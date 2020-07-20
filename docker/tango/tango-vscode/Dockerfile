@@ -38,11 +38,11 @@ RUN wget -q https://github.com/helm/chart-testing/releases/download/v3.0.0-beta.
     && tar -xf ct.tar.gz \
     && mv ct /usr/local/bin/ct
 
-RUN python3 -m pip install pytest pytest-cov pytest-json-report pycodestyle pytest-bdd elasticsearch \
-    kubernetes pytest-runner sphinx recommonmark assertpy astropy marshmallow
-RUN python3 -m pip install pytest pytest-cov pytest-json-report pycodestyle pytest-bdd elasticsearch kubernetes assertpy mock importlib
+COPY base-requirements.txt ./
 
-RUN apt-get install bash-completion
+RUN pip3 install -r base-requirements.txt && rm base-requirements.txt
+
+RUN apt-get install bash-completion -y
 
 RUN printf "#!/bin/sh\nexit 0" > /usr/sbin/policy-rc.d
 
