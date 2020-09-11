@@ -30,6 +30,9 @@ global:
       tag: 9.3.1
       pullPolicy: IfNotPresent
 
+dsconfig:
+  configuration_file: data/configuration.json
+
 hdbppdb:
   enabled: true
   use_pv: false
