@@ -1,89 +1,40 @@
-# Default values for ska-docker.
+# Default values for tango-base.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 display: ":0"
 xauthority: "~/.Xauthority"
+minikube: true
 
-tangodb:
-  enabled: true
-  image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-db
-    tag: latest
-    pullPolicy: IfNotPresent
-  db:
-    rootpw: secret
-    db: tango
-    user: tango
-    password: tango
-  resources:
-    requests:
-      cpu: 200m     # 200m = 0.2 CPU
-      memory: 256Mi # 256Mi = 0.25 GB mem
+global:
+  labels:
+    app: ska-docker
+  tango_host: databaseds-tango-base-test:10000
+  environment_variables: []
+  dsconfig:
+    image:
+      registry: nexus.engageska-portugal.pt/ska-docker
+      image: tango-dsconfig
+      tag: 1.2.5.1
+      pullPolicy: IfNotPresent
 
-databaseds:
-  enabled: true
-  image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-cpp
-    tag: latest
-    pullPolicy: IfNotPresent
-  resources:
-    requests:
-      cpu: 200m     # 200m = 0.2 CPU
-      memory: 256Mi # 256Mi = 0.25 GB mem
+tango-base:
+  itango:
+    enabled: false
 
-rsyslog:
-  enabled: true
-  image:
-    registry: registry.hub.docker.com/u/
-    image: jumanjiman/rsyslog
-    tag: latest
-    pullPolicy: IfNotPresent
+  jive:
+    enabled: false
 
-itango:
-  enabled: false
-  image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-itango
-    tag: latest
-    pullPolicy: IfNotPresent
+  vnc:
+    enabled: false
 
-tangotest:
-  enabled: true
-  image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-java
-    tag: latest
-    pullPolicy: IfNotPresent
+  vscode:
+    enabled: false
 
-jive:
-  enabled: true
-  image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-java
-    tag: latest
-    pullPolicy: IfNotPresent
+  tangorest:
+    enabled: true
 
-logviewer:
-  enabled: true
-  image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-java
-    tag: latest
-    pullPolicy: IfNotPresent
+  ingress:
+    enabled: true
+    hostname: tango-base.minikube.local
 
-pogo:
-  enabled: true
-  image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-pogo
-    tag: latest
-    pullPolicy: IfNotPresent
-
-nodeSelector: {}
-
-affinity: {}
-
-tolerations: []

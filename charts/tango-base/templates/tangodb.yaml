@@ -29,7 +29,7 @@ metadata:
   name: {{ template "tango-base.name" . }}-{{ .Values.tangodb.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "tango-base.labels" . | indent 4 }}
+{{ toYaml .Values.global.labels | indent 4 }}
     component: {{ .Values.tangodb.component }}
     function: {{ .Values.tangodb.function }}
     domain: {{ .Values.tangodb.domain }}
