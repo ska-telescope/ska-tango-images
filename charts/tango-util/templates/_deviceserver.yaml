@@ -1,15 +1,15 @@
 {{ define "tango-util.deviceserver.tpl" }}
+---
 # Device Server Service 
 # Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
 # giving a dummy Service entry ensures that the single pod is DNS addressable
----
 apiVersion: v1
 kind: Service
 metadata:
   name: {{ .deviceserver.name }}
   namespace: {{ .local.Release.Namespace }}
   labels:
-    {{ toYaml .local.Values.global.labels | indent 4 }}
+{{ toYaml .local.Values.global.labels | indent 4 }}
     component: {{ .deviceserver.name }}
     function: {{ .deviceserver.function }}
     domain: {{ .deviceserver.domain }}
@@ -25,33 +25,32 @@ spec:
     targetPort: 1234
 
 ---
-# Single Pod separate statefulset per Device Server
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .local.Chart.Name }}-{{ .deviceserver.name }}
+  name: {{ .deviceserver.name }}
   namespace: {{ .local.Release.Namespace }}
   labels:
-    {{ toYaml .local.Values.global.labels | indent 4 }}
+{{ toYaml .local.Values.global.labels | indent 4 }}
     component: {{ .deviceserver.name }}
     function: {{ .deviceserver.function }}
     domain: {{ .deviceserver.domain }}
-    subsystem: {{ .local.Values.subsystem }} 
+    subsystem: {{ .local.Values.subsystem }}
 spec:
   selector:
     matchLabels:
       component: {{ .deviceserver.name }}
-      subsystem: {{ .local.Values.subsystem }} 
-  serviceName: {{ .local.Chart.Name }}-{{ .deviceserver.name }}
+      subsystem: {{ .local.Values.subsystem }}
+  serviceName: {{ .deviceserver.name }}
   replicas: 1
   template:
     metadata:
       labels:
-        {{ toYaml .local.Values.global.labels | indent 8 }}
+{{ toYaml .local.Values.global.labels | indent 8 }}
         component: {{ .deviceserver.name }}
         function: {{ .deviceserver.function }}
         domain: {{ .deviceserver.domain }}
-        subsystem: {{ .local.Values.subsystem }} 
+        subsystem: {{ .local.Values.subsystem }}
     spec:
       initContainers:
       - name: check-databaseds-ready
@@ -67,11 +66,13 @@ spec:
         env:
         - name: TANGO_HOST
           value: {{ .local.Values.global.tango_host }}
+{{ if .local.Values.global.environment_variables }}
 {{ toYaml .local.Values.global.environment_variables | indent 8 }}
+{{ end }}
 {{ if (.deviceserver.depends_on) }}
 {{ range $index, $device := .deviceserver.depends_on }}
       - name: check-dependencies-{{ $index }}
-        image: {{ .local.Values.global.Values.dsconfig.image.registry }}/{{ .local.Values.global.Values.dsconfig.image.image }}:{{ .local.Values.global.Values.dsconfig.image.tag }}
+        image: "{{ .local.Values.global.Values.dsconfig.image.registry }}/{{ .local.Values.global.Values.dsconfig.image.image }}:{{ .local.Values.global.Values.dsconfig.image.tag }}"
         imagePullPolicy: {{ .local.Values.global.Values.dsconfig.image.pullPolicy }}
         command:
           - retry
@@ -83,7 +84,9 @@ spec:
         env:
         - name: TANGO_HOST
           value: {{ .local.Values.global.tango_host }}
+{{ if .local.Values.global.environment_variables }}
 {{ toYaml .local.Values.global.environment_variables | indent 8 }}
+{{ end }}
 {{ end }} 
 {{ end }} 
       containers:
@@ -97,7 +100,9 @@ spec:
         env:
         - name: TANGO_HOST
           value: {{ .local.Values.global.tango_host }}
+{{ if .local.Values.global.environment_variables }}
 {{ toYaml .local.Values.global.environment_variables | indent 8 }}
+{{ end }}
 {{ toYaml .deviceserver.environment_variables | indent 8 }}
         resources:
 {{ if .deviceserver.resources }}
@@ -105,15 +110,15 @@ spec:
 {{ else }}
 {{ toYaml .local.Values.resources | indent 10 }}
 {{ end }}
-{{- with .nodeSelector }}
+{{- with .local.Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
 {{- end }}
-{{- with .affinity }}
+{{- with .local.Values.affinity }}
       affinity:
 {{ toYaml . | indent 8 }}
 {{- end }}
-{{- with .tolerations }}
+{{- with .local.Values.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
 {{- end }}
