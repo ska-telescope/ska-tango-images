@@ -19,10 +19,6 @@ spec:
     subsystem: {{ .local.Values.subsystem }}
     component: {{ .deviceserver.name }}
   clusterIP: None
-  ports:
-  - name: dummy # Actually, no port is needed.
-    port: 1234
-    targetPort: 1234
 
 ---
 apiVersion: apps/v1
@@ -53,39 +49,42 @@ spec:
         subsystem: {{ .local.Values.subsystem }}
     spec:
       initContainers:
-      - name: check-databaseds-ready
-        image: {{ .local.Values.global.dsconfig.image.registry }}/{{ .local.Values.global.dsconfig.image.image }}:{{ .local.Values.global.dsconfig.image.tag }}
-        imagePullPolicy: {{ .local.Values.global.dsconfig.image.pullPolicy }}
+{{ if (.deviceserver.depends_on) }}
+{{ $chart := .local }}
+{{ range $index, $device := .deviceserver.depends_on }}
+{{ if ($device.host) }}
+      - name: check-dependencies-{{ $index }}
+        image: "{{ $chart.Values.global.dsconfig.image.registry }}/{{ $chart.Values.global.dsconfig.image.image }}:{{ $chart.Values.global.dsconfig.image.tag }}"
+        imagePullPolicy: {{ $chart.Values.global.dsconfig.image.pullPolicy }}
         command:
           - /usr/local/bin/wait-for-it.sh
-          - $TANGO_HOST
+          - {{ $device.host }}
           - --timeout=60
           - --strict
           - --
           - echo databaseds ready
+{{ if ($chart.Values.global.environment_variables) }}
         env:
-        - name: TANGO_HOST
-          value: {{ .local.Values.global.tango_host }}
-{{ if .local.Values.global.environment_variables }}
-{{ toYaml .local.Values.global.environment_variables | indent 8 }}
+{{ toYaml $chart.Values.global.environment_variables | indent 8 }}
 {{ end }}
-{{ if (.deviceserver.depends_on) }}
-{{ range $index, $device := .deviceserver.depends_on }}
+{{ end }}
+{{ if ($device.device) }}
       - name: check-dependencies-{{ $index }}
-        image: "{{ .local.Values.global.Values.dsconfig.image.registry }}/{{ .local.Values.global.Values.dsconfig.image.image }}:{{ .local.Values.global.Values.dsconfig.image.tag }}"
-        imagePullPolicy: {{ .local.Values.global.Values.dsconfig.image.pullPolicy }}
+        image: "{{ $chart.Values.global.dsconfig.image.registry }}/{{ $chart.Values.global.dsconfig.image.image }}:{{ $chart.Values.global.dsconfig.image.tag }}"
+        imagePullPolicy: {{ $chart.Values.global.dsconfig.image.pullPolicy }}
         command:
           - retry
           - --max=10
           - --
           - tango_admin
           - --check-device
-          - {{ $device | toString }}
+          - {{ $device.device | toString }}
         env:
         - name: TANGO_HOST
-          value: {{ .local.Values.global.tango_host }}
-{{ if .local.Values.global.environment_variables }}
-{{ toYaml .local.Values.global.environment_variables | indent 8 }}
+          value: {{ $chart.Values.global.tango_host }}
+{{ if ($chart.Values.global.environment_variables) }}
+{{ toYaml $chart.Values.global.environment_variables | indent 8 }}
+{{ end }}
 {{ end }}
 {{ end }} 
 {{ end }} 
@@ -103,7 +102,9 @@ spec:
 {{ if .local.Values.global.environment_variables }}
 {{ toYaml .local.Values.global.environment_variables | indent 8 }}
 {{ end }}
+{{ if .deviceserver.environment_variables }}
 {{ toYaml .deviceserver.environment_variables | indent 8 }}
+{{ end }}
         resources:
 {{ if .deviceserver.resources }}
 {{ toYaml .deviceserver.resources | indent 10 }}
