@@ -7,11 +7,15 @@ metadata:
   name: {{ template "tango-base.name" . }}-{{ .Values.logviewer.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "tango-base.labels" . | indent 4 }}
+{{ toYaml .Values.global.labels | indent 4 }}
     component: {{ .Values.logviewer.component }}
     function: {{ .Values.logviewer.function }}
     domain: {{ .Values.logviewer.domain }}
     intent: {{ .Values.logviewer.intent }}
+{{ if (.Values.global.annotations) }}
+  annotations:
+{{ toYaml .Values.global.annotations | indent 4 }}
+{{ end }}
 spec:
   containers:
   - name: logviewer

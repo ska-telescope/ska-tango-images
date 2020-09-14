@@ -7,11 +7,15 @@ metadata:
   name: {{ template "tango-base.name" . }}-{{ .Values.jive.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "tango-base.labels" . | indent 4 }}
+{{ toYaml .Values.global.labels | indent 4 }}
     component: {{ .Values.jive.component }}
     function: {{ .Values.jive.function }}
     domain: {{ .Values.jive.domain }}
     intent: {{ .Values.jive.intent }}
+{{ if (.Values.global.annotations) }}
+  annotations:
+{{ toYaml .Values.global.annotations | indent 4 }}
+{{ end }}
 spec:
   containers:
   - name: jive

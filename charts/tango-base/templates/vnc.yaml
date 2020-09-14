@@ -7,11 +7,15 @@ metadata:
   name: {{ template "tango-base.name" . }}-{{ .Values.vnc.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "tango-base.labels" . | indent 4 }}
     component: {{ .Values.vnc.component }}
     function: {{ .Values.vnc.function }}
     domain: {{ .Values.vnc.domain }}
     intent: {{ .Values.vnc.intent }}
+{{ toYaml .Values.global.labels | indent 4 }}
+{{ if (.Values.global.annotations) }}
+  annotations:
+{{ toYaml .Values.global.annotations | indent 4 }}
+{{ end }}
 spec:
   type: NodePort
   ports:
@@ -44,6 +48,11 @@ metadata:
     function: {{ .Values.vnc.function }}
     domain: {{ .Values.vnc.domain }}
     intent: {{ .Values.vnc.intent }}
+{{ toYaml .Values.global.labels | indent 4 }}
+{{ if (.Values.global.annotations) }}
+  annotations:
+{{ toYaml .Values.global.annotations | indent 4 }}
+{{ end }}
 spec:
   selector:
     matchLabels:
@@ -54,11 +63,15 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "tango-base.labels" . | indent 8 }}
         component: {{ .Values.vnc.component }}
         function: {{ .Values.vnc.function }}
         domain: {{ .Values.vnc.domain }}
         intent: {{ .Values.vnc.intent }}
+{{ toYaml .Values.global.labels | indent 8 }}
+{{ if (.Values.global.annotations) }}
+  annotations:
+{{ toYaml .Values.global.annotations | indent 8 }}
+{{ end }}
     spec:
       containers:
       - name: vnc

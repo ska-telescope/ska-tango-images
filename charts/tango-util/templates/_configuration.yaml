@@ -12,6 +12,10 @@ metadata:
     function: deployment
     intent: enabling
     domain: self-configuration
+{{ if (.Values.global.annotations) }}
+  annotations:
+{{ toYaml .Values.global.annotations | indent 4 }}
+{{ end }}
 data:
 {{ (tpl (.Files.Glob .Values.dsconfig.configuration_file).AsConfig . ) | indent 2  }}
   bootstrap.sh: |
@@ -44,6 +48,10 @@ metadata:
     function: deployment
     intent: enabling
     domain: self-configuration
+{{ if (.Values.global.annotations) }}
+  annotations:
+{{ toYaml .Values.global.annotations | indent 4 }}
+{{ end }}
 spec:
   ttlSecondsAfterFinished: 100
   template:

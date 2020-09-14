@@ -14,6 +14,10 @@ metadata:
     function: {{ .deviceserver.function }}
     domain: {{ .deviceserver.domain }}
     subsystem: {{ .local.Values.subsystem }}
+{{ if (.local.Values.global.annotations) }}
+  annotations:
+{{ toYaml .local.Values.global.annotations | indent 4 }}
+{{ end }}
 spec:
   selector:
     subsystem: {{ .local.Values.subsystem }}
@@ -32,6 +36,10 @@ metadata:
     function: {{ .deviceserver.function }}
     domain: {{ .deviceserver.domain }}
     subsystem: {{ .local.Values.subsystem }}
+{{ if (.local.Values.global.annotations) }}
+  annotations:
+{{ toYaml .local.Values.global.annotations | indent 4 }}
+{{ end }}
 spec:
   selector:
     matchLabels:
@@ -42,11 +50,15 @@ spec:
   template:
     metadata:
       labels:
-{{ toYaml .local.Values.global.labels | indent 8 }}
         component: {{ .deviceserver.name }}
         function: {{ .deviceserver.function }}
         domain: {{ .deviceserver.domain }}
         subsystem: {{ .local.Values.subsystem }}
+{{ toYaml .local.Values.global.labels | indent 8 }}
+{{ if (.local.Values.global.annotations) }}
+      annotations:
+{{ toYaml .local.Values.global.annotations | indent 8 }}
+{{ end }}
     spec:
       initContainers:
 {{ if (.deviceserver.depends_on) }}

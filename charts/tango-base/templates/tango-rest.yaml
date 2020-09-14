@@ -7,7 +7,7 @@ metadata:
   name: {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-   {{- include "tango-base.labels" . | indent 4 }}
+{{ toYaml .Values.global.labels | indent 4 }}
     component: {{ .Values.tangorest.component }}
     function: {{ .Values.tangorest.function }}
     domain: {{ .Values.tangorest.domain }}
@@ -18,7 +18,7 @@ spec:
   - name: rest
     port: 8080
   selector:
-    app: {{ template "tango-base.name" . }}
+{{ toYaml .Values.global.labels | indent 4 }}
     component: {{ .Values.tangorest.component }}
 
 ---
@@ -28,25 +28,36 @@ metadata:
   name: {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "tango-base.labels" . | indent 4 }}
+{{ toYaml .Values.global.labels | indent 4 }}
     component: {{ .Values.tangorest.component }}
     function: {{ .Values.tangorest.function }}
     domain: {{ .Values.tangorest.domain }}
     intent: {{ .Values.tangorest.intent }}
+{{ if (.Values.global.annotations) }}
+  annotations:
+{{ toYaml .Values.global.annotations | indent 4 }}
+{{ end }}
 spec:
   selector:
     matchLabels:
-      app: {{ template "tango-base.name" . }}
+{{ toYaml .Values.global.labels | indent 6 }}
       component: {{ .Values.tangorest.component }}
+      function: {{ .Values.tangorest.function }}
+      domain: {{ .Values.tangorest.domain }}
+      intent: {{ .Values.tangorest.intent }}
   replicas: {{ .Values.tangorest.replicas }}
   template:
     metadata:
       labels:
-        {{- include "tango-base.labels" . | indent 8 }}
+{{ toYaml .Values.global.labels | indent 8 }}
         component: {{ .Values.tangorest.component }}
         function: {{ .Values.tangorest.function }}
         domain: {{ .Values.tangorest.domain }}
         intent: {{ .Values.tangorest.intent }}
+{{ if (.Values.global.annotations) }}
+      annotations:
+{{ toYaml .Values.global.annotations | indent 8 }}
+{{ end }}
     spec:
       {{- if .Values.pullSecrets }}
       imagePullSecrets:

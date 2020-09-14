@@ -5,14 +5,18 @@ metadata:
   name: rest-api-{{ template "tango-base.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: rest-api-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-    chart: {{ template "tango-base.chart" . }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+{{ toYaml .Values.global.labels | indent 4 }}
+    component: {{ .Values.tangorest.component }}
+    function: {{ .Values.tangorest.function }}
+    domain: {{ .Values.tangorest.domain }}
+    intent: {{ .Values.tangorest.intent }}
   annotations:
     {{- range $key, $value := .Values.ingress.annotations }}
       {{ $key }}: {{ $value | quote }}
     {{- end }}
+{{ if (.Values.global.annotations) }}
+{{ toYaml .Values.global.annotations | indent 4 }}
+{{ end }}
 spec:
   rules:
     - host: tango.rest.{{ .Values.ingress.hostname }}
@@ -37,6 +41,12 @@ kind: Secret
 metadata:
   name: {{ tpl .Values.ingress.tls.secretname . }}
   namespace: {{ .Release.Namespace }}
+  labels:
+{{ toYaml .Values.global.labels | indent 4 }}
+    component: {{ .Values.tangorest.component }}
+    function: {{ .Values.tangorest.function }}
+    domain: {{ .Values.tangorest.domain }}
+    intent: {{ .Values.tangorest.intent }}
 type: kubernetes.io/tls
 data:
 {{ (tpl (.Files.Glob "secrets/tls.*").AsSecrets . ) | indent 2  }}

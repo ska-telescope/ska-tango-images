@@ -19,6 +19,12 @@ kind: ConfigMap
 metadata:
   name: {{ template "tango-base.name" . }}-{{ .Values.itango.component }}-scripts
   namespace: {{ .Release.Namespace }}
+  labels:  
+{{ toYaml .Values.global.labels | indent 4 }}
+    component: {{ .Values.tangorest.component }}
+    function: {{ .Values.tangorest.function }}
+    domain: {{ .Values.tangorest.domain }}
+    intent: {{ .Values.tangorest.intent }}
 data:
   load_config.py:
 {{ (tpl (.Files.Glob "data/load_config.py").AsConfig . ) | indent 2 }}
@@ -31,11 +37,15 @@ metadata:
   name: {{ template "tango-base.name" . }}-{{ .Values.itango.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "tango-base.labels" . | indent 4 }}
+{{ toYaml .Values.global.labels | indent 4 }}
     component: {{ .Values.itango.component }}
     function: {{ .Values.itango.function }}
     domain: {{ .Values.itango.domain }}
     intent: {{ .Values.itango.intent }}
+{{ if (.Values.global.annotations) }}
+  annotations:
+{{ toYaml .Values.global.annotations | indent 4 }}
+{{ end }}
 spec:
   volumes:
     - name: configuration

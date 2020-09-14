@@ -5,6 +5,12 @@ kind: ConfigMap
 metadata:
   name: archiverdb-delete-query-{{ template "archiver.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
+  labels:
+{{ toYaml .Values.global.labels | indent 4 }}
+{{ if (.local.Values.global.annotations) }}
+  annotations:
+{{ toYaml .local.Values.global.annotations | indent 4 }}
+{{ end }}
 data:
   # property-like keys; each key maps to a simple value
   query.sql: |-
@@ -69,13 +75,18 @@ data:
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-    name: archiverdb-cleaner-{{ template "archiver.name" . }}-{{ .Release.Name }}
-    namespace: {{ .Release.Namespace }}
-    labels:
-      app: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
-      chart: {{ template "archiver.chart" . }}
-      release: {{ .Release.Name }}
-      heritage: {{ .Release.Service }}
+  name: archiverdb-cleaner-{{ template "archiver.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    component: archiverdb-cleaner-{{ template "archiver.name" . }}-{{ .Release.Name }}
+    chart: {{ template "archiver.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{ toYaml .Values.global.labels | indent 4 }}
+{{ if (.local.Values.global.annotations) }}
+  annotations:
+{{ toYaml .local.Values.global.annotations | indent 4 }}
+{{ end }}
 spec:
   schedule: "* 6 * * *"
   jobTemplate:

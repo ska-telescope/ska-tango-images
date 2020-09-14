@@ -9,7 +9,11 @@ metadata:
   name: {{ template "tango-base.name" . }}-tangodb-storage
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "tango-base.labels" . | indent 4 }}
+{{ toYaml .Values.global.labels | indent 4 }}
+{{ if (.Values.global.annotations) }}
+  annotations:
+{{ toYaml .Values.global.annotations | indent 4 }}
+{{ end }}
 spec:
   storageClassName: standard
   persistentVolumeReclaimPolicy: Recycle
@@ -28,7 +32,11 @@ metadata:
   name: {{ template "tango-base.name" . }}-tangodb-storage
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "tango-base.labels" . | indent 4 }}
+{{ toYaml .Values.global.labels | indent 4 }}
+{{ if (.Values.global.annotations) }}
+  annotations:
+{{ toYaml .Values.global.annotations | indent 4 }}
+{{ end }}
 spec:
 {{ if .Values.minikube }}
   storageClassName: standard

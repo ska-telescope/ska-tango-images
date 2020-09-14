@@ -8,10 +8,15 @@ metadata:
   name: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
+    component: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
     chart: {{ template "archiver.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+{{ toYaml .local.Values.global.labels | indent 4 }}
+{{ if (.local.Values.global.annotations) }}
+  annotations:
+{{ toYaml .local.Values.global.annotations | indent 4 }}
+{{ end }}
 spec:
   storageClassName: standard
   persistentVolumeReclaimPolicy: Recycle
@@ -30,10 +35,15 @@ metadata:
   name: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
+    component: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
     chart: {{ template "archiver.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+{{ toYaml .local.Values.global.labels | indent 4 }}
+{{ if (.local.Values.global.annotations) }}
+  annotations:
+{{ toYaml .local.Values.global.annotations | indent 4 }}
+{{ end }}
 spec:
 {{ if .Values.minikube }}
   storageClassName: standard

@@ -8,6 +8,12 @@ kind: ConfigMap
 metadata:
   name: "attrconfig-configuration-{{ template "archiver.name" . }}-{{ .Release.Name }}"
   namespace: {{ .Release.Namespace }}
+  labels:
+{{ toYaml .Values.global.labels | indent 4 }}
+{{ if (.local.Values.global.annotations) }}
+  annotations:
+{{ toYaml .local.Values.global.annotations | indent 4 }}
+{{ end }}
 data:
   attribute2archive.json:
 {{ (tpl (.Files.Glob "data/attribute2archive.json").AsConfig . ) | indent 2 }}
@@ -20,6 +26,12 @@ kind: Job
 metadata:
   name: attrconfig-{{ template "archiver.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
+  labels:
+{{ toYaml .Values.global.labels | indent 4 }}
+{{ if (.local.Values.global.annotations) }}
+  annotations:
+{{ toYaml .local.Values.global.annotations | indent 4 }}
+{{ end }}
 spec:
   ttlSecondsAfterFinished: 100
   template:

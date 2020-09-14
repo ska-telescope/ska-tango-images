@@ -7,11 +7,15 @@ metadata:
   name: {{ template "tango-base.name" . }}-{{ .Values.vscode.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "tango-base.labels" . | indent 4 }}
     component: {{ .Values.vscode.component }}
     function: {{ .Values.vscode.function }}
     domain: {{ .Values.vscode.domain }}
     intent: {{ .Values.vscode.intent }}
+{{ toYaml .Values.global.labels | indent 4 }}
+{{ if (.Values.global.annotations) }}
+  annotations:
+{{ toYaml .Values.global.annotations | indent 4 }}
+{{ end }}
 spec:
   type: NodePort
   ports:
@@ -33,26 +37,37 @@ metadata:
   name: {{ template "tango-base.name" . }}-{{ .Values.vscode.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "tango-base.labels" . | indent 4 }}
     component: {{ .Values.vscode.component }}
     function: {{ .Values.vscode.function }}
     domain: {{ .Values.vscode.domain }}
     intent: {{ .Values.vscode.intent }}
+{{ toYaml .Values.global.labels | indent 4 }}
+{{ if (.Values.global.annotations) }}
+  annotations:
+{{ toYaml .Values.global.annotations | indent 4 }}
+{{ end }}
 spec:
   selector:
     matchLabels:
-      app: {{ template "tango-base.name" . }}
       component: {{ .Values.vscode.component }}
+      function: {{ .Values.vscode.function }}
+      domain: {{ .Values.vscode.domain }}
+      intent: {{ .Values.vscode.intent }}
+{{ toYaml .Values.global.labels | indent 6 }}
   serviceName: {{ template "tango-base.name" . }}-{{ .Values.vscode.component }}
   replicas:  {{ .Values.vscode.replicas }}
   template:
     metadata:
       labels:
-        {{- include "tango-base.labels" . | indent 8 }}
         component: {{ .Values.vscode.component }}
         function: {{ .Values.vscode.function }}
         domain: {{ .Values.vscode.domain }}
         intent: {{ .Values.vscode.intent }}
+{{ toYaml .Values.global.labels | indent 4 }}
+{{ if (.Values.global.annotations) }}
+  annotations:
+{{ toYaml .Values.global.annotations | indent 4 }}
+{{ end }}
     spec:
       containers:
       - name: vscode

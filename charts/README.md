@@ -4,7 +4,7 @@
 
 
 SKA TANGO-controls docker images on Kubernetes
-===========================
+==============================================
 
 The following are a set of instructions of running the SKA TANGO-controls docker images made by SKAon Kubernetes, and has been tested on minikube v0.34.1 with k8s v1.13.3 on Ubuntu 18.04.
 
@@ -97,106 +97,15 @@ sudo rm -rf /var/lib/kubeadm.yaml /data/minikube /var/lib/minikube /var/lib/kube
 ```
 
 Running the SKA TANGO-controls docker images on Kubernetes
-----------------------------------------
+----------------------------------------------------------
+The basic configuration for each component of the SKA TANGO-controls docker images is held in the `values.yaml` files.
 
-Note: your Xserver needs to allow TCP connections.  This will be different for each window manager, but on Ubuntu 18.04 using gdm3 it can be enabled by editing /etc/gdm3/custom.conf and adding:
+We launch the SKA TANGO-controls docker images with:
 ```
-[security]
-DisallowTCP=false
-```
-In order for these changes to take effect you will need to restart X (it's just easier to reboot...).
-
-Change the file /etc/kubernetes/addons/ingress-dp.yaml in order to set the nginx-ingress-controller to version 0.24.0:
-```
-...
-      containers:
-      - image: quay.io/kubernetes-ingress-controller/nginx-ingress-controller:0.24.0
-....
-```
-
-Once the Helm client is installed (from above) and TCP based Xserver connections are enabled, change to the k8s/ directory.  The basic configuration for each component of the SKA TANGO-controls docker images is held in the `values.yaml` file.
-
-The mode that we are using Helm in here is purely for templating - this avoids the need to install the Tiller process on the Kubernetes cluster, and we don't need to be concerend about making it secure (requires TLS and the setup of a CA).
-
-On for the main event - we launch the SKA TANGO-controls docker images with:
-```
-$ make deploy KUBE_NAMESPACE=integration
-```
-
-This will give extensive output describing what has been deployed in the test namespace:
-```
-kubectl describe namespace integration || kubectl create namespace integration
-Name:         integration
-Labels:       <none>
-Annotations:  <none>
-Status:       Active
-
-No resource quota.
-
-No resource limits.
-persistentvolume/pogo-ska-docker created
-persistentvolumeclaim/pogo-ska-docker created
-persistentvolume/tangodb-ska-docker-test created
-persistentvolumeclaim/tangodb-ska-docker-test created
-service/databaseds-ska-docker-test created
-statefulset.apps/databaseds-ska-docker-test created
-service/tangodb-ska-docker-test created
-statefulset.apps/tangodb-ska-docker-test created
-pod/jive-ska-docker-test created
-pod/logviewer-ska-docker-test created
-pod/pogo-ska-docker created
-pod/tangotest-ska-docker-test created
-```
-
-Please wait patiently - it will take time for the Container images to download, and for the database to initialise.  After some time, you can check what is running with:
-```
-watch kubectl get all,pv,pvc,ingress -n integration
-```
-
-Which will give output like:
-```
-Every 2.0s: kubectl get all,pv,pvc -n integration           osboxes: Fri Mar 29 09:25:05 2019
-
-NAME                                   READY   STATUS      RESTARTS   AGE
-pod/databaseds-ska-docker-test-0   0/1     Completed   1          27s
-pod/jive-ska-docker-test           1/1     Running     0          27s
-pod/logviewer-ska-docker-test      1/1     Running     0          27s
-pod/pogo-ska-docker                0/1     Error       1          27s
-pod/tangodb-ska-docker-test-0      1/1     Running     0          27s
-pod/tangotest-ska-docker-test      1/1     Running     0          27s
-
-NAME                                     TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)     AGE
-service/databaseds-ska-docker-test   ClusterIP   None         <none>        10000/TCP   27s
-service/tangodb-ska-docker-test      ClusterIP   None         <none>        3306/TCP    27s
-
-NAME                                              READY   AGE
-statefulset.apps/databaseds-ska-docker-test   0/1     27s
-statefulset.apps/tangodb-ska-docker-test      1/1     27s
-
-NAME                                           CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                     STORAGECLASS   REASON   AGE
-persistentvolume/pogo-ska-docker           1Gi        RWO            Retain           Bound    integration/pogo-ska-docker           standard                27s
-persistentvolume/tangodb-ska-docker-test   1Gi        RWO            Retain           Bound    integration/tangodb-ska-docker-test   standard                27s
-
-NAME                                                STATUS   VOLUME                        CAPACITY   ACCESS MODES   STORAGECLASS   AGE
-persistentvolumeclaim/pogo-ska-docker           Bound    pogo-ska-docker           1Gi        RWO            standard       27s
-persistentvolumeclaim/tangodb-ska-docker-test   Bound    tangodb-ska-docker-test   1Gi        RWO            standard       27s
+$ make install-chart
 ```
 
 To clean up the Helm Chart release:
 ```
-$make delete KUBE_NAMESPACE=integration
-```
-
-Running Helm Test for the SKA TANGO-controls docker images on Kubernetes
-------------------------------------------------------------------------
-To run the tests locally for the chart, it is needed to run the following commands:
-
-```
-make kubectl_dependencies
-make helm_dependencies
-make install
-make helm_tests
-make k8s_test
-make helm_delete
-
+$make uninstall-chart
 ```

@@ -7,11 +7,15 @@ metadata:
   name: {{ template "tango-base.name" . }}-{{ .Values.tangodb.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-    {{- include "tango-base.labels" . | indent 4 }}
     component: {{ .Values.tangodb.component }}
     function: {{ .Values.tangodb.function }}
     domain: {{ .Values.tangodb.domain }}
     intent: {{ .Values.tangodb.intent }}
+{{ toYaml .Values.global.labels | indent 4 }}
+{{ if (.Values.global.annotations) }}
+  annotations:
+{{ toYaml .Values.global.annotations | indent 4 }}
+{{ end }}
 spec:
   ports:
   - name: mysql
@@ -29,11 +33,15 @@ metadata:
   name: {{ template "tango-base.name" . }}-{{ .Values.tangodb.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ toYaml .Values.global.labels | indent 4 }}
     component: {{ .Values.tangodb.component }}
     function: {{ .Values.tangodb.function }}
     domain: {{ .Values.tangodb.domain }}
     intent: {{ .Values.tangodb.intent }}
+{{ toYaml .Values.global.labels | indent 4 }}
+{{ if (.Values.global.annotations) }}
+  annotations:
+{{ toYaml .Values.global.annotations | indent 4 }}
+{{ end }}
 spec:
   selector:
     matchLabels:
@@ -44,11 +52,15 @@ spec:
   template:
     metadata:
       labels:
-        {{- include "tango-base.labels" . | indent 8 }}
         component: {{ .Values.tangodb.component }}
         function: {{ .Values.tangodb.function }}
         domain: {{ .Values.tangodb.domain }}
         intent: {{ .Values.tangodb.intent }}
+{{ toYaml .Values.global.labels | indent 8 }}
+{{ if (.Values.global.annotations) }}
+  annotations:
+{{ toYaml .Values.global.annotations | indent 8 }}
+{{ end }}
     spec:
       containers:
       - name: tangodb

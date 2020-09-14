@@ -7,10 +7,15 @@ metadata:
   name: hdbppviewer-{{ template "archiver.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-    app: hdbppviewer-{{ template "archiver.name" . }}-{{ .Release.Name }}
+    component: hdbppviewer-{{ template "archiver.name" . }}-{{ .Release.Name }}
     chart: {{ template "archiver.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+{{ toYaml .Values.global.labels | indent 4 }}
+{{ if (.local.Values.global.annotations) }}
+  annotations:
+{{ toYaml .local.Values.global.annotations | indent 4 }}
+{{ end }}
 spec:
   containers:
   - name: hdbppviewer
