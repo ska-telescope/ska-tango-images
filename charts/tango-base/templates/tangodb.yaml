@@ -22,8 +22,11 @@ spec:
     port: 3306
   type: NodePort
   selector:
-    app: {{ template "tango-base.name" . }}
     component: {{ .Values.tangodb.component }}
+    function: {{ .Values.tangodb.function }}
+    domain: {{ .Values.tangodb.domain }}
+    intent: {{ .Values.tangodb.intent }}
+{{ toYaml .Values.global.labels | indent 4 }}
 
 ---
 
@@ -45,8 +48,11 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: {{ template "tango-base.name" . }}
       component: {{ .Values.tangodb.component }}
+      function: {{ .Values.tangodb.function }}
+      domain: {{ .Values.tangodb.domain }}
+      intent: {{ .Values.tangodb.intent }}
+{{ toYaml .Values.global.labels | indent 6 }}
   serviceName: {{ template "tango-base.name" . }}-{{ .Values.tangodb.component }}
   replicas: 1
   template:
@@ -58,7 +64,7 @@ spec:
         intent: {{ .Values.tangodb.intent }}
 {{ toYaml .Values.global.labels | indent 8 }}
 {{ if (.Values.global.annotations) }}
-  annotations:
+      annotations:
 {{ toYaml .Values.global.annotations | indent 8 }}
 {{ end }}
     spec:

@@ -8,17 +8,6 @@ Expand the name of the chart.
 {{/*
 service-name based on values in order to make it constant accross the deplpyent namespace
 */}}
-{{- define "tango-base.dbservice-name" -}}
-{{- if .Values.tangoDatabaseDS }}
-{{- .Values.tangoDatabaseDS }}
-{{- else }}
-    {{- if .Values.databaseds.domainTag -}}
-databaseds-{{ template "tango-base.name" . }}-{{ .Values.databaseds.domainTag }}
-    {{- else -}}
-databaseds-{{ template "tango-base.name" . }}-{{ .Release.Name }}
-    {{- end }}
-{{- end }}
-{{- end }}
 
 {{/*
 Create a default fully qualified app name.

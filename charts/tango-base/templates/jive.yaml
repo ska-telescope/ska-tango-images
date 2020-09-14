@@ -23,7 +23,7 @@ spec:
     imagePullPolicy: "{{ .Values.jive.image.pullPolicy }}"
     command:
       - /usr/local/bin/wait-for-it.sh
-      - "{{ include "tango-base.dbservice-name" . }}:10000"
+      - "{{ .Values.global.tango_host }}"
       - --timeout=30
       - --strict
       - --
@@ -34,7 +34,7 @@ spec:
     - name: DISPLAY
       value: "{{ .Values.display }}"
     - name: TANGO_HOST
-      value: "{{ include "tango-base.dbservice-name" . }}:10000"
+      value: "{{ .Values.global.tango_host }}"
     volumeMounts:
       - name: xauthority
         mountPath: /tmp/.Xauthority

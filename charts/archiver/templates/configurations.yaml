@@ -10,9 +10,9 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
 {{ toYaml .Values.global.labels | indent 4 }}
-{{ if (.local.Values.global.annotations) }}
+{{ if (.Values.global.annotations) }}
   annotations:
-{{ toYaml .local.Values.global.annotations | indent 4 }}
+{{ toYaml .Values.global.annotations | indent 4 }}
 {{ end }}
 data:
   attribute2archive.json:
@@ -28,9 +28,9 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
 {{ toYaml .Values.global.labels | indent 4 }}
-{{ if (.local.Values.global.annotations) }}
+{{ if (.Values.global.annotations) }}
   annotations:
-{{ toYaml .local.Values.global.annotations | indent 4 }}
+{{ toYaml .Values.global.annotations | indent 4 }}
 {{ end }}
 spec:
   ttlSecondsAfterFinished: 100

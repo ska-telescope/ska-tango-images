@@ -26,8 +26,11 @@ spec:
     nodePort: {{ .Values.vscode.nodeport }}
 {{end}}
   selector:
-    app: {{ template "tango-base.name" . }}
     component: {{ .Values.vscode.component }}
+    function: {{ .Values.vscode.function }}
+    domain: {{ .Values.vscode.domain }}
+    intent: {{ .Values.vscode.intent }}
+{{ toYaml .Values.global.labels | indent 4 }}
 
 ---
 
@@ -63,10 +66,10 @@ spec:
         function: {{ .Values.vscode.function }}
         domain: {{ .Values.vscode.domain }}
         intent: {{ .Values.vscode.intent }}
-{{ toYaml .Values.global.labels | indent 4 }}
+{{ toYaml .Values.global.labels | indent 8 }}
 {{ if (.Values.global.annotations) }}
-  annotations:
-{{ toYaml .Values.global.annotations | indent 4 }}
+      annotations:
+{{ toYaml .Values.global.annotations | indent 8 }}
 {{ end }}
     spec:
       containers:

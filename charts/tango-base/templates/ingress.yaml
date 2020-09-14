@@ -15,7 +15,7 @@ metadata:
       {{ $key }}: {{ $value | quote }}
     {{- end }}
 {{ if (.Values.global.annotations) }}
-{{ toYaml .Values.global.annotations | indent 4 }}
+{{ toYaml .Values.global.annotations | indent 6 }}
 {{ end }}
 spec:
   rules:

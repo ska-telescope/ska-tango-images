@@ -7,10 +7,10 @@ metadata:
   name: mysqld-conf-{{ template "archiver.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ toYaml .local.Values.global.labels | indent 4 }}
-{{ if (.local.Values.global.annotations) }}
+{{ toYaml .Values.global.labels | indent 4 }}
+{{ if (.Values.global.annotations) }}
   annotations:
-{{ toYaml .local.Values.global.annotations | indent 4 }}
+{{ toYaml .Values.global.annotations | indent 4 }}
 {{ end }}
 data: 
   conf.d: |- 
@@ -33,9 +33,9 @@ metadata:
     function: {{ .Values.hdbppdb.function }}
     domain: {{ .Values.hdbppdb.domain }}
     intent: {{ .Values.hdbppdb.intent }}
-{{ if (.local.Values.global.annotations) }}
+{{ if (.Values.global.annotations) }}
   annotations:
-{{ toYaml .local.Values.global.annotations | indent 4 }}
+{{ toYaml .Values.global.annotations | indent 4 }}
 {{ end }}
 spec:
   ports:
@@ -58,9 +58,9 @@ metadata:
     function: {{ .Values.hdbppdb.function }}
     domain: {{ .Values.hdbppdb.domain }}
     intent: {{ .Values.hdbppdb.intent }}
-{{ if (.local.Values.global.annotations) }}
+{{ if (.Values.global.annotations) }}
   annotations:
-{{ toYaml .local.Values.global.annotations | indent 4 }}
+{{ toYaml .Values.global.annotations | indent 4 }}
 {{ end }}
 spec:
   selector:
@@ -77,9 +77,9 @@ spec:
         function: {{ .Values.hdbppdb.function }}
         domain: {{ .Values.hdbppdb.domain }}
         intent: {{ .Values.hdbppdb.intent }}
-{{ if (.local.Values.global.annotations) }}
+{{ if (.Values.global.annotations) }}
       annotations:
-{{ toYaml .local.Values.global.annotations | indent 8 }}
+{{ toYaml .Values.global.annotations | indent 8 }}
 {{ end }}
     spec:
       containers:
