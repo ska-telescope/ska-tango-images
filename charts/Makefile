@@ -12,6 +12,16 @@ TANGO_HOST=$(shell helm get values ${RELEASE_NAME} -a -n ${KUBE_NAMESPACE} | gre
 
 .DEFAULT_GOAL := help
 
+k8s: ## Which kubernetes are we connected to
+	@echo "Kubernetes cluster-info:"
+	@kubectl cluster-info
+	@echo ""
+	@echo "kubectl version:"
+	@kubectl version
+	@echo ""
+	@echo "Helm version:"
+	@helm version --client
+
 namespace: ## create the kubernetes namespace
 	@kubectl describe namespace $(KUBE_NAMESPACE) > /dev/null 2>&1 ; \
 		K_DESC=$$? ; \
