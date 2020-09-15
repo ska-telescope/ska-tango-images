@@ -16,6 +16,20 @@ metadata:
 {{ toYaml .Values.global.annotations | indent 4 }}
 {{ end }}
 spec:
+  initContainers:
+  - name: check-dependencies-0
+    image: "{{ .Values.global.dsconfig.image.registry }}/{{ .Values.global.dsconfig.image.image }}:{{ .Values.global.dsconfig.image.tag }}"
+    imagePullPolicy: {{ .Values.global.dsconfig.image.pullPolicy }}
+    command:
+      - retry
+      - --max=10
+      - --
+      - tango_admin
+      - --check-device
+      - sys/database/2
+    env:
+    - name: TANGO_HOST
+      value: {{ .Values.global.tango_host }}
   containers:
   - name: itango
     image: "{{ .Values.itango.image.registry }}/{{ .Values.itango.image.image }}:{{ .Values.itango.image.tag }}"

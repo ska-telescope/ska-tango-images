@@ -65,6 +65,20 @@ spec:
         - name: {{ . }}
       {{- end}}
       {{- end }}
+      initContainers:
+      - name: check-dependencies-0
+        image: "{{ .Values.global.dsconfig.image.registry }}/{{ .Values.global.dsconfig.image.image }}:{{ .Values.global.dsconfig.image.tag }}"
+        imagePullPolicy: {{ .Values.global.dsconfig.image.pullPolicy }}
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --check-device
+          - sys/database/2
+        env:
+        - name: TANGO_HOST
+          value: {{ .Values.global.tango_host }}
       containers:
       - name: tango-rest
         image: "{{ .Values.tangorest.image.registry }}/{{ .Values.tangorest.image.image }}:{{ .Values.tangorest.image.tag }}"
@@ -73,13 +87,7 @@ spec:
           - /bin/bash
         args:
           - "-c"
-          - >
-            /usr/local/bin/wait-for-it.sh
-            {{ .Values.global.tango_host }}
-            --timeout=30
-            --strict
-            --
-            /usr/bin/supervisord --configuration /etc/supervisor/supervisord.conf
+          - /usr/bin/supervisord --configuration /etc/supervisor/supervisord.conf
         env:
         - name: TANGO_HOST
           value: "{{ .Values.global.tango_host }}"
