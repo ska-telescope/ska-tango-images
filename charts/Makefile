@@ -48,13 +48,19 @@ publish-charts: ## publish charts
 	done; \
 	for i in repository/*; do \
 	curl -u $(HELM_USERNAME):$(HELM_PASSWORD) --upload-file $${i} $(HELM_HOST)/repository/helm-chart/$${i}; \
-	done
+	done; \
+	rm -rf repository
 
 install-chart: namespace## install the helm chart with name RELEASE_NAME and path UMBRELLA_CHART_PATH on the namespace KUBE_NAMESPACE 
-	@helm dependency update $(UMBRELLA_CHART_PATH) && \
+	@sed -e 's/CI_PROJECT_PATH_SLUG/$(CI_PROJECT_PATH_SLUG)/' ska-docker/values.yaml > generated_values.yaml; \
+	sed -e 's/CI_ENVIRONMENT_SLUG/$(CI_ENVIRONMENT_SLUG)/' generated_values.yaml > values.yaml; \
+	helm dependency update $(UMBRELLA_CHART_PATH); \
 	helm install $(RELEASE_NAME) \
 	--set minikube=$(MINIKUBE) \
-	 $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) 
+	--values values.yaml \
+	 $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE); \
+	 rm generated_values.yaml; \
+	 rm values.yaml
 
 uninstall-chart: ## uninstall the ska-docker helm chart on the namespace ska-docker
 	helm template  $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; \
