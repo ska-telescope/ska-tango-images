@@ -2,9 +2,6 @@
 # Docker, when used with GitLab CI, runs each job in a separate and isolated container using the predefined image that is set up in .gitlab-ci.yml.
 image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
 
-services:
-- docker:dind
-
 # During the development of software, there can be many stages until it's ready for public consumption.
 # You sure want to first test your code and then deploy it in a testing or staging environment before you release it to the public.
 # That way you can prevent bugs not only in your software, but in the deployment process as well.
@@ -18,10 +15,6 @@ stages:
 - build_5
 - test
 - push
-
-# https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#authenticating-to-the-container-registry
-before_script:
-  - docker login -u $DOCKER_REGISTRY_USERNAME -p $DOCKER_REGISTRY_PASSWORD $DOCKER_REGISTRY_HOST
 
 test-chart:
   stage: test
