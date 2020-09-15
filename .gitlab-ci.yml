@@ -20,7 +20,7 @@ test-chart:
   stage: test
   tags:
   - real-docker-executor
-  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.0
+  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.1
   script:
   - cd charts/
   - kubectl version
