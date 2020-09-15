@@ -39,7 +39,9 @@ test-chart:
   - ./get_helm.sh
   - cd charts/
   - export KUBE_NAMESPACE="ci-ska-docker-$CI_COMMIT_SHORT_SHA"
-  - make k8s
+  - kubectl cluster-info dump
+  - kubectl version
+  - helm version --client
   - make install-chart
   - make wait
   - make test
