@@ -29,19 +29,12 @@ test-chart:
   - docker-executor
   image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.0
   script:
-  # install kubectl
   - curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.18.2/bin/linux/amd64/kubectl
   - chmod +x ./kubectl
   - mv ./kubectl /usr/local/bin/kubectl
-  # install helm
-  - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-  - chmod 700 get_helm.sh
-  - ./get_helm.sh
   - cd charts/
   - export KUBE_NAMESPACE="ci-ska-docker-$CI_COMMIT_SHORT_SHA"
-  - kubectl cluster-info dump
   - kubectl version
-  - helm version --client
   - make install-chart
   - make wait
   - make test
