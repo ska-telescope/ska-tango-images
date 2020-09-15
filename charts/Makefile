@@ -20,6 +20,14 @@ namespace: ## create the kubernetes namespace
 		else kubectl create namespace $(KUBE_NAMESPACE); \
 		fi
 
+delete_namespace: ## delete the kubernetes namespace
+	@if [ "default" == "$(KUBE_NAMESPACE)" ] || [ "kube-system" == "$(KUBE_NAMESPACE)" ]; then \
+	echo "You cannot delete Namespace: $(KUBE_NAMESPACE)"; \
+	exit 1; \
+	else \
+	kubectl describe namespace $(KUBE_NAMESPACE) && kubectl delete namespace $(KUBE_NAMESPACE); \
+	fi
+
 help:  ## show this help.
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
