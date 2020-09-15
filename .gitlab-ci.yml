@@ -19,7 +19,7 @@ stages:
 test-chart:
   stage: test
   tags:
-  - docker-executor
+  - real-docker-executor
   image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.0
   script:
   - cd charts/
