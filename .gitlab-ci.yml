@@ -27,12 +27,12 @@ test-chart:
   stage: test
   tags:
   - docker-executor
-  image: nexus.engageska-portugal.pt/ska-docker/ska-python-buildenv:latest
+  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.0
   script:
   # install kubectl
   - curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.18.2/bin/linux/amd64/kubectl
   - chmod +x ./kubectl
-  - sudo mv ./kubectl /usr/local/bin/kubectl
+  - mv ./kubectl /usr/local/bin/kubectl
   # install helm
   - curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
   - chmod 700 get_helm.sh
