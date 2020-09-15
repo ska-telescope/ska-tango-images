@@ -27,7 +27,7 @@ test-chart:
   stage: test
   tags:
   - docker-executor
-  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.0
+  image: nexus.engageska-portugal.pt/ska-docker/ska-python-buildenv:latest
   script:
   # install kubectl
   - curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.18.2/bin/linux/amd64/kubectl
