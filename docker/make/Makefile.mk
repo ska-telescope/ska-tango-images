@@ -72,8 +72,15 @@ release: check-status check-release build push
 push: pre-push do-push post-push
 
 do-push:
-	docker push $(IMAGE):$(VERSION)
-	docker push $(IMAGE):latest
+	@curl --output /dev/null --silent --head --fail -r 0-0 "https://$(DOCKER_REGISTRY_HOST)/repository/docker/v2/$(DOCKER_REGISTRY_USER)/$(NAME)/manifests/$(VERSION)"; \
+	result=$$?; \
+	if [ $$result -eq 0 ] ; then \
+		echo "Version $(VERSION) of image $(IMAGE) already exists"; \
+	else \
+		echo "Version $(VERSION) of image $(IMAGE) does not exist"; \
+		docker push $(IMAGE):$(VERSION); \
+		docker push $(IMAGE):latest; \
+	fi;
 
 snapshot: build push
 

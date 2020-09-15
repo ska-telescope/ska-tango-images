@@ -5,10 +5,10 @@ HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 MINIKUBE ?= true## Minikube or not
 MARK ?= all
 IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.7## docker image that will be run for testing purpose
-
 TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)-$(KUBE_NAMESPACE)-$(RELEASE_NAME)##name of the pod running the k8s_tests
-
 TANGO_HOST=$(shell helm get values ${RELEASE_NAME} -a -n ${KUBE_NAMESPACE} | grep tango_host | head -1 | cut -d':' -f2 | cut -d' ' -f2):10000
+
+CHART_TO_PUB ?= tango-base/ archiver/ tango-util/## list of charts to be published on nexus
 
 .DEFAULT_GOAL := help
 
@@ -43,11 +43,11 @@ help:  ## show this help.
 
 publish-charts: ## publish charts 
 	@mkdir -p repository
-	for i in tango-base/ archiver/ tango-util/; do \
+	for i in $(CHART_TO_PUB); do \
 	helm package $${i} --destination ./repository ; \
-	done \
+	done; \
 	for i in repository/*; do \
-	curl -v -u $(HELM_USERNAME):$(HELM_PASSWORD) --upload-file $${i} $(HELM_HOST)/repository/helm-chart/$${i}
+	curl -u $(HELM_USERNAME):$(HELM_PASSWORD) --upload-file $${i} $(HELM_HOST)/repository/helm-chart/$${i}; \
 	done
 
 install-chart: namespace## install the helm chart with name RELEASE_NAME and path UMBRELLA_CHART_PATH on the namespace KUBE_NAMESPACE 
