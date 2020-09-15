@@ -41,7 +41,7 @@ delete_namespace: ## delete the kubernetes namespace
 help:  ## show this help.
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-publish-charts: ## publish charts 
+publish-charts: ## publish charts DEPRECATED
 	@mkdir -p repository
 	for i in $(CHART_TO_PUB); do \
 	helm package $${i} --destination ./repository ; \
