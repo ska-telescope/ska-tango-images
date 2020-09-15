@@ -33,7 +33,8 @@ publish-charts: ## publish charts
 	done
 
 install-chart: namespace## install the helm chart with name RELEASE_NAME and path UMBRELLA_CHART_PATH on the namespace KUBE_NAMESPACE 
-	helm install $(RELEASE_NAME) --dependency-update \
+	@helm dependency update $(UMBRELLA_CHART_PATH) && \
+	helm install $(RELEASE_NAME) \
 	--set minikube=$(MINIKUBE) \
 	 $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) 
 

@@ -26,7 +26,7 @@ before_script:
 test-chart:
   stage: test
   tags:
-  - auto-k8sv2
+  - docker-executor
   image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.0
   script:
   - cd charts/
@@ -38,6 +38,8 @@ test-chart:
   - export KUBE_NAMESPACE="ci-$CI_COMMIT_SHORT_SHA"
   - make delete
   - make delete_namespace
+  environment:
+    name: test
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
