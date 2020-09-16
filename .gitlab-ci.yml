@@ -499,7 +499,7 @@ publish_chart:
   - docker-executor
   image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.1
   script:
-    - curl -s https://gitlab.com/ska-telescope/stupid/raw/st-473-publish-charts/scripts/publish-charts.sh | bash
+    - curl -s https://gitlab.com/ska-telescope/stupid/raw/master/scripts/publish-charts.sh | bash
     - cd charts/ && make package
 
 cleanup_build_job:
