@@ -23,8 +23,7 @@ COPY pip.conf /etc/pip.conf
 
 RUN python3 -m pip install wheel numpy==1.16.6
 
-RUN git clone https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig.git && \
-    cd lib-maxiv-dsconfig && python3 -m pip install . 
+RUN python3 -m pip install --extra-index-url https://nexus.engageska-portugal.pt/repository/pypi/simple python-dsconfig==1.5.0
 
 COPY json2tango .
 ENV PATH $PATH:/json2tango
