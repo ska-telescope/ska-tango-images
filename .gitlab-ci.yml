@@ -16,8 +16,10 @@ stages:
 - build_3
 - build_4
 - build_5
-- test
 - push
+- test
+- publish_chart
+- cleanup_build
 
 # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#authenticating-to-the-container-registry
 before_script:
@@ -457,6 +459,30 @@ test-all:
     paths:
     - public
 
+test-chart:
+  stage: test
+  tags:
+  - docker-executor
+  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.1
+  script:
+  - cd charts/
+  - kubectl version
+  - make install-chart
+  - make wait
+  - make test
+  after_script:
+  - cd charts/
+  - make uninstall-chart
+  - make delete_namespace
+  environment:
+    name: test
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - "charts/build/"
+    reports:
+      junit: charts/build/report.xml
+
 push: 
   stage: push
   tags:
@@ -464,4 +490,27 @@ push:
   script: 
   - cd docker
   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
-  when: manual
+
+publish_chart:
+  variables:
+    CHARTS_TO_PUBLISH: tango-base archiver tango-util
+  stage: publish_chart
+  tags:
+  - docker-executor
+  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.1
+  script:
+    - curl -s https://gitlab.com/ska-telescope/stupid/raw/master/scripts/publish-charts.sh | bash
+    - cd charts/ && make package
+
+cleanup_build_job:
+  stage: cleanup_build
+  tags:
+  - docker-executor
+  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.1
+  script:
+  - cd charts/
+  - make uninstall-chart
+  - make delete_namespace
+  environment:
+    name: test
+  when: on_failure

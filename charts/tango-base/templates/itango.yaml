@@ -1,0 +1,65 @@
+{{ if .Values.itango.enabled }}
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ template "tango-base.name" . }}-{{ .Values.itango.component }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ toYaml .Values.global.labels | indent 4 }}
+    component: {{ .Values.itango.component }}
+    function: {{ .Values.itango.function }}
+    domain: {{ .Values.itango.domain }}
+    intent: {{ .Values.itango.intent }}
+{{ if (.Values.global.annotations) }}
+  annotations:
+{{ toYaml .Values.global.annotations | indent 4 }}
+{{ end }}
+spec:
+  initContainers:
+  - name: check-dependencies-0
+    image: "{{ .Values.global.dsconfig.image.registry }}/{{ .Values.global.dsconfig.image.image }}:{{ .Values.global.dsconfig.image.tag }}"
+    imagePullPolicy: {{ .Values.global.dsconfig.image.pullPolicy }}
+    command:
+      - retry
+      - --max=10
+      - --
+      - tango_admin
+      - --check-device
+      - sys/database/2
+    env:
+    - name: TANGO_HOST
+      value: {{ .Values.global.tango_host }}
+  containers:
+  - name: itango
+    image: "{{ .Values.itango.image.registry }}/{{ .Values.itango.image.image }}:{{ .Values.itango.image.tag }}"
+    imagePullPolicy: {{ .Values.itango.image.pullPolicy }}
+    command:
+      - /usr/local/bin/wait-for-it.sh
+      - {{ .Values.global.tango_host }}
+      - --timeout=30
+      - --strict
+      - --
+      - sleep
+      - infinity
+      # - /venv/bin/itango3
+    env:
+    - name: TANGO_HOST
+      value: "{{ .Values.global.tango_host }}"
+    resources:
+{{ toYaml .Values.itango.resources | indent 6 }}
+  restartPolicy: Always
+{{- with .Values.nodeSelector }}
+  nodeSelector:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.affinity }}
+  affinity:
+{{ toYaml . | indent 4 }}
+{{- end }}
+{{- with .Values.tolerations }}
+  tolerations:
+{{ toYaml . | indent 4 }}
+{{- end }}
+
+{{ end }}

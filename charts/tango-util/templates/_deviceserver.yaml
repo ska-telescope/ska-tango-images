@@ -1,0 +1,139 @@
+{{ define "tango-util.deviceserver.tpl" }}
+---
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .deviceserver.name }}
+  namespace: {{ .local.Release.Namespace }}
+  labels:
+{{ toYaml .local.Values.global.labels | indent 4 }}
+    component: {{ .deviceserver.name }}
+    function: {{ .deviceserver.function }}
+    domain: {{ .deviceserver.domain }}
+    subsystem: {{ .local.Values.subsystem }}
+{{ if (.local.Values.global.annotations) }}
+  annotations:
+{{ toYaml .local.Values.global.annotations | indent 4 }}
+{{ end }}
+spec:
+  selector:
+    subsystem: {{ .local.Values.subsystem }}
+    component: {{ .deviceserver.name }}
+  clusterIP: None
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .deviceserver.name }}
+  namespace: {{ .local.Release.Namespace }}
+  labels:
+{{ toYaml .local.Values.global.labels | indent 4 }}
+    component: {{ .deviceserver.name }}
+    function: {{ .deviceserver.function }}
+    domain: {{ .deviceserver.domain }}
+    subsystem: {{ .local.Values.subsystem }}
+{{ if (.local.Values.global.annotations) }}
+  annotations:
+{{ toYaml .local.Values.global.annotations | indent 4 }}
+{{ end }}
+spec:
+  selector:
+    matchLabels:
+      component: {{ .deviceserver.name }}
+      subsystem: {{ .local.Values.subsystem }}
+  serviceName: {{ .deviceserver.name }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: {{ .deviceserver.name }}
+        function: {{ .deviceserver.function }}
+        domain: {{ .deviceserver.domain }}
+        subsystem: {{ .local.Values.subsystem }}
+{{ toYaml .local.Values.global.labels | indent 8 }}
+{{ if (.local.Values.global.annotations) }}
+      annotations:
+{{ toYaml .local.Values.global.annotations | indent 8 }}
+{{ end }}
+    spec:
+      initContainers:
+{{ if (.deviceserver.depends_on) }}
+{{ $chart := .local }}
+{{ range $index, $device := .deviceserver.depends_on }}
+{{ if ($device.host) }}
+      - name: check-dependencies-{{ $index }}
+        image: "{{ $chart.Values.global.dsconfig.image.registry }}/{{ $chart.Values.global.dsconfig.image.image }}:{{ $chart.Values.global.dsconfig.image.tag }}"
+        imagePullPolicy: {{ $chart.Values.global.dsconfig.image.pullPolicy }}
+        command:
+          - /usr/local/bin/wait-for-it.sh
+          - {{ $device.host }}
+          - --timeout=60
+          - --strict
+          - --
+          - echo databaseds ready
+{{ if ($chart.Values.global.environment_variables) }}
+        env:
+{{ toYaml $chart.Values.global.environment_variables | indent 8 }}
+{{ end }}
+{{ end }}
+{{ if ($device.device) }}
+      - name: check-dependencies-{{ $index }}
+        image: "{{ $chart.Values.global.dsconfig.image.registry }}/{{ $chart.Values.global.dsconfig.image.image }}:{{ $chart.Values.global.dsconfig.image.tag }}"
+        imagePullPolicy: {{ $chart.Values.global.dsconfig.image.pullPolicy }}
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --check-device
+          - {{ $device.device | toString }}
+        env:
+        - name: TANGO_HOST
+          value: {{ $chart.Values.global.tango_host }}
+{{ if ($chart.Values.global.environment_variables) }}
+{{ toYaml $chart.Values.global.environment_variables | indent 8 }}
+{{ end }}
+{{ end }}
+{{ end }} 
+{{ end }} 
+      containers:
+      - name: device-server
+        image: "{{ .image.registry }}/{{ .image.image }}:{{ .image.tag }}"
+        imagePullPolicy: {{ .image.pullPolicy }}
+        command:
+          - sh
+        args:
+{{ toYaml .deviceserver.args | indent 10 }}
+        env:
+        - name: TANGO_HOST
+          value: {{ .local.Values.global.tango_host }}
+{{ if .local.Values.global.environment_variables }}
+{{ toYaml .local.Values.global.environment_variables | indent 8 }}
+{{ end }}
+{{ if .deviceserver.environment_variables }}
+{{ toYaml .deviceserver.environment_variables | indent 8 }}
+{{ end }}
+        resources:
+{{ if .deviceserver.resources }}
+{{ toYaml .deviceserver.resources | indent 10 }}
+{{ else }}
+{{ toYaml .local.Values.resources | indent 10 }}
+{{ end }}
+{{- with .local.Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .local.Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .local.Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}
+
+{{ end }}

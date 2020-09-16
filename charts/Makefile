@@ -1,37 +1,19 @@
-# Set dir of Makefile to a variable to use later
-MAKEPATH := $(abspath $(lastword $(MAKEFILE_LIST)))
-BASEDIR := $(notdir $(patsubst %/,%,$(dir $(MAKEPATH))))
+KUBE_NAMESPACE ?= ska-docker#namespace to be used
+RELEASE_NAME ?= test## release name of the chart
+UMBRELLA_CHART_PATH ?= ska-docker/## Path of the umbrella chart to work with
+HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
+MINIKUBE ?= true## Minikube or not
+MARK ?= all
+IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.7## docker image that will be run for testing purpose
+TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)-$(KUBE_NAMESPACE)-$(RELEASE_NAME)##name of the pod running the k8s_tests
+TANGO_HOST=$(shell helm get values ${RELEASE_NAME} -a -n ${KUBE_NAMESPACE} | grep tango_host | head -1 | cut -d':' -f2 | cut -d' ' -f2):10000
 
-# find IP addresses of this machine, setting THIS_HOST to the first address found
-THIS_HOST := $(shell ifconfig | sed -En 's/127.0.0.1//;s/.*inet (addr:)?(([0-9]*\.){3}[0-9]*).*/\2/p' | head -n1)
-DISPLAY := $(THIS_HOST):0
-XAUTHORITY ?= $(DISPLAY)
-KUBE_NAMESPACE ?= default
-HELM_CHART ?= ska-docker
-HELM_RELEASE = test
+CHART_TO_PUB ?= ska-docker## list of charts to be published on gitlab -- umbrella charts for testing purpose
 
-# INGRESS_HOST is the host name used in the Ingress resource definition for
-# publishing services via the Ingress Controller
-INGRESS_HOST ?= $(HELM_RELEASE).$(HELM_CHART).local
+CI_PROJECT_PATH_SLUG ?= ska-docker
+CI_ENVIRONMENT_SLUG ?= ska-docker
 
-SHELL=/bin/bash
-
-# activate remote debugger for VSCode (ptvsd)
-REMOTE_DEBUG ?= false
-
-KUBE_CONFIG_BASE64 ?=  ## base64 encoded kubectl credentials for KUBECONFIG
-KUBECONFIG ?= /etc/deploy/config ## KUBECONFIG location
-
-# define overides for above variables in here
--include ../PrivateRules.mak
-
-.PHONY: vars k8s logs describe show lint install delete namespace delete_namespace localip helm_dependencies kubectl_dependencies kubeconfig mkcerts help
 .DEFAULT_GOAL := help
-
-vars: ## Display variables - pass in DISPLAY and XAUTHORITY
-	@echo "DISPLAY: $(DISPLAY)"
-	@echo "XAUTHORITY: $(XAUTHORITY)"
-	@echo "Namespace: $(KUBE_NAMESPACE)"
 
 k8s: ## Which kubernetes are we connected to
 	@echo "Kubernetes cluster-info:"
@@ -41,51 +23,15 @@ k8s: ## Which kubernetes are we connected to
 	@kubectl version
 	@echo ""
 	@echo "Helm version:"
-	@helm version
+	@helm version --client
 
 namespace: ## create the kubernetes namespace
-	kubectl describe namespace $(KUBE_NAMESPACE) || kubectl create namespace $(KUBE_NAMESPACE)
-
-deploy: namespace  ## deploy the helm chart
-	@helm template $(HELM_RELEASE) $(HELM_CHART)/ \
-				 --namespace $(KUBE_NAMESPACE) \
-	             --set display="$(DISPLAY)" \
-	             --set xauthority="$(XAUTHORITY)" \
-	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl -n $(KUBE_NAMESPACE) apply -f -
-
-show: ## show the helm chart
-	@helm template $(HELM_RELEASE) $(HELM_CHART)/ \
-				 --namespace $(KUBE_NAMESPACE) \
-	             --set display="$(DISPLAY)" \
-	             --set xauthority="$(XAUTHORITY)" \
-	             --set tangoexample.debug="$(REMOTE_DEBUG)"
-
-lint: ## lint check the helm chart
-	@helm lint $(HELM_CHART)/ \
-		--namespace $(KUBE_NAMESPACE) \
-		--set ingress.hostname=$(INGRESS_HOST)
-
-install: namespace mkcerts  ## install the helm chart
-	@helm install $(HELM_RELEASE) $(HELM_CHART)/
-		--wait \
-		--namespace $(KUBE_NAMESPACE) \
-		--set ingress.hostname=$(INGRESS_HOST) \
-		--set display="$(DISPLAY)" \
-		--set xauthority="$(XAUTHORITY)"
-
-delete: ## delete the helm chart release
-	@helm delete $(HELM_RELEASE) \
-		--namespace $(KUBE_NAMESPACE)
-
-delete_template: ## delete the helm chart release
-	@helm template $(HELM_RELEASE) ska-docker/ \
-				 --namespace $(KUBE_NAMESPACE) \
-	             --set display="$(DISPLAY)" \
-	             --set xauthority="$(XAUTHORITYx)" \
-	             --set tangoexample.debug="$(REMOTE_DEBUG)" | kubectl -n $(KUBE_NAMESPACE) delete -f -
-
-tests:  ## run Helm chart tests
-	@helm test $(HELM_RELEASE) --namespace $(KUBE_NAMESPACE)
+	@kubectl describe namespace $(KUBE_NAMESPACE) > /dev/null 2>&1 ; \
+		K_DESC=$$? ; \
+		if [ $$K_DESC -eq 0 ] ; \
+		then kubectl describe namespace $(KUBE_NAMESPACE); \
+		else kubectl create namespace $(KUBE_NAMESPACE); \
+		fi
 
 delete_namespace: ## delete the kubernetes namespace
 	@if [ "default" == "$(KUBE_NAMESPACE)" ] || [ "kube-system" == "$(KUBE_NAMESPACE)" ]; then \
@@ -95,96 +41,87 @@ delete_namespace: ## delete the kubernetes namespace
 	kubectl describe namespace $(KUBE_NAMESPACE) && kubectl delete namespace $(KUBE_NAMESPACE); \
 	fi
 
-describe: ## describe Pods executed from Helm chart
-	@for i in `kubectl -n $(KUBE_NAMESPACE) get pods -l release=$(HELM_RELEASE) -o=name`; \
-	do echo "---------------------------------------------------"; \
-	echo "Describe for $${i}"; \
-	echo kubectl -n $(KUBE_NAMESPACE) describe $${i}; \
-	echo "---------------------------------------------------"; \
-	kubectl -n $(KUBE_NAMESPACE) describe $${i}; \
-	echo "---------------------------------------------------"; \
-	echo ""; echo ""; echo ""; \
-	done
-
-logs: ## show Helm chart POD logs
-	@for i in `kubectl -n $(KUBE_NAMESPACE) get pods -l release=$(HELM_RELEASE) -o=name`; \
-	do \
-	echo "---------------------------------------------------"; \
-	echo "Logs for $${i}"; \
-	echo kubectl -n $(KUBE_NAMESPACE) logs $${i}; \
-	echo kubectl -n $(KUBE_NAMESPACE) get $${i} -o jsonpath="{.spec.initContainers[*].name}"; \
-	echo "---------------------------------------------------"; \
-	for j in `kubectl -n $(KUBE_NAMESPACE) get $${i} -o jsonpath="{.spec.initContainers[*].name}"`; do \
-	RES=`kubectl -n $(KUBE_NAMESPACE) logs $${i} -c $${j} 2>/dev/null`; \
-	echo "initContainer: $${j}"; echo "$${RES}"; \
-	echo "---------------------------------------------------";\
-	done; \
-	echo "Main Pod logs for $${i}"; \
-	echo "---------------------------------------------------"; \
-	for j in `kubectl -n $(KUBE_NAMESPACE) get $${i} -o jsonpath="{.spec.containers[*].name}"`; do \
-	RES=`kubectl -n $(KUBE_NAMESPACE) logs $${i} -c $${j} 2>/dev/null`; \
-	echo "Container: $${j}"; echo "$${RES}"; \
-	echo "---------------------------------------------------";\
-	done; \
-	echo "---------------------------------------------------"; \
-	echo ""; echo ""; echo ""; \
-	done
-
-localip:  ## set local Minikube IP in /etc/hosts file for apigateway
-	@new_ip=`minikube ip` && \
-	existing_ip=`grep integration.engageska-portugal.pt /etc/hosts || true` && \
-	echo "New IP is: $${new_ip}" && \
-	echo "Existing IP: $${existing_ip}" && \
-	if [ -z "$${existing_ip}" ]; then echo "$${new_ip} integration.engageska-portugal.pt" | sudo tee -a /etc/hosts; \
-	else sudo perl -i -ne "s/\d+\.\d+.\d+\.\d+/$${new_ip}/ if /integration.engageska-portugal.pt/; print" /etc/hosts; fi && \
-	echo "/etc/hosts is now: " `grep integration.engageska-portugal.pt /etc/hosts`
-
-mkcerts:  ## Make dummy certificates for $(INGRESS_HOST) and Ingress
-	@if [ ! -f $(HELM_CHART)//secrets/tls.key ]; then \
-	openssl req -x509 -sha256 -nodes -days 365 -newkey rsa:2048 \
-	   -keyout $(HELM_CHART)/secrets/tls.key \
-		 -out $(HELM_CHART)/secrets/tls.crt \
-		 -subj "/CN=$(INGRESS_HOST)/O=Minikube"; \
-	else \
-	echo "SSL cert already exits in $(HELM_CHART)/secrets ... skipping"; \
-	fi
-
-# Utility target to install Helm dependencies
-helm_dependencies:
-	@which helm ; rc=$$?; \
-	if [[ $$rc != 0 ]]; then \
-	curl "https://get.helm.sh/helm-$(HELM_VERSION)-linux-amd64.tar.gz" | tar zx; \
-	mv linux-amd64/helm /usr/bin/; \
-	fi
-	helm version
-
-# Utility target to install K8s dependencies
-kubectl_dependencies:
-	@([ -n "$(KUBE_CONFIG_BASE64)" ] && [ -n "$(KUBECONFIG)" ]) || (echo "unset variables [KUBE_CONFIG_BASE64/KUBECONFIG] - abort!"; exit 1)
-	@which kubectl ; rc=$$?; \
-	if [[ $$rc != 0 ]]; then \
-		curl -L -o /usr/bin/kubectl "https://storage.googleapis.com/kubernetes-release/release/$(KUBERNETES_VERSION)/bin/linux/amd64/kubectl"; \
-		chmod +x /usr/bin/kubectl; \
-		mkdir -p /etc/deploy; \
-		echo $(KUBE_CONFIG_BASE64) | base64 -d > $(KUBECONFIG); \
-	fi
-	@echo -e "\nkubectl client version:"
-	@kubectl version --client
-	@echo -e "\nkubectl config view:"
-	@kubectl config view
-	@echo -e "\nkubectl config get-contexts:"
-	@kubectl config get-contexts
-	@echo -e "\nkubectl version:"
-	@kubectl version
-
-kubeconfig: ## export current KUBECONFIG as base64 ready for KUBE_CONFIG_BASE64
-	@KUBE_CONFIG_BASE64=`kubectl config view --flatten | base64 -w 0`; \
-	echo "KUBE_CONFIG_BASE64: $$(echo $${KUBE_CONFIG_BASE64} | cut -c 1-40)..."; \
-	echo "appended to: ../PrivateRules.mak"; \
-	echo -e "\n\n# base64 encoded from: kubectl config view --flatten\nKUBE_CONFIG_BASE64 = $${KUBE_CONFIG_BASE64}" >> ../PrivateRules.mak
-
 help:  ## show this help.
-	@echo "make targets:"
-	@grep -hE '^[0-9a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
-	@echo ""; echo "make vars (+defaults):"
-	@grep -hE '^[0-9a-zA-Z_-]+ \?=.*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = " \?\= "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' | sed -e 's/\#\#/  \#/'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+package: ## package charts
+	@echo "Packaging helm charts. Any existing file won't be overwritten."; \
+	mkdir -p ../tmp
+	@for i in $(CHART_TO_PUB); do \
+	helm package $${i} --destination ../tmp > /dev/null; \
+	done; \
+	mkdir -p ../repository && cp -n ../tmp/* ../repository; \
+	cd ../repository && helm repo index .; \
+	rm -rf ../tmp
+
+install-chart: namespace## install the helm chart with name RELEASE_NAME and path UMBRELLA_CHART_PATH on the namespace KUBE_NAMESPACE 
+	@sed -e 's/CI_PROJECT_PATH_SLUG/$(CI_PROJECT_PATH_SLUG)/' ska-docker/values.yaml > generated_values.yaml; \
+	sed -e 's/CI_ENVIRONMENT_SLUG/$(CI_ENVIRONMENT_SLUG)/' generated_values.yaml > values.yaml; \
+	helm dependency update $(UMBRELLA_CHART_PATH); \
+	helm install $(RELEASE_NAME) \
+	--set minikube=$(MINIKUBE) \
+	--values values.yaml \
+	 $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE); \
+	 rm generated_values.yaml; \
+	 rm values.yaml
+
+uninstall-chart: ## uninstall the ska-docker helm chart on the namespace ska-docker
+	helm template  $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; \
+	helm uninstall  $(RELEASE_NAME) --namespace $(KUBE_NAMESPACE) 
+
+reinstall-chart: uninstall-chart install-chart ## reinstall the ska-docker helm chart on the namespace ska-docker
+
+upgrade-chart: ## upgrade the ska-docker helm chart on the namespace ska-docker
+	helm upgrade --set minikube=$(MINIKUBE) $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) 
+
+wait:## wait for pods to be ready
+	@echo "Waiting for pods to be ready"
+	@date
+	@kubectl -n $(KUBE_NAMESPACE) get pods
+	@jobs=$$(kubectl get job --output=jsonpath={.items..metadata.name} -n $(KUBE_NAMESPACE)); kubectl wait job --for=condition=complete --timeout=120s $$jobs -n $(KUBE_NAMESPACE)
+	@kubectl -n $(KUBE_NAMESPACE) wait --for=condition=ready -l app=ska-docker --timeout=120s pods || exit 1
+	@date
+
+#
+# defines a function to copy the ./test-harness directory into the K8s TEST_RUNNER
+# and then runs the requested make target in the container.
+# capture the output of the test in a tar file
+# stream the tar file base64 encoded to the Pod logs
+# 
+k8s_test = tar -c ../post-deployment/ | \
+		kubectl run $(TEST_RUNNER) \
+		--namespace $(KUBE_NAMESPACE) -i --wait --restart=Never \
+		--image-pull-policy=IfNotPresent \
+		--image=$(IMAGE_TO_TEST) \
+		--limits='cpu=1000m,memory=500Mi' \
+		--requests='cpu=900m,memory=400Mi' -- \
+		/bin/bash -c "mkdir testing && tar xv --directory testing --strip-components 1 --warning=all && cd testing && \
+		make KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(RELEASE_NAME) TANGO_HOST=$(TANGO_HOST) MARK=$(MARK) $1 && \
+		tar -czvf /tmp/build.tgz build && \
+		echo '~~~~BOUNDARY~~~~' && \
+		cat /tmp/build.tgz | base64 && \
+		echo '~~~~BOUNDARY~~~~'" \
+		2>&1
+
+# run the test function
+# save the status
+# clean out build dir
+# print the logs minus the base64 encoded payload
+# pull out the base64 payload and unpack build/ dir
+# base64 payload is given a boundary "~~~~BOUNDARY~~~~" and extracted using perl
+# clean up the run to completion container
+# exit the saved status
+test: ## test the application on K8s
+	$(call k8s_test,test); \
+		status=$$?; \
+		rm -fr build; \
+		kubectl --namespace $(KUBE_NAMESPACE) logs $(TEST_RUNNER) | \
+		perl -ne 'BEGIN {$$on=0;}; if (index($$_, "~~~~BOUNDARY~~~~")!=-1){$$on+=1;next;}; print if $$on % 2;' | \
+		base64 -d | tar -xzf -; \
+		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
+		exit $$status
+
+show:
+	echo $$TANGO_HOST
+
+.PHONY: help

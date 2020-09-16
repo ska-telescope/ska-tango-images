@@ -1,0 +1,62 @@
+{{ if .Values.hdbppdb.use_pv }}
+
+{{ if .Values.minikube }}
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    component: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
+    chart: {{ template "archiver.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{ toYaml .local.Values.global.labels | indent 4 }}
+{{ if (.local.Values.global.annotations) }}
+  annotations:
+{{ toYaml .local.Values.global.annotations | indent 4 }}
+{{ end }}
+spec:
+  storageClassName: standard
+  persistentVolumeReclaimPolicy: Recycle
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /data/archiverdb-{{ template "archiver.name" . }}-{{ .Release.Namespace }}-{{ .Release.Name }}/
+
+{{ end }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    component: archiverdb-{{ template "archiver.name" . }}-{{ .Release.Name }}
+    chart: {{ template "archiver.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{ toYaml .local.Values.global.labels | indent 4 }}
+{{ if (.local.Values.global.annotations) }}
+  annotations:
+{{ toYaml .local.Values.global.annotations | indent 4 }}
+{{ end }}
+spec:
+{{ if .Values.minikube }}
+  storageClassName: standard
+  accessModes:
+  - ReadWriteOnce
+{{ else }}
+  storageClassName: nfss1
+  accessModes:
+  - ReadWriteMany
+{{ end }}
+  resources:
+    requests:
+      storage: 10Gi
+
+
+{{ end }}
