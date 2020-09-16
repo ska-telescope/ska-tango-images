@@ -1,0 +1,99 @@
+{{- define "tango-util.configuration.tpl" -}}
+---
+# Device Server configurations
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.subsystem }}-configuration-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ toYaml .Values.global.labels | indent 4 }}
+    component: configurator
+    function: deployment
+    intent: enabling
+    domain: self-configuration
+{{ if (.Values.global.annotations) }}
+  annotations:
+{{ toYaml .Values.global.annotations | indent 4 }}
+{{ end }}
+data:
+{{ (tpl (.Files.Glob .Values.dsconfig.configuration_file).AsConfig . ) | indent 2  }}
+  bootstrap.sh: |
+    #/bin/sh
+    json2tango -w -a -u {{ .Values.dsconfig.configuration_file}}
+    rc=$?
+    if [ $rc -eq 0 ]; then
+      echo "finished normally."
+      exit 0
+    else
+      if [ $rc -eq 2 ]; then
+        echo "finished with an update."
+        exit 0
+      else
+        echo "finished with an ERROR."
+        exit $rc
+      fi
+    fi
+
+---
+# run once Job for loading Device Server config
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.subsystem }}-configuration-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ toYaml .Values.global.labels | indent 4 }}
+    component: configurator
+    function: deployment
+    intent: enabling
+    domain: self-configuration
+{{ if (.Values.global.annotations) }}
+  annotations:
+{{ toYaml .Values.global.annotations | indent 4 }}
+{{ end }}
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      initContainers:
+      - name: check-databaseds-ready
+        image: {{ .Values.global.itango.image.registry }}/{{ .Values.global.itango.image.image }}:{{ .Values.global.itango.image.tag }}
+        imagePullPolicy: {{ .Values.global.itango.image.pullPolicy }}
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --check-device
+          - sys/database/2
+        env:
+        - name: TANGO_HOST
+          value: {{ .Values.global.tango_host }}
+{{ if (.Values.global.environment_variables) }}
+{{ toYaml .Values.global.environment_variables | indent 8 }}
+{{ end }}
+      containers:
+      - name: dsconfig
+        image: "{{ .Values.global.dsconfig.image.registry }}/{{ .Values.global.dsconfig.image.image }}:{{ .Values.global.dsconfig.image.tag }}"
+        imagePullPolicy: {{ .Values.global.dsconfig.image.pullPolicy }}
+        command: # exit code 2 is CONFIG_APPLIED - https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig/blob/master/dsconfig/utils.py#L11 !!!! this should not be an error !!!!
+          - sh
+          - data/bootstrap.sh
+        env:
+        - name: TANGO_HOST
+          value: {{ .Values.global.tango_host }}
+{{ if (.Values.global.environment_variables) }}
+{{ toYaml .Values.global.environment_variables | indent 8 }}
+{{ end }}
+        volumeMounts:
+          - name: configuration
+            mountPath: data
+            readOnly: true
+      volumes:
+        - name: configuration
+          configMap:
+            name: {{ .Values.subsystem }}-configuration-{{ .Release.Name }}
+      restartPolicy: Never
+
+{{- end -}}

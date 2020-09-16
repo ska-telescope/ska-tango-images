@@ -1,0 +1,6 @@
+dependencies:
+- name: tango-util
+  repository: file:///home/ubuntu/ska-docker/charts/tango-util
+  version: 0.1.0
+digest: sha256:a2faecd91edca175823640f5a28f6d467481fc2139ec44ea8a67e39409f6cf93
+generated: "2020-09-10T14:40:38.2031008Z"

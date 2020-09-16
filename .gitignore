@@ -5,3 +5,9 @@ build
 .pytest_cache
 charts/ska-docker/secrets/tls.*
 PrivateRules.mak
+charts/tango-base/secrets/tls.crt
+charts/tango-base/secrets/tls.key
+charts/tango-base/charts/tango-util-0.1.0.tgz
+charts/ska-docker/charts/*
+charts/ska-docker/Chart.lock
+charts/repository/*
