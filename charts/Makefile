@@ -8,7 +8,7 @@ IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.7## doc
 TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)-$(KUBE_NAMESPACE)-$(RELEASE_NAME)##name of the pod running the k8s_tests
 TANGO_HOST=$(shell helm get values ${RELEASE_NAME} -a -n ${KUBE_NAMESPACE} | grep tango_host | head -1 | cut -d':' -f2 | cut -d' ' -f2):10000
 
-CHART_TO_PUB ?= tango-base/ archiver/ tango-util/## list of charts to be published on nexus
+CHART_TO_PUB ?= ska-docker## list of charts to be published on gitlab -- umbrella charts for testing purpose
 
 .DEFAULT_GOAL := help
 
@@ -41,15 +41,12 @@ delete_namespace: ## delete the kubernetes namespace
 help:  ## show this help.
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-publish-charts: ## publish charts DEPRECATED
-	@mkdir -p repository
+package: ## package charts
+	@mkdir -p ../repository
 	for i in $(CHART_TO_PUB); do \
-	helm package $${i} --destination ./repository ; \
+	helm package $${i} --destination ../repository ; \
 	done; \
-	for i in repository/*; do \
-	curl -u $(HELM_USERNAME):$(HELM_PASSWORD) --upload-file $${i} $(HELM_HOST)/repository/helm-chart/$${i}; \
-	done; \
-	rm -rf repository
+	cd ../repository && helm repo index .
 
 install-chart: namespace## install the helm chart with name RELEASE_NAME and path UMBRELLA_CHART_PATH on the namespace KUBE_NAMESPACE 
 	@sed -e 's/CI_PROJECT_PATH_SLUG/$(CI_PROJECT_PATH_SLUG)/' ska-docker/values.yaml > generated_values.yaml; \

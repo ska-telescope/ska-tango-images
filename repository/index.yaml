@@ -1,0 +1,24 @@
+apiVersion: v1
+entries:
+  ska-docker:
+  - apiVersion: v2
+    appVersion: "1.0"
+    created: "2020-09-16T08:18:32.55251372Z"
+    dependencies:
+    - name: tango-util
+      repository: file://../tango-util
+      version: 0.1.0
+    - name: tango-base
+      repository: file://../tango-base
+      version: 0.2.0
+    - name: archiver
+      repository: file://../archiver
+      version: 0.2.1
+    description: A Helm chart for deploying the TANGO base system on Kubernetes
+    digest: ac3fe2f41a0b3947a5bc88f5ab107baf571651f748ed6b171de273a62b84ac47
+    icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
+    name: ska-docker
+    urls:
+    - ska-docker-0.1.2.tgz
+    version: 0.1.2
+generated: "2020-09-16T08:18:32.547739323Z"
