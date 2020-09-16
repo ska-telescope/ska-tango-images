@@ -3,7 +3,7 @@ entries:
   ska-docker:
   - apiVersion: v2
     appVersion: "1.0"
-    created: "2020-09-16T08:18:32.55251372Z"
+    created: "2020-09-16T14:35:46.411669622Z"
     dependencies:
     - name: tango-util
       repository: file://../tango-util
@@ -21,4 +21,4 @@ entries:
     urls:
     - ska-docker-0.1.2.tgz
     version: 0.1.2
-generated: "2020-09-16T08:18:32.547739323Z"
+generated: "2020-09-16T14:35:46.40556769Z"

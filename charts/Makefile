@@ -45,11 +45,14 @@ help:  ## show this help.
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 package: ## package charts
-	@mkdir -p ../repository
-	for i in $(CHART_TO_PUB); do \
-	helm package $${i} --destination ../repository ; \
+	@echo "Packaging helm charts. Any existing file won't be overwritten."; \
+	mkdir -p ../tmp
+	@for i in $(CHART_TO_PUB); do \
+	helm package $${i} --destination ../tmp > /dev/null; \
 	done; \
-	cd ../repository && helm repo index .
+	mkdir -p ../repository && cp -n ../tmp/* ../repository; \
+	cd ../repository && helm repo index .; \
+	rm -rf ../tmp
 
 install-chart: namespace## install the helm chart with name RELEASE_NAME and path UMBRELLA_CHART_PATH on the namespace KUBE_NAMESPACE 
 	@sed -e 's/CI_PROJECT_PATH_SLUG/$(CI_PROJECT_PATH_SLUG)/' ska-docker/values.yaml > generated_values.yaml; \
