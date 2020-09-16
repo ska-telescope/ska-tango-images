@@ -10,6 +10,9 @@ TANGO_HOST=$(shell helm get values ${RELEASE_NAME} -a -n ${KUBE_NAMESPACE} | gre
 
 CHART_TO_PUB ?= ska-docker## list of charts to be published on gitlab -- umbrella charts for testing purpose
 
+CI_PROJECT_PATH_SLUG ?= ska-docker
+CI_ENVIRONMENT_SLUG ?= ska-docker
+
 .DEFAULT_GOAL := help
 
 k8s: ## Which kubernetes are we connected to
