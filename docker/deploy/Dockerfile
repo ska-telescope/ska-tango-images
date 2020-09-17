@@ -1,7 +1,7 @@
 FROM ubuntu:18.04
 
 ENV KUBE_LATEST_VERSION="v1.16.2"
-ENV HELM_VERSION="v3.1.1"
+ENV HELM_VERSION="v3.3.1"
 ENV DEBIAN_FRONTEND="noninteractive"
 ENV RUNLEVEL="1"
 ENV PYTEST_REQUIREMENTS="https://gitlab.com/ska-telescope/skampi/raw/8204ac53ef67941bf22e9f259be1910b2a9636a5/test-requirements.txt"
