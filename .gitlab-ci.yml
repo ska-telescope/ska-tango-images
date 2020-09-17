@@ -501,16 +501,3 @@ publish_chart:
   script:
     - curl -s https://gitlab.com/ska-telescope/stupid/raw/master/scripts/publish-charts.sh | bash
     - cd charts/ && make package
-
-cleanup_build_job:
-  stage: cleanup_build
-  tags:
-  - docker-executor
-  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.1
-  script:
-  - cd charts/
-  - make uninstall-chart
-  - make delete_namespace
-  environment:
-    name: test
-  when: on_failure
