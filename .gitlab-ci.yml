@@ -499,7 +499,7 @@ publish_chart:
   stage: publish_chart
   tags:
   - docker-executor
-  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.1
+  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.2
   script:
     - curl -s https://gitlab.com/ska-telescope/stupid/raw/master/scripts/publish-charts.sh | bash
     - cd charts/ && make package
