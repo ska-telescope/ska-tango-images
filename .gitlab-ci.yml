@@ -465,12 +465,14 @@ test-chart:
   - docker-executor
   image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.1
   script:
+  - export KUBE_NAMESPACE="ci-ska-docker-$CI_COMMIT_SHORT_SHA"
   - cd charts/
   - kubectl version
   - make install-chart
   - make wait
   - make test
   after_script:
+  - export KUBE_NAMESPACE="ci-ska-docker-$CI_COMMIT_SHORT_SHA"
   - cd charts/
   - make uninstall-chart
   - make delete_namespace
