@@ -465,6 +465,9 @@ test-chart:
   - docker-executor
   image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.2
   script:
+  - curl -LO https://storage.googleapis.com/kubernetes-release/release/v1.18.2/bin/linux/amd64/kubectl
+  - chmod +x ./kubectl
+  - sudo mv ./kubectl /usr/local/bin/kubectl
   - export KUBE_NAMESPACE="ci-ska-docker-$CI_COMMIT_SHORT_SHA"
   - cd charts/
   - kubectl version
