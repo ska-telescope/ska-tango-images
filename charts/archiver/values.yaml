@@ -32,6 +32,9 @@ global:
       image: tango-itango
       tag: 9.3.1
       pullPolicy: IfNotPresent
+  tango-base:
+    level0:
+      enabled: false
 
 dsconfig:
   configuration_file: data/configuration.json
