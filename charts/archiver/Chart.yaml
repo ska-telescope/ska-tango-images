@@ -1,8 +1,9 @@
-apiVersion: v1
+apiVersion: v2
 appVersion: "1.0"
 description: A Helm chart for deploying the HDB++ archiver for the MVP on Kubernetes
 name: archiver
 version: 0.2.2
+appVersion: 1.16.0
 icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
 dependencies:
 - name: tango-util
@@ -11,4 +12,4 @@ dependencies:
 - name: tango-base
   version: 0.2.1
   repository: file://../tango-base
-  condition: global.tango-base.level0.enabled
+  condition: tango-base.enabled,global.tango-base.level0.enabled

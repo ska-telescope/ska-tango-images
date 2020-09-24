@@ -8,12 +8,15 @@ IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.7## doc
 TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)-$(KUBE_NAMESPACE)-$(RELEASE_NAME)##name of the pod running the k8s_tests
 TANGO_HOST=$(shell helm get values ${RELEASE_NAME} -a -n ${KUBE_NAMESPACE} | grep tango_host | head -1 | cut -d':' -f2 | cut -d' ' -f2):10000
 
-CHART_TO_PUB ?= tango-util tango-base archiver ska-docker## list of charts to be published on gitlab -- umbrella charts for testing purpose
+CHARTS ?= tango-util tango-base archiver ska-docker## list of charts to be published on gitlab -- umbrella charts for testing purpose
 
 CI_PROJECT_PATH_SLUG ?= ska-docker
 CI_ENVIRONMENT_SLUG ?= ska-docker
 
 .DEFAULT_GOAL := help
+
+clean: ## clean out references to chart tgz's
+	@rm -f ./*/charts/*.tgz ./*/Chart.lock ./*/requirements.lock ../repository/*
 
 k8s: ## Which kubernetes are we connected to
 	@echo "Kubernetes cluster-info:"
@@ -47,17 +50,21 @@ help:  ## show this help.
 package: ## package charts
 	@echo "Packaging helm charts. Any existing file won't be overwritten."; \
 	mkdir -p ../tmp
-	@for i in $(CHART_TO_PUB); do \
+	@for i in $(CHARTS); do \
 	helm package $${i} --dependency-update --destination ../tmp > /dev/null; \
 	done; \
 	mkdir -p ../repository && cp -n ../tmp/* ../repository; \
 	cd ../repository && helm repo index .; \
 	rm -rf ../tmp
 
-install-chart: namespace## install the helm chart with name RELEASE_NAME and path UMBRELLA_CHART_PATH on the namespace KUBE_NAMESPACE 
+dep-up: ## update dependencies for every charts in the env var CHARTS
+	@for i in $(CHARTS); do \
+	helm dependency update $${i}; \
+	done;
+
+install-chart: clean dep-up namespace## install the helm chart with name RELEASE_NAME and path UMBRELLA_CHART_PATH on the namespace KUBE_NAMESPACE 
 	@sed -e 's/CI_PROJECT_PATH_SLUG/$(CI_PROJECT_PATH_SLUG)/' ska-docker/values.yaml > generated_values.yaml; \
 	sed -e 's/CI_ENVIRONMENT_SLUG/$(CI_ENVIRONMENT_SLUG)/' generated_values.yaml > values.yaml; \
-	helm dependency update $(UMBRELLA_CHART_PATH); \
 	helm install $(RELEASE_NAME) \
 	--set minikube=$(MINIKUBE) \
 	--values values.yaml \
@@ -65,10 +72,9 @@ install-chart: namespace## install the helm chart with name RELEASE_NAME and pat
 	 rm generated_values.yaml; \
 	 rm values.yaml
 
-template-chart: ## install the helm chart with name RELEASE_NAME and path UMBRELLA_CHART_PATH on the namespace KUBE_NAMESPACE 
-	@sed -e 's/CI_PROJECT_PATH_SLUG/$(CI_PROJECT_PATH_SLUG)/' ska-docker/values.yaml > generated_values.yaml; \
+template-chart: clean dep-up## install the helm chart with name RELEASE_NAME and path UMBRELLA_CHART_PATH on the namespace KUBE_NAMESPACE 
+	@sed -e 's/CI_PROJECT_PATH_SLUG/$(CI_PROJECT_PATH_SLUG)/' $(UMBRELLA_CHART_PATH)/values.yaml > generated_values.yaml; \
 	sed -e 's/CI_ENVIRONMENT_SLUG/$(CI_ENVIRONMENT_SLUG)/' generated_values.yaml > values.yaml; \
-	helm dependency update $(UMBRELLA_CHART_PATH); \
 	helm template $(RELEASE_NAME) \
 	--set minikube=$(MINIKUBE) \
 	--values values.yaml \
@@ -77,13 +83,13 @@ template-chart: ## install the helm chart with name RELEASE_NAME and path UMBREL
 	 rm values.yaml
 
 uninstall-chart: ## uninstall the ska-docker helm chart on the namespace ska-docker
-	helm template  $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; \
+	@helm template  $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; \
 	helm uninstall  $(RELEASE_NAME) --namespace $(KUBE_NAMESPACE) 
 
 reinstall-chart: uninstall-chart install-chart ## reinstall the ska-docker helm chart on the namespace ska-docker
 
 upgrade-chart: ## upgrade the ska-docker helm chart on the namespace ska-docker
-	helm upgrade --set minikube=$(MINIKUBE) $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) 
+	@helm upgrade --set minikube=$(MINIKUBE) $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) 
 
 wait:## wait for pods to be ready
 	@echo "Waiting for pods to be ready"

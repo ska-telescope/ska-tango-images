@@ -503,4 +503,3 @@ publish_chart:
   image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.1
   script:
     - curl -s https://gitlab.com/ska-telescope/stupid/raw/master/scripts/publish-charts.sh | bash
-    - cd charts/ && make package

@@ -23,8 +23,6 @@ global:
   tango-base:
     level0:
       enabled: false
-    level1:
-      enabled: true
 
 tango-base:
   itango:
@@ -40,4 +38,3 @@ tango-base:
   ingress:
     enabled: true
     hostname: tango-base.minikube.local
-
