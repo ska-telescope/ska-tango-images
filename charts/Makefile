@@ -8,7 +8,7 @@ IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.7## doc
 TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)-$(KUBE_NAMESPACE)-$(RELEASE_NAME)##name of the pod running the k8s_tests
 TANGO_HOST=$(shell helm get values ${RELEASE_NAME} -a -n ${KUBE_NAMESPACE} | grep tango_host | head -1 | cut -d':' -f2 | cut -d' ' -f2):10000
 
-CHART_TO_PUB ?= ska-docker## list of charts to be published on gitlab -- umbrella charts for testing purpose
+CHART_TO_PUB ?= tango-util tango-base archiver ska-docker## list of charts to be published on gitlab -- umbrella charts for testing purpose
 
 CI_PROJECT_PATH_SLUG ?= ska-docker
 CI_ENVIRONMENT_SLUG ?= ska-docker
@@ -48,7 +48,7 @@ package: ## package charts
 	@echo "Packaging helm charts. Any existing file won't be overwritten."; \
 	mkdir -p ../tmp
 	@for i in $(CHART_TO_PUB); do \
-	helm package $${i} --destination ../tmp > /dev/null; \
+	helm package $${i} --dependency-update --destination ../tmp > /dev/null; \
 	done; \
 	mkdir -p ../repository && cp -n ../tmp/* ../repository; \
 	cd ../repository && helm repo index .; \
