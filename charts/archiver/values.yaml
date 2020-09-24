@@ -34,7 +34,7 @@ global:
       pullPolicy: IfNotPresent
   tango-base:
     level0:
-      enabled: false
+      enabled: true
 
 dsconfig:
   configuration_file: data/configuration.json
