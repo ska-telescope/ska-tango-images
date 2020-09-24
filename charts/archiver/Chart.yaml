@@ -11,4 +11,4 @@ dependencies:
 - name: tango-base
   version: 0.2.1
   repository: file://../tango-base
-  condition: Global.tango-base.level0.enabled
+  condition: global.tango-base.level0.enabled
