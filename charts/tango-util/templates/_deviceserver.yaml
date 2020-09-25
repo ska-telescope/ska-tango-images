@@ -1,5 +1,6 @@
 {{ define "tango-util.deviceserver.tpl" }}
 ---
+{{ $chart := .local }}
 # Device Server Service 
 # Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
 # giving a dummy Service entry ensures that the single pod is DNS addressable
@@ -62,7 +63,6 @@ spec:
     spec:
       initContainers:
 {{ if (.deviceserver.depends_on) }}
-{{ $chart := .local }}
 {{ range $index, $device := .deviceserver.depends_on }}
 {{ if ($device.host) }}
       - name: check-dependencies-{{ $index }}
@@ -77,7 +77,10 @@ spec:
           - echo databaseds ready
 {{ if ($chart.Values.global.environment_variables) }}
         env:
-{{ toYaml $chart.Values.global.environment_variables | indent 8 }}
+{{ range $index, $envvar := $chart.Values.global.environment_variables }}
+        - name: {{$envvar.name}}
+        - value: {{tpl ($envvar.value | toString) $chart }}
+{{ end }}
 {{ end }}
 {{ end }}
 {{ if ($device.device) }}
@@ -95,7 +98,10 @@ spec:
         - name: TANGO_HOST
           value: {{ $chart.Values.global.tango_host }}
 {{ if ($chart.Values.global.environment_variables) }}
-{{ toYaml $chart.Values.global.environment_variables | indent 8 }}
+{{ range $index, $envvar := $chart.Values.global.environment_variables }}
+        - name: {{$envvar.name}}
+        - value: {{tpl ($envvar.value | toString) $chart }}
+{{ end }}
 {{ end }}
 {{ end }}
 {{ end }} 
@@ -112,18 +118,10 @@ spec:
         - name: TANGO_HOST
           value: {{ .local.Values.global.tango_host }}
 {{ if .local.Values.global.environment_variables }}
-{{- range .local.Values.global.environment_variables }}
-
-{{/* Workaround from: https://github.com/helm/helm/issues/5979#issuecomment-518231758 */}}
-{{- $_ := set $ "env_name" .name }}
-{{- $_ := set $ "env_value" .value }}
-{{- tpl ($.Files.Get "rangeparser.yaml") $ }}
-
-{{/* Workaround using context */}}
-{{ $context := dict "env_name" .name "env_value" .value}}
-{{- template  "tango-util.rangeparser.tpl" $context }}
-
-{{- end }}
+{{ range $index, $envvar := .local.Values.global.environment_variables }}
+        - name: {{$envvar.name}}
+        - value: {{tpl ($envvar.value | toString) $chart }}
+{{ end }}
 {{ end }}
 {{ if .deviceserver.environment_variables }}
 {{ toYaml .deviceserver.environment_variables | indent 8 }}
