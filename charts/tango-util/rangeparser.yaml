@@ -1,2 +1,0 @@
-- name: {{ tpl .env_name . }}
-  value: {{ tpl .env_value . }}

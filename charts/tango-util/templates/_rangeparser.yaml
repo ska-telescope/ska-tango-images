@@ -1,4 +1,0 @@
-{{ define "tango-util.rangeparser.tpl" }}
-- name: {{ tpl .env_name . }}
-  value: {{ tpl .env_value . }}
-{{ end }}

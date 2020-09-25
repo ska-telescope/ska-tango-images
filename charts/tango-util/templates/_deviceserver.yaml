@@ -75,14 +75,14 @@ spec:
           - --strict
           - --
           - echo databaseds ready
-{{ if ($chart.Values.global.environment_variables) }}
+{{- if ($chart.Values.global.environment_variables) }}
         env:
-{{ range $index, $envvar := $chart.Values.global.environment_variables }}
+{{- range $index, $envvar := $chart.Values.global.environment_variables }}
         - name: {{$envvar.name}}
-        - value: {{tpl ($envvar.value | toString) $chart }}
-{{ end }}
-{{ end }}
-{{ end }}
+          value: {{tpl ($envvar.value | toString) $chart }}
+{{- end }}
+{{- end }}
+{{- end }}
 {{ if ($device.device) }}
       - name: check-dependencies-{{ $index }}
         image: "{{ $chart.Values.global.dsconfig.image.registry }}/{{ $chart.Values.global.dsconfig.image.image }}:{{ $chart.Values.global.dsconfig.image.tag }}"
@@ -97,15 +97,15 @@ spec:
         env:
         - name: TANGO_HOST
           value: {{ $chart.Values.global.tango_host }}
-{{ if ($chart.Values.global.environment_variables) }}
-{{ range $index, $envvar := $chart.Values.global.environment_variables }}
+{{- if ($chart.Values.global.environment_variables) }}
+{{- range $index, $envvar := $chart.Values.global.environment_variables }}
         - name: {{$envvar.name}}
-        - value: {{tpl ($envvar.value | toString) $chart }}
-{{ end }}
-{{ end }}
-{{ end }}
-{{ end }} 
-{{ end }} 
+          value: {{tpl ($envvar.value | toString) $chart }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }} 
+{{- end }} 
       containers:
       - name: device-server
         image: "{{ .image.registry }}/{{ .image.image }}:{{ .image.tag }}"
@@ -117,15 +117,18 @@ spec:
         env:
         - name: TANGO_HOST
           value: {{ .local.Values.global.tango_host }}
-{{ if .local.Values.global.environment_variables }}
-{{ range $index, $envvar := .local.Values.global.environment_variables }}
+{{- if .local.Values.global.environment_variables }}
+{{- range $index, $envvar := .local.Values.global.environment_variables }}
         - name: {{$envvar.name}}
-        - value: {{tpl ($envvar.value | toString) $chart }}
-{{ end }}
-{{ end }}
-{{ if .deviceserver.environment_variables }}
-{{ toYaml .deviceserver.environment_variables | indent 8 }}
-{{ end }}
+          value: {{tpl ($envvar.value | toString) $chart }}
+{{- end }}
+{{- end }}
+{{- if .deviceserver.environment_variables }}
+{{- range $index, $envvar := .deviceserver.environment_variables }}
+        - name: {{$envvar.name}}
+          value: {{tpl ($envvar.value | toString) $chart }}
+{{- end }}
+{{- end }}
         resources:
 {{ if .deviceserver.resources }}
 {{ toYaml .deviceserver.resources | indent 10 }}
