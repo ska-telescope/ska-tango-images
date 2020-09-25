@@ -1,10 +1,10 @@
-# check device
+# check devices
 Scenario: Call Command and test attribute
-	Given a device called <device_name>
-	When I call the command <command_name>
-	Then the attribute <attribute_name> is <expected_value>
+	Given a device called sys/tg_test/1
+	When I call the command State()
+	Then the attribute State is RUNNING
 
-Examples:
-		| device_name    | command_name | attribute_name | expected_value |
-		| sys/tg_test/1  | State()      | State          | RUNNING        |
-		| sys/database/2 | State()      | State          | RUNNING        |
+Scenario: Call Command and test attribute
+	Given a device called sys/database/2
+	When I call the command State()
+	Then the attribute State is ON
