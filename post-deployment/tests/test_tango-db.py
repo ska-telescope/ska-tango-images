@@ -8,7 +8,7 @@ from mysql.connector import errorcode
 pytest.namespace = ""
 
 @given(parsers.parse("Tango env {values_file}"))
-def getPodName(values_file):
+def getValuesFile(values_file):
 
     try:
         with open(values_file) as file:
@@ -44,7 +44,7 @@ def getDBConfig(device_name):
     
 
 @then(parsers.parse("I check the tango database connection"))
-def queryDB():
+def checkDB():
     try:
         cnx = mysql.connector.connect(
             user=pytest.dbUser,
