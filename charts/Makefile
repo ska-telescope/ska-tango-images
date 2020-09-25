@@ -65,6 +65,18 @@ install-chart: namespace## install the helm chart with name RELEASE_NAME and pat
 	 rm generated_values.yaml; \
 	 rm values.yaml
 
+
+template-chart: ## install the helm chart with name RELEASE_NAME and path UMBRELLA_CHART_PATH on the namespace KUBE_NAMESPACE 
+	@sed -e 's/CI_PROJECT_PATH_SLUG/$(CI_PROJECT_PATH_SLUG)/' ska-docker/values.yaml > generated_values.yaml; \
+	sed -e 's/CI_ENVIRONMENT_SLUG/$(CI_ENVIRONMENT_SLUG)/' generated_values.yaml > values.yaml; \
+	helm dependency update $(UMBRELLA_CHART_PATH); \
+	helm template $(RELEASE_NAME) \
+	--set minikube=$(MINIKUBE) \
+	--values values.yaml \
+	 $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE); \
+	 rm generated_values.yaml; \
+	 rm values.yaml
+
 uninstall-chart: ## uninstall the ska-docker helm chart on the namespace ska-docker
 	helm template  $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; \
 	helm uninstall  $(RELEASE_NAME) --namespace $(KUBE_NAMESPACE) 
@@ -74,6 +86,10 @@ reinstall-chart: uninstall-chart install-chart ## reinstall the ska-docker helm 
 upgrade-chart: ## upgrade the ska-docker helm chart on the namespace ska-docker
 	helm upgrade --set minikube=$(MINIKUBE) $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) 
 
+chart_lint: ## lint check the helm chart
+	@helm lint $(UMBRELLA_CHART_PATH) \
+		--namespace $(KUBE_NAMESPACE) 
+		
 wait:## wait for pods to be ready
 	@echo "Waiting for pods to be ready"
 	@date
