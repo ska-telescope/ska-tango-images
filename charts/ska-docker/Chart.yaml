@@ -8,7 +8,9 @@ dependencies:
 - name: tango-base
   version: 0.2.1
   repository: file://../tango-base
-  condition: global.tango-base.level1.enabled
+  condition: tango-base.enabled,global.tango-base.level1.enabled
+  tags:
+  - tango-base
 - name: archiver
   version: 0.2.2
   repository: file://../archiver
