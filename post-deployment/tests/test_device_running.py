@@ -1,12 +1,7 @@
 # coding=utf-8
 """features/device_running.feature feature tests."""
-
-from pytest_bdd import (
-    given,
-    scenario,
-    then,
-    when,
-)
+import tango
+from pytest_bdd import given, scenario, then, when, parsers
 
 
 @scenario('device_running.feature', 'Test device is running')
@@ -14,20 +9,21 @@ def test_test_device_is_running():
     """Test device is running."""
 
 
-@given('a device called sys/tg_test/1')
-def a_device_called_systg_test1():
+@given(parsers.parse('a device called {device_name}'))
+def device_proxy(run_context, device_name):
     """a device called sys/tg_test/1."""
-    raise NotImplementedError
+    return tango.DeviceProxy(device_name)
 
 
-@when('I call the command state()')
-def i_call_the_command_state():
-    """I call the command state()."""
-    raise NotImplementedError
+@when(parsers.cfparse("I call the command {command_name}({parameter:String?})", extra_types=dict(String=str)))
+def call_command(device_proxy, command_name):
+    """I call the command State()."""
+    return device_proxy.command_inout(command_name)
 
 
-@then('the attribute DevState is RUNNING')
-def the_attribute_devstate_is_running():
-    """the attribute DevState is RUNNING."""
-    raise NotImplementedError
+@then(parsers.parse('the attribute {attribute_name} is {expected_value}'))
+def check_attribute(device_proxy, attribute_name, expected_value):
+    """the attribute State is RUNNING."""
+    attr = device_proxy.read_attribute(attribute_name)
+    assert str(attr.value) == expected_value
 

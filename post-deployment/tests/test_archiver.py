@@ -1,44 +1,47 @@
 # coding=utf-8
 """features/archiver.feature feature tests."""
 
-from pytest_bdd import (
-    given,
-    scenario,
-    then,
-    when,
-)
+import tango
+from pytest_bdd import given, scenario, then, when, parsers
 
 
-@scenario('archiver.feature', 'Test Configuration Manager device is ON')
-def test_test_configuration_manager_device_is_on():
-    """Test Configuration Manager device is ON."""
+@scenario('archiver.feature', 'Test archiver')
+def test_archiver():
+    """Test archiver."""
 
 
-@scenario('archiver.feature', 'Test Event Subscriber device is ON')
-def test_test_event_subscriber_device_is_on():
-    """Test Event Subscriber device is ON."""
-
-
-@given('a device called archiving/hdbpp/confmanager01')
-def a_device_called_archivinghdbppconfmanager01():
+@given(parsers.parse('a device called {device_name}'))
+def device_proxy1(run_context, device_name):
     """a device called archiving/hdbpp/confmanager01."""
-    raise NotImplementedError
+    return tango.DeviceProxy(device_name)
 
 
-@given('a device called archiving/hdbpp/eventsubscriber01')
-def a_device_called_archivinghdbppeventsubscriber01():
+@given(parsers.parse('a device called {device_name}'))
+def device_proxy2(run_context, device_name):
     """a device called archiving/hdbpp/eventsubscriber01."""
-    raise NotImplementedError
+    return tango.DeviceProxy(device_name)
 
 
-@when('I call the command state()')
-def i_call_the_command_state():
-    """I call the command state()."""
-    raise NotImplementedError
+@when(parsers.cfparse("I call the command {command_name}({parameter:String?})", extra_types=dict(String=str)))
+def call_command(device_proxy, command_name):
+    """I call the command archive()."""
+    return device_proxy.command_inout(command_name)
 
 
-@then('the attribute DevState is ON')
-def the_attribute_devstate_is_on():
-    """the attribute DevState is ON."""
-    raise NotImplementedError
+@when(parsers.parse('attribute is set to {attribute_name}'))
+def set_attribute(device_proxy, attribute_name):
+    """Attribute is set to sys/tg_test/1/double_scalar."""
+    return device_proxy.read_attribute(attribute_name)
 
+
+@then(parsers.parse("time interval is {time_interval}({parameter:String?})", extra_types=dict(String=str)))
+def set_time_interval(device_proxy, time_interval):
+    """Time interval is 1 second."""
+    return device_proxy.read_attribute(time_interval)
+
+
+@then(parsers.parse('the attribute {attribute_name} is {expected_value}'))
+def check_attribute(device_proxy, attribute_name, expected_value):
+    """the attribute State is archiving."""
+    attr = device_proxy.read_attribute(attribute_name)
+    assert str(attr.value) == expected_value

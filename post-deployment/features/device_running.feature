@@ -1,4 +1,4 @@
-# check device
+# check device is running
 Scenario: Test device is running
 	Given a device called sys/tg_test/1
 	When I call the command state()
