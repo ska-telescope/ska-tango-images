@@ -112,7 +112,18 @@ spec:
         - name: TANGO_HOST
           value: {{ .local.Values.global.tango_host }}
 {{ if .local.Values.global.environment_variables }}
-{{ toYaml .local.Values.global.environment_variables | indent 8 }}
+{{- range .local.Values.global.environment_variables }}
+
+{{/* Workaround from: https://github.com/helm/helm/issues/5979#issuecomment-518231758 */}}
+{{- $_ := set $ "env_name" .name }}
+{{- $_ := set $ "env_value" .value }}
+{{- tpl ($.Files.Get "rangeparser.yaml") $ }}
+
+{{/* Workaround using context */}}
+{{ $context := dict "env_name" .name "env_value" .value}}
+{{- template  "tango-util.rangeparser.tpl" $context }}
+
+{{- end }}
 {{ end }}
 {{ if .deviceserver.environment_variables }}
 {{ toYaml .deviceserver.environment_variables | indent 8 }}

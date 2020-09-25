@@ -13,7 +13,9 @@ global:
     app.gitlab.com/app: CI_PROJECT_PATH_SLUG
     app.gitlab.com/env: CI_ENVIRONMENT_SLUG
   tango_host: databaseds-tango-base-test:10000
-  environment_variables: []
+  environment_variables:
+    - name: SKUID_URL
+      value: "skuid-skuid-{{ .Release.Namespace }}-{{ .Release.Name }}.{{ .Release.Namespace }}.svc.cluster.local:9870"
   dsconfig:
     image:
       registry: nexus.engageska-portugal.pt/ska-docker
