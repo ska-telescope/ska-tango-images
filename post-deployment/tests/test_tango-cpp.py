@@ -1,32 +1,33 @@
 # coding=utf-8
 """features/tango-cpp.feature feature tests."""
+import tango
+import logging 
+import pytest
 
-from pytest_bdd import (
-    given,
-    scenario,
-    then,
-    when,
-)
+from pytest_bdd import given, scenario, then, when, parsers
 
 
-@scenario('features/tango-cpp.feature', 'Call Command and test attribute')
+@scenario('tango-cpp.feature', 'Call Command and test attribute')
 def test_call_command_and_test_attribute():
     """Call Command and test attribute."""
 
 
-@given('a device called sys/tg_test/1')
-def a_device_called_systg_test1():
+@given(parsers.parse('a device called {device_name}'))
+def device_proxy(run_context, device_name):
     """a device called sys/tg_test/1."""
-    raise NotImplementedError
+    return tango.DeviceProxy(device_name)
 
 
-@when('I call the command State()')
-def i_call_the_command_state():
+@when(parsers.cfparse("I call the command {command_name}({parameter:String?})", extra_types=dict(String=str)))
+def call_command(device_proxy,command_name):
     """I call the command State()."""
-    raise NotImplementedError
+    logging.info("Called command: {}".format(command_name))
+    return device_proxy.command_inout(command_name)
 
 
-@then('the attribute State is RUNNING')
-def the_attribute_state_is_running():
+@then(parsers.parse('the attribute {attribute_name} is {expected_value}'))
+def check_attribute(device_proxy, attribute_name, expected_value):
     """the attribute State is RUNNING."""
-    raise NotImplementedError
+    attr = device_proxy.read_attribute(attribute_name)
+    assert str(attr.value) == expected_value
+
