@@ -18,7 +18,6 @@ def device_proxy(run_context, device_name):
     return tango.DeviceProxy(device_name)
 
 
-@pytest.fixture
 @when(parsers.cfparse("I call the command {command_name}({parameter:String?})", extra_types=dict(String=str)))
 def call_command(device_proxy,command_name):
     """I call the command State()."""

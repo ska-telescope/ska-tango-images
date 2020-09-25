@@ -1,6 +1,33 @@
-import tango
+# coding=utf-8
+"""features/device_running.feature feature tests."""
+
+from pytest_bdd import (
+    given,
+    scenario,
+    then,
+    when,
+)
 
 
+@scenario('device_running.feature', 'Test device is running')
 def test_test_device_is_running():
-    tango_test = tango.DeviceProxy("sys/tg_test/1")
-    assert tango_test.state() == tango.DevState.RUNNING
+    """Test device is running."""
+
+
+@given('a device called sys/tg_test/1')
+def a_device_called_systg_test1():
+    """a device called sys/tg_test/1."""
+    raise NotImplementedError
+
+
+@when('I call the command state()')
+def i_call_the_command_state():
+    """I call the command state()."""
+    raise NotImplementedError
+
+
+@then('the attribute DevState is RUNNING')
+def the_attribute_devstate_is_running():
+    """the attribute DevState is RUNNING."""
+    raise NotImplementedError
+
