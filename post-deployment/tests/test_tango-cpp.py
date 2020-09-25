@@ -18,6 +18,7 @@ def device_proxy(run_context, device_name):
     return tango.DeviceProxy(device_name)
 
 
+@pytest.fixture
 @when(parsers.parse('I call the command <command_name>'))
 def call_command(device_proxy,command_name):
     """I call the command State()."""
