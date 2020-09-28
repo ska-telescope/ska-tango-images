@@ -360,104 +360,104 @@ build_hdbpp_viewer:
     - docker/tango/hdbpp_viewer/**/*
     - docker/tango/mariadb_hdbpp/**/*
 
-test-framework-tango-db:
-  retry: 2
-  stage: test
-  tags:
-  - shell
-  script:
-  - mkdir .public
-  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-db build
-  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-db test | tee .public/result.txt
-  - mv .public public
-  artifacts:
-    paths:
-    - public
+# test-framework-tango-db:
+#   retry: 2
+#   stage: test
+#   tags:
+#   - shell
+#   script:
+#   - mkdir .public
+#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-db build
+#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-db test | tee .public/result.txt
+#   - mv .public public
+#   artifacts:
+#     paths:
+#     - public
 
-test-framework-tango-cpp:
-  retry: 2
-  stage: test
-  tags:
-  - shell
-  script:
-  - mkdir .public
-  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-cpp build
-  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-cpp test | tee .public/result.txt
-  - mv .public public
-  artifacts:
-    paths:
-    - public
+# test-framework-tango-cpp:
+#   retry: 2
+#   stage: test
+#   tags:
+#   - shell
+#   script:
+#   - mkdir .public
+#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-cpp build
+#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-cpp test | tee .public/result.txt
+#   - mv .public public
+#   artifacts:
+#     paths:
+#     - public
 
-test-framework-tango-itango:
-  retry: 2
-  stage: test
-  tags:
-  - shell
-  script:
-  - mkdir .public
-  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-itango build
-  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-itango test | tee .public/result.txt
-  - mv .public public
-  artifacts:
-    paths:
-    - public
+# test-framework-tango-itango:
+#   retry: 2
+#   stage: test
+#   tags:
+#   - shell
+#   script:
+#   - mkdir .public
+#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-itango build
+#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-itango test | tee .public/result.txt
+#   - mv .public public
+#   artifacts:
+#     paths:
+#     - public
 
-test-framework-tango-rest:
-  retry: 2
-  stage: test
-  tags:
-  - shell
-  script:
-  - mkdir .public
-  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-rest build
-  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-rest test | tee .public/result.txt
-  - mv .public public
-  artifacts:
-    paths:
-    - public
+# test-framework-tango-rest:
+#   retry: 2
+#   stage: test
+#   tags:
+#   - shell
+#   script:
+#   - mkdir .public
+#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-rest build
+#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-rest test | tee .public/result.txt
+#   - mv .public public
+#   artifacts:
+#     paths:
+#     - public
 
-test-framework-ska-python-buildenv:
-  retry: 2
-  stage: test
-  tags:
-  - shell
-  script:
-  - mkdir .public
-  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/ska-python-buildenv build
-  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/ska-python-buildenv test | tee .public/result.txt
-  - mv .public public
-  artifacts:
-    paths:
-    - public
+# test-framework-ska-python-buildenv:
+#   retry: 2
+#   stage: test
+#   tags:
+#   - shell
+#   script:
+#   - mkdir .public
+#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/ska-python-buildenv build
+#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/ska-python-buildenv test | tee .public/result.txt
+#   - mv .public public
+#   artifacts:
+#     paths:
+#     - public
 
-test-framework-tango-archiver:
-  retry: 2
-  stage: test
-  tags:
-  - shell
-  script:
-  - mkdir .public
-  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-archiver build
-  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-archiver test | tee .public/result.txt
-  - mv .public public
-  artifacts:
-    paths:
-    - public
+# test-framework-tango-archiver:
+#   retry: 2
+#   stage: test
+#   tags:
+#   - shell
+#   script:
+#   - mkdir .public
+#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-archiver build
+#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-archiver test | tee .public/result.txt
+#   - mv .public public
+#   artifacts:
+#     paths:
+#     - public
 
-test-all:
-  when: manual
-  retry: 2
-  stage: test
-  tags:
-  - shell
-  script:
-  - mkdir .public
-  - cd docker
-  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST test | tee ../.public/result.txt
-  - mv ../.public ../public
-  artifacts:
-    paths:
-    - public
+# test-all:
+  # when: manual
+  # retry: 2
+  # stage: test
+  # tags:
+  # - shell
+  # script:
+  # - mkdir .public
+  # - cd docker
+  # - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST test | tee ../.public/result.txt
+  # - mv ../.public ../public
+  # artifacts:
+  #   paths:
+  #   - public
 
 test-chart:
   stage: test
