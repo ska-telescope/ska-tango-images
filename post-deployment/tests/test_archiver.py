@@ -5,7 +5,7 @@ import tango
 from pytest_bdd import given, scenario, then, when, parsers
 
 
-@scenario('archiver.feature', 'Test archiver')
+@scenario('archiver.feature', 'Check archiving')
 def test_archiver():
     """Test archiver."""
 
