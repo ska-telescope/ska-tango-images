@@ -2,7 +2,13 @@
 """features/archiver.feature feature tests."""
 
 import tango
+from tango import DevFailed, DeviceProxy
+from time import sleep
+import pytest
+import logging
 from pytest_bdd import given, scenario, then, when, parsers
+
+pytest.device_proxies = []
 
 
 @scenario('archiver.feature', 'Check archiving')
@@ -10,38 +16,49 @@ def test_archiver():
     """Test archiver."""
 
 
-@given(parsers.parse('a device called {device_name}'))
-def device_proxy1(run_context, device_name):
-    """a device called archiving/hdbpp/confmanager01."""
-    return tango.DeviceProxy(device_name)
+@given(parsers.parse('a Configuration Manager called {cm_device_name} and an Event Subscriber called {'
+                     'es_device_name}'))
+def device_proxy(run_context, cm_device_name, es_device_name):
+    """a Configuration Manager called archiving/hdbpp/confmanager01 and
+    an Event Subscriber called archiving/hdbpp/eventsubscriber01."""
+    pytest.conf_manager_device = tango.DeviceProxy(cm_device_name)
+    pytest.event_subscriber_device = tango.DeviceProxy(es_device_name)
 
 
-@given(parsers.parse('a device called {device_name}'))
-def device_proxy2(run_context, device_name):
-    """a device called archiving/hdbpp/eventsubscriber01."""
-    return tango.DeviceProxy(device_name)
-
-
-@when(parsers.cfparse("I call the command {command_name}({parameter:String?})", extra_types=dict(String=str)))
-def call_command(device_proxy, command_name):
-    """I call the command archive()."""
-    return device_proxy.command_inout(command_name)
-
-
-@when(parsers.parse('attribute is set to {attribute_name}'))
-def set_attribute(device_proxy, attribute_name):
+@pytest.fixture
+@when(parsers.parse("I request to archive the attribute {attribute_name}"))
+def attribute(device_proxy, attribute_name):
     """Attribute is set to sys/tg_test/1/double_scalar."""
-    return device_proxy.read_attribute(attribute_name)
+    conf_manager_proxy = pytest.conf_manager_device
+    evt_subscriber_device_proxy = pytest.event_subscriber_device
+    conf_manager_proxy.set_timeout_millis(5000)
+    evt_subscriber_device_proxy.set_timeout_millis(5000)
+    conf_manager_proxy.write_attribute("SetAttributeName", attribute_name)
+    conf_manager_proxy.write_attribute("SetArchiver", evt_subscriber_device_proxy.name())
+    conf_manager_proxy.write_attribute("SetStrategy", "ALWAYS")
+    conf_manager_proxy.write_attribute("SetPollingPeriod", 1000)
+    conf_manager_proxy.write_attribute("SetPeriodEvent", 3000)
+
+    evt_subscriber_device_proxy.Start()
+    return attribute_name
 
 
-@then(parsers.parse("time interval is {time_interval}({parameter:String?})", extra_types=dict(String=str)))
-def set_time_interval(device_proxy, time_interval):
-    """Time interval is 1 second."""
-    return device_proxy.read_attribute(time_interval)
-
-
-@then(parsers.parse('the attribute {attribute_name} is {expected_value}'))
-def check_attribute(device_proxy, attribute_name, expected_value):
-    """the attribute State is archiving."""
-    attr = device_proxy.read_attribute(attribute_name)
-    assert str(attr.value) == expected_value
+@then(parsers.parse("after {time_interval} milliseconds the Archiving is Started"))
+def check_archiving(device_proxy, attribute):
+    """The time interval is 1 second."""
+    max_retries = 10
+    sleep_time = 1
+    for x in range(0, max_retries):
+        try:
+            # Check status of Attribute Archiving in Configuration Manager
+            result_config_manager = pytest.conf_manager_device.command_inout("AttributeStatus", attribute)
+            # Check status of Attribute Archiving in Event Subscriber
+            result_evt_subscriber = pytest.event_subscriber_device.command_inout("AttributeStatus", attribute)
+            assert "Archiving          : Started" in result_config_manager
+            assert "Archiving          : Started" in result_evt_subscriber
+        except DevFailed as df:
+            if x == (max_retries - 1):
+                raise df
+            logging.info(
+                "DevFailed exception: " + str(df.args[0].reason) + ". Sleeping for " + str(sleep_time) + "ss")
+            sleep(sleep_time)
