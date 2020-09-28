@@ -16,7 +16,7 @@ def test_connect_to_the_tango_database_using_tango_admin():
 @given('the TANGO_HOST is defined in the environment')
 def the_tango_host_is_defined_in_the_environment(run_context):
     """the TANGO_HOST is defined in the environment."""
-    logging.info("TANGO_HOST: {}".format(run_context.TANGO_HOST))
+    # logging.info("TANGO_HOST: {}".format(run_context.TANGO_HOST))
     assert run_context.TANGO_HOST == 'databaseds-tango-base-test:10000', "RunContext has unexpected TANGO_HOST variable: {}".format(run_context.TANGO_HOST)
 
 
