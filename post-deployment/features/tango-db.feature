@@ -1,6 +1,6 @@
-# check device
-Feature: tango-bd
-	Test tango bd connection
+
+Feature: tango-db
+	Test tango db connection
 
 Scenario: Test mysql connection
 	Given Tango env tango_values.yaml
