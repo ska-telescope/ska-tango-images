@@ -30,7 +30,11 @@ def device_proxy(run_context, cm_device_name, es_device_name):
 def attribute(device_proxy, attribute_name):
     """Attribute is set to sys/tg_test/1/double_scalar."""
     conf_manager_proxy = pytest.conf_manager_device
+    logging.info(conf_manager_proxy.info())
+
     evt_subscriber_device_proxy = pytest.event_subscriber_device
+    logging.info(evt_subscriber_device_proxy.info())
+
     conf_manager_proxy.set_timeout_millis(5000)
     evt_subscriber_device_proxy.set_timeout_millis(5000)
     conf_manager_proxy.write_attribute("SetAttributeName", attribute_name)
@@ -38,6 +42,12 @@ def attribute(device_proxy, attribute_name):
     conf_manager_proxy.write_attribute("SetStrategy", "ALWAYS")
     conf_manager_proxy.write_attribute("SetPollingPeriod", 1000)
     conf_manager_proxy.write_attribute("SetPeriodEvent", 3000)
+
+    try:
+        conf_manager_proxy.command_inout("AttributeAdd")
+    except DevFailed as df:
+        if not str(df.args[0].reason) == 'Already archived':    
+            logging.info("DevFailed exception: " + str(df.args[0].reason))
 
     evt_subscriber_device_proxy.Start()
     return attribute_name
