@@ -7,7 +7,7 @@ appVersion: 1.16.0
 icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
 dependencies:
 - name: tango-util
-  version: 0.1.1
+  version: 0.2.0
   repository: file://../tango-util
 # The archiver cannot have the tango-base since we allow only one level in the chart hierarchies
 # - name: tango-base
