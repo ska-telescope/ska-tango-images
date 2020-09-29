@@ -20,6 +20,14 @@ global:
       image: tango-dsconfig
       tag: 1.5.0
       pullPolicy: IfNotPresent
+  # by setting this parameter we can disable the lower level sub-system tango-base, archiver and webjive
+  # sub-system:
+  #   tango-base:
+  #     enabled: false
+  #   archiver:
+  #     enabled: false
+  #   webjive: 
+  #     enabled: false
 
 tango-base:
   itango:
@@ -35,4 +43,3 @@ tango-base:
   ingress:
     enabled: true
     hostname: tango-base.minikube.local
-
