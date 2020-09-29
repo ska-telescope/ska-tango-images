@@ -1,19 +1,15 @@
 global:
-  labels:
-    app: ska-docker
   annotations:
     app.gitlab.com/app: CI_PROJECT_PATH_SLUG
     app.gitlab.com/env: CI_ENVIRONMENT_SLUG
-  # by setting the following parameter we can disable all level 0 tango-base
-  # tango-base:
-  #   level0:
+  # by setting this parameter we can disable the lower level sub-system tango-base, archiver and webjive
+  # sub-system:
+  #   tango-base:
   #     enabled: false
-  #   level1:
-  #     enabled: true
-
-# by setting the following parameter we can disable all charts with tag tango-base 
-tags:
-  tango-base: false
+  #   archiver:
+  #     enabled: false
+  #   webjive: 
+  #     enabled: false
 
 tango-base:
   enabled: true

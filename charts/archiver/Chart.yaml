@@ -9,9 +9,8 @@ dependencies:
 - name: tango-util
   version: 0.1.1
   repository: file://../tango-util
-- name: tango-base
-  version: 0.2.1
-  repository: file://../tango-base
-  condition: tango-base.enabled,global.tango-base.level0.enabled
-  tags:
-  - tango-base
+# The archiver cannot have the tango-base since we allow only one level in the chart hierarchies
+# - name: tango-base
+#   version: 0.2.1
+#   repository: file://../tango-base
+#   condition: tango-base.enabled,global.sub-system.tango-base.enabled
