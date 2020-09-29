@@ -16,7 +16,7 @@ stages:
 - build_3
 - build_4
 - build_5
-- push
+# - push
 - test
 - publish
 - cleanup_build
@@ -29,10 +29,11 @@ build_tango-builder:
   retry: 2
   stage: build_0
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/tango-builder
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-builder/**/*
@@ -54,10 +55,11 @@ build_dependencies:
   retry: 2
   stage: build_1
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/tango-dependencies
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-dependencies/**/*
@@ -66,10 +68,11 @@ build_tango-db:
   retry: 2
   stage: build_1
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/tango-db
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-db/**/*
@@ -78,10 +81,11 @@ build_tango-cpp:
   retry: 2
   stage: build_2
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/tango-cpp
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-dependencies/**/*
@@ -91,10 +95,11 @@ build_tango-java:
   retry: 2
   stage: build_2
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/tango-java
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-dependencies/**/*
@@ -104,10 +109,11 @@ build_tango-rest:
   retry: 2
   stage: build_3
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/tango-rest
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-dependencies/**/*
@@ -118,10 +124,11 @@ build_tango-dsconfig:
   retry: 2
   stage: build_3
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/tango-dsconfig
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-dependencies/**/*
@@ -132,10 +139,11 @@ build_ska-python-buildenv:
   retry: 2
   stage: build_3
   tags:
-    - shell
+    - k8srunner
   script:
     - cd docker/tango/ska-python-buildenv
     - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+    - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
       - docker/tango/tango-dependencies/**/*
@@ -146,10 +154,11 @@ build_tango-pogo:
   retry: 2
   stage: build_3
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/tango-pogo
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-dependencies/**/*
@@ -160,10 +169,11 @@ build_tango-starter:
   retry: 2
   stage: build_3
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/tango-starter
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-dependencies/**/*
@@ -174,10 +184,11 @@ build_tango-libtango:
   retry: 2
   stage: build_3
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/tango-libtango
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-dependencies/**/*
@@ -188,10 +199,11 @@ build_tango-jive:
   retry: 2
   stage: build_3
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/tango-jive
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-dependencies/**/*
@@ -202,10 +214,11 @@ build_ska-python-runtime:
   retry: 2
   stage: build_4
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/ska-python-runtime
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-dependencies/**/*
@@ -217,10 +230,11 @@ build_tango-admin:
   retry: 2
   stage: build_4
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/tango-admin
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-dependencies/**/*
@@ -232,10 +246,11 @@ build_tango-databaseds:
   retry: 2
   stage: build_4
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/tango-databaseds
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-dependencies/**/*
@@ -247,10 +262,11 @@ build_tango-test:
   retry: 2
   stage: build_4
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/tango-test
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-dependencies/**/*
@@ -262,10 +278,11 @@ build_tango-itango:
   retry: 2
   stage: build_5
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/tango-itango
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-dependencies/**/*
@@ -278,10 +295,11 @@ build_tango-vscode:
   retry: 2
   stage: build_5
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/tango-vscode
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-dependencies/**/*
@@ -294,10 +312,11 @@ build_tango-vnc:
   retry: 2
   stage: build_5
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/tango-vnc
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-dependencies/**/*
@@ -308,10 +327,11 @@ build_tango-pytango:
   retry: 2
   stage: build_5
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/tango-pytango
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-dependencies/**/*
@@ -324,10 +344,11 @@ build_tango-archiver:
   retry: 2
   stage: build_5
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/tango-archiver
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-archiver/**/*
@@ -336,10 +357,11 @@ build_mariadb_hdbpp:
   retry: 2
   stage: build_5
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/mariadb_hdbpp
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-archiver/**/*
@@ -350,120 +372,22 @@ build_hdbpp_viewer:
   retry: 2
   stage: build_5
   tags:
-  - shell
+  - k8srunner
   script:
   - cd docker/tango/hdbpp_viewer
   - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
   only:
     changes:
     - docker/tango/tango-archiver/**/*
     - docker/tango/hdbpp_viewer/**/*
     - docker/tango/mariadb_hdbpp/**/*
 
-# test-framework-tango-db:
-#   retry: 2
-#   stage: test
-#   tags:
-#   - shell
-#   script:
-#   - mkdir .public
-#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-db build
-#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-db test | tee .public/result.txt
-#   - mv .public public
-#   artifacts:
-#     paths:
-#     - public
-
-# test-framework-tango-cpp:
-#   retry: 2
-#   stage: test
-#   tags:
-#   - shell
-#   script:
-#   - mkdir .public
-#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-cpp build
-#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-cpp test | tee .public/result.txt
-#   - mv .public public
-#   artifacts:
-#     paths:
-#     - public
-
-# test-framework-tango-itango:
-#   retry: 2
-#   stage: test
-#   tags:
-#   - shell
-#   script:
-#   - mkdir .public
-#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-itango build
-#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-itango test | tee .public/result.txt
-#   - mv .public public
-#   artifacts:
-#     paths:
-#     - public
-
-# test-framework-tango-rest:
-#   retry: 2
-#   stage: test
-#   tags:
-#   - shell
-#   script:
-#   - mkdir .public
-#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-rest build
-#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-rest test | tee .public/result.txt
-#   - mv .public public
-#   artifacts:
-#     paths:
-#     - public
-
-# test-framework-ska-python-buildenv:
-#   retry: 2
-#   stage: test
-#   tags:
-#   - shell
-#   script:
-#   - mkdir .public
-#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/ska-python-buildenv build
-#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/ska-python-buildenv test | tee .public/result.txt
-#   - mv .public public
-#   artifacts:
-#     paths:
-#     - public
-
-# test-framework-tango-archiver:
-#   retry: 2
-#   stage: test
-#   tags:
-#   - shell
-#   script:
-#   - mkdir .public
-#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-archiver build
-#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST -C docker/tango/tango-archiver test | tee .public/result.txt
-#   - mv .public public
-#   artifacts:
-#     paths:
-#     - public
-
-# test-all:
-  # when: manual
-  # retry: 2
-  # stage: test
-  # tags:
-  # - shell
-  # script:
-  # - mkdir .public
-  # - cd docker
-  # - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST test | tee ../.public/result.txt
-  # - mv ../.public ../public
-  # artifacts:
-  #   paths:
-  #   - public
-
 test-chart:
   stage: test
   tags:
-  - docker-executor
-  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.2
+  - k8srunner
+  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
   script:
   - export KUBE_NAMESPACE="ci-ska-docker-$CI_COMMIT_SHORT_SHA"
   - cd charts/
@@ -486,13 +410,13 @@ test-chart:
     reports:
       junit: charts/build/report.xml
 
-push: 
-  stage: push
-  tags:
-  - shell
-  script: 
-  - cd docker
-  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
+# push: 
+#   stage: push
+#   tags:
+#   - shell
+#   script: 
+#   - cd docker
+#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
 
 variables:
     CHARTS_TO_PUBLISH: tango-util tango-base archiver 
