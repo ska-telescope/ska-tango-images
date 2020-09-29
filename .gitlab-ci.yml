@@ -18,7 +18,7 @@ stages:
 - build_5
 - push
 - test
-- publish_chart
+- publish
 - cleanup_build
 
 # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#authenticating-to-the-container-registry
@@ -494,12 +494,9 @@ push:
   - cd docker
   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
 
-publish_chart:
-  variables:
+variables:
     CHARTS_TO_PUBLISH: tango-base archiver tango-util
-  stage: publish_chart
-  tags:
-  - docker-executor
-  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.1
-  script:
-    - curl -s https://gitlab.com/ska-telescope/stupid/raw/master/scripts/publish-charts.sh | bash
+# Ensure your .gitlab-ci.yml has "publish" stage defined!
+include:
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/helm_publish.yml'

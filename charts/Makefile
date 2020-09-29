@@ -90,6 +90,10 @@ reinstall-chart: uninstall-chart install-chart ## reinstall the ska-docker helm 
 upgrade-chart: ## upgrade the ska-docker helm chart on the namespace ska-docker
 	@helm upgrade --set minikube=$(MINIKUBE) $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) 
 
+chart_lint: ## lint check the helm chart
+	@helm lint $(UMBRELLA_CHART_PATH) \
+		--namespace $(KUBE_NAMESPACE) 
+		
 wait:## wait for pods to be ready
 	@echo "Waiting for pods to be ready"
 	@date
