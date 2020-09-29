@@ -11,5 +11,5 @@ global:
   #   webjive: 
   #     enabled: false
 
-tango-base:
-  enabled: true
+# tango-base:
+#   enabled: true
