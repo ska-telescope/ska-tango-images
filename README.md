@@ -1,6 +1,6 @@
 # TANGO Docker containers
 
-This project defines a set of Docker images and Docker compose files
+This project defines a set of Docker images and Charts files
 that are useful for TANGO control system development.
 See the documentation in the 'docs' folder for build and usage
 instructions.
@@ -77,7 +77,7 @@ Containers like mariadb, databaseds, hdbpp-es and hdbpp-cm should be up and runn
 
 
 # Important links
- * [Link for Mariadb container](https://gitlab.com/ska-telescope/ska-docker/tree/story_AT1-422/docker/tango/mariadb_hdbpp)
- * [Link for Tango-archiver container](https://gitlab.com/ska-telescope/ska-docker/tree/story_AT1-422/docker/tango/tango-archiver)
- * [Link for Hdbpp-viewer container](https://gitlab.com/ska-telescope/ska-docker/tree/story_AT1-422/docker/tango/hdbpp_viewer)
- * [Docker-compose yaml](https://gitlab.com/ska-telescope/ska-docker/blob/story_AT1-422/docker/tango/tango-archiver/docker-compose.yml)
+ * [Link for Mariadb container](https://gitlab.com/ska-telescope/ska-docker/-/tree/master/docker/tango/mariadb_hdbpp)
+ * [Link for Tango-archiver container](https://gitlab.com/ska-telescope/ska-docker/-/tree/master/docker/tango/tango-archiver)
+ * [Link for Hdbpp-viewer container](https://gitlab.com/ska-telescope/ska-docker/-/tree/master/docker/tango/hdbpp_viewer)
+ * [Archiver Charts](https://gitlab.com/ska-telescope/ska-docker/-/tree/master/charts/archiver)
