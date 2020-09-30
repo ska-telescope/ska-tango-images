@@ -140,8 +140,8 @@ test: ## test the application on K8s
 		perl -ne 'BEGIN {$$on=0;}; if (index($$_, "~~~~BOUNDARY~~~~")!=-1){$$on+=1;next;}; print if $$on % 2;' | \
 		base64 -d | tar -xzf -; \
 		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
-		rm ../post-deployment/tango_values.yaml
-		echo $$status
+		rm ../post-deployment/tango_values.yaml; \
+		echo "Status set at $$status"; \
 		exit $$status
 
 show:
