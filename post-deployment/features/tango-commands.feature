@@ -20,10 +20,10 @@ Scenario: Test DevString command
 	When I call the command DevString(Hello World!)
 	Then the result is Hello World!
 
-Scenario: Test short_spectrum_ro
+Scenario: Test short_spectrum_ro quality
 	Given a device called sys/tg_test/1
 	Then the attribute short_spectrum_ro is tango._tango.AttrQuality.ATTR_VALID
 
-Scenario: Test short_spectrum
+Scenario: Test short_spectrum quality
 	Given a device called sys/tg_test/1
 	Then the attribute short_spectrum is tango._tango.AttrQuality.ATTR_VALID
