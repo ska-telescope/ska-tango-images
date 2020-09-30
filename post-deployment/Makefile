@@ -16,7 +16,7 @@ all: test
 test: install
 	mkdir -p build && \
 	find . -name "*.pyc" -type f -delete && \
-	PYTHONPATH=/app:/app/testing:/app/testing/post-deployment pytest $(if $(findstring all,$(MARK)),, -m $(MARK)) --disable-pytest-warnings | tee pytest.stdout && \
+	PYTHONPATH=/app:/app/testing:/app/testing/post-deployment pytest $(if $(findstring all,$(MARK)),, -m $(MARK)) --disable-pytest-warnings | tee pytest.stdout; \
 	status=$$?; \
 	echo "Status set at \"$$status\" in post-deployment/Makefile test target"; \
 	$(foreach artfct,$(TEST_ARTIFACTS),mv -f $(artfct) build/;) \
