@@ -141,6 +141,7 @@ test: ## test the application on K8s
 		base64 -d | tar -xzf -; \
 		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
 		rm ../post-deployment/tango_values.yaml
+		echo $$status
 		exit $$status
 
 show:

@@ -7,11 +7,6 @@ from tango import Database, DeviceProxy, CmdArgType as ArgType
 
 from pytest_bdd import given, scenario, then, when, parsers, scenarios
 
-
-# @scenario('tango-cpp.feature', 'Call Command and test attribute')
-# def test_call_command_and_test_attribute():
-#     """Call Command and test attribute."""
-
 scenarios('../features/tango-commands.feature')
 
 @given(parsers.parse('a device called {device_name}'))
