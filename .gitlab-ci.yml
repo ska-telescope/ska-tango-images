@@ -406,9 +406,9 @@ test-chart:
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
-      - "build/"
+      - "charts/build/"
     reports:
-      junit: build/report.xml
+      junit: charts/build/report.xml
 
 # push: 
 #   stage: push
