@@ -21,10 +21,10 @@ def call_command(command, parameter):
     """I call a command with parameter."""
 
     if parameter == "ping-database":
-        logging.info("Running command {} with param {}".format(command, parameter))
+        # logging.info("Running command {} with param {}".format(command, parameter))
         pytest.result = subprocess.run([command, "--"+parameter, "20"])
     elif command == "itango3":
-        logging.info("Running command {} with param {}".format(command, parameter))
+        # logging.info("Running command {} with param {}".format(command, parameter))
         pytest.result = subprocess.run([command, "--"+parameter])
 
 
