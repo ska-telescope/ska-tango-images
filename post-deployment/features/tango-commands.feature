@@ -22,8 +22,8 @@ Scenario: Test DevString command
 
 Scenario: Test short_spectrum_ro
 	Given a device called sys/tg_test/1
-	Then the attribute short_spectrum_ro is True
+	Then the attribute short_spectrum_ro is tango._tango.AttrQuality.ATTR_VALID
 
 Scenario: Test short_spectrum
 	Given a device called sys/tg_test/1
-	Then the attribute short_spectrum is True
+	Then the attribute short_spectrum is tango._tango.AttrQuality.ATTR_VALID
