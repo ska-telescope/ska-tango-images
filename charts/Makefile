@@ -5,6 +5,7 @@ HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
 MINIKUBE ?= true## Minikube or not
 MARK ?= all
 IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.7## docker image that will be run for testing purpose
+# IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-itango:9.3.2.1## docker image that will be run for testing purpose
 TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)-$(KUBE_NAMESPACE)-$(RELEASE_NAME)##name of the pod running the k8s_tests
 TANGO_HOST=$(shell helm get values ${RELEASE_NAME} -a -n ${KUBE_NAMESPACE} | grep tango_host | head -1 | cut -d':' -f2 | cut -d' ' -f2):10000
 CHARTS ?= tango-util tango-base archiver ska-docker## list of charts to be published on gitlab -- umbrella charts for testing purpose
@@ -132,6 +133,7 @@ k8s_test = tar -c ../post-deployment/ | \
 # clean up the run to completion container
 # exit the saved status
 test: ## test the application on K8s
+	cp tango-base/values.yaml ../post-deployment/tango_values.yaml 
 	$(call k8s_test,test); \
 		status=$$?; \
 		rm -fr build; \
@@ -139,6 +141,8 @@ test: ## test the application on K8s
 		perl -ne 'BEGIN {$$on=0;}; if (index($$_, "~~~~BOUNDARY~~~~")!=-1){$$on+=1;next;}; print if $$on % 2;' | \
 		base64 -d | tar -xzf -; \
 		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
+		rm ../post-deployment/tango_values.yaml; \
+		echo "Status set at \"$$status\" in charts/Makefile test target"; \
 		exit $$status
 
 show:
