@@ -27,13 +27,11 @@ def device_proxy(run_context, cm_device_name, es_device_name):
 
 @pytest.fixture
 @when(parsers.parse("I request to archive the attribute {attribute_name}"))
-def attribute(device_proxy, attribute_name):
+def archive_attribute(device_proxy, attribute_name):
     """Attribute is set to sys/tg_test/1/double_scalar."""
     conf_manager_proxy = pytest.conf_manager_device
-    logging.info(conf_manager_proxy.info())
 
     evt_subscriber_device_proxy = pytest.event_subscriber_device
-    logging.info(evt_subscriber_device_proxy.info())
 
     conf_manager_proxy.set_timeout_millis(5000)
     evt_subscriber_device_proxy.set_timeout_millis(5000)
@@ -54,8 +52,9 @@ def attribute(device_proxy, attribute_name):
 
 
 @then(parsers.parse("after {time_interval} milliseconds the Archiving is Started"))
-def check_archiving(device_proxy, attribute):
+def check_archiving(device_proxy, archive_attribute):
     """The time interval is 1 second."""
+    attribute = archive_attribute
     max_retries = 10
     sleep_time = 1
     for x in range(0, max_retries):
