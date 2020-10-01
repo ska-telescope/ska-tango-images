@@ -30,22 +30,25 @@ def call_command(command, parameter):
 
 
 @when(parsers.parse("I make a request with user {basic_auth} to {address}"))
-def curl_rest(basic_auth, address):
+def curl_rest(run_context, basic_auth, address):
     """Request basic attribute from test device"""
     pytest.result = subprocess.run(["curl", "--user", basic_auth, address])
     
-    url = address
+    url = address.replace('TANGO_HOST',run_context.TANGO_HOST.split(':')[0])
+    logging.info("Request sent to {}".format(url))
+    
     auth_tuple = (basic_auth.split(':')[0], basic_auth.split(':')[1])
 
     pytest.result = requests.get(url, auth=auth_tuple)
+    logging.info("Result text: {}".format(pytest.result.text))
 
 
 @then(parsers.parse('the return code is {expected_result}'))
 def check_return_code(expected_result):
     """the return code is as expected."""
     # return_code = call_command.returncode
-    if expected_result == 200:
-        assert pytest.result.status_code == expected_result, "Curl returned {}, expected {}".format(pytest.result, expected_result)
+    if expected_result == '200':
+        assert pytest.result.status_code == int(expected_result), "Curl returned {}, expected {}".format(pytest.result, expected_result)
     else:
         return_code = pytest.result.returncode
         assert str(return_code) == str(expected_result), "Function returned {}, expected {}".format(pytest.result, expected_result)

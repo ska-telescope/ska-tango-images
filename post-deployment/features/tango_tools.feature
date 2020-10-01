@@ -13,5 +13,5 @@ Scenario: Test starting itango session
 
 Scenario: Test REST interface
   Given the TANGO_HOST is defined in the environment
-  When I make a request with user tango-cs:tango to http://tango-base-tango-rest:8080/tango/rest/rc4/hosts/databaseds/10000/devices/sys/tg_test/1/attributes/boolean_scalar/value
+  When I make a request with user tango-cs:tango to http://tango-base-tango-rest:8080/tango/rest/rc4/hosts/TANGO_HOST/10000/devices/sys/tg_test/1/attributes/boolean_scalar/value
   Then the return code is 200
