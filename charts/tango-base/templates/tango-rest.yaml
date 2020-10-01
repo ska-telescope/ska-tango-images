@@ -20,6 +20,9 @@ spec:
   selector:
 {{ toYaml .Values.global.labels | indent 4 }}
     component: {{ .Values.tangorest.component }}
+    function: {{ .Values.tangorest.function }}
+    domain: {{ .Values.tangorest.domain }}
+    intent: {{ .Values.tangorest.intent }}
 
 ---
 apiVersion: apps/v1
