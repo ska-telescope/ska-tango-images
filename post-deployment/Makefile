@@ -25,4 +25,6 @@ test: install
 .PHONY: all test install
 
 install:
-	pip3 install -r test_requirements.txt
+	pip3 -q install -r test_requirements.txt;
+	@echo "############ post-deployment/test_requirements.txt versions not necessarily fixed - see build/python_packages_installed_for_test.pip3 ###############"
+	@pip3 list >> build/python_packages_installed_for_test.pip3
