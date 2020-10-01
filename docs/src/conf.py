@@ -35,11 +35,16 @@ def setup(app):
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.napoleon',
+    'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
+    'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
+    'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
-    'recommonmark',
+    'sphinx.ext.githubpages',
+              'recommonmark'
     ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -49,7 +54,7 @@ templates_path = ['_templates']
 # You can specify multiple suffix as a list of string:
 #
 # source_suffix = ['.rst', '.md']
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
 
 # The master toctree document.
 master_doc = 'index'
@@ -107,7 +112,7 @@ html_context = {
     'github_user': 'ska-telescope',  # Username
     'github_repo': 'ska-docker',  # Repo name
     'github_version': 'master',  # Version
-    'conf_py_path': '/docs/src/',  # Path in the checkout to the docs root
+    'conf_py_path': '/src/',  # Path in the checkout to the docs root
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,

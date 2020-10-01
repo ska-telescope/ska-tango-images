@@ -14,13 +14,5 @@ that are useful for TANGO control system development.
    :caption: Contents:
 
    docker_images
-   docker_compose
-   k8s
-   interactions
+   README
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
