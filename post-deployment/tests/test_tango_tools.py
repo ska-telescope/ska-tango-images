@@ -41,6 +41,7 @@ def curl_rest(run_context, basic_auth, address):
 
     pytest.result = requests.get(url, auth=auth_tuple)
     logging.info("Result text: {}".format(pytest.result.text))
+    logging.info("Result json: {}".format(pytest.result.json()))
 
 
 @then(parsers.parse('the return code is {expected_result}'))
@@ -49,8 +50,14 @@ def check_return_code(expected_result):
     # return_code = call_command.returncode
     if expected_result == '200':
         assert pytest.result.status_code == int(expected_result), "Curl returned {}, expected {}".format(pytest.result, expected_result)
+        assert pytest.result.json()['quality'] == 'ATTR_VALID'
     else:
         return_code = pytest.result.returncode
         assert str(return_code) == str(expected_result), "Function returned {}, expected {}".format(pytest.result, expected_result)
+
+@then(parsers.parse('the result {key} is {value}'))
+def check_result(key,value):
+    """result is as expected"""
+    assert pytest.result.json()[key] == value
 
 scenarios('../features/tango_tools.feature')
