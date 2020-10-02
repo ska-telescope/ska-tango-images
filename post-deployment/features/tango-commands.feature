@@ -20,10 +20,10 @@ Scenario: Test DevString command
 	When I call the command DevString(Hello World!)
 	Then the result is Hello World!
 
-Scenario: Test short_spectrum_ro quality
+Scenario: Test short_spectrum_ro type
 	Given a device called sys/tg_test/1
-	Then the attribute short_spectrum_ro is ATTR_VALID
+	Then the attribute short_spectrum_ro is np.ndarray
 
-Scenario: Test short_spectrum quality
+Scenario: Test short_spectrum type
 	Given a device called sys/tg_test/1
-	Then the attribute short_spectrum is ATTR_VALID
+	Then the attribute short_spectrum is np.ndarray

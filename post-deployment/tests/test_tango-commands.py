@@ -1,7 +1,8 @@
 # coding=utf-8
 """features/tango-cpp.feature feature tests."""
 import tango
-import logging 
+import logging
+import numpy as np
 import pytest
 from tango import Database, DeviceProxy, CmdArgType as ArgType
 
@@ -81,7 +82,7 @@ def check_attribute(device_proxy, attribute_name, expected_value):
     if attr.data_format == tango._tango.AttrDataFormat.SCALAR:
         assert str(attr.value) == expected_value
     elif attr.data_format == tango._tango.AttrDataFormat.SPECTRUM:
-        assert str(attr.quality) == expected_value
+        assert type(attr.value) == np.ndarray
 
 @then(parsers.parse("the result is {expected_result}"))
 def check_command(device_proxy, call_command, expected_result):

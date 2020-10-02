@@ -4,6 +4,7 @@ import tango
 import logging 
 import pytest
 import subprocess
+import requests
 
 from pytest_bdd import given, scenario, then, when, parsers, scenarios
 
@@ -28,11 +29,35 @@ def call_command(command, parameter):
         pytest.result = subprocess.run([command, "--"+parameter])
 
 
-@then('the return code is 0')
-def check_return_code():
-    """the result is 0."""
+@when(parsers.parse("I make a request with user {basic_auth} to {address}"))
+def curl_rest(run_context, basic_auth, address):
+    """Request basic attribute from test device"""
+    pytest.result = subprocess.run(["curl", "--user", basic_auth, address])
+    
+    url = address.replace('TANGO_HOST',run_context.TANGO_HOST.split(':')[0])
+    logging.info("Request sent to {}".format(url))
+    
+    auth_tuple = (basic_auth.split(':')[0], basic_auth.split(':')[1])
+
+    pytest.result = requests.get(url, auth=auth_tuple)
+    logging.info("Result text: {}".format(pytest.result.text))
+    logging.info("Result json: {}".format(pytest.result.json()))
+
+
+@then(parsers.parse('the return code is {expected_result}'))
+def check_return_code(expected_result):
+    """the return code is as expected."""
     # return_code = call_command.returncode
-    return_code = pytest.result.returncode
-    assert return_code == 0, "Function returned {}".format(pytest.result)
+    if expected_result == '200':
+        assert pytest.result.status_code == int(expected_result), "Curl returned {}, expected {}".format(pytest.result, expected_result)
+        assert pytest.result.json()['quality'] == 'ATTR_VALID'
+    else:
+        return_code = pytest.result.returncode
+        assert str(return_code) == str(expected_result), "Function returned {}, expected {}".format(pytest.result, expected_result)
+
+@then(parsers.parse('the result {key} is {value}'))
+def check_result(key,value):
+    """result is as expected"""
+    assert pytest.result.json()[key] == value
 
 scenarios('../features/tango_tools.feature')
