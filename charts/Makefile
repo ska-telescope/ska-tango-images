@@ -1,3 +1,4 @@
+SHELL := /bin/bash
 KUBE_NAMESPACE ?= ska-docker#namespace to be used
 RELEASE_NAME ?= test## release name of the chart
 UMBRELLA_CHART_PATH ?= ska-docker/## Path of the umbrella chart to work with
@@ -37,7 +38,7 @@ namespace: ## create the kubernetes namespace
 		fi
 
 delete_namespace: ## delete the kubernetes namespace
-	@if [ "default" = "$(KUBE_NAMESPACE)" ] || [ "kube-system" = "$(KUBE_NAMESPACE)" ]; then \
+	@if [ "default" == "$(KUBE_NAMESPACE)" ] || [ "kube-system" == "$(KUBE_NAMESPACE)" ]; then \
 	echo "You cannot delete Namespace: $(KUBE_NAMESPACE)"; \
 	exit 1; \
 	else \
