@@ -40,7 +40,7 @@ def curl_rest(run_context, basic_auth, address):
     
     auth_tuple = (basic_auth.split(':')[0], basic_auth.split(':')[1])
     
-    sleep_time = 20
+    sleep_time = 30
     max_retries = 10
     total_slept = 0
     for x in range(0, max_retries):
