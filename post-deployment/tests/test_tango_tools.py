@@ -32,7 +32,7 @@ def call_command(command, parameter):
 @when(parsers.parse("I make a request with user {basic_auth} to {address}"))
 def curl_rest(run_context, basic_auth, address):
     """Request basic attribute from test device"""
-    pytest.result = subprocess.run(["curl", "--user", basic_auth, address])
+    #pytest.result = subprocess.run(["curl", "--user", basic_auth, address])
     
     url = address.replace('TANGO_HOST',run_context.TANGO_HOST.split(':')[0])
     logging.info("Request sent to {}".format(url))
