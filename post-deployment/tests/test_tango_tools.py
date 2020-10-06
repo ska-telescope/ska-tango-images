@@ -5,6 +5,7 @@ import logging
 import pytest
 import subprocess
 import requests
+from time import sleep
 
 from pytest_bdd import given, scenario, then, when, parsers, scenarios
 
@@ -38,7 +39,7 @@ def curl_rest(run_context, basic_auth, address):
     logging.info("Request sent to {}".format(url))
     
     auth_tuple = (basic_auth.split(':')[0], basic_auth.split(':')[1])
-
+    
     sleep_time = 1
     max_retries = 10
     total_slept = 0
