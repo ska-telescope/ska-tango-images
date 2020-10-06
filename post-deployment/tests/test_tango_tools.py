@@ -40,20 +40,20 @@ def curl_rest(run_context, basic_auth, address):
     
     auth_tuple = (basic_auth.split(':')[0], basic_auth.split(':')[1])
     
-    sleep_time = 1
+    sleep_time = 20
     max_retries = 10
     total_slept = 0
     for x in range(0, max_retries):
         try:
             pytest.result = requests.get(url, auth=auth_tuple)
+            logging.info("Result text: {}".format(pytest.result.text))
+            logging.info("Result json: {}".format(pytest.result.json()))
             break
-        except:
+        except Exception as e:
             sleep(sleep_time)
             total_slept += 1
-
-    logging.info("Result text: {}".format(pytest.result.text))
-    logging.info("Result json: {}".format(pytest.result.json()))
-
+            if(x == (max_retries - 1)):
+                raise e
 
 @then(parsers.parse('the return code is {expected_result}'))
 def check_return_code(expected_result):
