@@ -70,8 +70,8 @@ spec:
       {{- end }}
       initContainers:
       - name: check-dependencies-0
-        image: "{{ .Values.global.dsconfig.image.registry }}/{{ .Values.global.dsconfig.image.image }}:{{ .Values.global.dsconfig.image.tag }}"
-        imagePullPolicy: {{ .Values.global.dsconfig.image.pullPolicy }}
+        image: "{{ .Values.tangorest.image.registry }}/{{ .Values.tangorest.image.image }}:{{ .Values.tangorest.image.tag }}"
+        imagePullPolicy: {{ .Values.tangorest.image.pullPolicy }}
         command:
           - retry
           - --max=10
@@ -79,6 +79,50 @@ spec:
           - tango_admin
           - --check-device
           - sys/database/2
+        env:
+        - name: TANGO_HOST
+          value: {{ .Values.global.tango_host }}
+      - name: init-0
+        image: "{{ .Values.tangorest.image.registry }}/{{ .Values.tangorest.image.image }}:{{ .Values.tangorest.image.tag }}"
+        imagePullPolicy: {{ .Values.tangorest.image.pullPolicy }}
+        command:
+          - /bin/bash
+        args:
+          - "-c"
+          - /usr/local/bin/tango_register_device.sh TangoRestServer/{{ template "tango-base.name" . }}-{{ .Values.tangorest.component }} TangoRestServer {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}/rest/0
+        env:
+        - name: TANGO_HOST
+          value: {{ .Values.global.tango_host }}
+      - name: init-1
+        image: "{{ .Values.tangorest.image.registry }}/{{ .Values.tangorest.image.image }}:{{ .Values.tangorest.image.tag }}"
+        imagePullPolicy: {{ .Values.tangorest.image.pullPolicy }}
+        command:
+          - /bin/bash
+        args:
+          - "-c"
+          - /usr/local/bin/tango_admin --add-property {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}/rest/0 TANGO_DB tango://{{ .Values.global.tango_host }}/sys/database/2
+        env:
+        - name: TANGO_HOST
+          value: {{ .Values.global.tango_host }}
+      - name: init-2
+        image: "{{ .Values.tangorest.image.registry }}/{{ .Values.tangorest.image.image }}:{{ .Values.tangorest.image.tag }}"
+        imagePullPolicy: {{ .Values.tangorest.image.pullPolicy }}
+        command:
+          - /bin/bash
+        args:
+          - "-c"
+          - /usr/local/bin/tango_admin --add-property {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}/rest/0 TOMCAT_PORT 8080
+        env:
+        - name: TANGO_HOST
+          value: {{ .Values.global.tango_host }}
+      - name: init-3
+        image: "{{ .Values.tangorest.image.registry }}/{{ .Values.tangorest.image.image }}:{{ .Values.tangorest.image.tag }}"
+        imagePullPolicy: {{ .Values.tangorest.image.pullPolicy }}
+        command:
+          - /bin/bash
+        args:
+          - "-c"
+          - /usr/local/bin/tango_admin --add-property {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}/rest/0 TOMCAT_AUTH_METHOD plain
         env:
         - name: TANGO_HOST
           value: {{ .Values.global.tango_host }}
@@ -90,12 +134,14 @@ spec:
           - /bin/bash
         args:
           - "-c"
-          - /usr/bin/supervisord --configuration /etc/supervisor/supervisord.conf
+          - /usr/bin/java -jar $JAVA_OPTS /usr/local/lib/tango/mtangorest.jar $MYHOSTNAME
         env:
         - name: TANGO_HOST
           value: "{{ .Values.global.tango_host }}"
         - name: JAVA_OPTS
           value: "-Xmx4G -Xshare:off -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5009"
+        - name: MYHOSTNAME
+          value: {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}
         ports:
         - name: rest
           containerPort: 8080
