@@ -6,7 +6,7 @@ display: ":0"
 xauthority: "~/.Xauthority"
 
 minikube: true
-resources: false
+resources: true
 
 homeDir: /home/ubuntu
 system: SW-infrastructure

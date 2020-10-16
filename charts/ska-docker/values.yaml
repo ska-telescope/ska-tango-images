@@ -6,21 +6,8 @@ display: ":0"
 xauthority: "~/.Xauthority"
 minikube: true
 
-labels:
-  app: ska-docker
-annotations:
-  app.gitlab.com/app: CI_PROJECT_PATH_SLUG
-  app.gitlab.com/env: CI_ENVIRONMENT_SLUG
-
 global:
   tango_host: databaseds-tango-base-{{.Release.Name}}:10000
-  environment_variables: []
-  dsconfig:
-    image:
-      registry: nexus.engageska-portugal.pt/ska-docker
-      image: tango-dsconfig
-      tag: 1.5.0
-      pullPolicy: IfNotPresent
   # by setting this parameter we can disable the lower level sub-system tango-base, archiver and webjive
   # sub-system:
   #   tango-base:
@@ -36,9 +23,9 @@ tango-base:
   jive:
     enabled: false
   vnc:
-    enabled: true
+    enabled: false
   vscode:
-    enabled: true
+    enabled: false
   tangorest:
     enabled: true
   ingress:
