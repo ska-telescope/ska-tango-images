@@ -11,11 +11,9 @@ metadata:
     function: {{ .Values.vnc.function }}
     domain: {{ .Values.vnc.domain }}
     intent: {{ .Values.vnc.intent }}
-{{ toYaml .Values.global.labels | indent 4 }}
-{{ if (.Values.global.annotations) }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
   annotations:
-{{ toYaml .Values.global.annotations | indent 4 }}
-{{ end }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 spec:
   type: NodePort
   ports:
@@ -36,7 +34,7 @@ spec:
     function: {{ .Values.vnc.function }}
     domain: {{ .Values.vnc.domain }}
     intent: {{ .Values.vnc.intent }}
-{{ toYaml .Values.global.labels | indent 4 }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
 
 ---
 apiVersion: apps/v1
@@ -49,11 +47,9 @@ metadata:
     function: {{ .Values.vnc.function }}
     domain: {{ .Values.vnc.domain }}
     intent: {{ .Values.vnc.intent }}
-{{ toYaml .Values.global.labels | indent 4 }}
-{{ if (.Values.global.annotations) }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
   annotations:
-{{ toYaml .Values.global.annotations | indent 4 }}
-{{ end }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 spec:
   selector:
     matchLabels:
@@ -61,7 +57,7 @@ spec:
       function: {{ .Values.vnc.function }}
       domain: {{ .Values.vnc.domain }}
       intent: {{ .Values.vnc.intent }}
-{{ toYaml .Values.global.labels | indent 6 }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 6 }}
   serviceName: {{ template "tango-base.name" . }}-{{ .Values.vnc.component }}
   replicas:  {{ .Values.vnc.replicas }}
   template:
@@ -71,11 +67,9 @@ spec:
         function: {{ .Values.vnc.function }}
         domain: {{ .Values.vnc.domain }}
         intent: {{ .Values.vnc.intent }}
-{{ toYaml .Values.global.labels | indent 8 }}
-{{ if (.Values.global.annotations) }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 8 }}
       annotations:
-{{ toYaml .Values.global.annotations | indent 8 }}
-{{ end }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 8 }}
     spec:
       containers:
       - name: vnc

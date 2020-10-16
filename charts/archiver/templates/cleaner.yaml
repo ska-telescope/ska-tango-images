@@ -6,11 +6,9 @@ metadata:
   name: archiverdb-delete-query-{{ template "archiver.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ toYaml .Values.global.labels | indent 4 }}
-{{ if (.local.Values.global.annotations) }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
   annotations:
-{{ toYaml .local.Values.global.annotations | indent 4 }}
-{{ end }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 data:
   # property-like keys; each key maps to a simple value
   query.sql: |-
@@ -82,11 +80,9 @@ metadata:
     chart: {{ template "archiver.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-{{ toYaml .Values.global.labels | indent 4 }}
-{{ if (.local.Values.global.annotations) }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
   annotations:
-{{ toYaml .local.Values.global.annotations | indent 4 }}
-{{ end }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 spec:
   schedule: "* 6 * * *"
   jobTemplate:

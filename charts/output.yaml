@@ -1,0 +1,581 @@
+---
+# Source: archiver/templates/archiverdb.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysqld-conf-archiver-test
+  namespace: default
+  labels:
+    app: ska-docker
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+data: 
+  conf.d: |- 
+    [mysqld]
+    sql-mode=""
+    innodb=OFF
+    default_storage_engine=MyISAM
+    general_log=0
+---
+# Source: archiver/templates/configurations.yaml
+# Device Server configurations
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: archiver-configuration-test
+  namespace: default
+  labels:
+    app: ska-docker
+    component: configurator
+    function: deployment
+    intent: enabling
+    domain: self-configuration
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+data:
+  configuration.json: |+
+    {
+        "servers": {
+            "hdbppes-srv": {
+                "01": {
+                    "HdbEventSubscriber": {
+                        "archiving/hdbpp/eventsubscriber01": {
+                            "attribute_properties": {},
+                            "properties": {
+                                "CheckPeriodicTimeoutDelay": ["5"],
+                                "PollingThreadPeriod": ["3"],
+                                "LibConfiguration": ["host=archiver-hdbppdb-db","libname=libhdb++mysql.so.6","dbname=hdbpp","port=3306", "user=tango", "password=tango"],
+                                "polled_attr": []
+                            }
+                        }
+                    }
+                }
+            },
+            "hdbppcm-srv": {
+                "01": {
+                    "HdbConfigurationManager": {
+  
+                        "archiving/hdbpp/confmanager01": {
+                            "attribute_properties": {},
+                            "properties": {
+                                "ArchiverList": ["archiving/hdbpp/eventsubscriber01"],
+                                "MaxSearchSize": ["1000"],
+                                "LibConfiguration": ["host=archiver-hdbppdb-db","libname=libhdb++mysql.so.6","dbname=hdbpp","port=3306", "user=tango", "password=tango"],
+                                "polled_attr": []
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+  
+  bootstrap.sh: |
+    #/bin/sh
+    json2tango -w -a -u data/configuration.json
+    rc=$?
+    if [ $rc -eq 0 ]; then
+      echo "finished normally."
+      exit 0
+    else
+      if [ $rc -eq 2 ]; then
+        echo "finished with an update."
+        exit 0
+      else
+        echo "finished with an ERROR."
+        exit $rc
+      fi
+    fi
+---
+# Source: archiver/templates/configurations.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "attrconfig-configuration-archiver-test"
+  namespace: default
+  labels:
+    app: ska-docker
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+data:
+  attribute2archive.json:
+  attribute2archive.json: "[\n    {\n        \"attributes\": \n                [\n                \"sys/tg_test/1/ulong_scalar\",\n
+    \               \"sys/tg_test/1/long64_scalar\",\n                \"sys/tg_test/1/long_scalar\"\n
+    \               ],\n        \"polling_period\": 1000,\n        \"period_event\":
+    3000\n    }\n]"
+  configure_hdbpp.py:
+  configure_hdbpp.py: "#Imports\nimport sys, getopt\nimport json\nfrom tango import
+    DeviceProxy, DevFailed, AttributeProxy\nfrom time import sleep\nimport os\n\ndef
+    cm_configure_attributes():\n    configure_success_count = 0\n    configure_fail_count
+    = 0\n    already_configured_count = 0\n    total_attrib_count = 0\n    with open(attr_list_file,
+    'r') as attrib_list_file:\n        configuration_blocks = json.load(attrib_list_file)\n
+    \       for cb in configuration_blocks:\n            attribute_list = cb['attributes']\n
+    \           polling_period = cb['polling_period']\n            period_event = cb['period_event']\n
+    \           for attribute in attribute_list:\n                total_attrib_count
+    += 1\n                \n                attribute_fqdn = \"tango://\" + os.environ['TANGO_HOST']
+    + \"/\" + attribute\n\n                is_already_archived = False\n                attr_list
+    = evt_subscriber_proxy.read_attribute(\"AttributeList\").value\n                if
+    attr_list is not None:\n                    for already_archived in attr_list:\n
+    \                       if attribute.lower() in str(already_archived).lower():\n
+    \                           print(\"Attribute \" + attribute + \" already configured.\")\n
+    \                           is_already_archived = True\n                            already_configured_count
+    += 1\n                            break\n\n                if not is_already_archived:\n
+    \                   print(\"Attribute \" + attribute + \" not configured. Configuring
+    it now. \")\n                    max_retries = 10\n                    sleep_time
+    = 30\n                    for x in range(0, max_retries):\n                        try:\n
+    \                           att = AttributeProxy(attribute_fqdn)\n                            att.read()\n
+    \                           break\n                        except DevFailed as df:\n
+    \                           if(x == (max_retries -1)):\n                                raise
+    df\n                            print(\"DevFailed exception: \" + str(df.args[0].reason)
+    + \". Sleeping for \" + str(sleep_time) + \"ss\")\n                            sleep(sleep_time)\n\n
+    \                   conf_manager_proxy.write_attribute(\"SetAttributeName\", attribute_fqdn)\n
+    \                   conf_manager_proxy.write_attribute(\"SetArchiver\", evt_subscriber_device_fqdn)\n
+    \                   conf_manager_proxy.write_attribute(\"SetStrategy\", \"ALWAYS\")\n
+    \                   conf_manager_proxy.write_attribute(\"SetPollingPeriod\", int(polling_period))\n
+    \                   conf_manager_proxy.write_attribute(\"SetPeriodEvent\", int(period_event))\n
+    \                   conf_manager_proxy.AttributeAdd()\n                    configure_success_count
+    += 1\n                    print (\"attribute_fqdn \" + attribute_fqdn + \" \" +
+    \" added successfuly\")\n\n    return configure_success_count, configure_fail_count,
+    already_configured_count, total_attrib_count\n\n# Main entrypoint of the script.\nconf_manager_device_fqdn
+    = \"\"\nevt_subscriber_device_fqdn = \"\"\nattr_list_file = \"\"\n## parse arguments\ntry:\n
+    \   opts, args = getopt.getopt(sys.argv[1:], \"c:e:a:\", [\"cm=\", \"es=\", \"attrfile=\"])\n\nexcept
+    getopt.GetoptError:\n    print(\"Please provide proper arguments.\")\n    print(\"Usage:
+    $python configure_hdbpp.py --cm=<FQDN> --es=<FQDN> --attrfile=<filepath> OR\")\n
+    \   print(\"       $python configure_hdbpp.py -cm <FQDN> -e <FQDN> -a <filepath>\")\n
+    \   print(\"       cm: FQDN of HDB++ Configuration Manager\")\n    print(\"       es:
+    FQDN of HDB++ Event subscriber\")\n    print(\"       infile: File containing FQDNs
+    of attributes to archive\")\n    sys.exit(2)\nfor opt, arg in opts:\n    if opt
+    in (\"-c\", \"--cm\"):\n        conf_manager_device_fqdn = arg\n    elif opt in
+    (\"-e\", \"--es\"):\n        evt_subscriber_device_fqdn = arg\n    elif  opt in
+    (\"-a\", \"--attrfile\"):\n        attr_list_file = arg\n\nconf_manager_proxy =
+    DeviceProxy(conf_manager_device_fqdn)\nevt_subscriber_proxy = DeviceProxy(evt_subscriber_device_fqdn)\n\nsleep_time
+    = 6\nmax_retries = 10\nfor x in range(0, max_retries):\n    try:\n        configure_success_count,
+    configure_fail_count, already_configured_count, total_attrib_count = cm_configure_attributes()\n
+    \       print(\"Configured successfully: \", configure_success_count, \"Failed:
+    \", configure_fail_count, \"Already configured: \", already_configured_count, \"Total
+    attributes: \", total_attrib_count)\n        break\n    except:\n        print(\"configure_attribute
+    exception: \" + str(sys.exc_info()))\n        if(x == (max_retries - 1)):\n            sys.exit(-1)\n\n
+    \   try:\n        deviceAdm = DeviceProxy(\"dserver/hdbppcm-srv/01\")\n        deviceAdm.RestartServer()\n
+    \   except:\n        print(\"reset_conf_manager exception: \" + str(sys.exc_info()[0]))\n\n
+    \   sleep(sleep_time)\n\n\nif configure_fail_count > 0:\n    exit(-1)\n\nevt_subscriber_proxy.Start()\n"
+---
+# Source: archiver/templates/archiverdb.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: archiver-hdbppdb-db
+  namespace: default
+  labels:
+    app: ska-docker
+    component: db
+    function: tango-archiver
+    domain: tango-archiver
+    intent: production
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  ports:
+  - name: archiverdb-port
+    port: 3306
+  type: NodePort
+  selector:
+    app: ska-docker
+    component: db
+    function: tango-archiver
+    domain: tango-archiver
+    intent: production
+---
+# Source: archiver/templates/deviceservers.yaml
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: arhiver-cm-archiver-test
+  namespace: default
+  labels:
+    app: ska-docker
+    component: arhiver-cm-archiver-test
+    function: tango-archiver-service
+    domain: archiver
+    subsystem: archiver
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    subsystem: archiver
+    component: arhiver-cm-archiver-test
+  clusterIP: None
+---
+# Source: archiver/templates/deviceservers.yaml
+# Device Server Service 
+# Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
+# giving a dummy Service entry ensures that the single pod is DNS addressable
+apiVersion: v1
+kind: Service
+metadata:
+  name: arhiver-es-archiver-test
+  namespace: default
+  labels:
+    app: ska-docker
+    component: arhiver-es-archiver-test
+    function: tango-archiver-service
+    domain: archiver
+    subsystem: archiver
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    subsystem: archiver
+    component: arhiver-es-archiver-test
+  clusterIP: None
+---
+# Source: archiver/templates/archiverdb.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: archiverdb-archiver
+  namespace: default
+  labels:
+    app: ska-docker
+    component: db
+    function: tango-archiver
+    domain: tango-archiver
+    intent: production
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      app: ska-docker
+      component: db
+      function: tango-archiver
+      domain: tango-archiver
+      intent: production
+  serviceName: archiverdb-archiver
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: ska-docker
+        component: db
+        function: tango-archiver
+        domain: tango-archiver
+        intent: production
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      containers:
+      - name: archiverdb
+        image: "nexus.engageska-portugal.pt/ska-docker/mariadb_hdbpp:1.1.0"
+        imagePullPolicy: IfNotPresent
+        env:
+          - name: MYSQL_ROOT_PASSWORD
+            value: "secret"
+          - name: MYSQL_DATABASE
+            value: "hdbpp"
+          - name: MYSQL_USER
+            value: "tango"
+          - name: MYSQL_PASSWORD
+            value: "tango"
+          - name: MYSQL_ALLOW_EMPTY_PASSWORD
+            value: "1"
+        ports:
+        - name: archiverdb-port
+          containerPort: 3306
+        volumeMounts:
+         - name: mysqld-conf
+           mountPath: /etc/mysql
+
+        resources:
+          limits:
+            cpu: 200m
+            ephemeral-storage: 2Gi
+            memory: 256Mi
+          requests:
+            cpu: 100m
+            ephemeral-storage: 1Gi
+            memory: 256Mi
+      volumes:
+      - name: mysqld-conf
+        configMap:
+          name: mysqld-conf-archiver-test
+---
+# Source: archiver/templates/deviceservers.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: arhiver-cm-archiver-test
+  namespace: default
+  labels:
+    app: ska-docker
+    component: arhiver-cm-archiver-test
+    function: tango-archiver-service
+    domain: archiver
+    subsystem: archiver
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: arhiver-cm-archiver-test
+      subsystem: archiver
+  serviceName: arhiver-cm-archiver-test
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: arhiver-cm-archiver-test
+        function: tango-archiver-service
+        domain: archiver
+        subsystem: archiver
+        app: ska-docker
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+
+
+
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - /usr/local/bin/wait-for-it.sh
+          - archiver-hdbppdb-db:3306
+          - --timeout=60
+          - --strict
+          - --
+          - echo databaseds ready
+
+
+
+      - name: check-dependencies-1
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --check-device
+          - sys/database/2
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000 
+      containers:
+      - name: device-server
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-archiver:1.0.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+        args:
+          - -c
+          - ./usr/local/bin/hdbppcm-srv 01
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+        - name: HdbManager
+          value: archiving/hdbpp/confmanager01
+---
+# Source: archiver/templates/deviceservers.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: arhiver-es-archiver-test
+  namespace: default
+  labels:
+    app: ska-docker
+    component: arhiver-es-archiver-test
+    function: tango-archiver-service
+    domain: archiver
+    subsystem: archiver
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  selector:
+    matchLabels:
+      component: arhiver-es-archiver-test
+      subsystem: archiver
+  serviceName: arhiver-es-archiver-test
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: arhiver-es-archiver-test
+        function: tango-archiver-service
+        domain: archiver
+        subsystem: archiver
+        app: ska-docker
+      annotations:
+        app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+        app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+    spec:
+      initContainers:
+
+
+
+      - name: check-dependencies-0
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - /usr/local/bin/wait-for-it.sh
+          - archiver-hdbppdb-db:3306
+          - --timeout=60
+          - --strict
+          - --
+          - echo databaseds ready
+
+
+
+      - name: check-dependencies-1
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --check-device
+          - sys/database/2
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000 
+      containers:
+      - name: device-server
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-archiver:1.0.0"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+        args:
+          - -c
+          - ./usr/local/bin/hdbppes-srv 01
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+        - name: HdbManager
+          value: archiving/hdbpp/confmanager01
+
+
+
+
+ # deviceservers
+---
+# Source: archiver/templates/configurations.yaml
+# run once Job for loading Device Server config
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: archiver-configuration-test
+  namespace: default
+  labels:
+    app: ska-docker
+    component: configurator
+    function: deployment
+    intent: enabling
+    domain: self-configuration
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      initContainers:
+      - name: check-databaseds-ready
+        image: nexus.engageska-portugal.pt/ska-docker/tango-itango:9.3.1
+        imagePullPolicy: IfNotPresent
+        command:
+          - retry
+          - --max=10
+          - --
+          - tango_admin
+          - --check-device
+          - sys/database/2
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+      containers:
+      - name: dsconfig
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+        imagePullPolicy: IfNotPresent
+        command: # exit code 2 is CONFIG_APPLIED - https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig/blob/master/dsconfig/utils.py#L11 !!!! this should not be an error !!!!
+          - sh
+          - data/bootstrap.sh
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+        volumeMounts:
+          - name: configuration
+            mountPath: data
+            readOnly: true
+      volumes:
+        - name: configuration
+          configMap:
+            name: archiver-configuration-test
+      restartPolicy: Never
+---
+# Source: archiver/templates/configurations.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: attrconfig-archiver-test
+  namespace: default
+  labels:
+    app: ska-docker
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+spec:
+  ttlSecondsAfterFinished: 100
+  template:
+    spec:
+      volumes:
+      - name: configureattrconfig
+        configMap:
+          name: "attrconfig-configuration-archiver-test"
+      initContainers:
+        - name: wait-for-devices
+          image: "nexus.engageska-portugal.pt/ska-docker/tango-dsconfig:1.5.0"
+          imagePullPolicy: IfNotPresent
+          command:
+            - sh
+          args:
+            - -c
+            - "retry --max=20 -- tango_admin --ping-device archiving/hdbpp/eventsubscriber01 && \
+              retry --max=20 -- tango_admin --ping-device archiving/hdbpp/confmanager01"
+          env:
+          - name: TANGO_HOST
+            value: databaseds-tango-base-test:10000
+      containers:
+      - name: attrconfig
+        image: "nexus.engageska-portugal.pt/ska-docker/tango-itango:9.3.1"
+        imagePullPolicy: IfNotPresent
+        command:
+          - sh
+        args:
+          - -c
+          - "/venv/bin/python data/configure_hdbpp.py \
+              --cm=archiving/hdbpp/confmanager01 \
+              --es=archiving/hdbpp/eventsubscriber01 \
+              --attrfile=data/attribute2archive.json"
+        env:
+        - name: TANGO_HOST
+          value: databaseds-tango-base-test:10000
+        volumeMounts:
+          - name: configureattrconfig
+            mountPath: /app/data
+            readOnly: true
+      restartPolicy: OnFailure

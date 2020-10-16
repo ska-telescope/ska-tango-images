@@ -18,7 +18,7 @@ global:
   annotations:
     app.gitlab.com/app: CI_PROJECT_PATH_SLUG
     app.gitlab.com/env: CI_ENVIRONMENT_SLUG
-  tango_host: databaseds-tango-base-test:10000
+  tango_host: databaseds-tango-base-{{.Release.Name}}:10000
   environment_variables: []
   dsconfig:
     image:
@@ -35,6 +35,13 @@ global:
 
 dsconfig:
   configuration_file: data/configuration.json
+
+archiver_image:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-archiver
+    tag: 1.0.0
+    pullPolicy: IfNotPresent
 
 hdbppdb:
   enabled: true
@@ -91,10 +98,10 @@ deviceServers:
   - name: HdbManager
     value: "archiving/hdbpp/confmanager01"
   image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-archiver
-    tag: 1.0.0
-    pullPolicy: IfNotPresent
+    registry: "{{.Values.archiver_image.image.registry}}"
+    image: "{{.Values.archiver_image.image.image}}"
+    tag: "{{.Values.archiver_image.image.tag}}"
+    pullPolicy: "{{.Values.archiver_image.image.pullPolicy}}"
   resources:
     requests:
       cpu: 100m     # 100m = 0.1 CPU
@@ -117,10 +124,10 @@ deviceServers:
   - name: HdbManager
     value: "archiving/hdbpp/confmanager01"
   image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-archiver
-    tag: 1.0.0
-    pullPolicy: IfNotPresent
+    registry: "{{.Values.archiver_image.image.registry}}"
+    image: "{{.Values.archiver_image.image.image}}"
+    tag: "{{.Values.archiver_image.image.tag}}"
+    pullPolicy: "{{.Values.archiver_image.image.pullPolicy}}"
   resources:
     requests:
       cpu: 100m     # 100m = 0.1 CPU

@@ -4,30 +4,56 @@
 
 display: ":0"
 xauthority: "~/.Xauthority"
-minikube: true
-homeDir: /home/ubuntu
 
+minikube: true
+resources: false
+
+homeDir: /home/ubuntu
 system: SW-infrastructure
 subsystem: tango-base
 telescope: SKA-mid
 
+labels:
+  app: ska-docker
+annotations:
+  app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+  app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+
+dsconfig:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-dsconfig
+    tag: 1.5.0
+    pullPolicy: IfNotPresent
+
+itango:
+  enabled: false
+  component: itango-console
+  function: generic-tango-console
+  domain: interactive-testing
+  intent: enabling
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-itango
+    tag: 9.3.1
+    pullPolicy: IfNotPresent
+  resources:
+    requests:
+      cpu: 100m     # 00m = 0.1 CPU
+      memory: 128Mi # 128Mi = 0.125 GB mem
+      ephemeral-storage: 512Mi
+    limits:
+      cpu: 100m     # 00m = 0.1 CPU
+      memory: 128Mi # 128Mi = 0.125 GB mem
+      ephemeral-storage: 512Mi
+
 global:
-  labels:
-    app: ska-docker
-  annotations:
-    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
-    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
-  tango_host: databaseds-tango-base-test:10000
-  environment_variables: []
-  dsconfig:
-    image:
-      registry: nexus.engageska-portugal.pt/ska-docker
-      image: tango-dsconfig
-      tag: 1.5.0
-      pullPolicy: IfNotPresent
+## use tpl function
+  tango_host: databaseds-tango-base-{{.Release.Name}}:10000
 
 deviceServers:
-- name: databaseds-tango-base-test
+## use tpl function
+- name: databaseds-tango-base-{{.Release.Name}}
   function: tango-dns-service
   domain: tango-base
   args:
@@ -122,27 +148,6 @@ tangodb:
     timeoutSeconds: 1
     successThreshold: 1
     failureThreshold: 3
-
-itango:
-  enabled: false
-  component: itango-console
-  function: generic-tango-console
-  domain: interactive-testing
-  intent: enabling
-  image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-itango
-    tag: 9.3.1
-    pullPolicy: IfNotPresent
-  resources:
-    requests:
-      cpu: 100m     # 00m = 0.1 CPU
-      memory: 128Mi # 128Mi = 0.125 GB mem
-      ephemeral-storage: 512Mi
-    limits:
-      cpu: 100m     # 00m = 0.1 CPU
-      memory: 128Mi # 128Mi = 0.125 GB mem
-      ephemeral-storage: 512Mi
 
 jive:
   enabled: false

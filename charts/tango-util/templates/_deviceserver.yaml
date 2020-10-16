@@ -1,73 +1,73 @@
 {{ define "tango-util.deviceserver.tpl" }}
 ---
+{{ $labels := coalesce .local.Values.global.labels .local.Values.labels "label:none" }}
+{{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations "annotations:none" }}
+{{ $default_tango_host := printf "%s-%s" "databaseds-tango-base-" .local.Release.Name }}
+{{ $tango_host := tpl (coalesce .local.Values.global.tango_host .local.Values.tango_host $default_tango_host | toString) .local }}
+{{ $dsconfig := coalesce .local.Values.global.dsconfig .local.Values.dsconfig}}
 {{ $chart := .local }}
+
 # Device Server Service 
 # Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
 # giving a dummy Service entry ensures that the single pod is DNS addressable
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .deviceserver.name }}
+  name: {{tpl (.deviceserver.name | toString) $chart }}
   namespace: {{ .local.Release.Namespace }}
   labels:
-{{ toYaml .local.Values.global.labels | indent 4 }}
-    component: {{ .deviceserver.name }}
+{{ toYaml $labels | indent 4 }}
+    component: {{tpl (.deviceserver.name | toString) $chart }}
     function: {{ .deviceserver.function }}
     domain: {{ .deviceserver.domain }}
     subsystem: {{ .local.Values.subsystem }}
-{{ if (.local.Values.global.annotations) }}
   annotations:
-{{ toYaml .local.Values.global.annotations | indent 4 }}
-{{ end }}
+{{ toYaml $annotations | indent 4 }}
 spec:
   selector:
     subsystem: {{ .local.Values.subsystem }}
-    component: {{ .deviceserver.name }}
+    component: {{tpl (.deviceserver.name | toString) $chart }}
   clusterIP: None
 
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .deviceserver.name }}
+  name: {{tpl (.deviceserver.name | toString) $chart }}
   namespace: {{ .local.Release.Namespace }}
   labels:
-{{ toYaml .local.Values.global.labels | indent 4 }}
-    component: {{ .deviceserver.name }}
+{{ toYaml $labels | indent 4 }}
+    component: {{tpl (.deviceserver.name | toString) $chart }}
     function: {{ .deviceserver.function }}
     domain: {{ .deviceserver.domain }}
     subsystem: {{ .local.Values.subsystem }}
-{{ if (.local.Values.global.annotations) }}
   annotations:
-{{ toYaml .local.Values.global.annotations | indent 4 }}
-{{ end }}
+{{ toYaml $annotations | indent 4 }}
 spec:
   selector:
     matchLabels:
-      component: {{ .deviceserver.name }}
+      component: {{tpl (.deviceserver.name | toString) $chart }}
       subsystem: {{ .local.Values.subsystem }}
-  serviceName: {{ .deviceserver.name }}
+  serviceName: {{tpl (.deviceserver.name | toString) $chart }}
   replicas: 1
   template:
     metadata:
       labels:
-        component: {{ .deviceserver.name }}
+        component: {{tpl (.deviceserver.name | toString) $chart }}
         function: {{ .deviceserver.function }}
         domain: {{ .deviceserver.domain }}
         subsystem: {{ .local.Values.subsystem }}
-{{ toYaml .local.Values.global.labels | indent 8 }}
-{{ if (.local.Values.global.annotations) }}
+{{ toYaml $labels | indent 8 }}
       annotations:
-{{ toYaml .local.Values.global.annotations | indent 8 }}
-{{ end }}
+{{ toYaml $annotations | indent 8 }}
     spec:
       initContainers:
 {{ if (.deviceserver.depends_on) }}
 {{ range $index, $device := .deviceserver.depends_on }}
 {{ if ($device.host) }}
       - name: check-dependencies-{{ $index }}
-        image: "{{ $chart.Values.global.dsconfig.image.registry }}/{{ $chart.Values.global.dsconfig.image.image }}:{{ $chart.Values.global.dsconfig.image.tag }}"
-        imagePullPolicy: {{ $chart.Values.global.dsconfig.image.pullPolicy }}
+        image: "{{ $dsconfig.image.registry }}/{{ $dsconfig.image.image }}:{{ $dsconfig.image.tag }}"
+        imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command:
           - /usr/local/bin/wait-for-it.sh
           - {{ $device.host }}
@@ -85,8 +85,8 @@ spec:
 {{- end }}
 {{ if ($device.device) }}
       - name: check-dependencies-{{ $index }}
-        image: "{{ $chart.Values.global.dsconfig.image.registry }}/{{ $chart.Values.global.dsconfig.image.image }}:{{ $chart.Values.global.dsconfig.image.tag }}"
-        imagePullPolicy: {{ $chart.Values.global.dsconfig.image.pullPolicy }}
+        image: "{{ $dsconfig.image.registry }}/{{ $dsconfig.image.image }}:{{ $dsconfig.image.tag }}"
+        imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command:
           - retry
           - --max=10
@@ -96,7 +96,7 @@ spec:
           - {{ $device.device | toString }}
         env:
         - name: TANGO_HOST
-          value: {{ $chart.Values.global.tango_host }}
+          value: {{ $tango_host }}
 {{- if ($chart.Values.global.environment_variables) }}
 {{- range $index, $envvar := $chart.Values.global.environment_variables }}
         - name: {{$envvar.name}}
@@ -108,15 +108,15 @@ spec:
 {{- end }} 
       containers:
       - name: device-server
-        image: "{{ .image.registry }}/{{ .image.image }}:{{ .image.tag }}"
-        imagePullPolicy: {{ .image.pullPolicy }}
+        image: "{{ tpl (.image.registry | toString) $chart }}/{{ tpl (.image.image | toString) $chart }}:{{ tpl (.image.tag | toString) $chart }}"
+        imagePullPolicy: {{ tpl (.image.pullPolicy | toString) $chart }}
         command:
           - sh
         args:
 {{ toYaml .deviceserver.args | indent 10 }}
         env:
         - name: TANGO_HOST
-          value: {{ .local.Values.global.tango_host }}
+          value: {{ $tango_host }}
 {{- if .local.Values.global.environment_variables }}
 {{- range $index, $envvar := .local.Values.global.environment_variables }}
         - name: {{$envvar.name}}
@@ -129,11 +129,13 @@ spec:
           value: {{tpl ($envvar.value | toString) $chart }}
 {{- end }}
 {{- end }}
+{{ if .local.Values.resources }}
         resources:
 {{ if .deviceserver.resources }}
 {{ toYaml .deviceserver.resources | indent 10 }}
 {{ else }}
 {{ toYaml .local.Values.resources | indent 10 }}
+{{ end }}
 {{ end }}
 {{- with .local.Values.nodeSelector }}
       nodeSelector:
