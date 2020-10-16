@@ -6,8 +6,8 @@ MINIKUBE ?= true## Minikube or not
 MARK ?= all
 IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.7## docker image that will be run for testing purpose
 # IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-itango:9.3.2.1## docker image that will be run for testing purpose
-TEST_RUNNER = test-makefile-runner-$(CI_JOB_ID)-$(KUBE_NAMESPACE)-$(RELEASE_NAME)##name of the pod running the k8s_tests
-TANGO_HOST=databaseds-tango-base-$(RELEASE_NAME):10000
+TEST_RUNNER ?= test-makefile-runner-$(CI_JOB_ID)-$(KUBE_NAMESPACE)-$(RELEASE_NAME)##name of the pod running the k8s_tests
+TANGO_HOST ?= tango-host-databaseds-from-makefile-$(RELEASE_NAME):10000## TANGO_HOST is an input!
 CHARTS ?= tango-util tango-base archiver ska-docker## list of charts to be published on gitlab -- umbrella charts for testing purpose
 
 CI_PROJECT_PATH_SLUG ?= ska-docker
@@ -67,6 +67,7 @@ install-chart: clean dep-up namespace## install the helm chart with name RELEASE
 	sed -e 's/CI_ENVIRONMENT_SLUG/$(CI_ENVIRONMENT_SLUG)/' generated_values.yaml > values.yaml; \
 	helm install $(RELEASE_NAME) \
 	--set minikube=$(MINIKUBE) \
+	--set global.tango_host=$(TANGO_HOST) \
 	--values values.yaml \
 	 $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE); \
 	 rm generated_values.yaml; \
@@ -77,14 +78,15 @@ template-chart: clean dep-up## install the helm chart with name RELEASE_NAME and
 	sed -e 's/CI_ENVIRONMENT_SLUG/$(CI_ENVIRONMENT_SLUG)/' generated_values.yaml > values.yaml; \
 	helm template $(RELEASE_NAME) \
 	--set minikube=$(MINIKUBE) \
+	--set global.tango_host=$(TANGO_HOST) \
 	--values values.yaml \
 	 $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE); \
 	 rm generated_values.yaml; \
 	 rm values.yaml
 
 uninstall-chart: ## uninstall the ska-docker helm chart on the namespace ska-docker
-	@helm template  $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)  | kubectl delete -f - ; \
-	helm uninstall  $(RELEASE_NAME) --namespace $(KUBE_NAMESPACE)
+	@helm template  $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --set global.tango_host=$(TANGO_HOST) --namespace $(KUBE_NAMESPACE) | kubectl delete -f - ; \
+	helm uninstall  $(RELEASE_NAME) --namespace $(KUBE_NAMESPACE) 
 
 reinstall-chart: uninstall-chart install-chart ## reinstall the ska-docker helm chart on the namespace ska-docker
 

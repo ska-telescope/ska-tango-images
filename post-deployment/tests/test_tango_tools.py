@@ -14,7 +14,7 @@ from pytest_bdd import given, scenario, then, when, parsers, scenarios
 def the_tango_host_is_defined_in_the_environment(run_context):
     """the TANGO_HOST is defined in the environment."""
     # logging.info("TANGO_HOST: {}".format(run_context.TANGO_HOST))
-    assert run_context.TANGO_HOST == 'databaseds-tango-base-test:10000', "RunContext has unexpected TANGO_HOST variable: {}".format(run_context.TANGO_HOST)
+    assert not run_context.TANGO_HOST == '', "RunContext has unexpected TANGO_HOST variable: {}".format(run_context.TANGO_HOST)
 
 
 # @pytest.fixture

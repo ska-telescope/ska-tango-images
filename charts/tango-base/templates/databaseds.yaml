@@ -1,0 +1,123 @@
+{{ $databaseds_name := (split ":" .Values.global.tango_host)._0 }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ tpl ($databaseds_name | toString) . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    component: {{ .Values.databaseds.component }}
+    function: {{ .Values.databaseds.function }}
+    domain: {{ .Values.databaseds.domain }}
+    intent: {{ .Values.databaseds.intent }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+  annotations:
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+spec:
+  ports:
+  - name: ds
+    port: 10000
+  type: NodePort
+  selector:
+    component: {{ .Values.databaseds.component }}
+    function: {{ .Values.databaseds.function }}
+    domain: {{ .Values.databaseds.domain }}
+    intent: {{ .Values.databaseds.intent }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+
+---
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ tpl ($databaseds_name | toString) . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    component: {{ .Values.databaseds.component }}
+    function: {{ .Values.databaseds.function }}
+    domain: {{ .Values.databaseds.domain }}
+    intent: {{ .Values.databaseds.intent }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+  annotations:
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+spec:
+  selector:
+    matchLabels:
+      component: {{ .Values.databaseds.component }}
+      function: {{ .Values.databaseds.function }}
+      domain: {{ .Values.databaseds.domain }}
+      intent: {{ .Values.databaseds.intent }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 6 }}
+  serviceName: {{ tpl ($databaseds_name | toString) . }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: {{ .Values.databaseds.component }}
+        function: {{ .Values.databaseds.function }}
+        domain: {{ .Values.databaseds.domain }}
+        intent: {{ .Values.databaseds.intent }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 8 }}
+    spec:
+      containers:
+      - name: databaseds
+        image: "{{ .Values.databaseds.image.registry }}/{{ .Values.databaseds.image.image }}:{{ .Values.databaseds.image.tag }}"
+        imagePullPolicy: {{ .Values.databaseds.image.pullPolicy }}
+        command:
+          - /usr/local/bin/wait-for-it.sh
+          - {{ template "tango-base.name" . }}-{{ .Values.tangodb.component }}:3306
+          - --timeout=30
+          - --strict
+          - --
+          - /usr/local/bin/DataBaseds
+          - "2"
+          - -ORBendPoint
+          - giop:tcp::10000
+        env:
+          - name: MYSQL_HOST
+            value: "{{ template "tango-base.name" . }}-{{ .Values.tangodb.component }}:3306"
+          - name: MYSQL_DATABASE
+            value: "{{ .Values.tangodb.db.db }}"
+          - name: MYSQL_USER
+            value: "{{ .Values.tangodb.db.user }}"
+          - name: MYSQL_PASSWORD
+            value: "{{ .Values.tangodb.db.password }}"
+        ports:
+        - name: ds
+          containerPort: 10000
+        {{- if .Values.databaseds.livenessProbe.enabled }}
+        readinessProbe:
+          tcpSocket:
+            port: 10000
+          initialDelaySeconds: {{ .Values.databaseds.readinessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.databaseds.readinessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.databaseds.readinessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.databaseds.readinessProbe.successThreshold }}
+          failureThreshold: {{ .Values.databaseds.readinessProbe.failureThreshold }}
+        {{- end }}
+        {{- if .Values.databaseds.readinessProbe.enabled }}
+        livenessProbe:
+          tcpSocket:
+            port: 10000
+          initialDelaySeconds: {{ .Values.databaseds.livenessProbe.initialDelaySeconds }}
+          periodSeconds: {{ .Values.databaseds.livenessProbe.periodSeconds }}
+          timeoutSeconds: {{ .Values.databaseds.livenessProbe.timeoutSeconds }}
+          successThreshold: {{ .Values.databaseds.livenessProbe.successThreshold }}
+          failureThreshold: {{ .Values.databaseds.livenessProbe.failureThreshold }}
+        {{- end }}
+        resources:
+{{ toYaml .Values.databaseds.resources | indent 10 }}
+{{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+{{- end }}
+{{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+{{- end }}

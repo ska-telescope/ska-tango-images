@@ -8,6 +8,10 @@ xauthority: "~/.Xauthority"
 minikube: true
 resources: true
 
+global:
+## use tpl function
+  tango_host: databaseds-tango-base-{{.Release.Name}}:10000
+
 homeDir: /home/ubuntu
 system: SW-infrastructure
 subsystem: tango-base
@@ -47,29 +51,11 @@ itango:
       memory: 128Mi # 128Mi = 0.125 GB mem
       ephemeral-storage: 512Mi
 
-global:
-## use tpl function
-  tango_host: databaseds-tango-base-{{.Release.Name}}:10000
-
-deviceServers:
-## use tpl function
-- name: databaseds-tango-base-{{.Release.Name}}
-  function: tango-dns-service
-  domain: tango-base
-  args:
-  - "-c"
-  - "/usr/local/bin/DataBaseds '2' -ORBendPoint giop:tcp::10000"
-  depends_on: 
-  - host: tango-base-tangodb:3306
-  environment_variables: 
-  - name: MYSQL_HOST
-    value: tango-base-tangodb:3306
-  - name: MYSQL_DATABASE
-    value: "tango"
-  - name: MYSQL_USER
-    value: "tango"
-  - name: MYSQL_PASSWORD
-    value: "tango"
+databaseds:
+  component: databaseds
+  function: tangodb-interface
+  domain: tango-configuration
+  intent: production
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-cpp
@@ -84,7 +70,24 @@ deviceServers:
       cpu: 200m     # 200m = 0.2 CPU
       memory: 256Mi # 256Mi = 0.25 GB mem
       ephemeral-storage: 1Gi
-- name: tangotest-tango-base-test
+  livenessProbe:
+    enabled: false
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+  readinessProbe:
+    enabled: false
+    initialDelaySeconds: 0
+    periodSeconds: 10
+    timeoutSeconds: 1
+    successThreshold: 1
+    failureThreshold: 3
+
+deviceServers:
+## use tpl function
+- name: tangotest-tango-base-{{.Release.Name}}
   function: tango-test
   domain: tango-base
   args:
