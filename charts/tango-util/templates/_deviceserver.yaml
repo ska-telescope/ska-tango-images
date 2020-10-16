@@ -129,13 +129,9 @@ spec:
           value: {{tpl ($envvar.value | toString) $chart }}
 {{- end }}
 {{- end }}
-{{ if .local.Values.resources }}
+{{ if not .local.Values.do_not_constraint_resources }}
         resources:
-{{ if .deviceserver.resources }}
-{{ toYaml .deviceserver.resources | indent 10 }}
-{{ else }}
-{{ toYaml .local.Values.resources | indent 10 }}
-{{ end }}
+{{ toYaml (coalesce .deviceserver.resources .local.Values.resources) | indent 10 }}
 {{ end }}
 {{- with .local.Values.nodeSelector }}
       nodeSelector:

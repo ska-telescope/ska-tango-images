@@ -6,7 +6,6 @@ display: ":0"
 xauthority: "~/.Xauthority"
 
 minikube: true
-resources: true
 
 global:
 ## use tpl function
