@@ -87,9 +87,8 @@ deviceServers:
 - name: arhiver-cm-archiver-test
   function: tango-archiver-service
   domain: archiver
-  args:
-  - "-c"
-  - "./usr/local/bin/hdbppcm-srv 01"
+  command: "./usr/local/bin/hdbppcm-srv"
+  instances: ["01"]
   depends_on: 
   - host: archiver-hdbppdb-db:3306
   - device: sys/database/2
@@ -113,9 +112,8 @@ deviceServers:
 - name: arhiver-es-archiver-test
   function: tango-archiver-service
   domain: archiver
-  args:
-  - "-c"
-  - "./usr/local/bin/hdbppes-srv 01"
+  command: "./usr/local/bin/hdbppes-srv"
+  instances: ["01"]
   depends_on: 
   - host: archiver-hdbppdb-db:3306
   - device: sys/database/2
