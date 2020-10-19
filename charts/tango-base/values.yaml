@@ -89,9 +89,8 @@ deviceServers:
 - name: tangotest-tango-base-{{.Release.Name}}
   function: tango-test
   domain: tango-base
-  args:
-  - "-c"
-  - "/usr/local/bin/TangoTest test"
+  command: "/usr/local/bin/TangoTest"
+  instances: ["test"]
   depends_on: 
   - device: sys/database/2
   environment_variables: []

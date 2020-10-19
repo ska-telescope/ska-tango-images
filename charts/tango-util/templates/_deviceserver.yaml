@@ -112,8 +112,9 @@ spec:
         imagePullPolicy: {{ tpl (.image.pullPolicy | toString) $chart }}
         command:
           - sh
+          - -c
         args:
-{{ toYaml .deviceserver.args | indent 10 }}
+          - {{ .deviceserver.command | toString }} {{ .instance |toString }}
         env:
         - name: TANGO_HOST
           value: {{ $tango_host }}
