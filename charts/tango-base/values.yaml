@@ -230,7 +230,7 @@ tangorest:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-rest
-    tag: 1.14
+    tag: 1.14.1
     pullPolicy: IfNotPresent
   resources:
     requests:
