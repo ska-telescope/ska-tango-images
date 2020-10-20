@@ -384,7 +384,9 @@ build_hdbpp_viewer:
     - docker/tango/mariadb_hdbpp/**/*
 
 test-chart:
-  stage: test
+  stage: test  
+  variables:
+    MINIKUBE: false
   tags:
   - k8srunner
   image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
@@ -392,12 +394,12 @@ test-chart:
   - cd charts/
   - kubectl version
   - helm version
-  - make install-chart MINIKUBE=false
+  - make install-chart
   - make wait
   - make test
   after_script:
   - cd charts/
-  - make uninstall-chart MINIKUBE=false
+  - make uninstall-chart
   - make delete_namespace
   environment:
     name: test
