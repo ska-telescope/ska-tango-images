@@ -47,7 +47,9 @@ archiver_image:
 
 hdbppdb:
   enabled: true
-  use_pv: false
+  use_pv: true
+  storage_size: 100Gi
+  cleaning_schedule: "* 6,18 * * *"
   component: db
   function: tango-archiver
   domain: tango-archiver

@@ -19,7 +19,7 @@ spec:
   storageClassName: standard
   persistentVolumeReclaimPolicy: Recycle
   capacity:
-    storage: 10Gi
+    storage: {{ .Values.hdbppdb.storage_size }}
   accessModes:
     - ReadWriteOnce
   hostPath:
@@ -52,7 +52,7 @@ spec:
 {{ end }}
   resources:
     requests:
-      storage: 10Gi
+      storage: {{ .Values.hdbppdb.storage_size }}
 
 
 {{ end }}

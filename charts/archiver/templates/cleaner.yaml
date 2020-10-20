@@ -84,7 +84,7 @@ metadata:
   annotations:
 {{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 spec:
-  schedule: "* 6 * * *"
+  schedule: {{ .Values.hdbppdb.cleaning_schedule }}
   jobTemplate:
     spec:
       template:

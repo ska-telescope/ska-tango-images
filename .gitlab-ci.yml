@@ -5,6 +5,9 @@ image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
 services:
 - docker:dind
 
+variables:
+    MINIKUBE: "false"
+
 # During the development of software, there can be many stages until it's ready for public consumption.
 # You sure want to first test your code and then deploy it in a testing or staging environment before you release it to the public.
 # That way you can prevent bugs not only in your software, but in the deployment process as well.
