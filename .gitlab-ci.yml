@@ -6,7 +6,7 @@ services:
 - docker:dind
 
 variables:
-    MINIKUBE: "false"
+  MINIKUBE: false
 
 # During the development of software, there can be many stages until it's ready for public consumption.
 # You sure want to first test your code and then deploy it in a testing or staging environment before you release it to the public.
