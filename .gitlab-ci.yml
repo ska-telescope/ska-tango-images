@@ -386,7 +386,7 @@ build_hdbpp_viewer:
 test-chart:
   stage: test  
   variables:
-    MINIKUBE: false
+    MINIKUBE: "false"
   tags:
   - k8srunner
   image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
