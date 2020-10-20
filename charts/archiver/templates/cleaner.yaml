@@ -1,4 +1,4 @@
-{{ if eq .Values.minikube false}}
+{{ if eq (coalesce .Values.global.minikube false | toString) "false"}}
 ---
 apiVersion: v1
 kind: ConfigMap

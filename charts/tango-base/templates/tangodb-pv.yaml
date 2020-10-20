@@ -1,7 +1,7 @@
 {{ if .Values.tangodb.enabled }}
 
 {{ if .Values.tangodb.use_pv }}
-{{ if .Values.minikube }}
+{{ if (coalesce .Values.global.minikube false) }}
 ---
 kind: PersistentVolume
 apiVersion: v1
@@ -34,7 +34,7 @@ metadata:
   annotations:
 {{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 spec:
-{{ if .Values.minikube }}
+{{ if (coalesce .Values.global.minikube false)  }}
   storageClassName: standard
   accessModes:
     - ReadWriteOnce

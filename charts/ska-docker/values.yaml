@@ -4,9 +4,9 @@
 
 display: ":0"
 xauthority: "~/.Xauthority"
-minikube: true
 
 global:
+  minikube: false
   tango_host: my-personal-databaseds-also-node-port:10000
   # by setting this parameter we can disable the lower level sub-system tango-base, archiver and webjive
   # sub-system:

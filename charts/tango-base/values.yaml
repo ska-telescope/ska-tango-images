@@ -5,9 +5,8 @@
 display: ":0"
 xauthority: "~/.Xauthority"
 
-minikube: true
-
 global:
+  minikube: false
 ## use tpl function
   tango_host: databaseds-tango-base-{{.Release.Name}}:10000
 
