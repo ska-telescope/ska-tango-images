@@ -35,6 +35,9 @@ global:
 dsconfig:
   configuration_file: data/configuration.json
 
+attributes: 
+  configuration_file: data/attribute2archive.json
+
 archiver_image:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker

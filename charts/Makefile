@@ -16,7 +16,7 @@ CI_ENVIRONMENT_SLUG ?= ska-docker
 .DEFAULT_GOAL := help
 
 clean: ## clean out references to chart tgz's
-	@rm -f ./*/charts/*.tgz ./*/Chart.lock ./*/requirements.lock ../repository/*
+	@rm -f ./*/charts/*.tgz ./*/Chart.lock ./*/requirements.lock
 
 k8s: ## Which kubernetes are we connected to
 	@echo "Kubernetes cluster-info:"
