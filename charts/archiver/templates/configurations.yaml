@@ -4,6 +4,8 @@
 
 {{ $default_tango_host := printf "%s-%s" "databaseds-tango-base-" .Release.Name }}
 {{ $tango_host := tpl (coalesce .Values.global.tango_host .Values.tango_host $default_tango_host | toString) . }}
+{{ $dsconfig := coalesce .Values.global.dsconfig .Values.dsconfig}}
+{{ $itango := coalesce .Values.global.itango .Values.itango}}
 
 ---
 apiVersion: v1
@@ -41,8 +43,8 @@ spec:
           name: "attrconfig-configuration-{{ template "archiver.name" . }}-{{ .Release.Name }}"
       initContainers:
         - name: wait-for-devices
-          image: "{{ .Values.global.dsconfig.image.registry }}/{{ .Values.global.dsconfig.image.image }}:{{ .Values.global.dsconfig.image.tag }}"
-          imagePullPolicy: {{ .Values.global.dsconfig.image.pullPolicy }}
+          image: "{{ $dsconfig.image.registry }}/{{ $dsconfig.image.image }}:{{ $dsconfig.image.tag }}"
+          imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
           command:
             - sh
           args:
@@ -54,8 +56,8 @@ spec:
             value: {{ $tango_host }}
       containers:
       - name: attrconfig
-        image: "{{ .Values.global.itango.image.registry }}/{{ .Values.global.itango.image.image }}:{{ .Values.global.itango.image.tag }}"
-        imagePullPolicy: {{ .Values.global.itango.image.pullPolicy }}
+        image: "{{ $itango.image.registry }}/{{ $itango.image.image }}:{{ $itango.image.tag }}"
+        imagePullPolicy: {{ $itango.image.pullPolicy }}
         command:
           - sh
         args:

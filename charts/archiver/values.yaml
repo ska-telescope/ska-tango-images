@@ -12,28 +12,28 @@ telescope: SKA-mid
 
 global:
   minikube: true
-  labels:
-    app: ska-docker
-  annotations:
-    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
-    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
   tango_host: databaseds-tango-base-{{.Release.Name}}:10000
-  environment_variables: []
-  dsconfig:
-    image:
-      registry: nexus.engageska-portugal.pt/ska-docker
-      image: tango-dsconfig
-      tag: 1.5.0
-      pullPolicy: IfNotPresent
-  itango:
-    image:
-      registry: nexus.engageska-portugal.pt/ska-docker
-      image: tango-itango
-      tag: 9.3.1
-      pullPolicy: IfNotPresent
+
+labels:
+  app: ska-docker
+annotations:
+  app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+  app.gitlab.com/env: CI_ENVIRONMENT_SLUG
 
 dsconfig:
   configuration_file: data/configuration.json
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-dsconfig
+    tag: 1.5.0
+    pullPolicy: IfNotPresent
+
+itango:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-itango
+    tag: 9.3.1
+    pullPolicy: IfNotPresent
 
 attributes: 
   configuration_file: data/attribute2archive.json

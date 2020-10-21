@@ -92,7 +92,7 @@ uninstall-chart: ## uninstall the ska-docker helm chart on the namespace ska-doc
 reinstall-chart: uninstall-chart install-chart ## reinstall the ska-docker helm chart on the namespace ska-docker
 
 upgrade-chart: ## upgrade the ska-docker helm chart on the namespace ska-docker
-	@helm upgrade --set global.minikube=$(MINIKUBE) $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)
+	@helm upgrade --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)
 
 chart_lint: ## lint check the helm chart
 	@helm lint $(UMBRELLA_CHART_PATH) \
