@@ -1,6 +1,6 @@
 {{ if .Values.hdbppdb.use_pv }}
 
-{{ if (coalesce .Values.global.minikube false)  }}
+{{ if (coalesce .Values.global.minikube .Values.minikube false)  }}
 ---
 kind: PersistentVolume
 apiVersion: v1
@@ -41,7 +41,7 @@ metadata:
   annotations:
 {{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 spec:
-{{ if (coalesce .Values.global.minikube false) }}
+{{ if (coalesce .Values.global.minikube .Values.minikube false) }}
   storageClassName: standard
   accessModes:
   - ReadWriteOnce
