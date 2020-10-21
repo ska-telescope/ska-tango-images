@@ -4,8 +4,6 @@
 
 display: ":0"
 xauthority: "~/.Xauthority"
-minikube: true
-
 enabled: true
 
 system: SW-infrastructure
@@ -13,12 +11,13 @@ subsystem: archiver
 telescope: SKA-mid
 
 global:
+  minikube: true
   labels:
     app: ska-docker
   annotations:
     app.gitlab.com/app: CI_PROJECT_PATH_SLUG
     app.gitlab.com/env: CI_ENVIRONMENT_SLUG
-  tango_host: databaseds-tango-base-test:10000
+  tango_host: databaseds-tango-base-{{.Release.Name}}:10000
   environment_variables: []
   dsconfig:
     image:
@@ -36,9 +35,21 @@ global:
 dsconfig:
   configuration_file: data/configuration.json
 
+attributes: 
+  configuration_file: data/attribute2archive.json
+
+archiver_image:
+  image:
+    registry: nexus.engageska-portugal.pt/ska-docker
+    image: tango-archiver
+    tag: 1.0.0
+    pullPolicy: IfNotPresent
+
 hdbppdb:
   enabled: true
-  use_pv: false
+  use_pv: true
+  storage_size: 100Gi
+  cleaning_schedule: "* 6,18 * * *"
   component: db
   function: tango-archiver
   domain: tango-archiver
@@ -81,9 +92,8 @@ deviceServers:
 - name: arhiver-cm-archiver-test
   function: tango-archiver-service
   domain: archiver
-  args:
-  - "-c"
-  - "./usr/local/bin/hdbppcm-srv 01"
+  command: "./usr/local/bin/hdbppcm-srv"
+  instances: ["01"]
   depends_on: 
   - host: archiver-hdbppdb-db:3306
   - device: sys/database/2
@@ -91,10 +101,10 @@ deviceServers:
   - name: HdbManager
     value: "archiving/hdbpp/confmanager01"
   image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-archiver
-    tag: 1.0.0
-    pullPolicy: IfNotPresent
+    registry: "{{.Values.archiver_image.image.registry}}"
+    image: "{{.Values.archiver_image.image.image}}"
+    tag: "{{.Values.archiver_image.image.tag}}"
+    pullPolicy: "{{.Values.archiver_image.image.pullPolicy}}"
   resources:
     requests:
       cpu: 100m     # 100m = 0.1 CPU
@@ -107,9 +117,8 @@ deviceServers:
 - name: arhiver-es-archiver-test
   function: tango-archiver-service
   domain: archiver
-  args:
-  - "-c"
-  - "./usr/local/bin/hdbppes-srv 01"
+  command: "./usr/local/bin/hdbppes-srv"
+  instances: ["01"]
   depends_on: 
   - host: archiver-hdbppdb-db:3306
   - device: sys/database/2
@@ -117,10 +126,10 @@ deviceServers:
   - name: HdbManager
     value: "archiving/hdbpp/confmanager01"
   image:
-    registry: nexus.engageska-portugal.pt/ska-docker
-    image: tango-archiver
-    tag: 1.0.0
-    pullPolicy: IfNotPresent
+    registry: "{{.Values.archiver_image.image.registry}}"
+    image: "{{.Values.archiver_image.image.image}}"
+    tag: "{{.Values.archiver_image.image.tag}}"
+    pullPolicy: "{{.Values.archiver_image.image.pullPolicy}}"
   resources:
     requests:
       cpu: 100m     # 100m = 0.1 CPU

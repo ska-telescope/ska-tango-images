@@ -4,7 +4,7 @@ Feature: tango-db
 
 Scenario: Test mysql connection
 	Given Tango env tango_values.yaml
-	When I extract the DB config in the databaseds-tango-base-test 
+	When I extract the DB config in the databaseds-tango-base-{{.Release.Name}}
 	Then I check the tango database connection
 
 # ping database

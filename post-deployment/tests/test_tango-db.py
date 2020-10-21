@@ -20,25 +20,11 @@ def getValuesFile(values_file):
 
 @when(parsers.parse("I extract the DB config in the {device_name}"))
 def getDBConfig(device_name):
-
     try:
-        deviceList : list = pytest.values_list['deviceServers']
-        
-        for device in deviceList:
-            if device['name'] == device_name:
-                varList: list = device['environment_variables']
-
-                for var in varList:
-                    if var['name'] == 'MYSQL_HOST':
-                        host : str = var['value']
-                        pytest.dbHost = host.split(":")[0]
-                    if var['name'] == 'MYSQL_DATABASE':
-                        pytest.dbName = var['value']
-                    if var['name'] == 'MYSQL_USER':
-                        pytest.dbUser = var['value']
-                    if var['name'] == 'MYSQL_PASSWORD':
-                        pytest.dbPassword = var['value']
-
+        pytest.dbHost = 'tango-base-' + pytest.values_list['tangodb']['component']
+        pytest.dbName = pytest.values_list['tangodb']['db']['db']
+        pytest.dbUser = pytest.values_list['tangodb']['db']['user']
+        pytest.dbPassword = pytest.values_list['tangodb']['db']['password']
     except Exception as e:
         pytest.raises(e)
     

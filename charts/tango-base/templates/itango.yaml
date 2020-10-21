@@ -1,4 +1,7 @@
 {{ if .Values.itango.enabled }}
+{{ $default_tango_host := printf "%s-%s" "databaseds-tango-base-" .Release.Name }}
+{{ $tango_host := tpl (coalesce .Values.global.tango_host .Values.tango_host $default_tango_host | toString) . }}
+{{ $dsconfig := coalesce .Values.global.dsconfig .Values.dsconfig}}
 ---
 apiVersion: v1
 kind: Pod
@@ -6,20 +9,18 @@ metadata:
   name: {{ template "tango-base.name" . }}-{{ .Values.itango.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ toYaml .Values.global.labels | indent 4 }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
     component: {{ .Values.itango.component }}
     function: {{ .Values.itango.function }}
     domain: {{ .Values.itango.domain }}
     intent: {{ .Values.itango.intent }}
-{{ if (.Values.global.annotations) }}
   annotations:
-{{ toYaml .Values.global.annotations | indent 4 }}
-{{ end }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 spec:
   initContainers:
   - name: check-dependencies-0
-    image: "{{ .Values.global.dsconfig.image.registry }}/{{ .Values.global.dsconfig.image.image }}:{{ .Values.global.dsconfig.image.tag }}"
-    imagePullPolicy: {{ .Values.global.dsconfig.image.pullPolicy }}
+    image: "{{ $dsconfig.image.registry }}/{{ $dsconfig.image.image }}:{{ $dsconfig.image.tag }}"
+    imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
     command:
       - retry
       - --max=10
@@ -29,14 +30,14 @@ spec:
       - sys/database/2
     env:
     - name: TANGO_HOST
-      value: {{ .Values.global.tango_host }}
+      value: {{ $tango_host }}
   containers:
   - name: itango
     image: "{{ .Values.itango.image.registry }}/{{ .Values.itango.image.image }}:{{ .Values.itango.image.tag }}"
     imagePullPolicy: {{ .Values.itango.image.pullPolicy }}
     command:
       - /usr/local/bin/wait-for-it.sh
-      - {{ .Values.global.tango_host }}
+      - {{ $tango_host }}
       - --timeout=30
       - --strict
       - --
@@ -45,7 +46,7 @@ spec:
       # - /venv/bin/itango3
     env:
     - name: TANGO_HOST
-      value: "{{ .Values.global.tango_host }}"
+      value: "{{ $tango_host }}"
     resources:
 {{ toYaml .Values.itango.resources | indent 6 }}
   restartPolicy: Always

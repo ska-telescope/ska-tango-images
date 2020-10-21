@@ -5,7 +5,7 @@ metadata:
   name: rest-api-{{ template "tango-base.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ toYaml .Values.global.labels | indent 4 }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
     component: {{ .Values.tangorest.component }}
     function: {{ .Values.tangorest.function }}
     domain: {{ .Values.tangorest.domain }}
@@ -14,9 +14,7 @@ metadata:
     {{- range $key, $value := .Values.ingress.annotations }}
       {{ $key }}: {{ $value | quote }}
     {{- end }}
-{{ if (.Values.global.annotations) }}
-{{ toYaml .Values.global.annotations | indent 6 }}
-{{ end }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 6 }}
 spec:
   rules:
     - host: tango.rest.{{ .Values.ingress.hostname }}
@@ -42,7 +40,7 @@ metadata:
   name: {{ tpl .Values.ingress.tls.secretname . }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ toYaml .Values.global.labels | indent 4 }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
     component: {{ .Values.tangorest.component }}
     function: {{ .Values.tangorest.function }}
     domain: {{ .Values.tangorest.domain }}
