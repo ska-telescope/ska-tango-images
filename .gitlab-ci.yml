@@ -384,12 +384,13 @@ build_hdbpp_viewer:
     - docker/tango/mariadb_hdbpp/**/*
 
 test-chart:
-  stage: test
+  stage: test  
+  variables:
+    MINIKUBE: "false"
   tags:
   - k8srunner
   image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
   script:
-  - export KUBE_NAMESPACE="ci-ska-docker-$CI_COMMIT_SHORT_SHA"
   - cd charts/
   - kubectl version
   - helm version
@@ -397,26 +398,19 @@ test-chart:
   - make wait
   - make test
   after_script:
-  - export KUBE_NAMESPACE="ci-ska-docker-$CI_COMMIT_SHORT_SHA"
   - cd charts/
   - make uninstall-chart
   - make delete_namespace
   environment:
     name: test
+    kubernetes:
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
       - "charts/build/"
     reports:
       junit: charts/build/report.xml
-
-# push: 
-#   stage: push
-#   tags:
-#   - shell
-#   script: 
-#   - cd docker
-#   - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
 
 variables:
     CHARTS_TO_PUBLISH: tango-util tango-base archiver 

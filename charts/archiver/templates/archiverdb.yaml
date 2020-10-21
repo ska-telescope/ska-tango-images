@@ -7,11 +7,9 @@ metadata:
   name: mysqld-conf-{{ template "archiver.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ toYaml .Values.global.labels | indent 4 }}
-{{ if (.Values.global.annotations) }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
   annotations:
-{{ toYaml .Values.global.annotations | indent 4 }}
-{{ end }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 data: 
   conf.d: |- 
     [mysqld]
@@ -28,24 +26,24 @@ metadata:
   name: {{ template "archiver.name" . }}-hdbppdb-{{ .Values.hdbppdb.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ toYaml .Values.global.labels | indent 4 }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
     component: {{ .Values.hdbppdb.component }}
     function: {{ .Values.hdbppdb.function }}
     domain: {{ .Values.hdbppdb.domain }}
     intent: {{ .Values.hdbppdb.intent }}
-{{ if (.Values.global.annotations) }}
   annotations:
-{{ toYaml .Values.global.annotations | indent 4 }}
-{{ end }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 spec:
   ports:
   - name: archiverdb-port
     port: 3306
   type: NodePort
   selector:
-{{ toYaml .Values.global.labels | indent 4 }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
     component: {{ .Values.hdbppdb.component }}
-
+    function: {{ .Values.hdbppdb.function }}
+    domain: {{ .Values.hdbppdb.domain }}
+    intent: {{ .Values.hdbppdb.intent }}
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -53,34 +51,33 @@ metadata:
   name: archiverdb-{{ template "archiver.name" . }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ toYaml .Values.global.labels | indent 4 }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
     component: {{ .Values.hdbppdb.component }}
     function: {{ .Values.hdbppdb.function }}
     domain: {{ .Values.hdbppdb.domain }}
     intent: {{ .Values.hdbppdb.intent }}
-{{ if (.Values.global.annotations) }}
   annotations:
-{{ toYaml .Values.global.annotations | indent 4 }}
-{{ end }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 spec:
   selector:
     matchLabels:
-{{ toYaml .Values.global.labels | indent 6 }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 6 }}
       component: {{ .Values.hdbppdb.component }}
+      function: {{ .Values.hdbppdb.function }}
+      domain: {{ .Values.hdbppdb.domain }}
+      intent: {{ .Values.hdbppdb.intent }}
   serviceName: archiverdb-{{ template "archiver.name" . }}
   replicas: 1
   template:
     metadata:
       labels:
-{{ toYaml .Values.global.labels | indent 8 }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 8 }}
         component: {{ .Values.hdbppdb.component }}
         function: {{ .Values.hdbppdb.function }}
         domain: {{ .Values.hdbppdb.domain }}
         intent: {{ .Values.hdbppdb.intent }}
-{{ if (.Values.global.annotations) }}
       annotations:
-{{ toYaml .Values.global.annotations | indent 8 }}
-{{ end }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 8 }}
     spec:
       containers:
       - name: archiverdb

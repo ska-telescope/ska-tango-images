@@ -1,7 +1,7 @@
 {{ if .Values.tangodb.enabled }}
 
 {{ if .Values.tangodb.use_pv }}
-{{ if .Values.minikube }}
+{{ if (coalesce .Values.global.minikube .Values.minikube false) }}
 ---
 kind: PersistentVolume
 apiVersion: v1
@@ -9,11 +9,9 @@ metadata:
   name: {{ template "tango-base.name" . }}-tangodb-storage
   namespace: {{ .Release.Namespace }}
   labels:
-{{ toYaml .Values.global.labels | indent 4 }}
-{{ if (.Values.global.annotations) }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
   annotations:
-{{ toYaml .Values.global.annotations | indent 4 }}
-{{ end }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 spec:
   storageClassName: standard
   persistentVolumeReclaimPolicy: Recycle
@@ -32,13 +30,11 @@ metadata:
   name: {{ template "tango-base.name" . }}-tangodb-storage
   namespace: {{ .Release.Namespace }}
   labels:
-{{ toYaml .Values.global.labels | indent 4 }}
-{{ if (.Values.global.annotations) }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
   annotations:
-{{ toYaml .Values.global.annotations | indent 4 }}
-{{ end }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 spec:
-{{ if .Values.minikube }}
+{{ if (coalesce .Values.global.minikube .Values.minikube false)  }}
   storageClassName: standard
   accessModes:
     - ReadWriteOnce

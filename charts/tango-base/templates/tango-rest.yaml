@@ -1,4 +1,6 @@
 {{ if .Values.tangorest.enabled }}
+{{ $default_tango_host := printf "%s-%s" "databaseds-tango-base-" .Release.Name }}
+{{ $tango_host := tpl (coalesce .Values.global.tango_host .Values.tango_host $default_tango_host | toString) . }}
 ---
 
 apiVersion: v1
@@ -7,7 +9,7 @@ metadata:
   name: {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ toYaml .Values.global.labels | indent 4 }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
     component: {{ .Values.tangorest.component }}
     function: {{ .Values.tangorest.function }}
     domain: {{ .Values.tangorest.domain }}
@@ -18,7 +20,7 @@ spec:
   - name: rest
     port: 8080
   selector:
-{{ toYaml .Values.global.labels | indent 4 }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
     component: {{ .Values.tangorest.component }}
     function: {{ .Values.tangorest.function }}
     domain: {{ .Values.tangorest.domain }}
@@ -31,19 +33,17 @@ metadata:
   name: {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ toYaml .Values.global.labels | indent 4 }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
     component: {{ .Values.tangorest.component }}
     function: {{ .Values.tangorest.function }}
     domain: {{ .Values.tangorest.domain }}
     intent: {{ .Values.tangorest.intent }}
-{{ if (.Values.global.annotations) }}
   annotations:
-{{ toYaml .Values.global.annotations | indent 4 }}
-{{ end }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 spec:
   selector:
     matchLabels:
-{{ toYaml .Values.global.labels | indent 6 }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 6 }}
       component: {{ .Values.tangorest.component }}
       function: {{ .Values.tangorest.function }}
       domain: {{ .Values.tangorest.domain }}
@@ -52,15 +52,13 @@ spec:
   template:
     metadata:
       labels:
-{{ toYaml .Values.global.labels | indent 8 }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 8 }}
         component: {{ .Values.tangorest.component }}
         function: {{ .Values.tangorest.function }}
         domain: {{ .Values.tangorest.domain }}
         intent: {{ .Values.tangorest.intent }}
-{{ if (.Values.global.annotations) }}
       annotations:
-{{ toYaml .Values.global.annotations | indent 8 }}
-{{ end }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 8 }}
     spec:
       {{- if .Values.pullSecrets }}
       imagePullSecrets:
@@ -81,7 +79,7 @@ spec:
           - sys/database/2
         env:
         - name: TANGO_HOST
-          value: {{ .Values.global.tango_host }}
+          value: {{ $tango_host }}
       - name: init-0
         image: "{{ .Values.tangorest.image.registry }}/{{ .Values.tangorest.image.image }}:{{ .Values.tangorest.image.tag }}"
         imagePullPolicy: {{ .Values.tangorest.image.pullPolicy }}
@@ -92,7 +90,7 @@ spec:
           - /usr/local/bin/tango_register_device.sh TangoRestServer/{{ template "tango-base.name" . }}-{{ .Values.tangorest.component }} TangoRestServer {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}/rest/0
         env:
         - name: TANGO_HOST
-          value: {{ .Values.global.tango_host }}
+          value: {{ $tango_host }}
       - name: init-1
         image: "{{ .Values.tangorest.image.registry }}/{{ .Values.tangorest.image.image }}:{{ .Values.tangorest.image.tag }}"
         imagePullPolicy: {{ .Values.tangorest.image.pullPolicy }}
@@ -100,10 +98,10 @@ spec:
           - /bin/bash
         args:
           - "-c"
-          - /usr/local/bin/tango_admin --add-property {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}/rest/0 TANGO_DB tango://{{ .Values.global.tango_host }}/sys/database/2
+          - /usr/local/bin/tango_admin --add-property {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}/rest/0 TANGO_DB tango://{{ $tango_host }}/sys/database/2
         env:
         - name: TANGO_HOST
-          value: {{ .Values.global.tango_host }}
+          value: {{ $tango_host }}
       - name: init-2
         image: "{{ .Values.tangorest.image.registry }}/{{ .Values.tangorest.image.image }}:{{ .Values.tangorest.image.tag }}"
         imagePullPolicy: {{ .Values.tangorest.image.pullPolicy }}
@@ -114,7 +112,7 @@ spec:
           - /usr/local/bin/tango_admin --add-property {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}/rest/0 TOMCAT_PORT 8080
         env:
         - name: TANGO_HOST
-          value: {{ .Values.global.tango_host }}
+          value: {{ $tango_host }}
       - name: init-3
         image: "{{ .Values.tangorest.image.registry }}/{{ .Values.tangorest.image.image }}:{{ .Values.tangorest.image.tag }}"
         imagePullPolicy: {{ .Values.tangorest.image.pullPolicy }}
@@ -125,7 +123,7 @@ spec:
           - /usr/local/bin/tango_admin --add-property {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}/rest/0 TOMCAT_AUTH_METHOD plain
         env:
         - name: TANGO_HOST
-          value: {{ .Values.global.tango_host }}
+          value: {{ $tango_host }}
       containers:
       - name: tango-rest
         image: "{{ .Values.tangorest.image.registry }}/{{ .Values.tangorest.image.image }}:{{ .Values.tangorest.image.tag }}"
@@ -137,7 +135,7 @@ spec:
           - /usr/bin/java -jar $JAVA_OPTS /usr/local/lib/tango/mtangorest.jar $MYHOSTNAME
         env:
         - name: TANGO_HOST
-          value: "{{ .Values.global.tango_host }}"
+          value: "{{ $tango_host }}"
         - name: JAVA_OPTS
           value: "-Xmx4G -Xshare:off -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5009"
         - name: MYHOSTNAME

@@ -1,4 +1,6 @@
 {{- define "tango-util.configuration.tpl" -}}
+{{ $default_tango_host := printf "%s-%s" "databaseds-tango-base-" .Release.Name }}
+{{ $tango_host := tpl (coalesce .Values.global.tango_host .Values.tango_host $default_tango_host | toString) . }}
 ---
 # Device Server configurations
 apiVersion: v1
@@ -7,15 +9,13 @@ metadata:
   name: {{ .Values.subsystem }}-configuration-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ toYaml .Values.global.labels | indent 4 }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
     component: configurator
     function: deployment
     intent: enabling
     domain: self-configuration
-{{ if (.Values.global.annotations) }}
   annotations:
-{{ toYaml .Values.global.annotations | indent 4 }}
-{{ end }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 data:
 {{ (tpl (.Files.Glob .Values.dsconfig.configuration_file).AsConfig . ) | indent 2  }}
   bootstrap.sh: |
@@ -43,15 +43,13 @@ metadata:
   name: {{ .Values.subsystem }}-configuration-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
-{{ toYaml .Values.global.labels | indent 4 }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
     component: configurator
     function: deployment
     intent: enabling
     domain: self-configuration
-{{ if (.Values.global.annotations) }}
   annotations:
-{{ toYaml .Values.global.annotations | indent 4 }}
-{{ end }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 spec:
   ttlSecondsAfterFinished: 100
   template:
@@ -69,7 +67,7 @@ spec:
           - sys/database/2
         env:
         - name: TANGO_HOST
-          value: {{ .Values.global.tango_host }}
+          value: {{ $tango_host }}
 {{- if (.Values.global.environment_variables) }}
 {{- range $index, $envvar := .Values.global.environment_variables }}
         - name: {{$envvar.name}}
@@ -85,7 +83,7 @@ spec:
           - data/bootstrap.sh
         env:
         - name: TANGO_HOST
-          value: {{ .Values.global.tango_host }}
+          value: {{ $tango_host }}
 {{- if (.Values.global.environment_variables) }}
 {{- range $index, $envvar := .Values.global.environment_variables }}
         - name: {{$envvar.name}}
