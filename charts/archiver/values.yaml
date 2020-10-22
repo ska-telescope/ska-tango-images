@@ -35,8 +35,13 @@ itango:
     tag: 9.3.1
     pullPolicy: IfNotPresent
 
-attributes: 
-  configuration_file: data/attribute2archive.json
+attributes2archive: 
+- attributes:
+    - "sys/tg_test/1/ulong_scalar"
+    - "sys/tg_test/1/long64_scalar"
+    - "sys/tg_test/1/long_scalar"
+  polling_period: 1000
+  period_event: 3000
 
 archiver_image:
   image:

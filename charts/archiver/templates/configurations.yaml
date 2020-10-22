@@ -18,9 +18,8 @@ metadata:
   annotations:
 {{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 data:
-  attribute2archive.json:
-{{ (tpl (.Files.Glob .Values.attributes.configuration_file).AsConfig . ) | indent 2 }}
-  configure_hdbpp.py:
+  attribute2archive.json: |
+    {{ .Values.attributes2archive | toJson  }}
 {{ (tpl (.Files.Glob "data/configure_hdbpp.py").AsConfig . ) | indent 2 }}
 
 ---
