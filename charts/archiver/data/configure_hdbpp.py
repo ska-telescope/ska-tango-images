@@ -33,8 +33,9 @@ def cm_configure_attributes():
 
                 if not is_already_archived:
                     print("Attribute " + attribute + " not configured. Configuring it now. ")
-                    max_retries = 10
-                    sleep_time = 30
+                    max_retries = 5
+                    sleep_time = 1
+                    not_online = False
                     for x in range(0, max_retries):
                         try:
                             att = AttributeProxy(attribute_fqdn)
@@ -42,9 +43,14 @@ def cm_configure_attributes():
                             break
                         except DevFailed as df:
                             if(x == (max_retries -1)):
-                                raise df
+                                print("Attribute " + attribute + " not online. Skipping it.")
+                                not_online = True
+                                break
                             print("DevFailed exception: " + str(df.args[0].reason) + ". Sleeping for " + str(sleep_time) + "ss")
                             sleep(sleep_time)
+
+                    if (not_online):
+                        continue
 
                     conf_manager_proxy.write_attribute("SetAttributeName", attribute_fqdn)
                     conf_manager_proxy.write_attribute("SetArchiver", evt_subscriber_device_fqdn)
