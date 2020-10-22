@@ -41,7 +41,7 @@ RUN CPPZMQ_DOWNLOAD_URL=https://github.com/zeromq/cppzmq/archive/v4.4.1.tar.gz \
     && tar xf cppzmq.tar.gz -C /usr/src/cppzmq --strip-components=1 \
     && mkdir build \
     && cd build \
-    && cmake .. \
+    && cmake -DCPPZMQ_BUILD_TESTS=OFF .. \
     && make -j4 install \
     && apt-get purge -y --auto-remove $buildDeps \
     && rm -r /usr/src/cppzmq
