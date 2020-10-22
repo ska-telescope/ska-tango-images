@@ -13,11 +13,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{tpl (.deviceserver.name | toString) $chart }}
+  name: {{tpl (.deviceserver.name | toString) $chart }}-{{ .instance | toString }}
   namespace: {{ .local.Release.Namespace }}
   labels:
 {{ toYaml $labels | indent 4 }}
-    component: {{tpl (.deviceserver.name | toString) $chart }}
+    component: {{tpl (.deviceserver.name | toString) $chart }}-{{ .instance | toString }}
     function: {{ .deviceserver.function }}
     domain: {{ .deviceserver.domain }}
     subsystem: {{ .local.Values.subsystem }}
@@ -26,18 +26,18 @@ metadata:
 spec:
   selector:
     subsystem: {{ .local.Values.subsystem }}
-    component: {{tpl (.deviceserver.name | toString) $chart }}
+    component: {{tpl (.deviceserver.name | toString) $chart }}-{{ .instance | toString }}
   clusterIP: None
 
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{tpl (.deviceserver.name | toString) $chart }}
+  name: {{tpl (.deviceserver.name | toString) $chart }}-{{ .instance | toString }}
   namespace: {{ .local.Release.Namespace }}
   labels:
 {{ toYaml $labels | indent 4 }}
-    component: {{tpl (.deviceserver.name | toString) $chart }}
+    component: {{tpl (.deviceserver.name | toString) $chart }}-{{ .instance | toString }}
     function: {{ .deviceserver.function }}
     domain: {{ .deviceserver.domain }}
     subsystem: {{ .local.Values.subsystem }}
@@ -46,14 +46,14 @@ metadata:
 spec:
   selector:
     matchLabels:
-      component: {{tpl (.deviceserver.name | toString) $chart }}
+      component: {{tpl (.deviceserver.name | toString) $chart }}-{{ .instance | toString }}
       subsystem: {{ .local.Values.subsystem }}
-  serviceName: {{tpl (.deviceserver.name | toString) $chart }}
+  serviceName: {{tpl (.deviceserver.name | toString) $chart }}-{{ .instance | toString }}
   replicas: 1
   template:
     metadata:
       labels:
-        component: {{tpl (.deviceserver.name | toString) $chart }}
+        component: {{tpl (.deviceserver.name | toString) $chart }}-{{ .instance | toString }}
         function: {{ .deviceserver.function }}
         domain: {{ .deviceserver.domain }}
         subsystem: {{ .local.Values.subsystem }}
@@ -74,7 +74,7 @@ spec:
           - --timeout=60
           - --strict
           - --
-          - echo databaseds ready
+          - echo {{ $device.host }} ready
 {{- if ($chart.Values.global.environment_variables) }}
         env:
 {{- range $index, $envvar := $chart.Values.global.environment_variables }}
