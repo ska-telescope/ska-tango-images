@@ -5,7 +5,7 @@
 #
 ARG DOCKER_REGISTRY_USER
 ARG DOCKER_REGISTRY_HOST
-FROM ${DOCKER_REGISTRY_HOST}/${DOCKER_REGISTRY_USER}/tango-dependencies:latest
+FROM ${DOCKER_REGISTRY_HOST}/${DOCKER_REGISTRY_USER}/tango-dependencies:9.3.3.1
 
 RUN JAVA_DOWNLOAD_URL=https://nexus.engageska-portugal.pt/repository/raw/java/jre-8u221-linux-x64.tar.gz \
     && mkdir /usr/java \
