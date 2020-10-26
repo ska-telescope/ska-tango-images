@@ -2,6 +2,8 @@
 {{ $default_tango_host := printf "%s-%s" "databaseds-tango-base-" .Release.Name }}
 {{ $tango_host := tpl (coalesce .Values.global.tango_host .Values.tango_host $default_tango_host | toString) . }}
 {{ $dsconfig := coalesce .Values.global.dsconfig .Values.dsconfig}}
+{{ $default_tango_host := printf "%s-%s" "databaseds-tango-base-" .Release.Name }}
+{{ $tango_host := tpl (coalesce .Values.global.tango_host .Values.tango_host $default_tango_host | toString) . }}
 {{ $itango := coalesce .Values.global.itango .Values.itango}}
 ---
 # Device Server configurations
@@ -58,19 +60,17 @@ spec:
     spec:
       initContainers:
       - name: check-databaseds-ready
-        image: {{ $itango.image.registry }}/{{ $itango.image.image }}:{{ $itango.image.tag }}
-        imagePullPolicy: {{ $itango.image.pullPolicy }}
+        image: {{ $dsconfig.image.registry }}/{{ $dsconfig.image.image }}:{{ $dsconfig.image.tag }}
+        imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command:
-          - retry
-          - --max=10
+          - /usr/local/bin/wait-for-it.sh
+          - {{ $tango_host }}
+          - --timeout=60
+          - --strict
           - --
-          - tango_admin
-          - --check-device
-          - sys/database/2
-        env:
-        - name: TANGO_HOST
-          value: {{ $tango_host }}
+          - echo {{ $tango_host }} ready
 {{- if (.Values.global.environment_variables) }}
+        env:
 {{- range $index, $envvar := .Values.global.environment_variables }}
         - name: {{$envvar.name}}
           value: {{tpl ($envvar.value | toString) $ }}

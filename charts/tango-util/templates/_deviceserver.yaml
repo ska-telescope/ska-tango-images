@@ -92,7 +92,7 @@ spec:
           - --max=10
           - --
           - tango_admin
-          - --check-device
+          - --ping-device
           - {{ $device.device | toString }}
         env:
         - name: TANGO_HOST
