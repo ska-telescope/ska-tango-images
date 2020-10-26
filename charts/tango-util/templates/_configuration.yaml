@@ -63,6 +63,9 @@ spec:
         image: {{ $dsconfig.image.registry }}/{{ $dsconfig.image.image }}:{{ $dsconfig.image.tag }}
         imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command:
+          - retry
+          - --max=10
+          - --
           - /usr/local/bin/wait-for-it.sh
           - {{ $tango_host }}
           - --timeout=60
