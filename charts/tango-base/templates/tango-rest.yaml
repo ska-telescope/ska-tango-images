@@ -87,7 +87,7 @@ spec:
           - /bin/bash
         args:
           - "-c"
-          - /usr/local/bin/tango_register_device.sh TangoRestServer/{{ template "tango-base.name" . }}-{{ .Values.tangorest.component }} TangoRestServer {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}/rest/0
+          - /usr/local/bin/tango_register_device.sh TangoRestServer/$(hostname) TangoRestServer $(hostname)/rest/0
         env:
         - name: TANGO_HOST
           value: {{ $tango_host }}
@@ -98,7 +98,7 @@ spec:
           - /bin/bash
         args:
           - "-c"
-          - /usr/local/bin/tango_admin --add-property {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}/rest/0 TANGO_DB tango://{{ $tango_host }}/sys/database/2
+          - /usr/local/bin/tango_admin --add-property $(hostname)/rest/0 TANGO_DB tango://{{ $tango_host }}/sys/database/2
         env:
         - name: TANGO_HOST
           value: {{ $tango_host }}
@@ -109,7 +109,7 @@ spec:
           - /bin/bash
         args:
           - "-c"
-          - /usr/local/bin/tango_admin --add-property {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}/rest/0 TOMCAT_PORT 8080
+          - /usr/local/bin/tango_admin --add-property $(hostname)/rest/0 TOMCAT_PORT 8080
         env:
         - name: TANGO_HOST
           value: {{ $tango_host }}
@@ -120,7 +120,7 @@ spec:
           - /bin/bash
         args:
           - "-c"
-          - /usr/local/bin/tango_admin --add-property {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}/rest/0 TOMCAT_AUTH_METHOD plain
+          - /usr/local/bin/tango_admin --add-property $(hostname)/rest/0 TOMCAT_AUTH_METHOD plain
         env:
         - name: TANGO_HOST
           value: {{ $tango_host }}
@@ -132,14 +132,12 @@ spec:
           - /bin/bash
         args:
           - "-c"
-          - /usr/bin/java -jar $JAVA_OPTS /usr/local/lib/tango/mtangorest.jar $MYHOSTNAME
+          - /usr/bin/java -jar $JAVA_OPTS /usr/local/lib/tango/mtangorest.jar $(hostname)
         env:
         - name: TANGO_HOST
           value: "{{ $tango_host }}"
         - name: JAVA_OPTS
           value: "-Xmx4G -Xshare:off -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5009"
-        - name: MYHOSTNAME
-          value: {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}
         ports:
         - name: rest
           containerPort: 8080
