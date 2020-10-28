@@ -63,6 +63,17 @@ spec:
 {{ toYaml $annotations | indent 8 }}
     spec:
       initContainers:
+{{ if (.deviceserver.wait_for_dsconfig) }}
+      - name: wait-for-dsconfig-job
+        image: "{{ tpl (.deviceserver.wait_for_dsconfig.image.registry | toString) $chart }}/{{ tpl (.deviceserver.wait_for_dsconfig.image.image | toString) $chart }}:{{ tpl (.deviceserver.wait_for_dsconfig.image.tag | toString) $chart }}"
+        imagePullPolicy: {{ tpl (.deviceserver.wait_for_dsconfig.image.pullPolicy | toString) $chart }}
+        command:
+          - kubectl 
+          - wait 
+          - --for=condition=complete 
+          - --timeout=180s 
+          - job.batch/{{ $chart.Values.subsystem }}-configuration-{{ $chart.Release.Name }}
+{{- end }}
 {{ if (.deviceserver.depends_on) }}
 {{ range $index, $device := .deviceserver.depends_on }}
 {{ if ($device.host) }}
