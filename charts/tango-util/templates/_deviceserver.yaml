@@ -118,7 +118,7 @@ spec:
           - sh
           - -c
         args:
-          - retry --max=10 --{{ .deviceserver.command | toString }} {{ .instance |toString }}
+          - retry --max=10 -- {{ .deviceserver.command | toString }} {{ .instance |toString }}
         env:
         - name: TANGO_HOST
           value: {{ $tango_host }}
