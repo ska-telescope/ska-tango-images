@@ -6,6 +6,7 @@
 {{ $tango_host := tpl (coalesce .local.Values.global.tango_host .local.Values.tango_host $default_tango_host | toString) .local }}
 {{ $dsconfig := coalesce .local.Values.global.dsconfig .local.Values.dsconfig}}
 {{ $chart := .local }}
+{{ $safe_instance := .instance |toString | replace "_" "-" }}
 
 # Device Server Service 
 # Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
@@ -13,11 +14,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{tpl (.deviceserver.name | toString) $chart }}-{{ .instance | toString }}
+  name: {{tpl (.deviceserver.name | toString) $chart }}-{{ $safe_instance }}
   namespace: {{ .local.Release.Namespace }}
   labels:
 {{ toYaml $labels | indent 4 }}
-    component: {{tpl (.deviceserver.name | toString) $chart }}-{{ .instance | toString }}
+    component: {{tpl (.deviceserver.name | toString) $chart }}-{{ $safe_instance }}
     function: {{ .deviceserver.function }}
     domain: {{ .deviceserver.domain }}
     subsystem: {{ .local.Values.subsystem }}
@@ -26,18 +27,18 @@ metadata:
 spec:
   selector:
     subsystem: {{ .local.Values.subsystem }}
-    component: {{tpl (.deviceserver.name | toString) $chart }}-{{ .instance | toString }}
+    component: {{tpl (.deviceserver.name | toString) $chart }}-{{ $safe_instance }}
   clusterIP: None
 
 ---
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{tpl (.deviceserver.name | toString) $chart }}-{{ .instance | toString }}
+  name: {{tpl (.deviceserver.name | toString) $chart }}-{{ $safe_instance }}
   namespace: {{ .local.Release.Namespace }}
   labels:
 {{ toYaml $labels | indent 4 }}
-    component: {{tpl (.deviceserver.name | toString) $chart }}-{{ .instance | toString }}
+    component: {{tpl (.deviceserver.name | toString) $chart }}-{{ $safe_instance }}
     function: {{ .deviceserver.function }}
     domain: {{ .deviceserver.domain }}
     subsystem: {{ .local.Values.subsystem }}
@@ -46,14 +47,14 @@ metadata:
 spec:
   selector:
     matchLabels:
-      component: {{tpl (.deviceserver.name | toString) $chart }}-{{ .instance | toString }}
+      component: {{tpl (.deviceserver.name | toString) $chart }}-{{ $safe_instance }}
       subsystem: {{ .local.Values.subsystem }}
-  serviceName: {{tpl (.deviceserver.name | toString) $chart }}-{{ .instance | toString }}
+  serviceName: {{tpl (.deviceserver.name | toString) $chart }}-{{ $safe_instance }}
   replicas: 1
   template:
     metadata:
       labels:
-        component: {{tpl (.deviceserver.name | toString) $chart }}-{{ .instance | toString }}
+        component: {{tpl (.deviceserver.name | toString) $chart }}-{{ $safe_instance }}
         function: {{ .deviceserver.function }}
         domain: {{ .deviceserver.domain }}
         subsystem: {{ .local.Values.subsystem }}
