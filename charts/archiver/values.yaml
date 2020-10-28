@@ -93,25 +93,12 @@ hdbppdb:
     successThreshold: 1
     failureThreshold: 3
 
-wait_for_dsconfig:
-  image:
-    registry: "docker.io"
-    image: "bitnami/kubectl"
-    tag: "1.18.10"
-    pullPolicy: "IfNotPresent"
-
 deviceServers:
-- name: arhiver-cm-archiver-test
+- name: archiver-cm-archiver-test
   function: tango-archiver-service
   domain: archiver
   command: "./usr/local/bin/hdbppcm-srv"
   instances: ["01"]
-  wait_for_dsconfig:
-    image:
-      registry: "{{.Values.wait_for_dsconfig.image.registry}}"
-      image: "{{.Values.wait_for_dsconfig.image.image}}"
-      tag: "{{.Values.wait_for_dsconfig.image.tag}}"
-      pullPolicy: "{{.Values.wait_for_dsconfig.image.pullPolicy}}"
   depends_on: 
   - host: archiver-hdbppdb-db:3306
   - device: sys/database/2
@@ -132,7 +119,7 @@ deviceServers:
       cpu: 200m     # 200m = 0.2 CPU
       memory: 256Mi # 256Mi = 0.25 GB mem
       ephemeral-storage: 1Gi
-- name: arhiver-es-archiver-test
+- name: archiver-es-archiver-test
   function: tango-archiver-service
   domain: archiver
   command: "./usr/local/bin/hdbppes-srv"

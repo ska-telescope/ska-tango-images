@@ -7,7 +7,7 @@
 {{ $dsconfig := coalesce .local.Values.global.dsconfig .local.Values.dsconfig}}
 {{ $chart := .local }}
 {{ $safe_instance := .instance |toString | replace "_" "-" }}
-
+---
 # Device Server Service 
 # Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
 # giving a dummy Service entry ensures that the single pod is DNS addressable
@@ -63,17 +63,6 @@ spec:
 {{ toYaml $annotations | indent 8 }}
     spec:
       initContainers:
-{{ if (.deviceserver.wait_for_dsconfig) }}
-      - name: wait-for-dsconfig-job
-        image: "{{ tpl (.deviceserver.wait_for_dsconfig.image.registry | toString) $chart }}/{{ tpl (.deviceserver.wait_for_dsconfig.image.image | toString) $chart }}:{{ tpl (.deviceserver.wait_for_dsconfig.image.tag | toString) $chart }}"
-        imagePullPolicy: {{ tpl (.deviceserver.wait_for_dsconfig.image.pullPolicy | toString) $chart }}
-        command:
-          - kubectl 
-          - wait 
-          - --for=condition=complete 
-          - --timeout=180s 
-          - job.batch/{{ $chart.Values.subsystem }}-configuration-{{ $chart.Release.Name }}
-{{- end }}
 {{ if (.deviceserver.depends_on) }}
 {{ range $index, $device := .deviceserver.depends_on }}
 {{ if ($device.host) }}
@@ -129,7 +118,7 @@ spec:
           - sh
           - -c
         args:
-          - {{ .deviceserver.command | toString }} {{ .instance |toString }}
+          - retry --max=10 --{{ .deviceserver.command | toString }} {{ .instance |toString }}
         env:
         - name: TANGO_HOST
           value: {{ $tango_host }}
