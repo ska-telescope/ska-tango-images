@@ -124,12 +124,6 @@ deviceServers:
   domain: archiver
   command: "./usr/local/bin/hdbppes-srv"
   instances: ["01"]
-  wait_for_dsconfig:
-    image:
-      registry: "{{.Values.wait_for_dsconfig.image.registry}}"
-      image: "{{.Values.wait_for_dsconfig.image.image}}"
-      tag: "{{.Values.wait_for_dsconfig.image.tag}}"
-      pullPolicy: "{{.Values.wait_for_dsconfig.image.pullPolicy}}"
   depends_on: 
   - host: archiver-hdbppdb-db:3306
   - device: sys/database/2
