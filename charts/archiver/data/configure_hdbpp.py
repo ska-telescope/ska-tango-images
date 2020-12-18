@@ -28,7 +28,8 @@ def cm_configure_attributes():
                         if attribute.lower() in str(already_archived).lower():
                             print("Attribute " + attribute + " already configured.")
                             is_already_archived = True
-                            already_configured_count += 1
+                            already_configured_count = start_archiving(attribute, already_configured_count)
+                            #already_configured_count += 1
                             break
 
                 if not is_already_archived:
@@ -52,16 +53,35 @@ def cm_configure_attributes():
                     if (not_online):
                         continue
 
-                    conf_manager_proxy.write_attribute("SetAttributeName", attribute_fqdn)
-                    conf_manager_proxy.write_attribute("SetArchiver", evt_subscriber_device_fqdn)
-                    conf_manager_proxy.write_attribute("SetStrategy", "ALWAYS")
-                    conf_manager_proxy.write_attribute("SetPollingPeriod", int(polling_period))
-                    conf_manager_proxy.write_attribute("SetPeriodEvent", int(period_event))
-                    conf_manager_proxy.AttributeAdd()
-                    configure_success_count += 1
-                    print ("attribute_fqdn " + attribute_fqdn + " " + " added successfuly")
+                    try:
+                        conf_manager_proxy.write_attribute("SetAttributeName", attribute_fqdn)
+                        conf_manager_proxy.write_attribute("SetArchiver", evt_subscriber_device_fqdn)
+                        conf_manager_proxy.write_attribute("SetStrategy", "ALWAYS")
+                        conf_manager_proxy.write_attribute("SetPollingPeriod", int(polling_period))
+                        conf_manager_proxy.write_attribute("SetPeriodEvent", int(period_event))
+                    except Exception as except_occured:
+                        print("Exception while setting configuration manager arrtibutes: ", except_occured)
+                        configure_fail_count += 1
+                        continue
+
+                    try:
+                        conf_manager_proxy.AttributeAdd()
+                        configure_success_count += 1
+                        print ("attribute_fqdn " + attribute_fqdn + " " + " added successfuly")
+                    except DevFailed as df:
+                        print("Exception occured while adding attribute for archiving: ", df)
 
     return configure_success_count, configure_fail_count, already_configured_count, total_attrib_count
+
+
+def start_archiving(str_attribute, already_configured_count):
+    try:
+        conf_manager_proxy.command_inout("AttributeStart", str_attribute)
+        already_configured_count += 1
+    except Exception as except_occured:
+        print("start_archiving except_occured: ", except_occured)
+
+    return already_configured_count
 
 # Main entrypoint of the script.
 conf_manager_device_fqdn = ""
