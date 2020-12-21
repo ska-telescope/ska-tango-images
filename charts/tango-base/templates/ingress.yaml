@@ -15,14 +15,8 @@ metadata:
   annotations:
       kubernetes.io/ingress.class: nginx
       nginx.ingress.kubernetes.io/rewrite-target: /$1
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 6 }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 spec:
-{{- if .Values.ingress.tls.enabled }}
-  tls:
-    - hosts:
-      - {{ tpl .Values.ingress.hostname . }}
-      secretName: {{ tpl .Values.ingress.tls.secretname . }}
-{{ end }}
   rules:
     - http:
         paths:
@@ -46,41 +40,15 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: traefik
     traefik.ingress.kubernetes.io/request-modifier: "ReplacePathRegex: /{{ .Release.Namespace }}/(.*) /$1"
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 6 }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 spec:
   rules:
-    - host: {{ .Values.ingress.hostname }}
-      http:
+    - http:
         paths:
           - path: /{{ .Release.Namespace }}/tango/rest/
             backend:
               serviceName:  {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}
               servicePort: 8080
-{{- if .Values.ingress.tls.enabled }}
-  tls:
-    - secretName: {{ tpl .Values.ingress.tls.secretname . }}
-      hosts:
-        - {{ tpl .Values.ingress.hostname . }}
-{{- end -}}
-{{- end -}}
-
-{{- if .Values.ingress.tls.enabled }}
-
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: {{ tpl .Values.ingress.tls.secretname . }}
-  namespace: {{ .Release.Namespace }}
-  labels:
-{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
-    component: {{ .Values.tangorest.component }}
-    function: {{ .Values.tangorest.function }}
-    domain: {{ .Values.tangorest.domain }}
-    intent: {{ .Values.tangorest.intent }}
-type: kubernetes.io/tls
-data:
-{{ (tpl (.Files.Glob "secrets/tls.*").AsSecrets . ) | indent 2  }}
 
 {{- end -}}
 {{- end -}}
