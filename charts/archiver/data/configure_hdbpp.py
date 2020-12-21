@@ -10,6 +10,8 @@ def cm_configure_attributes():
     configure_fail_count = 0
     already_configured_count = 0
     total_attrib_count = 0
+    attribute_started_count = 0
+    error_starting_attrib_count = 0
     with open(attr_list_file, 'r') as attrib_list_file:
         configuration_blocks = json.load(attrib_list_file)
         for cb in configuration_blocks:
@@ -28,7 +30,8 @@ def cm_configure_attributes():
                         if attribute.lower() in str(already_archived).lower():
                             print("Attribute " + attribute + " already configured.")
                             is_already_archived = True
-                            already_configured_count, configure_fail_count = start_archiving(attribute, already_configured_count, configure_fail_count)
+                            already_configured_count += 1
+                            attribute_started_count, error_starting_attrib_count = start_archiving(attribute, attribute_started_count, error_starting_attrib_count)
                             break
 
                 if not is_already_archived:
@@ -71,18 +74,18 @@ def cm_configure_attributes():
                         configure_fail_count += 1
                         print("Exception occured while adding attribute for archiving: ", df)
 
-    return configure_success_count, configure_fail_count, already_configured_count, total_attrib_count
+    return configure_success_count, configure_fail_count, already_configured_count, total_attrib_count, attribute_started_count, error_starting_attrib_count
 
 
-def start_archiving(str_attribute, already_configured_count, configure_fail_count):
+def start_archiving(str_attribute, attribute_started_count, error_starting_attrib_count):
     try:
         conf_manager_proxy.command_inout("AttributeStart", str_attribute)
-        already_configured_count += 1
+        attribute_started_count +=1
     except Exception as except_occured:
-        configure_fail_count += 1
+        error_starting_attrib_count += 1
         print("start_archiving except_occured: ", except_occured)
 
-    return already_configured_count
+    return attribute_started_count, error_starting_attrib_count
 
 # Main entrypoint of the script.
 conf_manager_device_fqdn = ""
@@ -115,8 +118,10 @@ sleep_time = 6
 max_retries = 10
 for x in range(0, max_retries):
     try:
-        configure_success_count, configure_fail_count, already_configured_count, total_attrib_count = cm_configure_attributes()
-        print("Configured successfully: ", configure_success_count, "Failed: ", configure_fail_count, "Already configured: ", already_configured_count, "Total attributes: ", total_attrib_count)
+        configure_success_count, configure_fail_count, already_configured_count, total_attrib_count, attribute_started_count, error_starting_attrib_count = cm_configure_attributes()
+        print("Configured successfully: ", configure_success_count, "Failed: ", configure_fail_count, "Already configured: ",
+              already_configured_count, "Total attributes: ", total_attrib_count, "Attribute started: ", attribute_started_count,
+              "Error starting attribute: ", error_starting_attrib_count)
         break
     except:
         print("configure_attribute exception: " + str(sys.exc_info()))
