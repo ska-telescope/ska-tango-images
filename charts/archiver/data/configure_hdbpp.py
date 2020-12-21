@@ -28,8 +28,7 @@ def cm_configure_attributes():
                         if attribute.lower() in str(already_archived).lower():
                             print("Attribute " + attribute + " already configured.")
                             is_already_archived = True
-                            already_configured_count = start_archiving(attribute, already_configured_count)
-                            #already_configured_count += 1
+                            already_configured_count, configure_fail_count = start_archiving(attribute, already_configured_count, configure_fail_count)
                             break
 
                 if not is_already_archived:
@@ -69,16 +68,18 @@ def cm_configure_attributes():
                         configure_success_count += 1
                         print ("attribute_fqdn " + attribute_fqdn + " " + " added successfuly")
                     except DevFailed as df:
+                        configure_fail_count += 1
                         print("Exception occured while adding attribute for archiving: ", df)
 
     return configure_success_count, configure_fail_count, already_configured_count, total_attrib_count
 
 
-def start_archiving(str_attribute, already_configured_count):
+def start_archiving(str_attribute, already_configured_count, configure_fail_count):
     try:
         conf_manager_proxy.command_inout("AttributeStart", str_attribute)
         already_configured_count += 1
     except Exception as except_occured:
+        configure_fail_count += 1
         print("start_archiving except_occured: ", except_occured)
 
     return already_configured_count
