@@ -1,11 +1,12 @@
 "Script to configure hdbpp archiver"
-#Imports
+# Imports
 import sys
 import getopt
 import json
 from time import sleep
 import os
 from tango import DeviceProxy, DevFailed, AttributeProxy
+
 
 def cm_configure_attributes():
     """Method to configure an attribute."""
@@ -50,7 +51,7 @@ def cm_configure_attributes():
                             att.read()
                             break
                         except DevFailed as dev_failed:
-                            if loop_cnt == (max_retries -1):
+                            if loop_cnt == (max_retries - 1):
                                 print("Attribute " + attribute + " not online. Skipping it.")
                                 not_online = True
                                 break
@@ -77,32 +78,33 @@ def cm_configure_attributes():
                     try:
                         conf_manager_proxy.AttributeAdd()
                         configure_success_count += 1
-                        print ("attribute_fqdn " + attribute_fqdn + " " + " added successfuly")
+                        print("attribute_fqdn " + attribute_fqdn + " " + " added successfuly")
                     except DevFailed as dev_failed:
                         configure_fail_count += 1
                         print("Exception occured while adding attribute for archiving: ",
                               dev_failed)
 
-    return configure_success_count, configure_fail_count, already_configured_count,\
-           total_attrib_count, attribute_started_count, error_starting_attrib_count
+    return configure_success_count, configure_fail_count, already_configured_count, \
+            total_attrib_count, attribute_started_count, error_starting_attrib_count
 
 
-def start_archiving(str_attribute, attribute_started_count, error_starting_attrib_count):
+def start_archiving(str_attribute, attribute_started, error_starting_attrib):
     """Method to start archiving an attribute."""
     try:
         conf_manager_proxy.command_inout("AttributeStart", str_attribute)
-        attribute_started_count +=1
+        attribute_started += 1
     except Exception as except_occured:
-        error_starting_attrib_count += 1
+        error_starting_attrib += 1
         print("start_archiving except_occured: ", except_occured)
 
-    return attribute_started_count, error_starting_attrib_count
+    return attribute_started, error_starting_attrib
+
 
 # Main entrypoint of the script.
 CONF_MANAGER_DEVICE_FQDN = ""
 EVT_SUBSCRIBER_DEVICE_FQDN = ""
 ATTR_LIST_FILE = ""
-## parse arguments
+# parse arguments
 try:
     opts, args = getopt.getopt(sys.argv[1:], "c:e:a:", ["cm=", "es=", "attrfile="])
 
@@ -119,7 +121,7 @@ for opt, arg in opts:
         CONF_MANAGER_DEVICE_FQDN = arg
     elif opt in ("-e", "--es"):
         EVT_SUBSCRIBER_DEVICE_FQDN = arg
-    elif  opt in ("-a", "--attrfile"):
+    elif opt in ("-a", "--attrfile"):
         ATTR_LIST_FILE = arg
 
 conf_manager_proxy = DeviceProxy(CONF_MANAGER_DEVICE_FQDN)
@@ -129,16 +131,16 @@ SLEEP_TIME = 6
 MAX_RETRIES = 10
 for x in range(0, MAX_RETRIES):
     try:
-        configure_success_count, configure_fail_count, already_configured_count, \
-        total_attrib_count, attribute_started_count, error_starting_attrib_count = \
-            cm_configure_attributes()
-        print("Configured successfully: ", configure_success_count, "Failed: ",
-              configure_fail_count, "Already configured: ",
-              already_configured_count, "Total attributes: ",
-              total_attrib_count, "Attribute started: ", attribute_started_count,
-              "Error starting attribute: ", error_starting_attrib_count)
+        configure_success_attr_count, configure_fail_attr_count, already_configured_attr_count, \
+         total_attribute_count, attr_started_archiving_count, error_starting_attr_count = \
+         cm_configure_attributes()
+        print("Configured successfully: ", configure_success_attr_count, "Failed: ",
+              configure_fail_attr_count, "Already configured: ",
+              already_configured_attr_count, "Total attributes: ",
+              total_attribute_count, "Attribute started: ", attr_started_archiving_count,
+              "Error starting attribute: ", error_starting_attr_count)
         break
-    except:
+    except Exception:
         print("configure_attribute exception: " + str(sys.exc_info()))
         if x == (MAX_RETRIES - 1):
             sys.exit(-1)
@@ -147,13 +149,13 @@ for x in range(0, MAX_RETRIES):
         DEVICE_ADM = None
         DEVICE_ADM = DeviceProxy("dserver/hdbppcm-srv/01")
         DEVICE_ADM.RestartServer()
-    except:
+    except Exception:
         print("reset_conf_manager exception: " + str(sys.exc_info()[0]))
 
     sleep(SLEEP_TIME)
 
 
-if configure_fail_count > 0:
+if configure_fail_attr_count > 0:
     sys.exit(-1)
 
 evt_subscriber_proxy.Start()
