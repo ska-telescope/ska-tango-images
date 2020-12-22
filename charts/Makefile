@@ -86,8 +86,16 @@ template-chart: clean dep-up## install the helm chart with name RELEASE_NAME and
 	 rm values.yaml
 
 uninstall-chart: ## uninstall the ska-docker helm chart on the namespace ska-docker
-	@helm template  $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --namespace $(KUBE_NAMESPACE) | kubectl delete -f - ; \
-	helm uninstall  $(RELEASE_NAME) --namespace $(KUBE_NAMESPACE) 
+	@sed -e 's/CI_PROJECT_PATH_SLUG/$(CI_PROJECT_PATH_SLUG)/' ci-values.yaml > generated_values.yaml; \
+	sed -e 's/CI_ENVIRONMENT_SLUG/$(CI_ENVIRONMENT_SLUG)/' generated_values.yaml > values.yaml; \
+	helm template $(RELEASE_NAME) \
+	--set global.minikube=$(MINIKUBE) \
+	--set global.tango_host=$(TANGO_HOST) \
+	--values values.yaml \
+	 $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) | kubectl delete -f - ; \
+	 rm generated_values.yaml; \
+	 rm values.yaml; \
+	 helm uninstall  $(RELEASE_NAME) --namespace $(KUBE_NAMESPACE) 
 
 reinstall-chart: uninstall-chart install-chart ## reinstall the ska-docker helm chart on the namespace ska-docker
 
