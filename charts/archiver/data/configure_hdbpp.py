@@ -22,6 +22,14 @@ def cm_configure_attributes():
             attribute_list = c_b['attributes']
             polling_period = c_b['polling_period']
             period_event = c_b['period_event']
+
+            attr_started_list = evt_subscriber_proxy.read_attribute("AttributeStartedList").value
+            for started_attr in attr_started_list:
+                for attrib in attribute_list:
+                    if started_attr.lower() == attrib.lower():
+                        attribute_list.remove(attrib)
+                        continue
+
             for attribute in attribute_list:
                 total_attrib_count += 1
 
