@@ -5,11 +5,15 @@ FROM ${DOCKER_REGISTRY_HOST}/${DOCKER_REGISTRY_USER}/tango-cpp:9.3.4-rc7
 USER root
 
 RUN runtimeDeps='libboost-python1.67.0 \
-		ca-certificates \
+		build-essential \
+        ca-certificates \
 		make \
 		curl \
+        libboost-python-dev \
+        pkg-config \
         git \
 		python3 \
+        python3-dev \
 		python3-distutils' \
     && DOCKERHOST=`awk '/^[a-z]+[0-9]+\t00000000/ { printf("%d.%d.%d.%d", "0x" substr($3, 7, 2), "0x" substr($3, 5, 2), "0x" substr($3, 3, 2), "0x" substr($3, 1, 2)) }' < /proc/net/route` \
     && /usr/local/bin/wait-for-it.sh --host=$DOCKERHOST --port=3142 --timeout=3 --strict --quiet -- echo "Acquire::http::Proxy \"http://$DOCKERHOST:3142\";" > /etc/apt/apt.conf.d/30proxy \
