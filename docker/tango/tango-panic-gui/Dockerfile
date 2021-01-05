@@ -1,6 +1,6 @@
 ARG http_proxy
 ARG https_proxy
-FROM nexus.engageska-portugal.pt/ska-docker/ska-python-buildenv:9.3.3
+FROM nexus.engageska-portugal.pt/ska-docker/ska-python-buildenv:9.3.2
 
 # # # NOTES
 # - pip2 crashes if the package we want isn't in the SKA repo,
