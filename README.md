@@ -54,6 +54,12 @@ suffix: `9.3.4-rc4.2`, etc.
   - tango-db/Dockerfile:FROM mariadb:10
     - mariadb_hdbpp/Dockerfile:FROM {nexus}/tango-db:latest
 
+If the Docker image tags change, then the related charts should also be updated:
+- In the `charts` folder, update all the `values.yaml` files to use the new tags.
+- If any of the `values.yaml` files changed, the corresponding `Chart.yaml` file
+  must have the `version` field incremented.  Similarly for any dependent `Chart.yaml`
+  files.  The `appVersion` field gets updated as well, if was in sync with the
+  `version` field.
 
 ## HDB++ Archiver Implementation
 
