@@ -133,6 +133,8 @@ build_tango-dsconfig:
     changes:
     - docker/tango/tango-dependencies/**/*
     - docker/tango/tango-cpp/**/*
+    - docker/tango/ska-python-buildenv/**/*
+    - docker/tango/ska-python-runtime/**/*
     - docker/tango/tango-dsconfig/**/*
 
 build_ska-python-buildenv:
@@ -384,7 +386,7 @@ build_hdbpp_viewer:
     - docker/tango/mariadb_hdbpp/**/*
 
 test-chart:
-  stage: test  
+  stage: test
   variables:
     MINIKUBE: "false"
   tags:
@@ -413,7 +415,7 @@ test-chart:
       junit: charts/build/report.xml
 
 variables:
-    CHARTS_TO_PUBLISH: tango-util tango-base archiver 
+    CHARTS_TO_PUBLISH: tango-util tango-base archiver
 # Ensure your .gitlab-ci.yml has "publish" stage defined!
 include:
   - project: 'ska-telescope/templates-repository'

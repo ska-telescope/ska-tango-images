@@ -34,7 +34,6 @@ suffix: `9.3.4-rc4.2`, etc.
     - tango-cpp/Dockerfile:FROM {nexus}/tango-dependencies:latest as buildenv
     - tango-cpp/Dockerfile:FROM debian:buster-slim
       - tango-archiver/Dockerfile:FROM {nexus}/tango-cpp:latest
-      - tango-dsconfig/Dockerfile:FROM {nexus}/tango-cpp:latest
       - tango-libtango/Dockerfile:FROM {nexus}/tango-cpp
         - tango-admin/Dockerfile:FROM {nexus}/tango-libtango:latest
         - tango-test/Dockerfile:FROM {nexus}/tango-libtango:latest
@@ -42,6 +41,8 @@ suffix: `9.3.4-rc4.2`, etc.
       - ska-python-buildenv/Dockerfile:FROM {nexus}/tango-cpp:latest
         - ska-python-runtime/Dockerfile:FROM {nexus}/ska-python-buildenv:latest as buildenv
         - ska-python-runtime/Dockerfile:FROM {nexus}/tango-cpp:latest
+          - tango-dsconfig/Dockerfile:FROM {nexus}/ska-python-buildenv:latest as buildenv
+          - tango-dsconfig/Dockerfile:FROM {nexus}/ska-python-runtime:latest
           - tango-itango/Dockerfile:FROM {nexus}/ska-python-buildenv:latest as buildenv
           - tango-itango/Dockerfile:FROM {nexus}/ska-python-runtime:latest
           - tango-pytango/Dockerfile:FROM {nexus}/ska-python-buildenv:latest as buildenv
