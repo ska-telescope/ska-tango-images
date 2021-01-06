@@ -1,6 +1,6 @@
 ARG DOCKER_REGISTRY_USER
 ARG DOCKER_REGISTRY_HOST
-FROM ${DOCKER_REGISTRY_HOST}/${DOCKER_REGISTRY_USER}/tango-cpp:9.3.4-rc7
+FROM ${DOCKER_REGISTRY_HOST}/${DOCKER_REGISTRY_USER}/tango-cpp:9.3.4
 
 USER root
 
@@ -20,4 +20,3 @@ COPY supervisord.conf /etc/supervisor/conf.d/
 
 # Start supervisor as daemon
 CMD ["/usr/bin/supervisord", "--configuration", "/etc/supervisor/supervisord.conf"]
-

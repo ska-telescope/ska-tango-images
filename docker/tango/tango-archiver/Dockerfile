@@ -1,6 +1,6 @@
 ARG DOCKER_REGISTRY_USER
 ARG DOCKER_REGISTRY_HOST
-FROM ${DOCKER_REGISTRY_HOST}/${DOCKER_REGISTRY_USER}/tango-cpp:9.3.4-rc7
+FROM ${DOCKER_REGISTRY_HOST}/${DOCKER_REGISTRY_USER}/tango-cpp:9.3.4
 
 USER root
 
@@ -21,7 +21,7 @@ RUN echo "deb http://deb.debian.org/debian buster-backports main contrib non-fre
         libcos4-dev \
         mariadb-server \
         libmariadb-dev-compat libmariadb-dev \
-        libmariadbclient-dev 
+        libmariadbclient-dev
 
 RUN git clone -b v1.0.0 --depth 1 https://github.com/tango-controls-hdbpp/libhdbpp.git
 
