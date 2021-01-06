@@ -25,7 +25,7 @@ dsconfig:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-dsconfig
-    tag: 1.5.0.1
+    tag: 1.5.0.2
     pullPolicy: IfNotPresent
 
 itango:
@@ -37,7 +37,7 @@ itango:
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-itango
-    tag: 9.3.3
+    tag: 9.3.3.1
     pullPolicy: IfNotPresent
   resources:
     requests:

@@ -1,10 +1,10 @@
 ARG http_proxy
 ARG https_proxy
-FROM nexus.engageska-portugal.pt/ska-docker/ska-python-buildenv:9.3.3
+FROM nexus.engageska-portugal.pt/ska-docker/ska-python-buildenv:9.3.3.1
 
 # # # NOTES
 # - pip2 crashes if the package we want isn't in the SKA repo,
-#     so we temporarily hide the SKA pip.conf 
+#     so we temporarily hide the SKA pip.conf
 # - exim4 is used for email alerts (configuration to be applied by user)
 # - Format of boost library name was apparently changed between 1.65 and 1.67,
 #     so we make a symlink

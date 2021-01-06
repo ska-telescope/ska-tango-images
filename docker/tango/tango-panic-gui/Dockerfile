@@ -1,10 +1,10 @@
 ARG http_proxy
 ARG https_proxy
-FROM nexus.engageska-portugal.pt/ska-docker/ska-python-buildenv:9.3.3
+FROM nexus.engageska-portugal.pt/ska-docker/ska-python-buildenv:9.3.3.1
 
 # # # NOTES
 # - pip2 crashes if the package we want isn't in the SKA repo,
-#     so we temporarily hide the SKA pip.conf 
+#     so we temporarily hide the SKA pip.conf
 # - python-qt4 is needed for the panic gui (but not PyAlarm)
 # - pip doesn't automically install lxml (needed for GUI but not PyAlarm)
 # - Format of boost library name was apparently changed between 1.65 and 1.67,
@@ -72,14 +72,14 @@ RUN apt-get update && apt-mark hold iptables && \
       mesa-utils-extra && \
     sed -i 's%<property name="ThemeName" type="string" value="Xfce"/>%<property name="ThemeName" type="string" value="Raleigh"/>%' /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
 
-RUN apt-get update && apt-get install -y \ 
+RUN apt-get update && apt-get install -y \
     git \
     x11vnc \
     software-properties-common \
     unzip \
     curl \
     slim \
-    xvfb \ 
+    xvfb \
     novnc \
     python-websockify
 
@@ -89,4 +89,4 @@ EXPOSE 6081
 
 ENV DISPLAY=:20
 
-CMD Xvfb :20 -screen 0 1366x768x16 & x11vnc -passwd TestVNC -display :20 -N -forever & startxfce4 & websockify --web /usr/share/novnc 6081 localhost:5920 
+CMD Xvfb :20 -screen 0 1366x768x16 & x11vnc -passwd TestVNC -display :20 -N -forever & startxfce4 & websockify --web /usr/share/novnc 6081 localhost:5920
