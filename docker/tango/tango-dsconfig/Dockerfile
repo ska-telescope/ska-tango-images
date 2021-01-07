@@ -6,5 +6,5 @@ FROM ${DOCKER_REGISTRY_HOST}/${DOCKER_REGISTRY_USER}/ska-python-runtime:9.3.3.1
 
 RUN python3 -m pip install python-dsconfig==1.5.0
 
-COPY json2tango .
-ENV PATH /app:$PATH
+# Existing Helm charts assume tango-dsconfig starts in the root directory
+WORKDIR /
