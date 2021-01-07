@@ -265,19 +265,7 @@ logviewer:
 # Configure Ingress resource that allow you to access the Tango REST API
 ingress:
   enabled: false
-  nginx: false
-  hostname: tango-base.minikube.local
-
-  # Ingress annotations
-  annotations:
-    kubernetes.io/ingress.class: traefik
-
-  # Ingress TLS configuration
-  #
-  tls:
-    enabled: false
-    secretname: "tls-secret-tango-base-{{ .Release.Name }}"
-    hostname: "{{ .Values.ingress.hostname }}"
+  nginx: true
 
 nodeSelector: {}
 
