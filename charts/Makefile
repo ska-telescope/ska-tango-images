@@ -87,7 +87,7 @@ template-chart: clean dep-up## install the helm chart with name RELEASE_NAME and
 
 uninstall-chart: ## uninstall the ska-docker helm chart on the namespace ska-docker
 	@helm template  $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --namespace $(KUBE_NAMESPACE) | kubectl delete -f - ; \
-	helm uninstall  $(RELEASE_NAME) --namespace $(KUBE_NAMESPACE) 
+	helm uninstall  $(RELEASE_NAME) --namespace $(KUBE_NAMESPACE)
 
 reinstall-chart: uninstall-chart install-chart ## reinstall the ska-docker helm chart on the namespace ska-docker
 
@@ -102,8 +102,8 @@ wait:## wait for pods to be ready
 	@echo "Waiting for pods to be ready"
 	@date
 	@kubectl -n $(KUBE_NAMESPACE) get pods
-	@jobs=$$(kubectl get job --output=jsonpath={.items..metadata.name} -n $(KUBE_NAMESPACE)); kubectl wait job --for=condition=complete --timeout=300s $$jobs -n $(KUBE_NAMESPACE)
-	@kubectl -n $(KUBE_NAMESPACE) wait --for=condition=ready -l app=ska-docker --timeout=300s pods || exit 1
+	@jobs=$$(kubectl get job --output=jsonpath={.items..metadata.name} -n $(KUBE_NAMESPACE)); kubectl wait job --for=condition=complete --timeout=900s $$jobs -n $(KUBE_NAMESPACE)
+	@kubectl -n $(KUBE_NAMESPACE) wait --for=condition=ready -l app=ska-docker --timeout=900s pods || exit 1
 	@date
 
 #
