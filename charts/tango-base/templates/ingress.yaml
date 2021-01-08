@@ -1,4 +1,31 @@
 {{- if .Values.ingress.enabled -}}
+{{ if .Values.ingress.nginx }}
+# use Nginx
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: rest-api-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+    component: {{ .Values.tangorest.component }}
+    function: {{ .Values.tangorest.function }}
+    domain: {{ .Values.tangorest.domain }}
+    intent: {{ .Values.tangorest.intent }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /$1
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+spec:
+  rules:
+    - http:
+        paths:
+        - path: /{{ .Release.Namespace }}/(tango/rest/.*)
+          backend:
+           serviceName: {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}
+           servicePort: 8080
+{{ else }}
+# use Traefik
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -11,43 +38,17 @@ metadata:
     domain: {{ .Values.tangorest.domain }}
     intent: {{ .Values.tangorest.intent }}
   annotations:
-    {{- range $key, $value := .Values.ingress.annotations }}
-      {{ $key }}: {{ $value | quote }}
-    {{- end }}
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 6 }}
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/request-modifier: "ReplacePathRegex: /{{ .Release.Namespace }}/(.*) /$1"
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 spec:
   rules:
-    - host: tango.rest.{{ .Values.ingress.hostname }}
-      http:
+    - http:
         paths:
-          - path: /
+          - path: /{{ .Release.Namespace }}/tango/rest/
             backend:
               serviceName:  {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}
               servicePort: 8080
-{{- if .Values.ingress.tls.enabled }}
-  tls:
-    - secretName: {{ tpl .Values.ingress.tls.secretname . }}
-      hosts:
-        - tango.rest.{{ tpl .Values.ingress.hostname . }}
-{{- end -}}
-
-{{- if .Values.ingress.tls.enabled }}
-
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: {{ tpl .Values.ingress.tls.secretname . }}
-  namespace: {{ .Release.Namespace }}
-  labels:
-{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
-    component: {{ .Values.tangorest.component }}
-    function: {{ .Values.tangorest.function }}
-    domain: {{ .Values.tangorest.domain }}
-    intent: {{ .Values.tangorest.intent }}
-type: kubernetes.io/tls
-data:
-{{ (tpl (.Files.Glob "secrets/tls.*").AsSecrets . ) | indent 2  }}
 
 {{- end -}}
 {{- end -}}
