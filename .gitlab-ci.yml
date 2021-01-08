@@ -120,21 +120,6 @@ build_tango-rest:
     - docker/tango/tango-cpp/**/*
     - docker/tango/tango-rest/**/*
 
-build_tango-dsconfig:
-  retry: 2
-  stage: build_3
-  tags:
-  - k8srunner
-  script:
-  - cd docker/tango/tango-dsconfig
-  - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
-  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
-  only:
-    changes:
-    - docker/tango/tango-dependencies/**/*
-    - docker/tango/tango-cpp/**/*
-    - docker/tango/tango-dsconfig/**/*
-
 build_ska-python-buildenv:
   retry: 2
   stage: build_3
@@ -274,6 +259,23 @@ build_tango-test:
     - docker/tango/tango-libtango/**/*
     - docker/tango/tango-test/**/*
 
+build_tango-dsconfig:
+  retry: 2
+  stage: build_5
+  tags:
+  - k8srunner
+  script:
+  - cd docker/tango/tango-dsconfig
+  - make DOCKER_BUILD_ARGS="--no-cache" DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST build
+  - make DOCKER_REGISTRY_USER=$DOCKER_REGISTRY_FOLDER DOCKER_REGISTRY_HOST=$DOCKER_REGISTRY_HOST push
+  only:
+    changes:
+    - docker/tango/tango-dependencies/**/*
+    - docker/tango/tango-cpp/**/*
+    - docker/tango/ska-python-buildenv/**/*
+    - docker/tango/ska-python-runtime/**/*
+    - docker/tango/tango-dsconfig/**/*
+
 build_tango-itango:
   retry: 2
   stage: build_5
@@ -384,7 +386,7 @@ build_hdbpp_viewer:
     - docker/tango/mariadb_hdbpp/**/*
 
 test-chart:
-  stage: test  
+  stage: test
   variables:
     MINIKUBE: "false"
   tags:
@@ -413,7 +415,7 @@ test-chart:
       junit: charts/build/report.xml
 
 variables:
-    CHARTS_TO_PUBLISH: tango-util tango-base archiver 
+    CHARTS_TO_PUBLISH: tango-util tango-base archiver
 # Ensure your .gitlab-ci.yml has "publish" stage defined!
 include:
   - project: 'ska-telescope/templates-repository'
