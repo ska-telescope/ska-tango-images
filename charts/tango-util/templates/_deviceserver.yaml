@@ -62,8 +62,11 @@ spec:
       annotations:
 {{ toYaml $annotations | indent 8 }}
     spec:
+      {{ if $chart.Values.dsconfig.configuration_file }}
       serviceAccountName: {{ $chart.Values.subsystem }}-sa-{{ $chart.Release.Name }}
+      {{ end }}
       initContainers:
+      {{ if $chart.Values.dsconfig.configuration_file }}
       - name: wait-for-configuration
         image: "bitnami/kubectl:latest"
         imagePullPolicy: IfNotPresent
@@ -72,6 +75,7 @@ spec:
           - -c
         args:
           - kubectl wait job --for=condition=complete {{ $chart.Values.subsystem }}-configuration-{{ $chart.Release.Name }}
+      {{ end }}
 {{ if (.deviceserver.depends_on) }}
 {{ range $index, $device := .deviceserver.depends_on }}
 {{ if ($device.host) }}
