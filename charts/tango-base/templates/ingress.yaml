@@ -1,7 +1,7 @@
 {{- if .Values.ingress.enabled -}}
 {{ if .Values.ingress.nginx }}
 # use Nginx
-apiVersion: networking.k8s.io/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: rest-api-{{ template "tango-base.name" . }}-{{ .Release.Name }}
@@ -21,12 +21,15 @@ spec:
     - http:
         paths:
         - path: /{{ .Release.Namespace }}/(tango/rest/.*)
+          pathType: Prefix
           backend:
-           serviceName: {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}
-           servicePort: 8080
+           service:
+            name: {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}
+            port:
+              number: 8080
 {{ else }}
 # use Traefik
-apiVersion: extensions/v1beta1
+apiVersion: extensions/v1
 kind: Ingress
 metadata:
   name: rest-api-{{ template "tango-base.name" . }}-{{ .Release.Name }}
@@ -46,9 +49,12 @@ spec:
     - http:
         paths:
           - path: /{{ .Release.Namespace }}/tango/rest/
+            pathType: Prefix
             backend:
-              serviceName:  {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}
-              servicePort: 8080
+            service:
+              name: {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}
+              port:
+                number: 8080
 
 {{- end -}}
 {{- end -}}
