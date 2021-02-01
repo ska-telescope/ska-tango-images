@@ -14,7 +14,7 @@ stages:
 
 # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#authenticating-to-the-container-registry
 before_script:
-  - docker login -u $CAR_OCI_REGISTRY_USERNAMENAME -p $CAR_OCI_REGISTRY_PASSWORD $CAR_OCI_REGISTRY_HOST
+  - docker login -u $CAR_OCI_REGISTRY_USERNAME -p $CAR_OCI_REGISTRY_PASSWORD $CAR_OCI_REGISTRY_HOST
 
 build_dependencies:
   retry: 2
