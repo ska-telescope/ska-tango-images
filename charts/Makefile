@@ -1,17 +1,17 @@
-KUBE_NAMESPACE ?= ska-mc-images#namespace to be used
+KUBE_NAMESPACE ?= ska-tango-images#namespace to be used
 RELEASE_NAME ?= test## release name of the chart
-UMBRELLA_CHART_PATH ?= ska-mc-images/## Path of the umbrella chart to work with
-HELM_HOST ?= https://nexus.engageska-portugal.pt## helm host url https
+UMBRELLA_CHART_PATH ?= ska-tango-images/## Path of the umbrella chart to work with
+HELM_HOST ?= https://artefact.skatelescope.org## helm host url https
 MINIKUBE ?= true## Minikube or not
 MARK ?= all
-IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-mc-images/tango-vscode:0.2.7## docker image that will be run for testing purpose
-# IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-mc-images/tango-itango:9.3.2.1## docker image that will be run for testing purpose
+IMAGE_TO_TEST ?= artefact.skatelescope.org/ska-tango-images/tango-itango-9.3.3.1## docker image that will be run for testing purpose
+# IMAGE_TO_TEST ?= artefact.skatelescope.org/ska-tango-images/tango-itango:9.3.2.1## docker image that will be run for testing purpose
 TEST_RUNNER ?= test-makefile-runner-$(CI_JOB_ID)-$(KUBE_NAMESPACE)-$(RELEASE_NAME)##name of the pod running the k8s_tests
 TANGO_HOST ?= tango-host-databaseds-from-makefile-$(RELEASE_NAME):10000## TANGO_HOST is an input!
-CHARTS ?= tango-util tango-base archiver ska-mc-images## list of charts to be published on gitlab -- umbrella charts for testing purpose
+CHARTS ?= tango-util tango-base archiver ska-tango-images## list of charts to be published on gitlab -- umbrella charts for testing purpose
 
-CI_PROJECT_PATH_SLUG ?= ska-mc-images
-CI_ENVIRONMENT_SLUG ?= ska-mc-images
+CI_PROJECT_PATH_SLUG ?= ska-tango-images
+CI_ENVIRONMENT_SLUG ?= ska-tango-images
 
 .DEFAULT_GOAL := help
 
@@ -85,7 +85,7 @@ template-chart: clean dep-up## install the helm chart with name RELEASE_NAME and
 	 rm generated_values.yaml; \
 	 rm values.yaml
 
-uninstall-chart: ## uninstall the ska-mc-images helm chart on the namespace ska-mc-images
+uninstall-chart: ## uninstall the ska-tango-images helm chart on the namespace ska-tango-images
 	@sed -e 's/CI_PROJECT_PATH_SLUG/$(CI_PROJECT_PATH_SLUG)/' ci-values.yaml > generated_values.yaml; \
 	sed -e 's/CI_ENVIRONMENT_SLUG/$(CI_ENVIRONMENT_SLUG)/' generated_values.yaml > values.yaml; \
 	helm template $(RELEASE_NAME) \
@@ -97,9 +97,9 @@ uninstall-chart: ## uninstall the ska-mc-images helm chart on the namespace ska-
 	 rm values.yaml; \
 	 helm uninstall  $(RELEASE_NAME) --namespace $(KUBE_NAMESPACE) 
 
-reinstall-chart: uninstall-chart install-chart ## reinstall the ska-mc-images helm chart on the namespace ska-mc-images
+reinstall-chart: uninstall-chart install-chart ## reinstall the ska-tango-images helm chart on the namespace ska-tango-images
 
-upgrade-chart: ## upgrade the ska-mc-images helm chart on the namespace ska-mc-images
+upgrade-chart: ## upgrade the ska-tango-images helm chart on the namespace ska-tango-images
 	@helm upgrade --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)
 
 chart_lint: ## lint check the helm chart
@@ -111,7 +111,7 @@ wait:## wait for pods to be ready
 	@date
 	@kubectl -n $(KUBE_NAMESPACE) get pods
 	@jobs=$$(kubectl get job --output=jsonpath={.items..metadata.name} -n $(KUBE_NAMESPACE)); kubectl wait job --for=condition=complete --timeout=900s $$jobs -n $(KUBE_NAMESPACE)
-	@kubectl -n $(KUBE_NAMESPACE) wait --for=condition=ready -l app=ska-mc-images --timeout=900s pods || exit 1
+	@kubectl -n $(KUBE_NAMESPACE) wait --for=condition=ready -l app=ska-tango-images --timeout=900s pods || exit 1
 	@date
 
 #

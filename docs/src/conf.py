@@ -110,7 +110,7 @@ html_context = {
     'theme_logo_only': True,
     'display_github': True,  # Integrate GitHub
     'github_user': 'ska-telescope',  # Username
-    'github_repo': 'ska-mc-images',  # Repo name
+    'github_repo': 'ska-tango-images',  # Repo name
     'github_version': 'master',  # Version
     'conf_py_path': '/src/',  # Path in the checkout to the docs root
 }

@@ -1,8 +1,8 @@
-ARG CAR_OCI_REGISTRY_USERNAME
+ARG CAR_OCI_REGISTRY_PREFIX
 ARG CAR_OCI_REGISTRY_HOST
 
-FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_USERNAME}/pytango-builder:9.3.3.1 as buildenv
-FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_USERNAME}/pytango-runtime:9.3.3.1
+FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/pytango-builder:9.3.3.1 as buildenv
+FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/pytango-runtime:9.3.3.1
 
 # create ipython profile to so that itango doesn't fail if ipython hasn't run yet
 

@@ -16,14 +16,14 @@ subsystem: tango-base
 telescope: SKA-mid
 
 labels:
-  app: ska-mc-images
+  app: ska-tango-images
 annotations:
   app.gitlab.com/app: CI_PROJECT_PATH_SLUG
   app.gitlab.com/env: CI_ENVIRONMENT_SLUG
 
 dsconfig:
   image:
-    registry: nexus.engageska-portugal.pt/ska-mc-images
+    registry: artefact.skatelescope.org/ska-tango-images
     image: tango-dsconfig
     tag: 1.5.0.3
     pullPolicy: IfNotPresent
@@ -35,7 +35,7 @@ itango:
   domain: interactive-testing
   intent: enabling
   image:
-    registry: nexus.engageska-portugal.pt/ska-mc-images
+    registry: artefact.skatelescope.org/ska-tango-images
     image: tango-itango
     tag: 9.3.3.1
     pullPolicy: IfNotPresent
@@ -55,7 +55,7 @@ databaseds:
   domain: tango-configuration
   intent: production
   image:
-    registry: nexus.engageska-portugal.pt/ska-mc-images
+    registry: artefact.skatelescope.org/ska-tango-images
     image: tango-cpp
     tag: 9.3.4
     pullPolicy: IfNotPresent
@@ -94,7 +94,7 @@ deviceServers:
   - device: sys/database/2
   environment_variables: []
   image:
-    registry: nexus.engageska-portugal.pt/ska-mc-images
+    registry: artefact.skatelescope.org/ska-tango-images
     image: tango-java
     tag: 9.3.3
     pullPolicy: IfNotPresent
@@ -116,7 +116,7 @@ tangodb:
   domain: tango-configuration
   intent: production
   image:
-    registry: nexus.engageska-portugal.pt/ska-mc-images
+    registry: artefact.skatelescope.org/ska-tango-images
     image: tango-db
     tag: 10.4.10
     pullPolicy: IfNotPresent
@@ -156,7 +156,7 @@ jive:
   domain: interactive-testing
   intent: enabling
   image:
-    registry: nexus.engageska-portugal.pt/ska-mc-images
+    registry: artefact.skatelescope.org/ska-tango-images
     image: tango-java
     tag: 9.3.3
     pullPolicy: IfNotPresent
@@ -181,7 +181,7 @@ vnc:
   nodeport_novnc: 32082
   replicas: 3
   image:
-    registry: nexus.engageska-portugal.pt/ska-mc-images
+    registry: artefact.skatelescope.org/ska-tango-images
     image: tango-vnc
     tag: latest
     pullPolicy: IfNotPresent
@@ -205,7 +205,7 @@ vscode:
   nodeport: 32080
   replicas: 1
   image:
-    registry: nexus.engageska-portugal.pt/ska-mc-images
+    registry: artefact.skatelescope.org/ska-tango-images
     image: tango-vscode
     tag: latest
     pullPolicy: IfNotPresent
@@ -227,7 +227,7 @@ tangorest:
   domain: tango-configuration
   intent: enabling
   image:
-    registry: nexus.engageska-portugal.pt/ska-mc-images
+    registry: artefact.skatelescope.org/ska-tango-images
     image: tango-rest
     tag: 1.14.1
     pullPolicy: IfNotPresent
@@ -248,7 +248,7 @@ logviewer:
   domain: interactive-testing
   intent: enabling
   image:
-    registry: nexus.engageska-portugal.pt/ska-mc-images
+    registry: artefact.skatelescope.org/ska-tango-images
     image: tango-java
     tag: 9.3.3
     pullPolicy: IfNotPresent

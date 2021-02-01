@@ -3,11 +3,11 @@
 # python projects. This image should be used as an intermediate layer
 # alongside the pytango-builder image.
 #
-ARG CAR_OCI_REGISTRY_USERNAME
+ARG CAR_OCI_REGISTRY_PREFIX
 ARG CAR_OCI_REGISTRY_HOST
-FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_USERNAME}/pytango-builder:9.3.3.1 as buildenv
+FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/pytango-builder:9.3.3.1 as buildenv
 
-FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_USERNAME}/tango-cpp:9.3.4
+FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/tango-cpp:9.3.4
 USER root
 
 # Permanently install Python and PyTango runtime dependencies:

@@ -27,8 +27,8 @@ build_dependencies:
   script: 
   - &build_push |
     cd docker 
-    make DOCKER_BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER build
-    make DOCKER_BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER push
+    make BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER build
+    make BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER push
   only:
     changes:
     - docker/tango/tango-dependencies/**/*

@@ -1,11 +1,11 @@
 FROM mariadb:10
 
-ENV TANGO_DOWNLOAD_URL=https://nexus.engageska-portugal.pt/repository/raw/tango-cs/tango-9.3.3-rc2.tar.gz                                                               
+ENV TANGO_DOWNLOAD_URL=https://artefact.skatelescope.org/repository/raw-internal/ska-tango-images/libraries/tango-9.3.3-rc2.tar.gz                                                    
 
 RUN buildDeps='curl ca-certificates' \
     && DEBIAN_FRONTEND=noninteractive apt-get update \
     && apt-get -y install --no-install-recommends $buildDeps \
-    && rm -rf /var/lib/apt/lists/* \
+    && rm -rf /var/lib/apt/lists/* \\
     && mkdir -p /usr/src/tango \
     && cd /usr/src/tango \
     && curl -fsSL "$TANGO_DOWNLOAD_URL" -o tango.tar.gz \
