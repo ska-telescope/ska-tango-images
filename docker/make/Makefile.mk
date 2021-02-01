@@ -19,7 +19,7 @@ NAME=$(shell basename $(CURDIR))
 RELEASE_SUPPORT := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))/.make-release-support
 
 CAR_OCI_REGISTRY_HOST ?= nexus.engageska-portugal.pt
-CAR_OCI_REGISTRY_USERNAME ?= ska-docker
+CAR_OCI_REGISTRY_USERNAME ?= ska-mc-images
 
 IMAGE=$(CAR_OCI_REGISTRY_HOST)/$(CAR_OCI_REGISTRY_USERNAME)/$(NAME)
 

@@ -1,4 +1,4 @@
-image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest
+image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest ## tmp: 2 be change
 
 stages:
 - build_0
@@ -20,7 +20,7 @@ build_dependencies:
   retry: 2
   stage: build_1
   variables:
-  - IMAGE_FOLDER: tango/tango-dependencies
+    IMAGE_FOLDER: tango/tango-dependencies
   tags:
   - k8srunner
   script: 
@@ -36,7 +36,7 @@ build_tango-db:
   retry: 2
   stage: build_1
   variables:
-  - IMAGE_FOLDER: tango/tango-db
+    IMAGE_FOLDER: tango/tango-db
   tags:
   - k8srunner
   script:
@@ -49,7 +49,7 @@ build_tango-cpp:
   retry: 2
   stage: build_2
   variables:
-  - IMAGE_FOLDER: tango/tango-cpp
+    IMAGE_FOLDER: tango/tango-cpp
   tags:
   - k8srunner
   script:
@@ -63,7 +63,7 @@ build_tango-java:
   retry: 2
   stage: build_2
   variables:
-  - IMAGE_FOLDER: tango/tango-java
+    IMAGE_FOLDER: tango/tango-java
   tags:
   - k8srunner
   script:
@@ -77,7 +77,7 @@ build_tango-rest:
   retry: 2
   stage: build_3
   variables:
-  - IMAGE_FOLDER: tango/tango-rest
+    IMAGE_FOLDER: tango/tango-rest
   tags:
   - k8srunner
   script:
@@ -92,7 +92,7 @@ build_pytango-builder:
   retry: 2
   stage: build_3
   variables:
-  - IMAGE_FOLDER: tango/pytango-builder
+    IMAGE_FOLDER: tango/pytango-builder
   tags:
     - k8srunner
   script:
@@ -107,7 +107,7 @@ build_tango-pogo:
   retry: 2
   stage: build_3
   variables:
-  - IMAGE_FOLDER: tango/tango-pogo
+    IMAGE_FOLDER: tango/tango-pogo
   tags:
   - k8srunner
   script:
@@ -122,7 +122,7 @@ build_tango-libtango:
   retry: 2
   stage: build_3
   variables:
-  - IMAGE_FOLDER: tango/tango-libtango
+    IMAGE_FOLDER: tango/tango-libtango
   tags:
   - k8srunner
   script:
@@ -137,7 +137,7 @@ build_tango-jive:
   retry: 2
   stage: build_3
   variables:
-  - IMAGE_FOLDER: tango/tango-jive
+    IMAGE_FOLDER: tango/tango-jive
   tags:
   - k8srunner
   script:
@@ -152,7 +152,7 @@ build_pytango-runtime:
   retry: 2
   stage: build_4
   variables:
-  - IMAGE_FOLDER: tango/pytango-runtime
+    IMAGE_FOLDER: tango/pytango-runtime
   tags:
   - k8srunner
   script:
@@ -168,7 +168,7 @@ build_tango-admin:
   retry: 2
   stage: build_4
   variables:
-  - IMAGE_FOLDER: tango/tango-admin
+    IMAGE_FOLDER: tango/tango-admin
   tags:
   - k8srunner
   script:
@@ -184,7 +184,7 @@ build_tango-databaseds:
   retry: 2
   stage: build_4
   variables:
-  - IMAGE_FOLDER: tango/tango-databaseds
+    IMAGE_FOLDER: tango/tango-databaseds
   tags:
   - k8srunner
   script:
@@ -200,7 +200,7 @@ build_tango-test:
   retry: 2
   stage: build_4
   variables:
-  - IMAGE_FOLDER: tango/tango-test
+    IMAGE_FOLDER: tango/tango-test
   tags:
   - k8srunner
   script:
@@ -216,7 +216,7 @@ build_tango-dsconfig:
   retry: 2
   stage: build_5
   variables:
-  - IMAGE_FOLDER: tango/tango-dsconfig
+    IMAGE_FOLDER: tango/tango-dsconfig
   tags:
   - k8srunner
   script:
@@ -233,7 +233,7 @@ build_tango-itango:
   retry: 2
   stage: build_5
   variables:
-  - IMAGE_FOLDER: tango/tango-itango
+    IMAGE_FOLDER: tango/tango-itango
   tags:
   - k8srunner
   script:
@@ -250,7 +250,7 @@ build_tango-vnc:
   retry: 2
   stage: build_5
   variables:
-  - IMAGE_FOLDER: tango/tango-vnc
+    IMAGE_FOLDER: tango/tango-vnc
   tags:
   - k8srunner
   script:
@@ -265,7 +265,7 @@ build_tango-pytango:
   retry: 2
   stage: build_5
   variables:
-  - IMAGE_FOLDER: tango/tango-pytango
+    IMAGE_FOLDER: tango/tango-pytango
   tags:
   - k8srunner
   script:
@@ -284,7 +284,7 @@ test-chart:
     MINIKUBE: "false"
   tags:
   - k8srunner
-  image: nexus.engageska-portugal.pt/ska-docker/deploy:0.4.3
+  image: nexus.engageska-portugal.pt/ska-mc-images/deploy:0.4.3
   script:
   - cd charts/
   - kubectl version

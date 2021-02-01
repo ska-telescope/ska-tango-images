@@ -63,7 +63,7 @@ If the Docker image tags change, then the related charts should also be updated:
 
 ## HDB++ Archiver Implementation
 
-[![Documentation Status](https://readthedocs.org/projects/ska-docker/badge/?version=latest)](https://developer.skatelescope.org/projects/ska-docker/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/ska-mc-images/badge/?version=latest)](https://developer.skatelescope.org/projects/ska-mc-images/en/latest/?badge=latest)
 
 
 HDB++ is a archiver available in TANGO. It is configured to subscribe to TANGO attributes to be archived. MariaDB
@@ -84,7 +84,7 @@ Containers like mariadb, databaseds, hdbpp-es and hdbpp-cm should be up and runn
 
 
 # Important links
- * [Link for Mariadb container](https://gitlab.com/ska-telescope/ska-docker/-/tree/master/docker/tango/mariadb_hdbpp)
- * [Link for Tango-archiver container](https://gitlab.com/ska-telescope/ska-docker/-/tree/master/docker/tango/tango-archiver)
- * [Link for Hdbpp-viewer container](https://gitlab.com/ska-telescope/ska-docker/-/tree/master/docker/tango/hdbpp_viewer)
- * [Archiver Charts](https://gitlab.com/ska-telescope/ska-docker/-/tree/master/charts/archiver)
+ * [Link for Mariadb container](https://gitlab.com/ska-telescope/ska-mc-images/-/tree/master/docker/tango/mariadb_hdbpp)
+ * [Link for Tango-archiver container](https://gitlab.com/ska-telescope/ska-mc-images/-/tree/master/docker/tango/tango-archiver)
+ * [Link for Hdbpp-viewer container](https://gitlab.com/ska-telescope/ska-mc-images/-/tree/master/docker/tango/hdbpp_viewer)
+ * [Archiver Charts](https://gitlab.com/ska-telescope/ska-mc-images/-/tree/master/charts/archiver)

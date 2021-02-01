@@ -28,7 +28,7 @@ RUN [ ! -z "$http_proxy" ] && \
     sudo mv /tmp/ska_pip_conf /etc/pip.conf && \
     sudo sed -i.original 's/python/python2/g' `which PyAlarm`
 
-# now the VNC stuff (ref. tango-vnc image in ska-docker repo)
+# now the VNC stuff (ref. tango-vnc image in ska-mc-images repo)
 
 USER root
 
