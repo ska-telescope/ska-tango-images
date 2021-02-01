@@ -74,7 +74,7 @@ spec:
           - sh
           - -c
         args:
-          - kubectl wait job --for=condition=complete {{ $chart.Values.subsystem }}-configuration-{{ $chart.Release.Name }}
+          - kubectl wait job --for=condition=complete {{ $chart.Values.subsystem }}-configuration-{{ $chart.Release.Name }} {{ if $chart.Values.dsconfig.timeout }} --timeout={{ $chart.Values.dsconfig.timeout }} {{ end }}
       {{ end }}
 {{ if (.deviceserver.depends_on) }}
 {{ range $index, $device := .deviceserver.depends_on }}
