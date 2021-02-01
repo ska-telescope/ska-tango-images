@@ -74,7 +74,6 @@ do-push:
 	else \
 		echo "Version $(VERSION) of image $(IMAGE) does not exist"; \
 		docker push $(IMAGE):$(VERSION); \
-		docker push $(IMAGE):latest; \
 	fi;
 
 snapshot: build push
