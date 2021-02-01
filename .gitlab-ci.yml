@@ -1,4 +1,4 @@
-image: artefact.skatelescope.org/ska-tango-images/pytango-builder:9.3.3.1
+image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest ## tmp: 2 be change
 
 stages:
 - build_0
@@ -13,8 +13,7 @@ stages:
 - cleanup_build
 
 # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#authenticating-to-the-container-registry
-before_script:
-  - env 
+before_script:ù
   - echo $CAR_OCI_REGISTRY_PASSWORD | docker login -u $CAR_OCI_REGISTRY_USERNAME --password-stdin $CAR_OCI_REGISTRY_HOST
 
 build_dependencies:
