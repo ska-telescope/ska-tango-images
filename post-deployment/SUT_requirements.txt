@@ -1,2 +1,2 @@
 observation-execution-tool==2.3.0
---extra-index-url https://artefact.skatelescope.org/repository/pypi-internal/
+--extra-index-url https://artefact.skatelescope.org/repository/pypi-all/
