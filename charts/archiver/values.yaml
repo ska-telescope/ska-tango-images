@@ -22,6 +22,7 @@ annotations:
 
 dsconfig:
   configuration_file: data/configuration.json
+  timeout: 120s
   image:
     registry: nexus.engageska-portugal.pt/ska-docker
     image: tango-dsconfig
