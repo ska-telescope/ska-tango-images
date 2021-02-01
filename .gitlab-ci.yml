@@ -1,4 +1,4 @@
-image: nexus.engageska-portugal.pt/ska-docker/tango-builder:latest ## tmp: 2 be change
+image: artefact.skatelescope.org/ska-tango-images/pytango-builder:9.3.3.1
 
 stages:
 - build_0
@@ -285,7 +285,7 @@ test-chart:
     MINIKUBE: "false"
   tags:
   - k8srunner
-  image: nexus.engageska-portugal.pt/ska-mc-images/deploy:0.4.3
+  image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.3
   script:
   - cd charts/
   - kubectl version
