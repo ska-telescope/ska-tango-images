@@ -39,7 +39,7 @@ To pull pre-built images from the Docker hub, execute:
    make pull
 
 Optional: the images can be pulled from an alternative registry and/or
-account by supplying the DOCKER_REGISTRY_HOST and DOCKER_REGISTRY_USER
+account by supplying the CAR_OCI_REGISTRY_HOST and CAR_OCI_REGISTRY_USERNAME
 Makefile variables respectively, e.g.,
 
 .. code-block:: console
@@ -47,7 +47,7 @@ Makefile variables respectively, e.g.,
    cd docker-compose
    # download foo/tango-cpp, foo/tango-jive, etc. from a registry at
    # localhost:5000
-   make DOCKER_REGISTRY_HOST=localhost:5000 DOCKER_REGISTRY_USER=foo pull
+   make CAR_OCI_REGISTRY_HOST=localhost:5000 CAR_OCI_REGISTRY_USERNAME=foo pull
 
 To start and stop a minimal TANGO system (database and databaseds
 server), execute:

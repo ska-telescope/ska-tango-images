@@ -38,17 +38,17 @@ suffix: `9.3.4-rc4.2`, etc.
         - tango-admin/Dockerfile:FROM {nexus}/tango-libtango:latest
         - tango-test/Dockerfile:FROM {nexus}/tango-libtango:latest
         - tango-databaseds/Dockerfile:FROM {nexus}/tango-libtango:latest
-      - ska-python-buildenv/Dockerfile:FROM {nexus}/tango-cpp:latest
-        - ska-python-runtime/Dockerfile:FROM {nexus}/ska-python-buildenv:latest as buildenv
-        - ska-python-runtime/Dockerfile:FROM {nexus}/tango-cpp:latest
-          - tango-dsconfig/Dockerfile:FROM {nexus}/ska-python-buildenv:latest as buildenv
-          - tango-dsconfig/Dockerfile:FROM {nexus}/ska-python-runtime:latest
-          - tango-itango/Dockerfile:FROM {nexus}/ska-python-buildenv:latest as buildenv
-          - tango-itango/Dockerfile:FROM {nexus}/ska-python-runtime:latest
-          - tango-pytango/Dockerfile:FROM {nexus}/ska-python-buildenv:latest as buildenv
-          - tango-pytango/Dockerfile:FROM {nexus}/ska-python-runtime:latest
-          - tango-vscode/Dockerfile:FROM {nexus}/ska-python-buildenv:latest as buildenv
-          - tango-vscode/Dockerfile:FROM {nexus}/ska-python-runtime:latest
+      - pytango-builder/Dockerfile:FROM {nexus}/tango-cpp:latest
+        - pytango-runtime/Dockerfile:FROM {nexus}/pytango-builder:latest as buildenv
+        - pytango-runtime/Dockerfile:FROM {nexus}/tango-cpp:latest
+          - tango-dsconfig/Dockerfile:FROM {nexus}/pytango-builder:latest as buildenv
+          - tango-dsconfig/Dockerfile:FROM {nexus}/pytango-runtime:latest
+          - tango-itango/Dockerfile:FROM {nexus}/pytango-builder:latest as buildenv
+          - tango-itango/Dockerfile:FROM {nexus}/pytango-runtime:latest
+          - tango-pytango/Dockerfile:FROM {nexus}/pytango-builder:latest as buildenv
+          - tango-pytango/Dockerfile:FROM {nexus}/pytango-runtime:latest
+          - tango-vscode/Dockerfile:FROM {nexus}/pytango-builder:latest as buildenv
+          - tango-vscode/Dockerfile:FROM {nexus}/pytango-runtime:latest
       - tango-starter/Dockerfile:FROM {nexus}/tango-cpp:latest
 - mariadb
   - tango-db/Dockerfile:FROM mariadb:10

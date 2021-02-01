@@ -45,13 +45,13 @@ repository execute:
    make build
 
 Optionally, you can register images to an alternative Docker registry
-account by supplying the ``DOCKER_REGISTRY_HOST`` and
-``DOCKER_REGISTRY_USER`` Makefile variables, e.g.,
+account by supplying the ``CAR_OCI_REGISTRY_HOST`` and
+``CAR_OCI_REGISTRY_USERNAME`` Makefile variables, e.g.,
 
 .. code-block:: console
 
    # build and register images as foo/tango-cpp, foo/tango-jive, etc.
-   make DOCKER_REGISTRY_USER=foo build
+   make CAR_OCI_REGISTRY_USERNAME=foo build
 
 Pushing the images to a Docker registry
 ---------------------------------------
@@ -63,18 +63,18 @@ using the ``make push`` target.
 
    # push the images to the Docker registry, making them publicly
    # available as foo/tango-cpp, foo/tango-jive, etc.
-   make DOCKER_REGISTRY_USER=foo push
+   make CAR_OCI_REGISTRY_USERNAME=foo push
 
 Images can also be pushed to a custom registry by specifying a
-``DOCKER_REGISTRY_HOST`` Makefile argument during the ``make build``
+``CAR_OCI_REGISTRY_HOST`` Makefile argument during the ``make build``
 and ``make push`` steps, e.g.,
 
 .. code-block:: console
 
    # build and tag the images to a custom registry located at
    # http://test_registry:5000
-   make DOCKER_REGISTRY_USER=foo DOCKER_REGISTRY_HOST=my_registry.org:5000 build
+   make CAR_OCI_REGISTRY_USERNAME=foo CAR_OCI_REGISTRY_HOST=my_registry.org:5000 build
 
    # Now push the images to the remote custom registry
-   make DOCKER_REGISTRY_USER=foo DOCKER_REGISTRY_HOST=my.registry.org:5000 push
+   make CAR_OCI_REGISTRY_USERNAME=foo CAR_OCI_REGISTRY_HOST=my.registry.org:5000 push
 

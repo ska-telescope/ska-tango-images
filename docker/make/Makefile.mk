@@ -18,15 +18,10 @@ NAME=$(shell basename $(CURDIR))
 
 RELEASE_SUPPORT := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))/.make-release-support
 
-ifeq ($(strip $(DOCKER_REGISTRY_HOST)),)
-  DOCKER_REGISTRY_HOST = nexus.engageska-portugal.pt
-endif
+CAR_OCI_REGISTRY_HOST ?= nexus.engageska-portugal.pt
+CAR_OCI_REGISTRY_USERNAME ?= ska-docker
 
-ifeq ($(strip $(DOCKER_REGISTRY_USER)),)
-  DOCKER_REGISTRY_USER = ska-docker
-endif
-
-IMAGE=$(DOCKER_REGISTRY_HOST)/$(DOCKER_REGISTRY_USER)/$(NAME)
+IMAGE=$(CAR_OCI_REGISTRY_HOST)/$(CAR_OCI_REGISTRY_USERNAME)/$(NAME)
 
 VERSION=$(shell . $(RELEASE_SUPPORT) ; getVersion)
 TAG=$(shell . $(RELEASE_SUPPORT); getTag)
@@ -50,7 +45,7 @@ pre-push:
 post-push:
 
 docker-build: .release
-	docker build $(DOCKER_BUILD_ARGS) -t $(IMAGE):$(VERSION) $(DOCKER_BUILD_CONTEXT) -f $(DOCKER_FILE_PATH) --build-arg DOCKER_REGISTRY_HOST=$(DOCKER_REGISTRY_HOST) --build-arg DOCKER_REGISTRY_USER=$(DOCKER_REGISTRY_USER) --build-arg http_proxy --build-arg https_proxy
+	docker build $(DOCKER_BUILD_ARGS) -t $(IMAGE):$(VERSION) $(DOCKER_BUILD_CONTEXT) -f $(DOCKER_FILE_PATH) --build-arg CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) --build-arg CAR_OCI_REGISTRY_USERNAME=$(CAR_OCI_REGISTRY_USERNAME) --build-arg http_proxy --build-arg https_proxy
 	@DOCKER_MAJOR=$(shell docker -v | sed -e 's/.*version //' -e 's/,.*//' | cut -d\. -f1) ; \
 	DOCKER_MINOR=$(shell docker -v | sed -e 's/.*version //' -e 's/,.*//' | cut -d\. -f2) ; \
 	if [ $$DOCKER_MAJOR -eq 1 ] && [ $$DOCKER_MINOR -lt 10 ] ; then \
@@ -72,7 +67,7 @@ release: check-status check-release build push
 push: pre-push do-push post-push
 
 do-push:
-	@curl --output /dev/null --silent --head --fail -r 0-0 "https://$(DOCKER_REGISTRY_HOST)/repository/docker/v2/$(DOCKER_REGISTRY_USER)/$(NAME)/manifests/$(VERSION)"; \
+	@curl --output /dev/null --silent --head --fail -r 0-0 "https://$(CAR_OCI_REGISTRY_HOST)/repository/docker/v2/$(CAR_OCI_REGISTRY_USERNAME)/$(NAME)/manifests/$(VERSION)"; \
 	result=$$?; \
 	if [ $$result -eq 0 ] ; then \
 		echo "Version $(VERSION) of image $(IMAGE) already exists"; \

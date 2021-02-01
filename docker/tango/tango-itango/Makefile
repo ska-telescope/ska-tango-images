@@ -7,13 +7,13 @@ CACHE_VOLUME = cache-tango-itango-test
 DOCKER_RUN_ARGS =
 
 # defines the image to test
-IMAGE_TO_TEST = $(DOCKER_REGISTRY_HOST)/$(DOCKER_REGISTRY_USER)/tango-itango:latest
+IMAGE_TO_TEST = $(CAR_OCI_REGISTRY_HOST)/$(CAR_OCI_REGISTRY_USERNAME)/tango-itango:latest
 
 # docker-compose commmand for a composition of services for the tango database,
 # databaseds device, and tangotest devices
 DOCKER_COMPOSE_COMMAND = PWD=$(CURDIR) \
-						 DOCKER_REGISTRY_HOST=$(DOCKER_REGISTRY_HOST) \
-						 DOCKER_REGISTRY_USER=$(DOCKER_REGISTRY_USER) \
+						 CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) \
+						 CAR_OCI_REGISTRY_USERNAME=$(CAR_OCI_REGISTRY_USERNAME) \
 						 docker-compose \
 						 -f docker-compose.yml
 

@@ -3,9 +3,9 @@
 # intermediate image, then creates a release image containing the compiled
 # binaries.
 #
-ARG DOCKER_REGISTRY_USER
-ARG DOCKER_REGISTRY_HOST
-FROM ${DOCKER_REGISTRY_HOST}/${DOCKER_REGISTRY_USER}/tango-dependencies:9.3.3.1
+ARG CAR_OCI_REGISTRY_USERNAME
+ARG CAR_OCI_REGISTRY_HOST
+FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_USERNAME}/tango-dependencies:9.3.3.1
 
 RUN JAVA_DOWNLOAD_URL=https://nexus.engageska-portugal.pt/repository/raw/java/jre-8u221-linux-x64.tar.gz \
     && mkdir /usr/java \
