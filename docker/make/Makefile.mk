@@ -18,6 +18,7 @@ NAME=$(shell basename $(CURDIR))
 
 RELEASE_SUPPORT := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))/.make-release-support
 
+IMAGE_BUILDER ?= docker
 CAR_OCI_REGISTRY_HOST ?= artefact.skatelescope.org
 CAR_OCI_REGISTRY_PREFIX ?= ska-tango-images
 
@@ -45,15 +46,15 @@ pre-push:
 post-push:
 
 docker-build: .release
-	docker build $(BUILD_ARGS) -t $(IMAGE):$(VERSION) $(BUILD_CONTEXT) -f $(FILE_PATH) --build-arg CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) --build-arg CAR_OCI_REGISTRY_PREFIX=$(CAR_OCI_REGISTRY_PREFIX) --build-arg http_proxy --build-arg https_proxy
-	@DOCKER_MAJOR=$(shell docker -v | sed -e 's/.*version //' -e 's/,.*//' | cut -d\. -f1) ; \
-	DOCKER_MINOR=$(shell docker -v | sed -e 's/.*version //' -e 's/,.*//' | cut -d\. -f2) ; \
+	$(IMAGE_BUILDER) build $(BUILD_ARGS) -t $(IMAGE):$(VERSION) $(BUILD_CONTEXT) -f $(FILE_PATH) --build-arg CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) --build-arg CAR_OCI_REGISTRY_PREFIX=$(CAR_OCI_REGISTRY_PREFIX)
+	@DOCKER_MAJOR=$(shell $(IMAGE_BUILDER) -v | sed -e 's/.*version //' -e 's/,.*//' | cut -d\. -f1) ; \
+	DOCKER_MINOR=$(shell $(IMAGE_BUILDER) -v | sed -e 's/.*version //' -e 's/,.*//' | cut -d\. -f2) ; \
 	if [ $$DOCKER_MAJOR -eq 1 ] && [ $$DOCKER_MINOR -lt 10 ] ; then \
-		echo docker tag -f $(IMAGE):$(VERSION) $(IMAGE):latest ;\
-		docker tag -f $(IMAGE):$(VERSION) $(IMAGE):latest ;\
+		echo $(IMAGE_BUILDER) tag -f $(IMAGE):$(VERSION) $(IMAGE):latest ;\
+		$(IMAGE_BUILDER) tag -f $(IMAGE):$(VERSION) $(IMAGE):latest ;\
 	else \
-		echo docker tag $(IMAGE):$(VERSION) $(IMAGE):latest ;\
-		docker tag $(IMAGE):$(VERSION) $(IMAGE):latest ; \
+		echo $(IMAGE_BUILDER) tag $(IMAGE):$(VERSION) $(IMAGE):latest ;\
+		$(IMAGE_BUILDER) tag $(IMAGE):$(VERSION) $(IMAGE):latest ; \
 	fi
 
 .release:
@@ -73,7 +74,7 @@ do-push:
 		echo "Version $(VERSION) of image $(IMAGE) already exists"; \
 	else \
 		echo "Version $(VERSION) of image $(IMAGE) does not exist"; \
-		docker push $(IMAGE):$(VERSION); \
+		$(IMAGE_BUILDER) push $(IMAGE):$(VERSION); \
 	fi;
 
 snapshot: build push
