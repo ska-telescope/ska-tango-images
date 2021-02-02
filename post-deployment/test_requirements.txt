@@ -15,10 +15,8 @@ elasticsearch-dsl
 aiohttp
 aiojobs
 pytest-asyncio
-ska_logging
 aiohttp_cors
 flake8
 tango-simlib==0.7.0
-lmcbaseclasses
 mysql-connector-python
 itango
