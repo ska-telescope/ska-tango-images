@@ -1,4 +1,4 @@
-DIRS = tango-builder tango-dependencies tango-db tango-cpp tango-java tango-rest tango-dsconfig pytango-builder tango-pogo tango-starter tango-libtango tango-jive pytango-runtime tango-admin tango-databaseds tango-test tango-itango tango-vscode tango-vnc tango-pytango mariadb_hdbpp tango-archiver hdbpp_viewer
+DIRS = tango-dependencies tango-db tango-cpp tango-java tango-rest tango-dsconfig pytango-builder tango-pogo tango-libtango tango-jive pytango-runtime tango-admin tango-databaseds tango-test tango-itango tango-vnc tango-pytango
 TEST = pytango-builder tango-itango tango-rest tango-db tango-cpp tango-archiver
 BUILDDIRS = $(DIRS:%=build-%)
 TESTDIRS = $(TEST:%=test-%)
