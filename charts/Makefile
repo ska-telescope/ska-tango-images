@@ -110,7 +110,7 @@ wait:## wait for pods to be ready
 	@echo "Waiting for pods to be ready"
 	@date
 	@kubectl -n $(KUBE_NAMESPACE) get pods
-	@jobs=$$(kubectl get job --output=jsonpath={.items..metadata.name} -n $(KUBE_NAMESPACE)); kubectl wait job --for=condition=complete --timeout=900s $$jobs -n $(KUBE_NAMESPACE)
+	#jobs=$$(kubectl get job --output=jsonpath={.items..metadata.name} -n $(KUBE_NAMESPACE)); kubectl wait job --for=condition=complete --timeout=900s $$jobs -n $(KUBE_NAMESPACE)
 	@kubectl -n $(KUBE_NAMESPACE) wait --for=condition=ready -l app=ska-tango-images --timeout=900s pods || exit 1
 	@date
 
