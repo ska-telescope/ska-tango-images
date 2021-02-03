@@ -6,6 +6,39 @@
 {{ $tango_host := tpl (coalesce .Values.global.tango_host .Values.tango_host $default_tango_host | toString) . }}
 {{ $itango := coalesce .Values.global.itango .Values.itango}}
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ .Values.subsystem }}-sa-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Values.subsystem }}-role-bind-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+subjects:
+- kind: ServiceAccount
+  name: {{ .Values.subsystem }}-sa-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+roleRef:
+  kind: Role
+  name: {{ .Values.subsystem }}-role-{{ .Release.Name }}
+  apiGroup: rbac.authorization.k8s.io
+---
+
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ .Values.subsystem }}-role-{{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+rules:
+- apiGroups: ["", "batch", "apps"]
+  resources: ["jobs"]
+  verbs: ["list", "get", "watch"]
+
+---
 # Device Server configurations
 apiVersion: v1
 kind: ConfigMap
