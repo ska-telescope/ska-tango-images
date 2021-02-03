@@ -6,7 +6,7 @@ MINIKUBE ?= true## Minikube or not
 MARK ?= all
 IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-vscode:0.2.7## docker image that will be run for testing purpose
 # IMAGE_TO_TEST ?= nexus.engageska-portugal.pt/ska-docker/tango-itango:9.3.2.1## docker image that will be run for testing purpose
-TEST_RUNNER ?= test-makefile-runner-$(CI_JOB_ID)-$(KUBE_NAMESPACE)-$(RELEASE_NAME)##name of the pod running the k8s_tests
+TEST_RUNNER ?= test-mk-$(CI_JOB_ID)-$(KUBE_NAMESPACE)-$(RELEASE_NAME)##name of the pod running the k8s_tests
 TANGO_HOST ?= tango-host-databaseds-from-makefile-$(RELEASE_NAME):10000## TANGO_HOST is an input!
 CHARTS ?= tango-util tango-base archiver ska-docker## list of charts to be published on gitlab -- umbrella charts for testing purpose
 
