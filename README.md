@@ -24,35 +24,36 @@ suffix: `9.3.4-rc4.2`, etc.
 - debian-buster-slim
   - tango-dependencies/Dockerfile:FROM debian:buster-slim as buildenv
   - tango-dependencies/Dockerfile:FROM debian:buster-slim
-    - tango-java/Dockerfile:FROM {nexus}/tango-dependencies:latest
-        - hdbpp_viewer/Dockerfile:FROM {nexus}/tango-java:latest
+    - tango-java/Dockerfile:FROM {nexus}/tango-dependencies
+        - hdbpp_viewer/Dockerfile:FROM {nexus}/tango-java
         - tango-jive/Dockerfile:FROM {nexus}/tango-java
-        - tango-pogo/Dockerfile:FROM {nexus}/tango-java:latest
-        - tango-rest/Dockerfile:FROM {nexus}/tango-dependencies:latest as buildenv
-        - tango-rest/Dockerfile:FROM {nexus}/tango-java:latest
-        - tango-vnc/Dockerfile:FROM {nexus}/tango-java:latest
-    - tango-cpp/Dockerfile:FROM {nexus}/tango-dependencies:latest as buildenv
+        - tango-pogo/Dockerfile:FROM {nexus}/tango-java
+        - tango-rest/Dockerfile:FROM {nexus}/tango-dependencies as buildenv
+        - tango-rest/Dockerfile:FROM {nexus}/tango-java
+        - tango-vnc/Dockerfile:FROM {nexus}/tango-java
+    - tango-cpp/Dockerfile:FROM {nexus}/tango-dependencies as buildenv
     - tango-cpp/Dockerfile:FROM debian:buster-slim
-      - tango-archiver/Dockerfile:FROM {nexus}/tango-cpp:latest
+      - tango-archiver/Dockerfile:FROM {nexus}/tango-cpp
       - tango-libtango/Dockerfile:FROM {nexus}/tango-cpp
-        - tango-admin/Dockerfile:FROM {nexus}/tango-libtango:latest
-        - tango-test/Dockerfile:FROM {nexus}/tango-libtango:latest
-        - tango-databaseds/Dockerfile:FROM {nexus}/tango-libtango:latest
-      - pytango-builder/Dockerfile:FROM {nexus}/tango-cpp:latest
-        - pytango-runtime/Dockerfile:FROM {nexus}/pytango-builder:latest as buildenv
-        - pytango-runtime/Dockerfile:FROM {nexus}/tango-cpp:latest
-          - tango-dsconfig/Dockerfile:FROM {nexus}/pytango-builder:latest as buildenv
-          - tango-dsconfig/Dockerfile:FROM {nexus}/pytango-runtime:latest
-          - tango-itango/Dockerfile:FROM {nexus}/pytango-builder:latest as buildenv
-          - tango-itango/Dockerfile:FROM {nexus}/pytango-runtime:latest
-          - tango-pytango/Dockerfile:FROM {nexus}/pytango-builder:latest as buildenv
-          - tango-pytango/Dockerfile:FROM {nexus}/pytango-runtime:latest
-          - tango-vscode/Dockerfile:FROM {nexus}/pytango-builder:latest as buildenv
-          - tango-vscode/Dockerfile:FROM {nexus}/pytango-runtime:latest
-      - tango-starter/Dockerfile:FROM {nexus}/tango-cpp:latest
+        - tango-admin/Dockerfile:FROM {nexus}/tango-libtango
+        - tango-test/Dockerfile:FROM {nexus}/tango-libtango
+        - tango-databaseds/Dockerfile:FROM {nexus}/tango-libtango
+      - pytango-builder/Dockerfile:FROM {nexus}/tango-cpp
+        - pytango-panic/Dockerfile:FROM {nexus}/pytango-builder as buildenv
+        - pytango-panic-gui/Dockerfile:FROM {nexus}/pytango-builder as buildenv
+        - pytango-runtime/Dockerfile:FROM {nexus}/pytango-builder as buildenv
+        - pytango-runtime/Dockerfile:FROM {nexus}/tango-cpp
+          - tango-dsconfig/Dockerfile:FROM {nexus}/pytango-builder as buildenv
+          - tango-dsconfig/Dockerfile:FROM {nexus}/pytango-runtime
+          - tango-itango/Dockerfile:FROM {nexus}/pytango-builder as buildenv
+          - tango-itango/Dockerfile:FROM {nexus}/pytango-runtime
+          - tango-pytango/Dockerfile:FROM {nexus}/pytango-builder as buildenv
+          - tango-pytango/Dockerfile:FROM {nexus}/pytango-runtime
+          - tango-vscode/Dockerfile:FROM {nexus}/pytango-builder as buildenv
+          - tango-vscode/Dockerfile:FROM {nexus}/pytango-runtime
+      - tango-starter/Dockerfile:FROM {nexus}/tango-cpp
 - mariadb
   - tango-db/Dockerfile:FROM mariadb:10
-    - mariadb_hdbpp/Dockerfile:FROM {nexus}/tango-db:latest
 
 If the Docker image tags change, then the related charts should also be updated:
 - In the `charts` folder, update all the `values.yaml` files to use the new tags.
@@ -60,31 +61,3 @@ If the Docker image tags change, then the related charts should also be updated:
   must have the `version` field incremented.  Similarly for any dependent `Chart.yaml`
   files.  The `appVersion` field gets updated as well, if was in sync with the
   `version` field.
-
-## HDB++ Archiver Implementation
-
-[![Documentation Status](https://readthedocs.org/projects/ska-tango-images/badge/?version=latest)](https://developer.skatelescope.org/projects/ska-tango-images/en/latest/?badge=latest)
-
-
-HDB++ is a archiver available in TANGO. It is configured to subscribe to TANGO attributes to be archived. MariaDB
-provides the archival database. HDB++ default schema is used to store the archived data. It consists of the following
-components:
-The Hdbpp-es is a event suscriber device which subscribes to the Tango attributes. Multiple instances of the event
-subscriber are deployed to support large number of attributes. These attributes could belong to multiple TANGO Devices.
-The Hdbpp-cm provides the configuration manager. It allows to configure the attributes to be archived and defines which
-Event Subscriber is responsible for a set of Tango attributes to be archived.
-Hdbpp-viewer shows the graphical representation of the archived data, which is stored in the data archive.
-
-The archiever solution comprises of the following Docker images:
-
-Tango-archiver(hdbpp-es and hdbpp-cm), Mariadb and Hdb++ viewer
-
-Containers like mariadb, databaseds, hdbpp-es and hdbpp-cm should be up and running in order to work HDB++ archiver solution.
-
-
-
-# Important links
- * [Link for Mariadb container](https://gitlab.com/ska-telescope/ska-tango-images/-/tree/master/docker/tango/mariadb_hdbpp)
- * [Link for Tango-archiver container](https://gitlab.com/ska-telescope/ska-tango-images/-/tree/master/docker/tango/tango-archiver)
- * [Link for Hdbpp-viewer container](https://gitlab.com/ska-telescope/ska-tango-images/-/tree/master/docker/tango/hdbpp_viewer)
- * [Archiver Charts](https://gitlab.com/ska-telescope/ska-tango-images/-/tree/master/charts/archiver)
