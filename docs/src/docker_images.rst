@@ -15,24 +15,45 @@ The following Docker images are built by this project:
 +--------------------+-------------------------------------------------------+
 | tango-cpp          | Core C++ TANGO libraries and applications.            |
 +--------------------+-------------------------------------------------------+
+| tango-libtango     | Same as tango-cpp.            |
++--------------------+-------------------------------------------------------+
 | tango-pogo         | Image for running Pogo and displaying Pogo help. Pogo |
 |                    | output can be persisted to a docker volume or to the  |
 |                    | host machine.                                         |
 +--------------------+-------------------------------------------------------+
+| tango-jive        | The TANGO jive tool                                    |
++--------------------+-------------------------------------------------------+
 | tango-java         | As per ska/tango-cpp, plus Java applications and      |
 |                    | bindings.                                             |
 +--------------------+-------------------------------------------------------+
-| tango-python       | Extends ska/tango-cpp, adding PyTango Python          |
-|                    | bindings.                                             |
+| pytango-builder    | Extends ska/tango-cpp, adding PyTango Python          |
+|                    | bindings and other tools for building python libraries|
++--------------------+-------------------------------------------------------+
+| pytango-runtime    | Extends pytango-builder without any tools for         |
+|                    | development.                                          |
++--------------------+-------------------------------------------------------+
+| tango-pytango      | same as pytango-runtime.                              |
 +--------------------+-------------------------------------------------------+
 | tango-itango       | itango, a Python shell for interactive TANGO          |
 |                    | sessions.                                             |
 +--------------------+-------------------------------------------------------+
-| tango-starter      | Example image that demonstrates how to package the    |
-|                    | Starter device in an image.                           |
-+--------------------+-------------------------------------------------------+
 | tango-rest         | An image containing mtango-rest, which acts as a REST |
 |                    | proxy to a TANGO system.                              |
++--------------------+-------------------------------------------------------+
+| tango-vnc          | An image containing xfce4 and vnc in order to enable  | 
+|                    | desktop application such as jive.                     |
++--------------------+-------------------------------------------------------+
+| tango-admin        | The TANGO tango-admin tool.                           |
++--------------------+-------------------------------------------------------+
+| tango-databaseds   | The TANGO databaseds device server.                   |
++--------------------+-------------------------------------------------------+
+| tango-dsconfig     | The TANGO MAXIV tool for managing the tango-db        |
++--------------------+-------------------------------------------------------+
+| tango-test         | The TANGO test device server.                         |
++--------------------+-------------------------------------------------------+
+| tango-panic        | The TANGO panic tool                                  |
++--------------------+-------------------------------------------------------+
+| tango-panic-gui    | The TANGO panic tool with xfce4 and vnc.              |
 +--------------------+-------------------------------------------------------+
 
 To build and register the images locally, from the root of this
