@@ -8,7 +8,7 @@ IMAGE_TO_TEST ?= artefact.skatelescope.org/ska-tango-images/tango-itango:9.3.3.1
 # IMAGE_TO_TEST ?= artefact.skatelescope.org/ska-tango-images/tango-itango:9.3.2.1## docker image that will be run for testing purpose
 TEST_RUNNER ?= test-runner-$(CI_JOB_ID)-$(KUBE_NAMESPACE)##name of the pod running the k8s_tests
 TANGO_HOST ?= tango-host-databaseds-from-makefile-$(RELEASE_NAME):10000## TANGO_HOST is an input!
-CHARTS ?= tango-util tango-base archiver ska-tango-images## list of charts to be published on gitlab -- umbrella charts for testing purpose
+CHARTS ?= tango-util tango-base ska-tango-images## list of charts to be published on gitlab -- umbrella charts for testing purpose
 
 CI_PROJECT_PATH_SLUG ?= ska-tango-images
 CI_ENVIRONMENT_SLUG ?= ska-tango-images
