@@ -30,7 +30,10 @@ RUN runtimeDeps='libboost-python1.67.0 \
     && apt-get -y install --no-install-recommends $runtimeDeps \
     && rm -rf /var/lib/apt/lists/* /etc/apt/apt.conf.d/30proxy
 
-
+# Copy across files that are used to help orchestrate container compositions
+# and test execution sequences
+COPY --from=buildenv /usr/local/bin/wait-for-it.sh /usr/local/bin/wait-for-it.sh
+COPY --from=buildenv /usr/local/bin/retry /usr/local/bin/retry
 COPY --from=buildenv /usr/local/lib/python3.7 /usr/local/lib/python3.7
 
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
