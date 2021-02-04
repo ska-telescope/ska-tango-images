@@ -1,4 +1,4 @@
-DIRS = tango-builder tango-dependencies tango-db tango-cpp tango-java tango-rest tango-dsconfig ska-python-buildenv tango-pogo tango-starter tango-libtango tango-jive ska-python-runtime tango-admin tango-databaseds tango-test tango-itango tango-vscode tango-vnc tango-pytango mariadb_hdbpp tango-archiver hdbpp_viewer
+DIRS = tango-builder tango-dependencies tango-db tango-cpp tango-java tango-rest tango-dsconfig ska-python-buildenv tango-pogo tango-starter tango-libtango tango-jive ska-python-runtime tango-admin tango-databaseds tango-test tango-itango tango-vscode tango-vnc tango-pytango mariadb_hdbpp tango-archiver hdbpp_viewer tango-modbus
 TEST = ska-python-buildenv tango-itango tango-rest tango-db tango-cpp tango-archiver
 BUILDDIRS = $(DIRS:%=build-%)
 TESTDIRS = $(TEST:%=test-%)
