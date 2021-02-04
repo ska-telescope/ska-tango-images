@@ -5,7 +5,7 @@ ENV TANGO_DOWNLOAD_URL=https://artefact.skatelescope.org/repository/raw-internal
 RUN buildDeps='curl ca-certificates' \
     && DEBIAN_FRONTEND=noninteractive apt-get update \
     && apt-get -y install --no-install-recommends $buildDeps \
-    && rm -rf /var/lib/apt/lists/* \\
+    && rm -rf /var/lib/apt/lists/* \
     && mkdir -p /usr/src/tango \
     && cd /usr/src/tango \
     && curl -fsSL "$TANGO_DOWNLOAD_URL" -o tango.tar.gz \
