@@ -4,7 +4,7 @@ pyyaml
 pytest-cov
 pytest-json-report
 pycodestyle<2.7.0,>=2.6.0a1
-pytest-bdd
+pytest-bdd==3.4.0
 pytest-ordering
 elasticsearch
 kubernetes
@@ -15,10 +15,8 @@ elasticsearch-dsl
 aiohttp
 aiojobs
 pytest-asyncio
-ska_logging
 aiohttp_cors
 flake8
 tango-simlib==0.7.0
-lmcbaseclasses
 mysql-connector-python
 itango

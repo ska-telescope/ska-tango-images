@@ -3,11 +3,11 @@
 # intermediate image, then creates a release image containing the compiled
 # binaries.
 #
-ARG DOCKER_REGISTRY_USER
-ARG DOCKER_REGISTRY_HOST
-FROM ${DOCKER_REGISTRY_HOST}/${DOCKER_REGISTRY_USER}/tango-dependencies:9.3.3.1
+ARG CAR_OCI_REGISTRY_PREFIX
+ARG CAR_OCI_REGISTRY_HOST
+FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/tango-dependencies:9.3.3.1
 
-RUN JAVA_DOWNLOAD_URL=https://nexus.engageska-portugal.pt/repository/raw/java/jre-8u221-linux-x64.tar.gz \
+RUN JAVA_DOWNLOAD_URL=https://artefact.skatelescope.org/repository/raw-internal/ska-tango-images/libraries/jre-8u221-linux-x64.tar.gz \
     && mkdir /usr/java \
     && cd /usr/java \
     && buildDeps='wget sudo libxrender1 libxtst6 libxi6' \
@@ -19,7 +19,7 @@ RUN JAVA_DOWNLOAD_URL=https://nexus.engageska-portugal.pt/repository/raw/java/jr
     && update-alternatives --set java /usr/java/jre1.8.0_221/bin/java \
     && rm /usr/java/java.tar.gz
 
-RUN TANGO_DOWNLOAD_URL=https://nexus.engageska-portugal.pt/repository/raw/tango-cs/tango-9.3.3-rc2.tar.gz \
+RUN TANGO_DOWNLOAD_URL=https://artefact.skatelescope.org/repository/raw-internal/ska-tango-images/libraries/tango-9.3.3-rc2.tar.gz \
     && DOCKERHOST=`awk '/^[a-z]+[0-9]+\t00000000/ { printf("%d.%d.%d.%d", "0x" substr($3, 7, 2), "0x" substr($3, 5, 2), "0x" substr($3, 3, 2), "0x" substr($3, 1, 2)) }' < /proc/net/route` \
     && /usr/local/bin/wait-for-it.sh --host=$DOCKERHOST --port=3142 --timeout=3 --strict --quiet -- echo "Acquire::http::Proxy \"http://$DOCKERHOST:3142\";" > /etc/apt/apt.conf.d/30proxy \
     && echo "Proxy detected on docker host - using for this build" || echo "No proxy detected on docker host" \
@@ -39,7 +39,7 @@ RUN TANGO_DOWNLOAD_URL=https://nexus.engageska-portugal.pt/repository/raw/tango-
     && apt-get purge -y --auto-remove $buildDeps \
     && rm -r /usr/src/tango
 
-RUN LOG4J=https://nexus.engageska-portugal.pt/repository/raw/java/log4j-1.2.17.tar.gz \
+RUN LOG4J=https://artefact.skatelescope.org/repository/raw-internal/ska-tango-images/libraries/log4j-1.2.17.tar.gz \
     && cd /usr/java \
     && wget --no-check-certificate "$LOG4J" -O log4j.tar.gz \
     && tar zxvf log4j.tar.gz \
