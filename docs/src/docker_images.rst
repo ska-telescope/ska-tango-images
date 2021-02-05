@@ -15,13 +15,13 @@ The following Docker images are built by this project:
 +--------------------+-------------------------------------------------------+
 | tango-cpp          | Core C++ TANGO libraries and applications.            |
 +--------------------+-------------------------------------------------------+
-| tango-libtango     | Same as tango-cpp.            |
+| tango-libtango     | Same as tango-cpp.                                    |
 +--------------------+-------------------------------------------------------+
 | tango-pogo         | Image for running Pogo and displaying Pogo help. Pogo |
 |                    | output can be persisted to a docker volume or to the  |
 |                    | host machine.                                         |
 +--------------------+-------------------------------------------------------+
-| tango-jive        | The TANGO jive tool                                    |
+| tango-jive         | The TANGO jive tool                                   |
 +--------------------+-------------------------------------------------------+
 | tango-java         | As per ska/tango-cpp, plus Java applications and      |
 |                    | bindings.                                             |
