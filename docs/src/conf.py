@@ -23,7 +23,7 @@
 import sphinx_rtd_theme
 
 def setup(app):
-    app.add_stylesheet('css/custom.css')
+    app.add_css_file('css/custom.css')
 
 # -- General configuration ------------------------------------------------
 
@@ -60,7 +60,7 @@ source_suffix = ['.rst', '.md']
 master_doc = 'index'
 
 # General information about the project.
-project = 'SKA Docker Images'
+project = 'SKA Tango Images'
 copyright = '2018, Stewart Williams'
 author = 'Stewart Williams'
 
