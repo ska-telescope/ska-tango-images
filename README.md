@@ -49,8 +49,6 @@ suffix: `9.3.4-rc4.2`, etc.
           - tango-itango/Dockerfile:FROM {nexus}/pytango-runtime
           - tango-pytango/Dockerfile:FROM {nexus}/pytango-builder as buildenv
           - tango-pytango/Dockerfile:FROM {nexus}/pytango-runtime
-          - tango-vscode/Dockerfile:FROM {nexus}/pytango-builder as buildenv
-          - tango-vscode/Dockerfile:FROM {nexus}/pytango-runtime
       - tango-starter/Dockerfile:FROM {nexus}/tango-cpp
 - mariadb
   - tango-db/Dockerfile:FROM mariadb:10

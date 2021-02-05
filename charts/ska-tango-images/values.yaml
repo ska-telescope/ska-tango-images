@@ -24,8 +24,6 @@ tango-base:
     enabled: false
   vnc:
     enabled: false
-  vscode:
-    enabled: false
   tangorest:
     enabled: true
   ingress:
