@@ -18,23 +18,19 @@ NAME=$(shell basename $(CURDIR))
 
 RELEASE_SUPPORT := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))/.make-release-support
 
-ifeq ($(strip $(DOCKER_REGISTRY_HOST)),)
-  DOCKER_REGISTRY_HOST = nexus.engageska-portugal.pt
-endif
+IMAGE_BUILDER ?= docker
+CAR_OCI_REGISTRY_HOST ?= artefact.skatelescope.org
+CAR_OCI_REGISTRY_PREFIX ?= ska-tango-images
 
-ifeq ($(strip $(DOCKER_REGISTRY_USER)),)
-  DOCKER_REGISTRY_USER = ska-docker
-endif
-
-IMAGE=$(DOCKER_REGISTRY_HOST)/$(DOCKER_REGISTRY_USER)/$(NAME)
+IMAGE=$(CAR_OCI_REGISTRY_HOST)/$(CAR_OCI_REGISTRY_PREFIX)/$(NAME)
 
 VERSION=$(shell . $(RELEASE_SUPPORT) ; getVersion)
 TAG=$(shell . $(RELEASE_SUPPORT); getTag)
 
 SHELL=/bin/bash
 
-DOCKER_BUILD_CONTEXT=.
-DOCKER_FILE_PATH=Dockerfile
+BUILD_CONTEXT=.
+FILE_PATH=Dockerfile
 
 .PHONY: pre-build docker-build post-build build release patch-release minor-release major-release tag check-status check-release showver \
 	push pre-push do-push post-push
@@ -50,15 +46,15 @@ pre-push:
 post-push:
 
 docker-build: .release
-	docker build $(DOCKER_BUILD_ARGS) -t $(IMAGE):$(VERSION) $(DOCKER_BUILD_CONTEXT) -f $(DOCKER_FILE_PATH) --build-arg DOCKER_REGISTRY_HOST=$(DOCKER_REGISTRY_HOST) --build-arg DOCKER_REGISTRY_USER=$(DOCKER_REGISTRY_USER) --build-arg http_proxy --build-arg https_proxy
-	@DOCKER_MAJOR=$(shell docker -v | sed -e 's/.*version //' -e 's/,.*//' | cut -d\. -f1) ; \
-	DOCKER_MINOR=$(shell docker -v | sed -e 's/.*version //' -e 's/,.*//' | cut -d\. -f2) ; \
+	$(IMAGE_BUILDER) build $(BUILD_ARGS) -t $(IMAGE):$(VERSION) $(BUILD_CONTEXT) -f $(FILE_PATH) --build-arg CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) --build-arg CAR_OCI_REGISTRY_PREFIX=$(CAR_OCI_REGISTRY_PREFIX)
+	@DOCKER_MAJOR=$(shell $(IMAGE_BUILDER) -v | sed -e 's/.*version //' -e 's/,.*//' | cut -d\. -f1) ; \
+	DOCKER_MINOR=$(shell $(IMAGE_BUILDER) -v | sed -e 's/.*version //' -e 's/,.*//' | cut -d\. -f2) ; \
 	if [ $$DOCKER_MAJOR -eq 1 ] && [ $$DOCKER_MINOR -lt 10 ] ; then \
-		echo docker tag -f $(IMAGE):$(VERSION) $(IMAGE):latest ;\
-		docker tag -f $(IMAGE):$(VERSION) $(IMAGE):latest ;\
+		echo $(IMAGE_BUILDER) tag -f $(IMAGE):$(VERSION) $(IMAGE):latest ;\
+		$(IMAGE_BUILDER) tag -f $(IMAGE):$(VERSION) $(IMAGE):latest ;\
 	else \
-		echo docker tag $(IMAGE):$(VERSION) $(IMAGE):latest ;\
-		docker tag $(IMAGE):$(VERSION) $(IMAGE):latest ; \
+		echo $(IMAGE_BUILDER) tag $(IMAGE):$(VERSION) $(IMAGE):latest ;\
+		$(IMAGE_BUILDER) tag $(IMAGE):$(VERSION) $(IMAGE):latest ; \
 	fi
 
 .release:
@@ -72,14 +68,13 @@ release: check-status check-release build push
 push: pre-push do-push post-push
 
 do-push:
-	@curl --output /dev/null --silent --head --fail -r 0-0 "https://$(DOCKER_REGISTRY_HOST)/repository/docker/v2/$(DOCKER_REGISTRY_USER)/$(NAME)/manifests/$(VERSION)"; \
+	@curl --output /dev/null --silent --head --fail -r 0-0 "https://$(CAR_OCI_REGISTRY_HOST)/repository/docker/v2/$(CAR_OCI_REGISTRY_PREFIX)/$(NAME)/manifests/$(VERSION)"; \
 	result=$$?; \
 	if [ $$result -eq 0 ] ; then \
 		echo "Version $(VERSION) of image $(IMAGE) already exists"; \
 	else \
 		echo "Version $(VERSION) of image $(IMAGE) does not exist"; \
-		docker push $(IMAGE):$(VERSION); \
-		docker push $(IMAGE):latest; \
+		$(IMAGE_BUILDER) push $(IMAGE):$(VERSION); \
 	fi;
 
 snapshot: build push

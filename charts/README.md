@@ -1,6 +1,6 @@
 
 
-[![Documentation Status](https://readthedocs.org/projects/ska-docker/badge/?version=latest)](https://developer.skatelescope.org/projects/ska-docker/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/ska-tango-imagesges/badge/?version=latest)](https://developer.skatelescope.org/projecska-tango-imagesimages/en/latest/?badge=latest)
 
 
 SKA TANGO-controls docker images on Kubernetes

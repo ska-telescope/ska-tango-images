@@ -7,9 +7,9 @@
 # This image caches a compilation of PyTango bindings so that child images
 # need not recompile it.
 #
-ARG DOCKER_REGISTRY_USER
-ARG DOCKER_REGISTRY_HOST
-FROM ${DOCKER_REGISTRY_HOST}/${DOCKER_REGISTRY_USER}/tango-cpp:9.3.4
+ARG CAR_OCI_REGISTRY_PREFIX
+ARG CAR_OCI_REGISTRY_HOST
+FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/tango-cpp:9.3.4
 
 USER root
 

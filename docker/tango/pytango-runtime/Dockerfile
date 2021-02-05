@@ -1,13 +1,13 @@
 #
 # This Dockerfile creates a Docker image intended to be a base runtime for SKA
 # python projects. This image should be used as an intermediate layer
-# alongside the ska-python-buildenv image.
+# alongside the pytango-builder image.
 #
-ARG DOCKER_REGISTRY_USER
-ARG DOCKER_REGISTRY_HOST
-FROM ${DOCKER_REGISTRY_HOST}/${DOCKER_REGISTRY_USER}/ska-python-buildenv:9.3.3.1 as buildenv
+ARG CAR_OCI_REGISTRY_PREFIX
+ARG CAR_OCI_REGISTRY_HOST
+FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/pytango-builder:9.3.3.2 as buildenv
 
-FROM ${DOCKER_REGISTRY_HOST}/${DOCKER_REGISTRY_USER}/tango-cpp:9.3.4
+FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/tango-cpp:9.3.4
 USER root
 
 # Permanently install Python and PyTango runtime dependencies:
@@ -30,7 +30,10 @@ RUN runtimeDeps='libboost-python1.67.0 \
     && apt-get -y install --no-install-recommends $runtimeDeps \
     && rm -rf /var/lib/apt/lists/* /etc/apt/apt.conf.d/30proxy
 
-
+# Copy across files that are used to help orchestrate container compositions
+# and test execution sequences
+COPY --from=buildenv /usr/local/bin/wait-for-it.sh /usr/local/bin/wait-for-it.sh
+COPY --from=buildenv /usr/local/bin/retry /usr/local/bin/retry
 COPY --from=buildenv /usr/local/lib/python3.7 /usr/local/lib/python3.7
 
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py

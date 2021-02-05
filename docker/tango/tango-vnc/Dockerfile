@@ -3,9 +3,9 @@
 # intermediate image, then creates a release image containing the compiled
 # binaries.
 #
-ARG DOCKER_REGISTRY_USER
-ARG DOCKER_REGISTRY_HOST
-FROM ${DOCKER_REGISTRY_HOST}/${DOCKER_REGISTRY_USER}/tango-java:9.3.3
+ARG CAR_OCI_REGISTRY_PREFIX
+ARG CAR_OCI_REGISTRY_HOST
+FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/tango-java:9.3.3
 
 USER root
 

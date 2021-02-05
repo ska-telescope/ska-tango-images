@@ -5,11 +5,11 @@ build
 *.swp
 *~ 
 .pytest_cache
-charts/ska-docker/secrets/tls.*
+charts/ska-tango-images/secrets/tls.*
 PrivateRules.mak
 charts/tango-base/secrets/tls.crt
 charts/tango-base/secrets/tls.key
 charts/tango-base/charts/tango-util-0.1.0.tgz
-charts/ska-docker/charts/*
-charts/ska-docker/Chart.lock
+charts/ska-tango-images/charts/*
+charts/ska-tango-images/Chart.lock
 charts/repository/*
