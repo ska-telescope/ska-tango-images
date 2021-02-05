@@ -73,6 +73,28 @@ account by supplying the ``CAR_OCI_REGISTRY_HOST`` and
 
    # build and register images as foo/tango-cpp, foo/tango-jive, etc.
    make CAR_OCI_REGISTRY_PREFIX=foo build
+   
+Building with alternatives to Docker
+------------------------------------
+
+You can use a daemon-less unpriveleged alternative to Docker to build container images using the dockerfiles hosted in this project by setting the ``IMAGE_BUILDER`` Makefile variable. This alternative image builder must be fully compatible with ``docker build`` options. Currently, Img and Podman were tested and they work without any major issues.
+
+To use, e.g., Img:
+
+.. code-block:: console
+
+   # build and register images as TBC/tango-cpp, TBC/tango-jive, etc.
+   make IMAGE_BUILDER=img build
+
+For more information about IMG, including installation:
+
+https://github.com/genuinetools/img
+
+For more information about Podman:
+
+https://github.com/containers/podman 
+
+
 
 Pushing the images to a Docker registry
 ---------------------------------------
@@ -98,4 +120,6 @@ and ``make push`` steps, e.g.,
 
    # Now push the images to the remote custom registry
    make CAR_OCI_REGISTRY_PREFIX=foo CAR_OCI_REGISTRY_HOST=my.registry.org:5000 push
+
+If your images were built with alternatives to Docker like Img or Podman do not forget to set the ``IMAGE_BUILDER`` variable accordingly.
 
