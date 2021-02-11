@@ -151,7 +151,7 @@ spec:
         resources:
 {{ toYaml (coalesce .deviceserver.resources .local.Values.resources) | indent 10 }}
 {{ end }}
-{{- with .local.Values.nodeSelector }}
+{{- with .deviceserver.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
 {{- end }}
