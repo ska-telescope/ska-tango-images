@@ -11,9 +11,9 @@ The following are a set of instructions of running the SKA TANGO-controls docker
 Minikube
 ========
 
-Using [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube/) enables us to create a single node stand alone Kubernetes cluster for testing purposes.  If you already have a cluster at your disposal, then you can skip forward to 'Running the SKA TANGO-controls docker images on Kubernetes'.
+Using [Minikube](https://kubernetes.io/docs/getting-started-guides/minikube/) enables us to create a single node stand alone Kubernetes cluster for testing purposes.  If you already have a cluster at your disposal, then you can skip forward to the section ['Running the SKA TANGO-controls docker images on Kubernetes'](https://developer.skatelescope.org/projects/ska-tango-images/en/latest/README.html#running-the-ska-tango-controls-docker-images-on-kubernetes).
 
-The generic installation instructions are available at https://kubernetes.io/docs/tasks/tools/install-minikube/. A deployment of Minikube that will support the standard features required for the SKA is available at https://gitlab.com/ska-telescope/sdi/deploy-minikube
+The generic installation instructions are available at [https://kubernetes.io/docs/tasks/tools/install-minikube/](https://kubernetes.io/docs/tasks/tools/install-minikube/). A deployment of Minikube that will support the standard features required for the SKA is available at [https://gitlab.com/ska-telescope/sdi/deploy-minikube](https://gitlab.com/ska-telescope/sdi/deploy-minikube).
 
 Once you have finished the deployment you may need to fixup your permissions:
 ```
