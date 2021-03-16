@@ -54,7 +54,9 @@ data:
                 "attribute_properties": {
                 {{- range $attr_prop := $device.attribute_properties }}
                   "{{ $attr_prop.attribute }}": {
-                    "{{ $attr_prop.name }}": {{ $attr_prop.values | toJson }}
+                    {{- range $prop := $attr_prop.properties }}
+                    "{{ $prop.name }}": {{ $prop.values | toJson }},
+                    {{- end }}
                   },
                 {{- end }}
                 },
@@ -84,7 +86,7 @@ data:
         exit $rc
       fi
     fi
-  {{ $deviceserver.name }}.py: |
+  {{ $deviceserver.server.name }}.py: |
     import importlib
     from tango.server import run
     
@@ -212,6 +214,9 @@ spec:
 ---
 {{ range $instance := $deviceserver.server.instances }}
 {{ $safe_instance := $instance.name | toString | replace "_" "-" }}
+
+{{if has $safe_instance $deviceserver.instances }}
+
 # one k8s service per instance
 apiVersion: v1
 kind: Service
@@ -264,6 +269,10 @@ spec:
       annotations:
 {{ toYaml $annotations | indent 8 }}
     spec:
+      volumes:
+        - name: configuration
+          configMap:
+            name: {{$deviceserver_name | toString }}-dsconfig-json
       serviceAccountName: {{ $deviceserver_name | toString }}-sa-{{ $chart.Release.Name }}
       initContainers:
       {{ if $chart.Values.dsconfig.configuration_file }}
@@ -331,7 +340,11 @@ spec:
           - sh
           - -c
         args:
-          - {{ if not $deviceserver.noretry }}retry --max=10 -- {{ end }}{{ $deviceserver.command | toString }} {{ $instance |toString }}
+          - {{ if not $deviceserver.noretry }}retry --max=10 -- {{ end }}/usr/bin/python data/{ $deviceserver.server.name }}.py {{ $safe_instance |toString }}
+        volumeMounts:
+          - name: configuration
+            mountPath: data
+            readOnly: true
         env:
         - name: TANGO_HOST
           value: {{ $tango_host }}
@@ -363,6 +376,8 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
 {{- end }}
+
+{{ end }} ## if has
 
 {{ end }} # range instances
 
