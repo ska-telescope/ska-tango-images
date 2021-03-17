@@ -37,35 +37,41 @@ data:
     {
       "servers": {
         "{{ $deviceserver.server.name }}" : {
-          {{- range $instance := $deviceserver.server.instances }}
+          {{- range $index_instance,$instance := $deviceserver.server.instances }}
+          {{- if $index_instance}},{{end}}
           "{{ $instance.name }}": {
-            {{- range $class := $instance.classes }}
+            {{- range $index_class, $class := $instance.classes }}
+            {{- if $index_class}},{{end}}
             "{{ $class.name }}": {
-              {{- range $device := $class.devices }}
+              {{- range $index_device, $device := $class.devices }}
+              {{- if $index_device}},{{end}}
               "{{ $device.name }}": {
                 {{- if $device.properties }}
                 "properties": {
-                  {{- range $property := $device.properties }}
+                  {{- range $index_property, $property := $device.properties }}
+                  {{- if $index_property}},{{end}}
                   "{{ $property.name }}": {{ $property.values | toJson }}
                   {{- end }}
-                },
+                }{{ if $device.attribute_properties }},{{ end }}
                 {{- end }}
                 {{- if $device.attribute_properties }}
                 "attribute_properties": {
-                {{- range $attr_prop := $device.attribute_properties }}
+                {{- range $index_attr_prop, $attr_prop := $device.attribute_properties }}
+                  {{- if $index_attr_prop}},{{end}}
                   "{{ $attr_prop.attribute }}": {
-                    {{- range $prop := $attr_prop.properties }}
-                    "{{ $prop.name }}": {{ $prop.values | toJson }},
+                    {{- range $index_prop, $prop := $attr_prop.properties }}
+                    {{- if $index_prop}},{{end}}
+                    "{{ $prop.name }}": {{ $prop.values | toJson }}
                     {{- end }}
-                  },
+                  }
                 {{- end }}
-                },
+                }
                 {{- end }}
-              },
+              }
               {{- end }}    
-            },
+            }
             {{- end }}
-          },
+          }
           {{- end }} 
         }
       }
@@ -87,12 +93,14 @@ data:
       fi
     fi
   {{ $deviceserver.server.name }}.py: |
-    import importlib
+    import importlib.util
     from tango.server import run
     
     classes = []
     {{- range $module := $deviceserver.modules }}
-    mod = importlib.import_module("{{ $module | toString }}")
+    spec = importlib.util.spec_from_file_location("{{ $module.name }}", "{{ $module.path }}")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
     {{- range $instance := $deviceserver.server.instances }}
     {{- range $class := $instance.classes }}
     try:
@@ -215,8 +223,8 @@ spec:
 {{ range $instance := $deviceserver.server.instances }}
 {{ $safe_instance := $instance.name | toString | replace "_" "-" }}
 
-{{if has $safe_instance $deviceserver.instances }}
-
+{{ if has $safe_instance $deviceserver.instances }}
+---
 # one k8s service per instance
 apiVersion: v1
 kind: Service
@@ -236,7 +244,6 @@ spec:
     subsystem: {{ $chart.Values.subsystem }}
     component: {{tpl ($deviceserver_name | toString) $chart }}-{{ $safe_instance }}
   clusterIP: None
-
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -340,7 +347,7 @@ spec:
           - sh
           - -c
         args:
-          - {{ if not $deviceserver.noretry }}retry --max=10 -- {{ end }}/usr/bin/python data/{ $deviceserver.server.name }}.py {{ $safe_instance |toString }}
+          - {{ if not $deviceserver.noretry }}retry --max=10 -- {{ end }}/usr/bin/python /data/{{ $deviceserver.server.name }}.py {{ $safe_instance |toString }}
         volumeMounts:
           - name: configuration
             mountPath: data
@@ -376,7 +383,7 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
 {{- end }}
-
+---
 {{ end }} ## if has
 
 {{ end }} # range instances
