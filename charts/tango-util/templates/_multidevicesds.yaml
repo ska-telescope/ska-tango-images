@@ -15,7 +15,7 @@ Parameters:
 {{ $dsconfig := coalesce .local.Values.global.dsconfig .local.Values.dsconfig}}
 {{ $chart := .local }}
 {{ $deviceserver := .deviceserver }}
-{{ $deviceserver_name := .name | toString }}
+{{ $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
 
 ---
 # Device Server configuration
@@ -347,7 +347,7 @@ spec:
           - sh
           - -c
         args:
-          - {{ if not $deviceserver.noretry }}retry --max=10 -- {{ end }}/usr/bin/python /data/{{ $deviceserver.server.name }}.py {{ $safe_instance |toString }}
+          - {{ if not $deviceserver.noretry }}retry --max=10 -- {{ end }}{{ if $deviceserver.command }}{{ $deviceserver.command }}{{ else }}/usr/bin/python /data/{{ $deviceserver.server.name }}.py{{ end }} {{ $safe_instance |toString }}
         volumeMounts:
           - name: configuration
             mountPath: data
