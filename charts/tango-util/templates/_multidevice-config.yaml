@@ -1,0 +1,113 @@
+{{ define "tango-util.multidevice-config.tpl" }}
+
+---
+{{ $labels := coalesce .local.Values.global.labels .local.Values.labels "label:none" }}
+{{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations "annotations:none" }}
+{{ $deviceserver := .deviceserver }}
+{{ $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
+
+---
+# Device Server configuration
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ $deviceserver_name | toString }}-dsconfig-json
+  namespace: {{ .local.Release.Namespace }}
+  labels:
+{{ toYaml $labels | indent 4 }}
+    component: configurator
+    function: deployment
+    intent: enabling
+    domain: self-configuration
+  annotations:
+{{ toYaml $annotations | indent 4 }}
+data:
+  configuration.json: | 
+    {
+      "servers": {
+        "{{ $deviceserver.server.name }}" : {
+          {{- range $index_instance,$instance := $deviceserver.server.instances }}
+          {{- if $index_instance}},{{end}}
+          "{{ $instance.name }}": {
+            {{- range $index_class, $class := $instance.classes }}
+            {{- if $index_class}},{{end}}
+            "{{ $class.name }}": {
+              {{- range $index_device, $device := $class.devices }}
+              {{- if $index_device}},{{end}}
+              "{{ $device.name }}": {
+                {{- if $device.properties }}
+                "properties": {
+                  {{- range $index_property, $property := $device.properties }}
+                  {{- if $index_property}},{{end}}
+                  "{{ $property.name }}": {{ $property.values | toJson }}
+                  {{- end }}
+                }{{ if $device.attribute_properties }},{{ end }}
+                {{- end }}
+                {{- if $device.attribute_properties }}
+                "attribute_properties": {
+                {{- range $index_attr_prop, $attr_prop := $device.attribute_properties }}
+                  {{- if $index_attr_prop}},{{end}}
+                  "{{ $attr_prop.attribute }}": {
+                    {{- range $index_prop, $prop := $attr_prop.properties }}
+                    {{- if $index_prop}},{{end}}
+                    "{{ $prop.name }}": {{ $prop.values | toJson }}
+                    {{- end }}
+                  }
+                {{- end }}
+                }
+                {{- end }}
+              }
+              {{- end }}    
+            }
+            {{- end }}
+          }
+          {{- end }} 
+        }
+      }
+    }
+  bootstrap.sh: |
+    #/bin/sh
+    json2tango -w -a -u data/configuration.json
+    rc=$?
+    if [ $rc -eq 0 ]; then
+      echo "finished normally."
+      exit 0
+    else
+      if [ $rc -eq 2 ]; then
+        echo "finished with an update."
+        exit 0
+      else
+        echo "finished with an ERROR."
+        exit $rc
+      fi
+    fi
+  {{ $deviceserver.server.name }}.py: |
+    import importlib.util
+    from tango.server import run
+    
+    classes = []
+    {{- range $module := $deviceserver.modules }}
+    spec = importlib.util.spec_from_file_location("{{ $module.name }}", "{{ $module.path }}")
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    {{- range $instance := $deviceserver.server.instances }}
+    {{- range $class := $instance.classes }}
+    try:
+      myclass = getattr(mod, "{{ $class.name }}")
+      if not myclass in classes: 
+        classes.append(myclass)
+    except:
+      pass
+    
+    {{- end }}
+    {{- end }}
+    {{- end }}
+
+    def main(args=None, **kwargs):
+      return run(classes=(classes), args=args, **kwargs)
+
+    if __name__ == '__main__':
+        main()
+
+
+{{ end }} # multidevice-config.tpl
