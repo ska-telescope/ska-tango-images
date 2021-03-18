@@ -282,7 +282,6 @@ spec:
             name: {{$deviceserver_name | toString }}-dsconfig-json
       serviceAccountName: {{ $deviceserver_name | toString }}-sa-{{ $chart.Release.Name }}
       initContainers:
-      {{ if $chart.Values.dsconfig.configuration_file }}
       - name: wait-for-configuration
         image: "bitnami/kubectl:latest"
         imagePullPolicy: IfNotPresent
@@ -291,7 +290,6 @@ spec:
           - -c
         args:
           - kubectl wait job --for=condition=complete {{ $deviceserver_name | toString }}-configuration-{{ $chart.Release.Name }} {{ if $chart.Values.dsconfig.timeout }} --timeout={{ $chart.Values.dsconfig.timeout }} {{ end }}
-      {{ end }}
 {{ if ($deviceserver.depends_on) }}
 {{ range $index, $device := $deviceserver.depends_on }}
 {{ if ($device.host) }}
