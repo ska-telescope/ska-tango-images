@@ -5,6 +5,7 @@
 {{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations "annotations:none" }}
 {{ $deviceserver := .deviceserver }}
 {{ $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
+{{ $chart := .local }}
 
 ---
 # Device Server configuration
@@ -27,7 +28,9 @@ data:
       "servers": {
         "{{ $deviceserver.server.name }}" : {
           {{- range $index_instance,$instance := $deviceserver.server.instances }}
-          {{- if $index_instance}},{{end}}
+          {{- if has $instance.name $deviceserver.instances }}
+          {{- if hasKey $deviceserver "tmp_start_instance" }},{{end}}
+          {{- $_ := set $deviceserver "tmp_start_instance" "1" }}
           "{{ $instance.name }}": {
             {{- range $index_class, $class := $instance.classes }}
             {{- if $index_class}},{{end}}
@@ -39,7 +42,12 @@ data:
                 "properties": {
                   {{- range $index_property, $property := $device.properties }}
                   {{- if $index_property}},{{end}}
-                  "{{ $property.name }}": {{ $property.values | toJson }}
+                  "{{ $property.name }}": [
+                    {{- range $index_value, $value := $property.values }}
+                    {{- if $index_value}},{{end}}
+                    "{{ tpl $value $chart }}"
+                    {{- end }}
+                    ]
                   {{- end }}
                 }{{ if $device.attribute_properties }},{{ end }}
                 {{- end }}
@@ -50,7 +58,12 @@ data:
                   "{{ $attr_prop.attribute }}": {
                     {{- range $index_prop, $prop := $attr_prop.properties }}
                     {{- if $index_prop}},{{end}}
-                    "{{ $prop.name }}": {{ $prop.values | toJson }}
+                    "{{ $prop.name }}": [
+                    {{- range $index_value, $value := $prop.values }}
+                    {{- if $index_value}},{{end}}
+                    "{{ tpl $value $chart }}"
+                    {{- end }}
+                    ]
                     {{- end }}
                   }
                 {{- end }}
@@ -62,9 +75,11 @@ data:
             {{- end }}
           }
           {{- end }} 
+          {{- end }} 
         }
       }
     }
+    {{- $_ := unset $deviceserver "tmp_start_instance" }}
   bootstrap.sh: |
     #/bin/sh
     json2tango -w -a -u data/configuration.json
