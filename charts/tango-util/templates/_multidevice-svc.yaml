@@ -96,7 +96,7 @@ spec:
         imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command:
           - retry
-          - --max=10
+          - --max=60 --sleep=5
           - --
           - /usr/local/bin/wait-for-it.sh
           - {{ $device.host }}
@@ -118,7 +118,7 @@ spec:
         imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command:
           - retry
-          - --max=10
+          - --max=60 --sleep=5
           - --
           - tango_admin
           - --ping-device
@@ -143,7 +143,7 @@ spec:
           - sh
           - -c
         args:
-          - {{ if not $deviceserver.noretry }}retry --max=10 -- {{ end }}{{ if $deviceserver.command }}{{ $deviceserver.command }}{{ else }}/usr/bin/python /data/{{ $deviceserver.server.name }}.py{{ end }} {{ $safe_instance |toString }}
+          - {{ if not $deviceserver.noretry }}retry --max=60 --sleep=5 -- {{ end }}{{ if $deviceserver.command }}{{ $deviceserver.command }}{{ else }}/usr/bin/python /data/{{ $deviceserver.server.name }}.py{{ end }} {{ $safe_instance |toString }}
         volumeMounts:
           - name: configuration
             mountPath: data
