@@ -53,7 +53,7 @@ data:
                 {{- end }}
                 {{- if $device.attribute_properties }}
                 "attribute_properties": {
-                {{- range $index_attr_prop, $attr_prop := $device.attribute_properties }}
+                  {{- range $index_attr_prop, $attr_prop := $device.attribute_properties }}
                   {{- if $index_attr_prop}},{{end}}
                   "{{ $attr_prop.attribute }}": {
                     {{- range $index_prop, $prop := $attr_prop.properties }}
@@ -77,7 +77,26 @@ data:
           {{- end }} 
           {{- end }} 
         }
+      }{{ if $deviceserver.class_properties }},
+      "classes": {
+        {{- range $index_class_prop_group, $class_prop_group := $deviceserver.class_properties }}
+        {{- if $index_class_prop_group}},{{end}}  
+          "{{ $class_prop_group.name }}": {
+              "properties": {
+                {{- range $index_class_prop, $class_prop := $class_prop_group.properties }}
+                {{- if $index_class_prop}},{{end}}
+                  "{{ $class_prop.name }}": [
+                    {{- range $index_value, $value := $class_prop.values }}
+                    {{- if $index_value}},{{end}}
+                    "{{ tpl $value $chart }}"
+                    {{- end }}
+                  ]
+                {{- end }}
+              }
+          }
+        {{- end }}
       }
+      {{ end }}
     }
     {{- $_ := unset $deviceserver "tmp_start_instance" }}
   bootstrap.sh: |
