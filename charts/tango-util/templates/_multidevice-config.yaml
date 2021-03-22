@@ -116,32 +116,44 @@ data:
       fi
     fi
   {{ $deviceserver.server.name }}.py: |
+    import importlib
     import importlib.util
     from tango.server import run
     
     classes = []
-    {{- range $module := $deviceserver.modules }}
-    spec = importlib.util.spec_from_file_location("{{ $module.name }}", "{{ $module.path }}")
+
+    {{- range $entrypoint := $deviceserver.entrypoints }}
+    splitted_name = str(" {{ $entrypoint.name }} ").split(sep='.')
+    module_name = ".".join(splitted_name[:-1])
+    {{- if $entrypoint.path }}  
+    spec = importlib.util.spec_from_file_location(module_name.strip(), "{{  $entrypoint.path }}")
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
-    {{- range $instance := $deviceserver.server.instances }}
-    {{- range $class := $instance.classes }}
-    try:
-      myclass = getattr(mod, "{{ $class.name }}")
-      if not myclass in classes: 
-        classes.append(myclass)
-    except:
-      pass
     
-    {{- end }}
+    myclass = getattr(mod, splitted_name[-1].strip())
+    if not myclass in classes: 
+      classes.append(myclass)
+
+    {{- else }}
+    
+    mod = importlib.import_module(module_name.strip())
+    myclass = getattr(mod,  splitted_name[-1].strip())
+    if not myclass in classes: 
+      classes.append(myclass)
+
     {{- end }}
     {{- end }}
 
     def main(args=None, **kwargs):
+      print(classes)
       return run(classes=(classes), args=args, **kwargs)
 
     if __name__ == '__main__':
         main()
+
+    
+
+   
 
 
 {{ end }} # multidevice-config.tpl
