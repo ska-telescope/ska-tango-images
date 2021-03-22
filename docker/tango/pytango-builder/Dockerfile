@@ -51,7 +51,4 @@ RUN python3 -m pip install numpy==1.19.2
 COPY requirements.txt /requirements.txt
 RUN python3 -m pip install -r /requirements.txt
 
-# build PyTango with ipython support.
-RUN python3 -m pip install ipython==7.21.0
-
 RUN mkdir /venv && ln -s /usr/* /venv/  && ln -s /usr/local/bin/itango3 /venv/bin/itango3
