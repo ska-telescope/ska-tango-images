@@ -1,10 +1,10 @@
 {{- define "tango-util.configuration.tpl" -}}
-{{ $default_tango_host := printf "%s-%s" "databaseds-tango-base-" .Release.Name }}
+{{ $default_tango_host := printf "%s-%s:10000" "databaseds-tango-base-" .Release.Name }}
 {{ $tango_host := tpl (coalesce .Values.global.tango_host .Values.tango_host $default_tango_host | toString) . }}
 {{ $dsconfig := coalesce .Values.global.dsconfig .Values.dsconfig}}
-{{ $default_tango_host := printf "%s-%s" "databaseds-tango-base-" .Release.Name }}
-{{ $tango_host := tpl (coalesce .Values.global.tango_host .Values.tango_host $default_tango_host | toString) . }}
 {{ $itango := coalesce .Values.global.itango .Values.itango}}
+{{ $tries := coalesce  .Values.global.tries 10}}
+{{ $sleep := coalesce  .Values.global.sleep 5}}
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -97,7 +97,7 @@ spec:
         imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command:
           - retry
-          - --max=10
+          - --tries={{$tries}} --sleep={{$sleep}}
           - --
           - /usr/local/bin/wait-for-it.sh
           - {{ $tango_host }}
@@ -117,6 +117,10 @@ spec:
         image: "{{ $dsconfig.image.registry }}/{{ $dsconfig.image.image }}:{{ $dsconfig.image.tag }}"
         imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command: # exit code 2 is CONFIG_APPLIED - https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig/blob/master/dsconfig/utils.py#L11 !!!! this should not be an error !!!!
+          - retry
+          - --tries={{$tries}} 
+          - --sleep={{$sleep}}
+          - --
           - sh
           - data/bootstrap.sh
         env:
