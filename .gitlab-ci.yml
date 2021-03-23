@@ -15,7 +15,7 @@ stages:
 # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#authenticating-to-the-container-registry
 before_script:
   - echo $CAR_OCI_REGISTRY_PASSWORD | docker login -u $CAR_OCI_REGISTRY_USERNAME --password-stdin $CAR_OCI_REGISTRY_HOST
-
+  - echo $DOCKER_REGISTRY_PASSWORD | docker login -u $DOCKER_REGISTRY_USERNAME --password-stdin $DOCKER_REGISTRY_HOST
 build_dependencies:
   retry: 2
   stage: build_1
@@ -27,7 +27,9 @@ build_dependencies:
   - &build_push |
     cd docker 
     make BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER build
+    make CAR_OCI_REGISTRY_HOST="nexus.engageska-portugal.pt" -C $IMAGE_FOLDER build
     make BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER push
+    make CAR_OCI_REGISTRY_HOST="nexus.engageska-portugal.pt" BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER push
   only:
     changes:
     - docker/tango/tango-dependencies/**/*
