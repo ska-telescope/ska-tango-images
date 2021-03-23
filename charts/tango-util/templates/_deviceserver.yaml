@@ -89,7 +89,8 @@ spec:
           - -c
         args:
           - retry
-          - --tries={{$tries}} --sleep={{$sleep}}
+          - --tries={{$tries}} 
+          - --sleep={{$sleep}}
           - --
           - /usr/local/bin/wait-for-it.sh
           - {{ $device.host }}
@@ -114,7 +115,8 @@ spec:
           - -c
         args:
           - retry
-          - --tries={{$tries}} --sleep={{$sleep}}
+          - --tries={{$tries}} 
+          - --sleep={{$sleep}}
           - --
           - tango_admin
           - --ping-device

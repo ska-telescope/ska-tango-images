@@ -97,7 +97,8 @@ spec:
         imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command:
           - retry
-          - --tries={{$tries}} --sleep={{$sleep}}
+          - --tries={{$tries}} 
+          - --sleep={{$sleep}}
           - --
           - /usr/local/bin/wait-for-it.sh
           - {{ $tango_host }}

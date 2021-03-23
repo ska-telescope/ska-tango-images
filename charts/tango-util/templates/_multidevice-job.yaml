@@ -37,7 +37,8 @@ spec:
           - -c
         args:
           - retry
-          - --tries={{$tries}} --sleep={{$sleep}}
+          - --tries={{$tries}} 
+          - --sleep={{$sleep}}
           - --
           - tango_admin
           - --check-device

@@ -68,7 +68,8 @@ spec:
         imagePullPolicy: {{ .Values.databaseds.image.pullPolicy }}
         command:
           - retry
-          - --tries={{$tries}} --sleep={{$sleep}}
+          - --tries={{$tries}} 
+          - --sleep={{$sleep}}
           - --
           - /usr/local/bin/wait-for-it.sh
           - {{ template "tango-base.name" . }}-{{ .Values.tangodb.component }}:3306
