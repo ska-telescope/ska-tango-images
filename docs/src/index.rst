@@ -14,5 +14,6 @@ that are useful for TANGO control system development.
    :caption: Contents:
 
    docker_images
+   helm_charts
    README
 

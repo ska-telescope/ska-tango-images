@@ -1,13 +1,15 @@
 {{ $localchart := . }}
 
-{{ range $deviceserver := .Values.deviceServers }}
+{{ range $key, $deviceserver := .Values.deviceServers }}
 
-{{ range $instance := $deviceserver.instances }}
+{{ $context := dict "name" $key "deviceserver" $deviceserver "image" $deviceserver.image "local" $localchart }}
 
-{{ $context := dict "deviceserver" $deviceserver "image" $deviceserver.image "local" $localchart "instance" $instance }}
+{{ template "tango-util.multidevice-config.tpl" $context }}
 
-{{ template "tango-util.deviceserver.tpl" $context }}
+{{ template "tango-util.multidevice-sacc-role.tpl" $context }}
 
-{{ end }}
+{{ template "tango-util.multidevice-job.tpl" $context }}
+
+{{ template "tango-util.multidevice-svc.tpl" $context }}
 
 {{ end }} # deviceservers
