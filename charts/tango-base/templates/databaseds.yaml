@@ -73,7 +73,7 @@ spec:
           - --
           - /usr/local/bin/wait-for-it.sh
           - {{ template "tango-base.name" . }}-{{ .Values.tangodb.component }}:3306
-          - --timeout=30
+          - --timeout=60
           - --strict
           - --
           - /usr/local/bin/DataBaseds
