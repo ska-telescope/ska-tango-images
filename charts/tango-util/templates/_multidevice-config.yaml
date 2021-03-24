@@ -145,7 +145,7 @@ data:
     {{- end }}
 
     def main(args=None, **kwargs):
-      print(classes)
+      {{ if $chart.Values.global.DEBUG }}import debugpy; debugpy.listen({{ $chart.Values.global.DEBUG }}){{ end }}
       return run(classes=(classes), args=args, **kwargs)
 
     if __name__ == '__main__':
