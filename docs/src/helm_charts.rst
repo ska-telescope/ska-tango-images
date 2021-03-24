@@ -36,76 +36,78 @@ Dsconfig generation
 +++++++++++++++++++
 
 `Dsconfig <https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig>`_ is an application which configure the tango database with the help of a json file.
-With tango-util a deviceServer is configurable using specifications in a values.yaml file of the chart instead of the dsconfig.json file, where all deviceServers have a configuration yaml file.
+With tango-util a device derver is configurable using specifications in a values.yaml file of the chart instead of the dsconfig.json file, where all device servers have a configuration yaml block.
 Below there is an example of a values file that can be used with the tango-util multi device definition: 
 
 .. code-block:: console
 
     deviceServers: 
-        name: "theexample-{{.Release.Name}}"
-        function: tango-example-powersupply
-        domain: tango-example
-        instances: ["test"]
-        entrypoints:
-            - name: "powersupply.PowerSupply"
-            path: "/app/module_example/powersupply.py"
-            - name: "EventReceiver.EventReceiver"
-            path: "/app/module_example/EventReceiver.py"
-            - name: "Motor.Motor"
-            path: "/app/module_example/Motor.py"
-        server:
-            name: "theexample"
-            instances:
-            - name: "test2"
-                classes: 
-                - name: "PowerSupply"
-                devices: 
-                - name: "test/power_supply/2"
-                    properties:
-                    - name: "test"
-                    values: 
-                    - "test2"
-            - name: "test"
-                classes: 
-                - name: "PowerSupply"
-                devices: 
-                - name: "test/power_supply/1"
-                    properties:
-                    - name: "test"
-                    values: 
-                    - "test2"
-                - name: "EventReceiver"
-                devices: 
-                - name: "test/eventreceiver/1"
-                - name: "Motor"
-                devices: 
-                - name: "test/motor/1"
-                    properties:
-                    - name: "polled_attr"
-                    values: 
-                    - "PerformanceValue"
-                    - "{{ .Values.deviceServers.theexample.polling }}"
-                    attribute_properties:
-                    - attribute: "PerformanceValue"
-                    properties: 
-                    - name: "rel_change"
+        theexample: 
+            name: "theexample-{{.Release.Name}}"
+            function: tango-example-powersupply
+            domain: tango-example
+            instances: ["test"]
+            polling: 1000
+            entrypoints:
+                - name: "powersupply.PowerSupply"
+                path: "/app/module_example/powersupply.py"
+                - name: "EventReceiver.EventReceiver"
+                path: "/app/module_example/EventReceiver.py"
+                - name: "Motor.Motor"
+                path: "/app/module_example/Motor.py"
+            server:
+                name: "theexample"
+                instances:
+                - name: "test2"
+                    classes: 
+                    - name: "PowerSupply"
+                    devices: 
+                    - name: "test/power_supply/2"
+                        properties:
+                        - name: "test"
                         values: 
-                        - "-1"
-                        - "1"
-        class_properties:
-            - name: "PowerSupply"
-            properties:
-                - name: "aClassProperty"
-                values: ["67.4", "123"]
-                - name: "anotherClassProperty"
-                values: ["test", "test2"]
-        depends_on:
-            - device: sys/database/2
-        image:
-            registry: "{{.Values.tango_example.image.registry}}"
-            image: "{{.Values.tango_example.image.image}}"
-            tag: "{{.Values.tango_example.image.tag}}"
-            pullPolicy: "{{.Values.tango_example.image.pullPolicy}}"
+                        - "test2"
+                - name: "test"
+                    classes: 
+                    - name: "PowerSupply"
+                    devices: 
+                    - name: "test/power_supply/1"
+                        properties:
+                        - name: "test"
+                        values: 
+                        - "test2"
+                    - name: "EventReceiver"
+                    devices: 
+                    - name: "test/eventreceiver/1"
+                    - name: "Motor"
+                    devices: 
+                    - name: "test/motor/1"
+                        properties:
+                        - name: "polled_attr"
+                        values: 
+                        - "PerformanceValue"
+                        - "{{ .Values.deviceServers.theexample.polling }}"
+                        attribute_properties:
+                        - attribute: "PerformanceValue"
+                        properties: 
+                        - name: "rel_change"
+                            values: 
+                            - "-1"
+                            - "1"
+            class_properties:
+                - name: "PowerSupply"
+                properties:
+                    - name: "aClassProperty"
+                    values: ["67.4", "123"]
+                    - name: "anotherClassProperty"
+                    values: ["test", "test2"]
+            depends_on:
+                - device: sys/database/2
+            image:
+                registry: "{{.Values.tango_example.image.registry}}"
+                image: "{{.Values.tango_example.image.image}}"
+                tag: "{{.Values.tango_example.image.tag}}"
+                pullPolicy: "{{.Values.tango_example.image.pullPolicy}}"
     
 
 Fields explained:
@@ -121,7 +123,7 @@ Fields explained:
     - **intances** : A list of all instances for a device server. For each instance a number of devices can be defined together with the relative properties.
  - **class_properties** : On this field you can list your class properties.
 
-The configuration file, like the above one, needs to be added to the values.yaml file. Below there is an example of how to add it :
+The device server configuration, like the above one, needs to be added to the values.yaml file. Below there is an example of how to add it (by splitting the definitions in different files):
 
 .. code-block:: console
 
@@ -132,8 +134,8 @@ The configuration file, like the above one, needs to be added to the values.yaml
             file: "data/theexample.yaml"
 
 Fields explained:
-    - **file** : This field specifies the path of the Dsconfig file in an yaml format. Note:. This file should be included in the `data folder <https://gitlab.com/ska-telescope/tango-example/-/tree/master/charts/tango-example/data>`__ .
-    - **polling** : The polling field is one of the variable attributes of the  deviceServer. In this example we have it present on the *test/motor/1* device in the values of the *polled_attr* property. So this field allows us to change the value of the *polled_attr* property.
+    - **file** : This field specifies the path of the device server configuration block as shown above. Note:. This file should be included in a `data folder <https://gitlab.com/ska-telescope/tango-example/-/tree/master/charts/tango-example/data>`__ inside the chart.
+    - **polling** : This field is referenced in the above device server configuration block. In fact the tango-util device server definition template some of the field composing it (like the properties). In the above example the *polled_attr* property of the *test/motor/1* device takes its value from this field. As a consequence, this field allows us to change the value of the *polled_attr* property in the parent chart.
     - **instances** : If **instances** has values ​​in the value file, this takes precedence over the data file **instances** field.
 
 The use of the yaml file allows users to have a cleaner and more understandable view of the DeviceServer configurations compared to a json file configuration. 
