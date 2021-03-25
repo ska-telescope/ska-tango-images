@@ -16,7 +16,6 @@ Parameters:
 {{ $chart := .local }}
 {{ $deviceserver := .deviceserver }}
 {{ $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
-{{ $retry_option := coalesce  .local.Values.global.retry "--max=60"}}
 {{ $kubectl_wait_timeout := coalesce $dsconfig.timeout "120s" }}
 
 ---
@@ -101,7 +100,13 @@ spec:
           - -c
         args:
           - retry
-          - {{$retry_option}}
+          {{- if $chart.Values.global.retry }}
+          {{- range $retry_option := $chart.Values.global.retry }}
+          - {{ $retry_option }}
+          {{- end }}
+          {{- else }}
+          - --max=60
+          {{- end }}
           - --
           - /usr/local/bin/wait-for-it.sh
           - {{ $device.host }}
@@ -126,7 +131,13 @@ spec:
           - -c
         args:
           - retry
-          - {{$retry_option}}
+          {{- if $chart.Values.global.retry }}
+          {{- range $retry_option := $chart.Values.global.retry }}
+          - {{ $retry_option }}
+          {{- end }}
+          {{- else }}
+          - --max=60
+          {{- end }}
           - --
           - tango_admin
           - --ping-device
@@ -151,7 +162,17 @@ spec:
           - sh
           - -c
         args:
-          - {{ if not $deviceserver.noretry }}retry {{$retry_option}} -- {{ end }}{{ if $deviceserver.command }}{{ $deviceserver.command }}{{ else }}/usr/bin/python /data/{{ $deviceserver.server.name }}.py{{ end }} {{ $safe_instance |toString }}
+          {{- if not $deviceserver.noretry }}
+          - retry 
+          {{- if $chart.Values.global.retry }}
+          {{- range $retry_option := $chart.Values.global.retry }}
+          - {{ $retry_option }}
+          {{- end }}
+          {{- else }}
+          - -- 
+          {{- end }}
+          {{- end }}
+          - {{ if $deviceserver.command }}{{ $deviceserver.command }}{{ else }}/usr/bin/python /data/{{ $deviceserver.server.name }}.py{{ end }} {{ $safe_instance |toString }}
         volumeMounts:
           - name: configuration
             mountPath: data

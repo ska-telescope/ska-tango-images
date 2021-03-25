@@ -98,8 +98,8 @@ spec:
         imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command:
           - retry
-          {{- if .local.Values.global.retry }}
-          {{- range $retry_option := .local.Values.global.retry }}
+          {{- if .Values.global.retry }}
+          {{- range $retry_option := .Values.global.retry }}
           - {{ $retry_option }}
           {{- end }}
           {{- else }}

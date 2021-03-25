@@ -85,8 +85,8 @@ spec:
         imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command:
           - retry
-          {{- if .local.Values.global.retry }}
-          {{- range $retry_option := .local.Values.global.retry }}
+          {{- if $chart.Values.global.retry }}
+          {{- range $retry_option := $chart.Values.global.retry }}
           - {{ $retry_option }}
           {{- end }}
           {{- else }}
@@ -113,8 +113,8 @@ spec:
         imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command:
           - retry
-          {{- if .local.Values.global.retry }}
-          {{- range $retry_option := .local.Values.global.retry }}
+          {{- if $chart.Values.global.retry }}
+          {{- range $retry_option := $chart.Values.global.retry }}
           - {{ $retry_option }}
           {{- end }}
           {{- else }}
@@ -145,9 +145,9 @@ spec:
           - -c
         args:
           - retry 
-          {{- if .local.Values.global.retry }}
-          {{- range $retry_option := .local.Values.global.retry }}
-          {{- $retry_option }}
+          {{- if $chart.Values.global.retry }}
+          {{- range $retry_option := $chart.Values.global.retry }}
+          - {{ $retry_option }}
           {{- end }}
           {{- else }}
           - --max=60
