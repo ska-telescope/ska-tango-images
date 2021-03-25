@@ -5,7 +5,7 @@
 {{ $default_tango_host := printf "%s-%s" "databaseds-tango-base-" .Release.Name }}
 {{ $tango_host := tpl (coalesce .Values.global.tango_host .Values.tango_host $default_tango_host | toString) . }}
 {{ $itango := coalesce .Values.global.itango .Values.itango}}
-{{ $retry_option := coalesce  .local.Values.global.retry "--max=60"}}
+{{ $retry_option := coalesce  .Values.global.retry "--max=60"}}
 
 ---
 apiVersion: v1
