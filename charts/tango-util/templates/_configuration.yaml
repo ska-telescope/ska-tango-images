@@ -5,7 +5,6 @@
 {{ $default_tango_host := printf "%s-%s" "databaseds-tango-base-" .Release.Name }}
 {{ $tango_host := tpl (coalesce .Values.global.tango_host .Values.tango_host $default_tango_host | toString) . }}
 {{ $itango := coalesce .Values.global.itango .Values.itango}}
-{{ $retry_option := coalesce  .Values.global.retry "--max=60"}}
 
 ---
 apiVersion: v1
@@ -99,7 +98,13 @@ spec:
         imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command:
           - retry
-          - {{$retry_option}}
+          {{- if .local.Values.global.retry }}
+          {{- range $retry_option := .local.Values.global.retry }}
+          - {{ $retry_option }}
+          {{- end }}
+          {{- else }}
+          - --max=60
+          {{- end }}
           - --
           - /usr/local/bin/wait-for-it.sh
           - {{ $tango_host }}

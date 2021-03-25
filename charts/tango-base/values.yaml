@@ -7,8 +7,10 @@ xauthority: "~/.Xauthority"
 
 global:
   minikube: false
-## use tpl function
   tango_host: databaseds-tango-base-{{.Release.Name}}:10000
+  retry:
+  - "--sleep=1"
+  - "--tries=100"
 
 homeDir: /home/ubuntu
 system: SW-infrastructure

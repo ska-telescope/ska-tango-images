@@ -7,7 +7,6 @@
 {{ $dsconfig := coalesce .local.Values.global.dsconfig .local.Values.dsconfig}}
 {{ $chart := .local }}
 {{ $safe_instance := .instance |toString | replace "_" "-" }}
-{{ $retry_option := coalesce  .local.Values.global.retry "--max=60"}}
 {{ $kubectl_wait_timeout := coalesce $dsconfig.timeout "120s" }}
 ---
 # Device Server Service 
@@ -86,7 +85,13 @@ spec:
         imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command:
           - retry
-          - {{$retry_option}}
+          {{- if .local.Values.global.retry }}
+          {{- range $retry_option := .local.Values.global.retry }}
+          - {{ $retry_option }}
+          {{- end }}
+          {{- else }}
+          - --max=60
+          {{- end }}
           - --
           - /usr/local/bin/wait-for-it.sh
           - {{ $device.host }}
@@ -108,7 +113,13 @@ spec:
         imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command:
           - retry
-          - {{$retry_option}}
+          {{- if .local.Values.global.retry }}
+          {{- range $retry_option := .local.Values.global.retry }}
+          - {{ $retry_option }}
+          {{- end }}
+          {{- else }}
+          - --max=60
+          {{- end }}
           - --
           - tango_admin
           - --ping-device
@@ -133,7 +144,15 @@ spec:
           - sh
           - -c
         args:
-          - retry {{$retry_option}} -- {{ .deviceserver.command | toString }} {{ .instance |toString }}
+          - retry 
+          {{- if .local.Values.global.retry }}
+          {{- range $retry_option := .local.Values.global.retry }}
+          {{- $retry_option }}
+          {{- end }}
+          {{- else }}
+          - --max=60
+          {{- end }} 
+          - -- {{ .deviceserver.command | toString }} {{ .instance |toString }}
         env:
         - name: TANGO_HOST
           value: {{ $tango_host }}
