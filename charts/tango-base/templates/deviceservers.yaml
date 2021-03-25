@@ -2,6 +2,8 @@
 
 {{ range $key, $deviceserver := .Values.deviceServers }}
 
+{{ if $key }}
+
 {{ $context := dict "name" $key "deviceserver" $deviceserver "image" $deviceserver.image "local" $localchart }}
 
 {{ template "tango-util.multidevice-config.tpl" $context }}
@@ -11,5 +13,7 @@
 {{ template "tango-util.multidevice-job.tpl" $context }}
 
 {{ template "tango-util.multidevice-svc.tpl" $context }}
+
+{{ end }}
 
 {{ end }} # deviceservers
