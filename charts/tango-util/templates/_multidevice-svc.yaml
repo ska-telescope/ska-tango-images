@@ -16,8 +16,7 @@ Parameters:
 {{ $chart := .local }}
 {{ $deviceserver := .deviceserver }}
 {{ $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
-{{ $tries := coalesce  .local.Values.global.tries 10}}
-{{ $sleep := coalesce  .local.Values.global.sleep 5}}
+{{ $retry_option := coalesce  .local.Values.global.retry "--max=60"}}
 
 ---
 {{ range $instance := $deviceserver.server.instances }}
@@ -101,8 +100,7 @@ spec:
           - -c
         args:
           - retry
-          - --tries={{$tries}} 
-          - --sleep={{$sleep}}
+          - {{$retry_option}}
           - --
           - /usr/local/bin/wait-for-it.sh
           - {{ $device.host }}
@@ -127,8 +125,7 @@ spec:
           - -c
         args:
           - retry
-          - --tries={{$tries}} 
-          - --sleep={{$sleep}}
+          - {{$retry_option}}
           - --
           - tango_admin
           - --ping-device
@@ -153,7 +150,7 @@ spec:
           - sh
           - -c
         args:
-          - {{ if not $deviceserver.noretry }}retry --tries={{$tries}} --sleep={{$sleep}} -- {{ end }}{{ if $deviceserver.command }}{{ $deviceserver.command }}{{ else }}/usr/bin/python /data/{{ $deviceserver.server.name }}.py{{ end }} {{ $safe_instance |toString }}
+          - {{ if not $deviceserver.noretry }}retry {{$retry_option}} -- {{ end }}{{ if $deviceserver.command }}{{ $deviceserver.command }}{{ else }}/usr/bin/python /data/{{ $deviceserver.server.name }}.py{{ end }} {{ $safe_instance |toString }}
         volumeMounts:
           - name: configuration
             mountPath: data

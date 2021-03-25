@@ -3,8 +3,7 @@
 {{ $tango_host := tpl (coalesce .Values.global.tango_host .Values.tango_host $default_tango_host | toString) . }}
 {{ $dsconfig := coalesce .Values.global.dsconfig .Values.dsconfig}}
 {{ $itango := coalesce .Values.global.itango .Values.itango}}
-{{ $tries := coalesce  .Values.global.tries 10}}
-{{ $sleep := coalesce  .Values.global.sleep 5}}
+{{ $retry_option := coalesce  .local.Values.global.retry "--max=60"}}
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -97,8 +96,7 @@ spec:
         imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command:
           - retry
-          - --tries={{$tries}} 
-          - --sleep={{$sleep}}
+          - {{$retry_option}}
           - --
           - /usr/local/bin/wait-for-it.sh
           - {{ $tango_host }}
@@ -119,8 +117,7 @@ spec:
         imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command: # exit code 2 is CONFIG_APPLIED - https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig/blob/master/dsconfig/utils.py#L11 !!!! this should not be an error !!!!
           - retry
-          - --tries={{$tries}} 
-          - --sleep={{$sleep}}
+          - {{$retry_option}}
           - --
           - sh
           - data/bootstrap.sh
