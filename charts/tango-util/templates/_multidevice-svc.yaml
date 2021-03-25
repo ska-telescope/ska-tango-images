@@ -17,6 +17,7 @@ Parameters:
 {{ $deviceserver := .deviceserver }}
 {{ $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
 {{ $retry_option := coalesce  .local.Values.global.retry "--max=60"}}
+{{ $kubectl_wait_timeout := coalesce .local.Values.global.dsconfig.timeout .local.Values.dsconfig.timeout "120s" }}
 
 ---
 {{ range $instance := $deviceserver.server.instances }}
@@ -88,7 +89,7 @@ spec:
           - sh
           - -c
         args:
-          - kubectl wait job --for=condition=complete {{ $deviceserver_name | toString }}-configuration-{{ $chart.Release.Name }} {{ if $chart.Values.dsconfig.timeout }} --timeout={{ $chart.Values.dsconfig.timeout }} {{ end }}
+          - kubectl wait job --for=condition=complete {{ $deviceserver_name | toString }}-configuration-{{ $chart.Release.Name }} --timeout={{ $kubectl_wait_timeout }}
 {{ if ($deviceserver.depends_on) }}
 {{ range $index, $device := $deviceserver.depends_on }}
 {{ if ($device.host) }}
