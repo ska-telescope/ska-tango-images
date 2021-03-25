@@ -7,7 +7,7 @@
 {{ $dsconfig := coalesce .local.Values.global.dsconfig .local.Values.dsconfig}}
 {{ $chart := .local }}
 {{ $safe_instance := .instance |toString | replace "_" "-" }}
-{{ $retry_option := coalesce  .local.Values.global.retry "--max=60"}}
+{{ $retry_option := coalesce .local.Values.global.retry "--max=60"}}
 ---
 # Device Server Service 
 # Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
