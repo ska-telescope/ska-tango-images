@@ -141,9 +141,7 @@ spec:
         image: "{{ tpl (.image.registry | toString) $chart }}/{{ tpl (.image.image | toString) $chart }}:{{ tpl (.image.tag | toString) $chart }}"
         imagePullPolicy: {{ tpl (.image.pullPolicy | toString) $chart }}
         command:
-          - sh
-          - -c
-        args:
+          {{- if not .deviceserver.noretry }}
           - retry 
           {{- if $chart.Values.global.retry }}
           {{- range $retry_option := $chart.Values.global.retry }}
@@ -151,8 +149,11 @@ spec:
           {{- end }}
           {{- else }}
           - --max=60
-          {{- end }} 
-          - -- {{ .deviceserver.command | toString }} {{ .instance |toString }}
+          {{- end }}
+          - -- 
+          {{- end }}
+          - {{ .deviceserver.command | toString }} 
+          - {{ .instance |toString }}
         env:
         - name: TANGO_HOST
           value: {{ $tango_host }}

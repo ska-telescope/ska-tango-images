@@ -96,9 +96,6 @@ spec:
         image: "{{ $dsconfig.image.registry }}/{{ $dsconfig.image.image }}:{{ $dsconfig.image.tag }}"
         imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command:
-          - sh
-          - -c
-        args:
           - retry
           {{- if $chart.Values.global.retry }}
           {{- range $retry_option := $chart.Values.global.retry }}
@@ -127,9 +124,6 @@ spec:
         image: "{{ $dsconfig.image.registry }}/{{ $dsconfig.image.image }}:{{ $dsconfig.image.tag }}"
         imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command:
-          - sh
-          - -c
-        args:
           - retry
           {{- if $chart.Values.global.retry }}
           {{- range $retry_option := $chart.Values.global.retry }}
@@ -159,9 +153,6 @@ spec:
         image: "{{ tpl ($deviceserver.image.registry | toString) $chart }}/{{ tpl ($deviceserver.image.image | toString) $chart }}:{{ tpl ($deviceserver.image.tag | toString) $chart }}"
         imagePullPolicy: {{ tpl ($deviceserver.image.pullPolicy | toString) $chart }}
         command:
-          - sh
-          - -c
-        args:
           {{- if not $deviceserver.noretry }}
           - retry 
           {{- if $chart.Values.global.retry }}
@@ -169,10 +160,17 @@ spec:
           - {{ $retry_option }}
           {{- end }}
           {{- else }}
+          - --max=60
+          {{- end }}
           - -- 
           {{- end }}
-          {{- end }}
-          - {{ if $deviceserver.command }}{{ $deviceserver.command }}{{ else }}/usr/bin/python /data/{{ $deviceserver.server.name }}.py{{ end }} {{ $safe_instance |toString }}
+          {{- if $deviceserver.command }}
+          - {{ $deviceserver.command }}
+          {{- else }}
+          - /usr/bin/python 
+          - /data/{{ $deviceserver.server.name }}.py
+          {{- end }} 
+          - {{ $safe_instance | toString }}
         volumeMounts:
           - name: configuration
             mountPath: data
