@@ -17,7 +17,7 @@ Parameters:
 {{ $deviceserver := .deviceserver }}
 {{ $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
 {{ $retry_option := coalesce  .local.Values.global.retry "--max=60"}}
-{{ $kubectl_wait_timeout := coalesce .local.Values.global.dsconfig.timeout .local.Values.dsconfig.timeout "120s" }}
+{{ $kubectl_wait_timeout := coalesce $dsconfig.timeout "120s" }}
 
 ---
 {{ range $instance := $deviceserver.server.instances }}

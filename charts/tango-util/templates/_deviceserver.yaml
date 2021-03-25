@@ -8,7 +8,7 @@
 {{ $chart := .local }}
 {{ $safe_instance := .instance |toString | replace "_" "-" }}
 {{ $retry_option := coalesce  .local.Values.global.retry "--max=60"}}
-{{ $kubectl_wait_timeout := coalesce .local.Values.global.dsconfig.timeout .local.Values.dsconfig.timeout "120s" }}
+{{ $kubectl_wait_timeout := coalesce $dsconfig.timeout "120s" }}
 ---
 # Device Server Service 
 # Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
