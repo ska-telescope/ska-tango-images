@@ -2,12 +2,11 @@
 ---
 {{ $labels := coalesce .local.Values.global.labels .local.Values.labels "label:none" }}
 {{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations "annotations:none" }}
-{{ $default_tango_host := printf "%s-%s:10000" "databaseds-tango-base-" .local.Release.Name }}
+{{ $default_tango_host := printf "%s-%s" "databaseds-tango-base-" .local.Release.Name }}
 {{ $tango_host := tpl (coalesce .local.Values.global.tango_host .local.Values.tango_host $default_tango_host | toString) .local }}
 {{ $dsconfig := coalesce .local.Values.global.dsconfig .local.Values.dsconfig}}
 {{ $chart := .local }}
 {{ $safe_instance := .instance |toString | replace "_" "-" }}
-{{ $retry_option := coalesce .local.Values.global.retry "--max=60"}}
 ---
 # Device Server Service 
 # Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
@@ -84,11 +83,8 @@ spec:
         image: "{{ $dsconfig.image.registry }}/{{ $dsconfig.image.image }}:{{ $dsconfig.image.tag }}"
         imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command:
-          - sh
-          - -c
-        args:
           - retry
-          - {{$retry_option}}
+          - --max=10
           - --
           - /usr/local/bin/wait-for-it.sh
           - {{ $device.host }}
@@ -109,11 +105,8 @@ spec:
         image: "{{ $dsconfig.image.registry }}/{{ $dsconfig.image.image }}:{{ $dsconfig.image.tag }}"
         imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command:
-          - sh
-          - -c
-        args:
           - retry
-          - {{$retry_option}}
+          - --max=10
           - --
           - tango_admin
           - --ping-device
@@ -138,7 +131,7 @@ spec:
           - sh
           - -c
         args:
-          - {{ if not .deviceserver.noretry }}retry {{$retry_option}} -- {{ end }}{{ .deviceserver.command | toString }} {{ .instance |toString }}
+          - retry --max=10 -- {{ .deviceserver.command | toString }} {{ .instance |toString }}
         env:
         - name: TANGO_HOST
           value: {{ $tango_host }}
@@ -158,7 +151,7 @@ spec:
         resources:
 {{ toYaml (coalesce .deviceserver.resources .local.Values.resources) | indent 10 }}
 {{ end }}
-{{- with .deviceserver.nodeSelector }}
+{{- with .local.Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
 {{- end }}
