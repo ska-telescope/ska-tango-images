@@ -86,7 +86,7 @@ databaseds:
     failureThreshold: 3
 
 deviceServers:
-  - name: tangotest-tango-base-{{.Release.Name}}
+  - name: tangotest
     function: tango-test
     domain: tango-base
     command: "/usr/local/bin/TangoTest"

@@ -12,7 +12,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{$deviceserver_name | toString }}-configuration-{{ .local.Release.Name }}
+  name: {{$deviceserver_name | toString }}-config
   namespace: {{ .local.Release.Namespace }}
   labels:
 {{ toYaml $labels | indent 4 }}
