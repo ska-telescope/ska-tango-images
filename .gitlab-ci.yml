@@ -291,10 +291,10 @@ test-chart:
   - cd charts/
   - kubectl version
   - helm version
-  - make chart_lint
   - make install-chart
   - make wait
   - make test
+  - make chart_lint
   - mkdir -p ../build/reports
   - mv build/report.xml ../build/reports/unit-tests.xml
   - mv build/linting.xml ../build/reports/linting.xml
