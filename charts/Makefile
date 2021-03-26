@@ -5,6 +5,7 @@ HELM_HOST ?= https://artefact.skatelescope.org## helm host url https
 MINIKUBE ?= true## Minikube or not
 MARK ?= all
 IMAGE_TO_TEST ?= artefact.skatelescope.org/ska-tango-images/tango-itango:9.3.3.1## docker image that will be run for testing purpose
+CI_JOB_ID ?= local##pipeline job id
 TEST_RUNNER ?= test-mk-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
 TANGO_HOST ?= tango-host-databaseds-from-makefile-$(RELEASE_NAME):10000## TANGO_HOST is an input!
 CHARTS ?= tango-util tango-base ska-tango-images## list of charts to be published on gitlab -- umbrella charts for testing purpose
