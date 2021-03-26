@@ -104,8 +104,7 @@ upgrade-chart: ## upgrade the ska-tango-images helm chart on the namespace ska-t
 	@helm upgrade --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)
 
 chart_lint: clean dep-up## lint check the helm chart
-	@mkdir -p build; \ 
-	helm lint $(UMBRELLA_CHART_PATH) --with-subcharts --namespace $(KUBE_NAMESPACE); \
+	mkdir -p build; helm lint $(UMBRELLA_CHART_PATH) --with-subcharts --namespace $(KUBE_NAMESPACE); \
 	echo "<testsuites><testsuite errors=\"$(LINTING_OUTPUT)\" failures=\"0\" name=\"helm-lint\" skipped=\"0\" tests=\"0\" time=\"0.000\" timestamp=\"$(shell date)\"> </testsuite> </testsuites>" > build/linting.xml
 	exit $(LINTING_OUTPUT)
 
