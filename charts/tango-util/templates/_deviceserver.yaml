@@ -153,7 +153,7 @@ spec:
           - -- 
           {{- end }}
           - {{ .deviceserver.command | toString }} 
-          - {{ .instance |toString }}
+          - "{{ .instance | toString }}"
         env:
         - name: TANGO_HOST
           value: {{ $tango_host }}

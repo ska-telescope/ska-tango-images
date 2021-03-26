@@ -170,7 +170,7 @@ spec:
           - /usr/bin/python 
           - /data/{{ $deviceserver.server.name }}.py
           {{- end }} 
-          - {{ $safe_instance | toString }}
+          - "{{ $safe_instance | toString }}"
         volumeMounts:
           - name: configuration
             mountPath: data
