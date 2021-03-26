@@ -88,7 +88,7 @@ spec:
           - sh
           - -c
         args:
-          - kubectl wait job --for=condition=complete {{ $deviceserver_name | toString }}-configuration-{{ $chart.Release.Name }} --timeout={{ $kubectl_wait_timeout }}
+          - kubectl wait job --for=condition=complete {{ $deviceserver_name | toString }}-config --timeout={{ $kubectl_wait_timeout }}
 {{ if ($deviceserver.depends_on) }}
 {{ range $index, $device := $deviceserver.depends_on }}
 {{ if ($device.host) }}
