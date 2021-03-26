@@ -295,13 +295,13 @@ test-chart:
   - make install-chart
   - make wait
   - make test
+  - mkdir -p ../build/reports
+  - mv build/report.xml ../build/reports/unit-tests.xml
+  - mv build/linting.xml ../build/reports/linting.xml
   after_script:
   - cd charts/
   - make uninstall-chart
   - make delete_namespace
-  - mkdir -p ../build/reports
-  - mv build/report.xml ../build/reports/unit-tests.xml
-  - mv build/linting.xml ../build/reports/linting.xml
   environment:
     name: test
     kubernetes:
