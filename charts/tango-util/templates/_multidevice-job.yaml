@@ -7,14 +7,12 @@
 {{ $tango_host := tpl (coalesce .local.Values.global.tango_host .local.Values.tango_host $default_tango_host | toString) .local }}
 {{ $dsconfig := coalesce .local.Values.global.dsconfig .local.Values.dsconfig}}
 {{ $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
-{{ $tries := coalesce  .local.Values.global.tries 10}}
-{{ $sleep := coalesce  .local.Values.global.sleep 5}}
 ---
 # run once Job for loading Device Server config
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{$deviceserver_name | toString }}-configuration-{{ .local.Release.Name }}
+  name: {{$deviceserver_name | toString }}-config
   namespace: {{ .local.Release.Namespace }}
   labels:
 {{ toYaml $labels | indent 4 }}
@@ -37,8 +35,13 @@ spec:
           - -c
         args:
           - retry
-          - --tries={{$tries}} 
-          - --sleep={{$sleep}}
+          {{- if .local.Values.global.retry }}
+          {{- range $retry_option := .local.Values.global.retry }}
+          - {{ $retry_option }}
+          {{- end }}
+          {{- else }}
+          - --max=60
+          {{- end }}
           - --
           - tango_admin
           - --check-device
@@ -58,8 +61,13 @@ spec:
         imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command: # exit code 2 is CONFIG_APPLIED - https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig/blob/master/dsconfig/utils.py#L11 !!!! this should not be an error !!!!
           - retry
-          - --tries={{$tries}} 
-          - --sleep={{$sleep}}
+          {{- if .local.Values.global.retry }}
+          {{- range $retry_option := .local.Values.global.retry }}
+          - {{ $retry_option }}
+          {{- end }}
+          {{- else }}
+          - --max=60
+          {{- end }}
           - --
           - sh
           - data/bootstrap.sh

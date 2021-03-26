@@ -1,8 +1,8 @@
 {{ $localchart := . }}
 
-{{ range $key, $deviceserver := .Values.deviceServers }}
+{{ range $deviceserver := .Values.deviceServers }}
 
-{{ $context := dict "name" $key "deviceserver" $deviceserver "image" $deviceserver.image "local" $localchart }}
+{{ $context := dict "deviceserver" $deviceserver "image" $deviceserver.image "local" $localchart }}
 
 {{ template "tango-util.multidevice-config.tpl" $context }}
 
