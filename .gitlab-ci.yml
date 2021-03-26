@@ -291,6 +291,7 @@ test-chart:
   - cd charts/
   - kubectl version
   - helm version
+  - make chart_lint
   - make install-chart
   - make wait
   - make test
@@ -298,6 +299,9 @@ test-chart:
   - cd charts/
   - make uninstall-chart
   - make delete_namespace
+  - mkdir -p ../build/reports
+  - mv build/report.xml ../build/reports/unit-tests.xml
+  - mv build/linting.xml ../build/reports/linting.xml
   environment:
     name: test
     kubernetes:
@@ -305,9 +309,9 @@ test-chart:
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
-      - "charts/build/"
+      - "build/"
     reports:
-      junit: charts/build/report.xml
+      junit: build/report.xml
 
 variables:
     CHARTS_TO_PUBLISH: tango-util tango-base
