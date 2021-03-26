@@ -9,6 +9,7 @@ CI_JOB_ID ?= local##pipeline job id
 TEST_RUNNER ?= test-mk-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
 TANGO_HOST ?= tango-host-databaseds-from-makefile-$(RELEASE_NAME):10000## TANGO_HOST is an input!
 CHARTS ?= tango-util tango-base ska-tango-images## list of charts to be published on gitlab -- umbrella charts for testing purpose
+LINTING_OUTPUT=$(shell helm lint --with-subcharts $(UMBRELLA_CHART_PATH) | grep ERROR -c | tail -1)
 
 CI_PROJECT_PATH_SLUG ?= ska-tango-images
 CI_ENVIRONMENT_SLUG ?= ska-tango-images
@@ -102,9 +103,10 @@ reinstall-chart: uninstall-chart install-chart ## reinstall the ska-tango-images
 upgrade-chart: ## upgrade the ska-tango-images helm chart on the namespace ska-tango-images
 	@helm upgrade --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)
 
-chart_lint: ## lint check the helm chart
-	@helm lint $(UMBRELLA_CHART_PATH) \
-		--namespace $(KUBE_NAMESPACE)
+chart_lint: clean dep-up## lint check the helm chart
+	mkdir -p build; helm lint $(UMBRELLA_CHART_PATH) --with-subcharts --namespace $(KUBE_NAMESPACE); \
+	echo "<testsuites><testsuite errors=\"$(LINTING_OUTPUT)\" failures=\"0\" name=\"helm-lint\" skipped=\"0\" tests=\"0\" time=\"0.000\" timestamp=\"$(shell date)\"> </testsuite> </testsuites>" > build/linting.xml
+	exit $(LINTING_OUTPUT)
 
 wait:## wait for pods to be ready
 	@echo "Waiting for pods to be ready"

@@ -9,3 +9,6 @@ dependencies:
   version: 0.2.20
   repository: file://../tango-base
   condition: tango-base.enabled,global.sub-system.tango-base.enabled
+- name: tango-util
+  version: 0.2.13
+  repository: file://../tango-util

@@ -286,7 +286,7 @@ test-chart:
     MINIKUBE: "false"
   tags:
   - k8srunner
-  image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.3
+  image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.5
   script:
   - cd charts/
   - kubectl version
@@ -294,6 +294,10 @@ test-chart:
   - make install-chart
   - make wait
   - make test
+  - make chart_lint
+  - mkdir -p ../build/reports
+  - mv build/report.xml ../build/reports/unit-tests.xml
+  - mv build/linting.xml ../build/reports/linting.xml
   after_script:
   - cd charts/
   - make uninstall-chart
@@ -305,9 +309,9 @@ test-chart:
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
     paths:
-      - "charts/build/"
+      - "build/"
     reports:
-      junit: charts/build/report.xml
+      junit: build/reports/unit-tests.xml
 
 variables:
     CHARTS_TO_PUBLISH: tango-util tango-base
