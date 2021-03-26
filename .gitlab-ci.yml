@@ -311,7 +311,7 @@ test-chart:
     paths:
       - "build/"
     reports:
-      junit: charts/build/report.xml
+      junit: build/reports/unit-tests.xml
 
 variables:
     CHARTS_TO_PUBLISH: tango-util tango-base
