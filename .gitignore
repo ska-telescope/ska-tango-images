@@ -13,3 +13,5 @@ charts/tango-base/charts/tango-util-0.1.0.tgz
 charts/ska-tango-images/charts/*
 charts/ska-tango-images/Chart.lock
 charts/repository/*
+charts/tango-base/charts/*
+charts/tango-base/Chart.lock
