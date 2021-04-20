@@ -48,7 +48,23 @@ retry()
     for param in "${@:2}"; do P="$P '$param'"; done
     #TODO: replace single quotes in each arg with '"'"' ?
     export RETRY_ATTEMPT=$attempts
-    bash -c "$P"
+
+    # Propagate signals to child process and stop further attempts
+    # on SIGTERM and SIGINT
+    bash -c "$P" &
+    child_pid=$!
+    _term() {
+        kill -SIGTERM $child_pid
+        attempts=$max_tries
+    }
+    _int() {
+        kill -SIGINT $child_pid
+        attempts=$max_tries
+    }
+    trap _term SIGTERM
+    trap _int SIGINT
+    wait $child_pid
+
     return_code=$?
     #__log_out "Process returned $return_code on attempt $attempts"
     if [ $return_code -eq 127 ]; then
