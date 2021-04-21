@@ -8,4 +8,7 @@ FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/pytango-runtime:9.3.3.3
 
 RUN ipython profile create
 
+COPY requirements.txt /requirements.txt
+RUN python3 -m pip install -r /requirements.txt
+
 CMD ["itango3"]
