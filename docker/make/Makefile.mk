@@ -46,16 +46,29 @@ pre-push:
 post-push:
 
 docker-build: .release
-	curl -s https://gitlab.com/ska-telescope/templates-repository/-/raw/st-758/scripts/metadata/docker-build.sh -o build.sh && chmod +x build.sh && \
-	PROJECT=$(PROJECT) \
-	DOCKER_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) \
-	DOCKER_REGISTRY_USER=$(CAR_OCI_REGISTRY_PREFIX) \
-	DOCKER_BUILD_CONTEXT=$(BUILD_CONTEXT) \
-	DOCKER_FILE_PATH=$(FILE_PATH) \
-	VERSION=$(VERSION) \
-	TAG=$(TAG) \
-	ADDITIONAL_ARGS="$(BUILD_ARGS) --build-arg CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) --build-arg CAR_OCI_REGISTRY_PREFIX=$(CAR_OCI_REGISTRY_PREFIX)" \
-	./build.sh; rm ./build.sh;
+	@if [ ! -f /usr/local/bin/docker-build.sh ] ; then \
+		curl -s https://gitlab.com/ska-telescope/ska-k8s-tools/-/raw/master/docker/docker-builder/scripts/docker-build.sh -o docker-build.sh; \
+		chmod +x docker-build.sh; \
+		PROJECT=$(PROJECT) \
+		DOCKER_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) \
+		DOCKER_REGISTRY_USER=$(CAR_OCI_REGISTRY_PREFIX) \
+		DOCKER_BUILD_CONTEXT=$(BUILD_CONTEXT) \
+		DOCKER_FILE_PATH=$(FILE_PATH) \
+		VERSION=$(VERSION) \
+		TAG=$(TAG) \
+		ADDITIONAL_ARGS="--build-arg http_proxy --build-arg https_proxy --build-arg CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) --build-arg CAR_OCI_REGISTRY_PREFIX=$(CAR_OCI_REGISTRY_PREFIX)" \
+		./docker-build.sh; rm docker-build.sh; \
+	else \
+		PROJECT=$(PROJECT) \
+		DOCKER_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) \
+		DOCKER_REGISTRY_USER=$(CAR_OCI_REGISTRY_PREFIX) \
+		DOCKER_BUILD_CONTEXT=$(BUILD_CONTEXT) \
+		DOCKER_FILE_PATH=$(FILE_PATH) \
+		VERSION=$(VERSION) \
+		TAG=$(TAG) \
+		ADDITIONAL_ARGS="--build-arg http_proxy --build-arg https_proxy --build-arg CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) --build-arg CAR_OCI_REGISTRY_PREFIX=$(CAR_OCI_REGISTRY_PREFIX)" \
+		/usr/local/bin/docker-build.sh; \
+	fi; 
 
 .release:
 	@echo "release=0.0.0" > .release
@@ -67,15 +80,7 @@ release: check-status check-release build push
 
 push: pre-push do-push post-push
 
-do-push:
-# curl --output /dev/null --silent --head --fail -r 0-0 "https://$(CAR_OCI_REGISTRY_HOST)/repository/docker/v2/$(CAR_OCI_REGISTRY_PREFIX)/$(NAME)/manifests/$(VERSION)"; \
-# result=$$?; \
-# if [ $$result -eq 0 ] ; then \
-# 	echo "Version $(VERSION) of image $(IMAGE) already exists"; \
-# else \
-# 	echo "Version $(VERSION) of image $(IMAGE) does not exist"; \
-# 	$(IMAGE_BUILDER) push $(IMAGE):$(VERSION); \
-# fi;
+do-push: build
 
 snapshot: build push
 
