@@ -286,7 +286,7 @@ test-chart:
     MINIKUBE: "false"
   tags:
   - k8srunner
-  image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.5
+  image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.8
   script:
   - cd charts/
   - kubectl version
