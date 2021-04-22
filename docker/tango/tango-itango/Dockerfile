@@ -7,6 +7,7 @@ FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/pytango-runtime:9.3.3.3
 USER root 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y procps
 
+USER tango
 # create ipython profile to so that itango doesn't fail if ipython hasn't run yet
 RUN ipython profile create
 

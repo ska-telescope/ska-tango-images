@@ -57,7 +57,10 @@ docker-build: .release
 		VERSION=$(VERSION) \
 		TAG=$(TAG) \
 		ADDITIONAL_ARGS="--build-arg http_proxy --build-arg https_proxy --build-arg CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) --build-arg CAR_OCI_REGISTRY_PREFIX=$(CAR_OCI_REGISTRY_PREFIX)" \
-		./docker-build.sh; rm docker-build.sh; \
+		./docker-build.sh; \
+		status=$$?; \
+		rm docker-build.sh; \
+		exit $$status; \
 	else \
 		PROJECT=$(PROJECT) \
 		DOCKER_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) \
@@ -68,6 +71,7 @@ docker-build: .release
 		TAG=$(TAG) \
 		ADDITIONAL_ARGS="--build-arg http_proxy --build-arg https_proxy --build-arg CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) --build-arg CAR_OCI_REGISTRY_PREFIX=$(CAR_OCI_REGISTRY_PREFIX)" \
 		/usr/local/bin/docker-build.sh; \
+		exit $$?; \
 	fi; 
 
 .release:
