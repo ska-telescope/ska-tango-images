@@ -5,7 +5,7 @@
 #
 ARG CAR_OCI_REGISTRY_PREFIX
 ARG CAR_OCI_REGISTRY_HOST
-FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/tango-dependencies:9.3.3.1
+FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/tango-dependencies:9.3.3.1-a
 
 RUN JAVA_DOWNLOAD_URL=https://artefact.skatelescope.org/repository/raw-internal/ska-tango-images/libraries/jre-8u221-linux-x64.tar.gz \
     && mkdir /usr/java \
