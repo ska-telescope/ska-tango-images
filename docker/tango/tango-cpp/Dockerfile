@@ -5,7 +5,7 @@
 #
 ARG CAR_OCI_REGISTRY_PREFIX
 ARG CAR_OCI_REGISTRY_HOST
-FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/tango-dependencies:9.3.3.2 as buildenv
+FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/tango-dependencies:9.3.3.3 as buildenv
 
 RUN TANGO_DOWNLOAD_URL=https://artefact.skatelescope.org/repository/raw-internal/ska-tango-images/libraries/tango-9.3.4.tar.gz \
     # Speed up image builds by adding apt proxy if detected on host
