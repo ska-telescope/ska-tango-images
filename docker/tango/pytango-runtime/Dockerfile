@@ -7,7 +7,7 @@ ARG CAR_OCI_REGISTRY_PREFIX
 ARG CAR_OCI_REGISTRY_HOST
 FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/pytango-builder:9.3.3.4 as buildenv
 
-FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/tango-cpp:9.3.3.4
+FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/tango-cpp:9.3.4.1
 USER root
 
 # Permanently install Python and PyTango runtime dependencies:
