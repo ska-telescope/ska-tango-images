@@ -39,7 +39,7 @@ itango:
   image:
     registry: artefact.skatelescope.org/ska-tango-images
     image: tango-itango
-    tag: 9.3.3.6
+    tag: 9.3.3.7
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -59,7 +59,7 @@ databaseds:
   image:
     registry: artefact.skatelescope.org/ska-tango-images
     image: tango-cpp
-    tag: 9.3.4.1
+    tag: 9.3.4.2
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -105,7 +105,7 @@ deviceServers:
     image:
       registry: artefact.skatelescope.org/ska-tango-images
       image: tango-java
-      tag: 9.3.3.1
+      tag: 9.3.3.2
       pullPolicy: IfNotPresent
     resources:
       requests:
@@ -167,7 +167,7 @@ jive:
   image:
     registry: artefact.skatelescope.org/ska-tango-images
     image: tango-java
-    tag: 9.3.3.1
+    tag: 9.3.3.2
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -192,7 +192,7 @@ vnc:
   image:
     registry: artefact.skatelescope.org/ska-tango-images
     image: tango-vnc
-    tag: 0.1.1
+    tag: 0.1.2
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -214,7 +214,7 @@ tangorest:
   image:
     registry: artefact.skatelescope.org/ska-tango-images
     image: tango-rest
-    tag: 1.14.1.1
+    tag: 1.14.1.2
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -235,7 +235,7 @@ logviewer:
   image:
     registry: artefact.skatelescope.org/ska-tango-images
     image: tango-java
-    tag: 9.3.3.1
+    tag: 9.3.3.2
     pullPolicy: IfNotPresent
   resources:
     requests:
