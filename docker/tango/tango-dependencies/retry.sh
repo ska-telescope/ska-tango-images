@@ -53,16 +53,16 @@ retry()
     # on SIGTERM and SIGINT
     bash -c "$P" &
     child_pid=$!
-    _term() {
+    __term() {
         kill -SIGTERM $child_pid
         attempts=$max_tries
     }
-    _int() {
+    __int() {
         kill -SIGINT $child_pid
         attempts=$max_tries
     }
-    trap _term SIGTERM
-    trap _int SIGINT
+    trap __term SIGTERM
+    trap __int SIGINT
     wait $child_pid
 
     return_code=$?
