@@ -1,4 +1,4 @@
-image: artefact.skatelescope.org/ska-k8s-tools/docker-builder:0.2.13
+image: artefact.skatelescope.org/ska-k8s-tools/docker-builder:0.2.14
 
 stages:
 - build_0
