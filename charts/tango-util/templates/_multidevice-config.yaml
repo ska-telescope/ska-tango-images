@@ -1,8 +1,8 @@
 {{ define "tango-util.multidevice-config.tpl" }}
 
 ---
-{{ $labels := coalesce .local.Values.global.labels .local.Values.labels "label:none" }}
-{{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations "annotations:none" }}
+{{ $labels := coalesce .local.Values.global.labels .local.Values.labels "label: none" }}
+{{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations "annotation: none" }}
 {{ $deviceserver := .deviceserver }}
 {{ $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
 {{ $chart := .local }}
