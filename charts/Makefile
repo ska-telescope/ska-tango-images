@@ -69,7 +69,6 @@ install-chart: clean dep-up namespace## install the helm chart with name RELEASE
 	helm install $(RELEASE_NAME) \
 	--set global.minikube=$(MINIKUBE) \
 	--set global.tango_host=$(TANGO_HOST) \
-	--set global.image_registry="$(CAR_OCI_REGISTRY_HOST)/ska-tango-images" \
 	--values values.yaml \
 	 $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE); \
 	 rm generated_values.yaml; \
@@ -81,7 +80,6 @@ template-chart: clean dep-up## install the helm chart with name RELEASE_NAME and
 	helm template $(RELEASE_NAME) \
 	--set global.minikube=$(MINIKUBE) \
 	--set global.tango_host=$(TANGO_HOST) \
-	--set global.image_registry="$(CAR_OCI_REGISTRY_HOST)/ska-tango-images" \
 	--values values.yaml \
 	--debug \
 	 $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE); \
@@ -94,7 +92,6 @@ uninstall-chart: ## uninstall the ska-tango-images helm chart on the namespace s
 	helm template $(RELEASE_NAME) \
 	--set global.minikube=$(MINIKUBE) \
 	--set global.tango_host=$(TANGO_HOST) \
-	--set global.image_registry="$(CAR_OCI_REGISTRY_HOST)/ska-tango-images" \
 	--values values.yaml \
 	 $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) | kubectl delete -f - ; \
 	 rm generated_values.yaml; \

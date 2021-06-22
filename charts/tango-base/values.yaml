@@ -8,7 +8,6 @@ xauthority: "~/.Xauthority"
 global:
   minikube: false
   tango_host: databaseds-tango-base-{{.Release.Name}}:10000
-  image_registry: artefact.skao.int/ska-tango-images
   retry:
   - "--sleep=1"
   - "--tries=100"
@@ -26,7 +25,7 @@ annotations:
 
 dsconfig:
   image:
-    registry: {{ .Values.global.image_registry }}
+    registry: artefact.skao.int/ska-tango-images
     image: tango-dsconfig
     tag: 1.5.0.6 
     pullPolicy: IfNotPresent
@@ -38,7 +37,7 @@ itango:
   domain: interactive-testing
   intent: enabling
   image:
-    registry: {{ .Values.global.image_registry }}
+    registry: artefact.skao.int/ska-tango-images
     image: tango-itango
     tag: 9.3.3.7
     pullPolicy: IfNotPresent
@@ -58,7 +57,7 @@ databaseds:
   domain: tango-configuration
   intent: production
   image:
-    registry: {{ .Values.global.image_registry }}
+    registry: artefact.skao.int/ska-tango-images
     image: tango-cpp
     tag: 9.3.4.2
     pullPolicy: IfNotPresent
@@ -104,7 +103,7 @@ deviceServers:
           devices: 
           - name: "sys/tg_test/1"
     image:
-      registry: {{ .Values.global.image_registry }}
+      registry: artefact.skao.int/ska-tango-images
       image: tango-java
       tag: 9.3.3.2
       pullPolicy: IfNotPresent
@@ -126,7 +125,7 @@ tangodb:
   domain: tango-configuration
   intent: production
   image:
-    registry: {{ .Values.global.image_registry }}
+    registry: artefact.skao.int/ska-tango-images
     image: tango-db
     tag: 10.4.10
     pullPolicy: IfNotPresent
@@ -166,7 +165,7 @@ jive:
   domain: interactive-testing
   intent: enabling
   image:
-    registry: {{ .Values.global.image_registry }}
+    registry: artefact.skao.int/ska-tango-images
     image: tango-java
     tag: 9.3.3.2
     pullPolicy: IfNotPresent
@@ -191,7 +190,7 @@ vnc:
   nodeport_novnc: 32082
   replicas: 3
   image:
-    registry: {{ .Values.global.image_registry }}
+    registry: artefact.skao.int/ska-tango-images
     image: tango-vnc
     tag: 0.1.2
     pullPolicy: IfNotPresent
@@ -213,7 +212,7 @@ tangorest:
   domain: tango-configuration
   intent: enabling
   image:
-    registry: {{ .Values.global.image_registry }}
+    registry: artefact.skao.int/ska-tango-images
     image: tango-rest
     tag: 1.14.1.2
     pullPolicy: IfNotPresent
@@ -234,7 +233,7 @@ logviewer:
   domain: interactive-testing
   intent: enabling
   image:
-    registry: {{ .Values.global.image_registry }}
+    registry: artefact.skao.int/ska-tango-images
     image: tango-java
     tag: 9.3.3.2
     pullPolicy: IfNotPresent
