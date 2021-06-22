@@ -1,10 +1,10 @@
 KUBE_NAMESPACE ?= ska-tango-images#namespace to be used
 RELEASE_NAME ?= test## release name of the chart
 UMBRELLA_CHART_PATH ?= ska-tango-images/## Path of the umbrella chart to work with
-HELM_HOST ?= https://artefact.skatelescope.org## helm host url https
-MINIKUBE ?= true## Minikube or not
+# HELM_HOST ?= https://artefact.skatelescope.org # helm host url https 
+MINIKUBE ?= true ## Minikube or not
 MARK ?= all
-IMAGE_TO_TEST ?= artefact.skatelescope.org/ska-tango-images/tango-itango:9.3.3.7## docker image that will be run for testing purpose
+IMAGE_TO_TEST ?= artefact.skao.int/ska-tango-images/tango-itango:9.3.3.7 ## TODO: UGUR docker image that will be run for testing purpose 
 CI_JOB_ID ?= local##pipeline job id
 TEST_RUNNER ?= test-mk-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
 TANGO_HOST ?= tango-host-databaseds-from-makefile-$(RELEASE_NAME):10000## TANGO_HOST is an input!
@@ -69,6 +69,7 @@ install-chart: clean dep-up namespace## install the helm chart with name RELEASE
 	helm install $(RELEASE_NAME) \
 	--set global.minikube=$(MINIKUBE) \
 	--set global.tango_host=$(TANGO_HOST) \
+	--set global.image_registry="$(CAR_OCI_REGISTRY_HOST)/ska-tango-images" \
 	--values values.yaml \
 	 $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE); \
 	 rm generated_values.yaml; \
@@ -80,6 +81,7 @@ template-chart: clean dep-up## install the helm chart with name RELEASE_NAME and
 	helm template $(RELEASE_NAME) \
 	--set global.minikube=$(MINIKUBE) \
 	--set global.tango_host=$(TANGO_HOST) \
+	--set global.image_registry="$(CAR_OCI_REGISTRY_HOST)/ska-tango-images" \
 	--values values.yaml \
 	--debug \
 	 $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE); \
@@ -92,6 +94,7 @@ uninstall-chart: ## uninstall the ska-tango-images helm chart on the namespace s
 	helm template $(RELEASE_NAME) \
 	--set global.minikube=$(MINIKUBE) \
 	--set global.tango_host=$(TANGO_HOST) \
+	--set global.image_registry="$(CAR_OCI_REGISTRY_HOST)/ska-tango-images" \
 	--values values.yaml \
 	 $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE) | kubectl delete -f - ; \
 	 rm generated_values.yaml; \

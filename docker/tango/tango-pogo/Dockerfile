@@ -18,7 +18,7 @@ RUN runtimeDeps='firefox-esr' \
 RUN buildDeps='wget' \
     && DEBIAN_FRONTEND=noninteractive apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends $buildDeps \
-    && POGO_DOWNLOAD_URL=https://artefact.skatelescope.org/repository/raw-internal/ska-tango-images/libraries/Pogo-9.6.31.jar \
+    && POGO_DOWNLOAD_URL=${CAR_OCI_REGISTRY_HOST}/repository/raw-internal/${CAR_OCI_REGISTRY_PREFIX}/libraries/Pogo-9.6.31.jar \
     && cd /usr/local/share/java \
     && rm -f Pogo-*.jar \
     && wget --no-check-certificate "$POGO_DOWNLOAD_URL" -O Pogo-9.6.31.jar \

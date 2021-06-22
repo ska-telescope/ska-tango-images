@@ -19,7 +19,7 @@ NAME=$(shell basename $(CURDIR))
 RELEASE_SUPPORT := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))/.make-release-support
 
 IMAGE_BUILDER ?= docker
-CAR_OCI_REGISTRY_HOST ?= artefact.skatelescope.org
+# CAR_OCI_REGISTRY_HOST ?= artefact.skatelescope.org
 CAR_OCI_REGISTRY_PREFIX ?= ska-tango-images
 
 IMAGE=$(CAR_OCI_REGISTRY_HOST)/$(CAR_OCI_REGISTRY_PREFIX)/$(NAME)
