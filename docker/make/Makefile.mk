@@ -56,7 +56,7 @@ docker-build: .release
 		DOCKER_FILE_PATH=$(FILE_PATH) \
 		VERSION=$(VERSION) \
 		TAG=$(TAG) \
-		ADDITIONAL_ARGS="--build-arg http_proxy --build-arg https_proxy --build-arg CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) --build-arg CAR_OCI_REGISTRY_PREFIX=$(CAR_OCI_REGISTRY_PREFIX)" \
+		ADDITIONAL_ARGS="--build-arg http_proxy --build-arg https_proxy --build-arg CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) --build-arg CAR_OCI_REGISTRY_PREFIX=$(CAR_OCI_REGISTRY_PREFIX)" --build-arg CAR_PYPI_REPOSITORY_URL=$(CAR_PYPI_REPOSITORY_URL)" \
 		./docker-build.sh; \
 		status=$$?; \
 		rm docker-build.sh; \
@@ -69,7 +69,7 @@ docker-build: .release
 		DOCKER_FILE_PATH=$(FILE_PATH) \
 		VERSION=$(VERSION) \
 		TAG=$(TAG) \
-		ADDITIONAL_ARGS="--build-arg http_proxy --build-arg https_proxy --build-arg CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) --build-arg CAR_OCI_REGISTRY_PREFIX=$(CAR_OCI_REGISTRY_PREFIX)" \
+		ADDITIONAL_ARGS="--build-arg http_proxy --build-arg https_proxy --build-arg CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) --build-arg CAR_OCI_REGISTRY_PREFIX=$(CAR_OCI_REGISTRY_PREFIX)" --build-arg CAR_PYPI_REPOSITORY_URL=$(CAR_PYPI_REPOSITORY_URL)" \
 		/usr/local/bin/docker-build.sh; \
 		exit $$?; \
 	fi; 
