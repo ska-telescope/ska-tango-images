@@ -43,7 +43,7 @@ COPY pip.conf /etc/pip.conf
 RUN mkdir /venv && ln -s /usr/* /venv/ && ln -s /usr/bin/python3 /venv/bin/python && ln -s /usr/local/bin/itango3 /venv/bin/itango3
 
 USER tango
-
+ENV PIP_INDEX_URL=${CAR_PYPI_REPOSITORY_URL}
 ENV PATH="/home/tango/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PATH}"
 
 ONBUILD COPY --chown=tango:tango . /app
