@@ -70,7 +70,7 @@ docker-build: .release
 
 .release:
 	@echo "release=0.0.0" > .release
-	@echo "tag=$(PROJECT)-0.0.0" >> .release
+	@echo "tag=$(NAME)-0.0.0" >> .release
 	@echo INFO: .release created
 	@cat .release
 
