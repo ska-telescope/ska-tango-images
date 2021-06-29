@@ -312,7 +312,7 @@ test-chart:
       junit: build/reports/unit-tests.xml
 
 variables:
-    CHARTS_TO_PUBLISH: tango-util tango-base
+    CHARTS_TO_PUBLISH: ska-tango-util ska-tango-base
 # Ensure your .gitlab-ci.yml has "publish" stage defined!
 include:
   - project: 'ska-telescope/templates-repository'
