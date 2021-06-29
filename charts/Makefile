@@ -8,7 +8,7 @@ IMAGE_TO_TEST ?= artefact.skao.int/ska-tango-images-tango-itango:9.3.4 ## TODO: 
 CI_JOB_ID ?= local##pipeline job id
 TEST_RUNNER ?= test-mk-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
 TANGO_HOST ?= tango-host-databaseds-from-makefile-$(RELEASE_NAME):10000## TANGO_HOST is an input!
-CHARTS ?= ska-tango-util ska-tango-base ska-tango-umbrella## list of charts to be published on gitlab -- umbrella charts for testing purpose
+CHARTS ?= tango-util tango-base ska-tango-umbrella## list of charts to be published on gitlab -- umbrella charts for testing purpose
 LINTING_OUTPUT=$(shell helm lint --with-subcharts $(UMBRELLA_CHART_PATH) | grep ERROR -c | tail -1)
 
 CI_PROJECT_PATH_SLUG ?= ska-tango-images
