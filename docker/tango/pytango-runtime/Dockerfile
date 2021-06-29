@@ -9,7 +9,6 @@ FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:9.3.6 as buildenv
 
 FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp:9.3.5
 USER root
-ENV PIP_INDEX_URL=${CAR_PYPI_REPOSITORY_URL}
 # Permanently install Python and PyTango runtime dependencies:
 #
 # * libboost-python is required by PyTango;
@@ -38,11 +37,11 @@ COPY --from=buildenv /usr/local/lib/python3.7 /usr/local/lib/python3.7
 
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 COPY pip.conf /etc/pip.conf
+RUN echo "index-url = " ${CAR_PYPI_REPOSITORY_URL} >> /etc/pip.conf
 
 RUN mkdir /venv && ln -s /usr/* /venv/ && ln -s /usr/bin/python3 /venv/bin/python && ln -s /usr/local/bin/itango3 /venv/bin/itango3
 
 USER tango
-ENV PIP_INDEX_URL=${CAR_PYPI_REPOSITORY_URL}
 ENV PATH="/home/tango/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PATH}"
 
 ONBUILD COPY --chown=tango:tango . /app
