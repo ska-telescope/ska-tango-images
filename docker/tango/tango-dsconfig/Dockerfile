@@ -3,7 +3,7 @@ ARG CAR_OCI_REGISTRY_HOST
 FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:9.3.9 as buildenv
 FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-runtime:9.3.9
 
-ENV PIP_INDEX_URL=https://nexus.skatelescope.org/repository/pypi-internal
+ENV PIP_INDEX_URL=https://artefact.skatelescope.org/repository/pypi-internal
 RUN python3 -m pip install python-dsconfig==1.5.0
 
 # Existing Helm charts assume tango-dsconfig starts in the root directory
