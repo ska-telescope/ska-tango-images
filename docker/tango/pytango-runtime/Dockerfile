@@ -37,7 +37,6 @@ COPY --from=buildenv /usr/local/lib/python3.7 /usr/local/lib/python3.7
 
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 COPY pip.conf /etc/pip.conf
-RUN echo "index-url = " ${CAR_PYPI_REPOSITORY_URL}/simple >> /etc/pip.conf
 
 RUN mkdir /venv && ln -s /usr/* /venv/ && ln -s /usr/bin/python3 /venv/bin/python && ln -s /usr/local/bin/itango3 /venv/bin/itango3
 
