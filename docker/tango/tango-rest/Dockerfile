@@ -14,7 +14,7 @@ RUN MTANGOREST_DOWNLOAD_URL=https://github.com/tango-controls/rest-server/releas
     && curl -fsSL "$MTANGOREST_DOWNLOAD_URL" -o mtangorest.jar \
     && apt-get purge -y --auto-remove $buildDeps
 
-FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/tango-java:9.3.3.2
+FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images/tango-java:9.3.3.2
 
 COPY --from=buildenv /usr/local/lib/tango/mtangorest.jar /usr/local/lib/tango/mtangorest.jar
 

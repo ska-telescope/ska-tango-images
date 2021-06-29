@@ -37,8 +37,8 @@ itango:
   domain: interactive-testing
   intent: enabling
   image:
-    registry: artefact.skao.int/ska-tango-images
-    image: tango-itango
+    registry: artefact.skao.int
+    image: ska-tango-images-tango-itango
     tag: 9.3.4
     pullPolicy: IfNotPresent
   resources:
@@ -57,8 +57,8 @@ databaseds:
   domain: tango-configuration
   intent: production
   image:
-    registry: artefact.skao.int/ska-tango-images
-    image: tango-cpp
+    registry: artefact.skao.int
+    image: ska-tango-images-tango-cpp
     tag: 9.3.5
     pullPolicy: IfNotPresent
   resources:
@@ -103,8 +103,8 @@ deviceServers:
           devices: 
           - name: "sys/tg_test/1"
     image:
-      registry: artefact.skao.int/ska-tango-images
-      image: tango-java
+      registry: artefact.skao.int
+      image: ska-tango-images-tango-java
       tag: 9.3.4
       pullPolicy: IfNotPresent
     resources:
@@ -125,8 +125,8 @@ tangodb:
   domain: tango-configuration
   intent: production
   image:
-    registry: artefact.skao.int/ska-tango-images
-    image: tango-db
+    registry: artefact.skao.int
+    image: ska-tango-images-tango-db
     tag: 10.4.10
     pullPolicy: IfNotPresent
   db:
@@ -165,8 +165,8 @@ jive:
   domain: interactive-testing
   intent: enabling
   image:
-    registry: artefact.skao.int/ska-tango-images
-    image: tango-java
+    registry: artefact.skao.int
+    image: /ska-tango-images-tango-java
     tag: 9.3.4
     pullPolicy: IfNotPresent
   resources:
@@ -190,8 +190,8 @@ vnc:
   nodeport_novnc: 32082
   replicas: 3
   image:
-    registry: artefact.skao.int/ska-tango-images
-    image: tango-vnc
+    registry: artefact.skao.int
+    image: ska-tango-images-tango-vnc
     tag: 0.1.2
     pullPolicy: IfNotPresent
   resources:
@@ -212,8 +212,8 @@ tangorest:
   domain: tango-configuration
   intent: enabling
   image:
-    registry: artefact.skao.int/ska-tango-images
-    image: tango-rest
+    registry: artefact.skao.int
+    image: ska-tango-images-tango-rest
     tag: 1.14.2
     pullPolicy: IfNotPresent
   resources:
@@ -233,8 +233,8 @@ logviewer:
   domain: interactive-testing
   intent: enabling
   image:
-    registry: artefact.skao.int/ska-tango-images
-    image: tango-java
+    registry: artefact.skao.int
+    image: ska-tango-images-tango-java
     tag: 9.3.4
     pullPolicy: IfNotPresent
   resources:
