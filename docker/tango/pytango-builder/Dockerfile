@@ -37,7 +37,7 @@ RUN buildDeps='build-essential \
 
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 COPY pip.conf /etc/pip.conf
-#RUN echo "index-url = " ${CAR_PYPI_REPOSITORY_URL} >> /etc/pip.conf
+RUN echo "index-url = " ${CAR_PYPI_REPOSITORY_URL}/simple >> /etc/pip.conf
 
 RUN python3 -m pip install setuptools \
     wheel
