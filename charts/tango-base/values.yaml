@@ -25,8 +25,8 @@ annotations:
 
 dsconfig:
   image:
-    registry: artefact.skao.int/ska-tango-images
-    image: tango-dsconfig
+    registry: artefact.skao.int
+    image: ska-tango-images-tango-dsconfig
     tag: 1.5.1 
     pullPolicy: IfNotPresent
 
