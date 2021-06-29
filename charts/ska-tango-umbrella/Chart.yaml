@@ -5,9 +5,9 @@ name: ska-tango-umbrella
 version: 0.1.15
 icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
 dependencies:
-- name: ska-tango-base
+- name: tango-base
   version: 0.2.23
-  repository: file://../ska-tango-base
+  repository: file://../tango-base
   condition: tango-base.enabled,global.sub-system.tango-base.enabled
 - name: ska-tango-util
   version: 0.2.14
