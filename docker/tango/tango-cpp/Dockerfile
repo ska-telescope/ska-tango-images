@@ -3,9 +3,8 @@
 # intermediate image, then creates a release image containing the compiled
 # binaries.
 #
-ARG CAR_OCI_REGISTRY_PREFIX
 ARG CAR_OCI_REGISTRY_HOST
-FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/tango-dependencies:9.3.4 as buildenv
+FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images/tango-dependencies:9.3.4 as buildenv
 
 RUN TANGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/tango-9.3.4.tar.gz\
     # Speed up image builds by adding apt proxy if detected on host

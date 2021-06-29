@@ -1,6 +1,5 @@
-ARG CAR_OCI_REGISTRY_PREFIX
 ARG CAR_OCI_REGISTRY_HOST
-FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/tango-libtango:9.3.5
+FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images/tango-libtango:9.3.5
 
 ENTRYPOINT ["/usr/local/bin/DataBaseds"]
 

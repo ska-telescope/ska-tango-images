@@ -3,9 +3,8 @@
 # intermediate image, then creates a release image containing the compiled
 # binaries.
 #
-ARG CAR_OCI_REGISTRY_PREFIX
 ARG CAR_OCI_REGISTRY_HOST
-FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/tango-java:9.3.4
+FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images/tango-java:9.3.4
 
 USER root
 
