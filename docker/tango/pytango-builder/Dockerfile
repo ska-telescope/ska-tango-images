@@ -37,7 +37,7 @@ RUN buildDeps='build-essential \
 
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 COPY pip.conf /etc/pip.conf
-RUN echo "index-url = " ${CAR_PYPI_REPOSITORY_URL} >> /etc/pip.conf
+#RUN echo "index-url = " ${CAR_PYPI_REPOSITORY_URL} >> /etc/pip.conf
 
 RUN python3 -m pip install setuptools \
     wheel
@@ -49,6 +49,6 @@ WORKDIR /app
 RUN python3 -m pip install numpy==1.19.2
 
 COPY requirements.txt /requirements.txt
-RUN python3 -m pip install -r /requirements.txt
+#RUN python3 -m pip install -r /requirements.txt
 
 RUN mkdir /venv && ln -s /usr/* /venv/  && ln -s /usr/local/bin/itango3 /venv/bin/itango3
