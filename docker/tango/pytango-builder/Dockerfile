@@ -49,6 +49,6 @@ WORKDIR /app
 RUN python3 -m pip install numpy==1.19.2
 
 COPY requirements.txt /requirements.txt
-#RUN python3 -m pip install -r /requirements.txt
+RUN python3 -m pip install -r /requirements.txt
 
 RUN mkdir /venv && ln -s /usr/* /venv/  && ln -s /usr/local/bin/itango3 /venv/bin/itango3
