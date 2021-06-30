@@ -11,4 +11,4 @@ dependencies:
   condition: tango-base.enabled,global.sub-system.tango-base.enabled
 - name: ska-tango-util
   version: 0.2.14
-  repository: file://../../ska-tango-util
+  repository: file://../ska-tango-util
