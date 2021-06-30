@@ -14,7 +14,7 @@ global:
 
 homeDir: /home/ubuntu
 system: SW-infrastructure
-subsystem: tango-base
+subsystem: ska-tango-base
 telescope: SKA-mid
 
 labels:
@@ -88,7 +88,7 @@ databaseds:
 deviceServers:
   - name: tangotest
     function: tango-test
-    domain: tango-base
+    domain: ska-tango-base
     command: "/usr/local/bin/TangoTest"
     instances: ["test"]
     depends_on:
