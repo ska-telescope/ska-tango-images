@@ -1,12 +1,12 @@
 {{- /*
-tango-util.multidevicesds.tpl 
+ska-tango-util.multidevicesds.tpl 
 Parameters:
 - deviceserver (the deviceserver entire yaml tag)
 - image (to be used for the deviceserver)
 - local (the local chart)
 - instance (of the device server)
 */}}
-{{ define "tango-util.multidevice-svc.tpl" }}
+{{ define "ska-tango-util.multidevice-svc.tpl" }}
 ---
 {{ $labels := coalesce .local.Values.global.labels .local.Values.labels "label:none" }}
 {{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations "annotations:none" }}

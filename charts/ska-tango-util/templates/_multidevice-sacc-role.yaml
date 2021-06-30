@@ -1,4 +1,4 @@
-{{ define "tango-util.multidevice-sacc-role.tpl" }}
+{{ define "ska-tango-util.multidevice-sacc-role.tpl" }}
 ---
 {{ $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
 ---

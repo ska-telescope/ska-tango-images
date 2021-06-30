@@ -1,4 +1,4 @@
-{{ define "tango-util.deviceserver.tpl" }}
+{{ define "ska-tango-util.deviceserver.tpl" }}
 ---
 {{ $labels := coalesce .local.Values.global.labels .local.Values.labels "label:none" }}
 {{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations "annotations:none" }}
