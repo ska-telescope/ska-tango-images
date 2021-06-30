@@ -7,5 +7,5 @@ icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_201
 dependencies:
 - name: ska-tango-util
   version: 0.2.14
-  repository: file://../tango-util
+  repository: file://../ska-tango-util
   
