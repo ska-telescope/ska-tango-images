@@ -146,7 +146,7 @@ k8s_test = tar -c ../post-deployment/ | \
 # clean up the run to completion container
 # exit the saved status
 test: ## test the application on K8s
-	cp ska-tango-base/values.yaml ../post-deployment/tango_values.yaml
+	cp tango-base/values.yaml ../post-deployment/tango_values.yaml
 	$(call k8s_test,test); \
 		status=$$?; \
 		rm -fr build; \
