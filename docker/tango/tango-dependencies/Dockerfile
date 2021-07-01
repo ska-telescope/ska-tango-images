@@ -46,7 +46,7 @@ RUN CPPZMQ_DOWNLOAD_URL=https://github.com/zeromq/cppzmq/archive/v4.4.1.tar.gz \
     && apt-get purge -y --auto-remove $buildDeps \
     && rm -r /usr/src/cppzmq
 
-RUN OMNIORB_DOWNLOAD_URL=https://artefact.skatelescope.org/repository/raw-internal/ska-tango-images/libraries/omniORB-4.2.3.tar.bz2 \
+RUN OMNIORB_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/omniORB-4.2.3.tar.bz2 \
     && buildDeps='build-essential ca-certificates curl python-dev python-pkgconfig' \
     && DEBIAN_FRONTEND=noninteractive apt-get update \
     && apt-get -y install --no-install-recommends $buildDeps \

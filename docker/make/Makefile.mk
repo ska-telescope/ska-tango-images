@@ -14,15 +14,13 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-NAME=$(shell basename $(CURDIR))
+PROJECT="ska-tango-images-"$(shell basename $(CURDIR))
 
 RELEASE_SUPPORT := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))/.make-release-support
 
 IMAGE_BUILDER ?= docker
-CAR_OCI_REGISTRY_HOST ?= artefact.skatelescope.org
-CAR_OCI_REGISTRY_PREFIX ?= ska-tango-images
 
-IMAGE=$(CAR_OCI_REGISTRY_HOST)/$(CAR_OCI_REGISTRY_PREFIX)/$(NAME)
+IMAGE=$(CAR_OCI_REGISTRY_HOST)/$(PROJECT)
 
 VERSION=$(shell . $(RELEASE_SUPPORT) ; getVersion)
 TAG=$(shell . $(RELEASE_SUPPORT); getTag)
@@ -50,26 +48,22 @@ docker-build: .release
 		curl -s https://gitlab.com/ska-telescope/ska-k8s-tools/-/raw/master/docker/docker-builder/scripts/docker-build.sh -o docker-build.sh; \
 		chmod +x docker-build.sh; \
 		PROJECT=$(PROJECT) \
-		DOCKER_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) \
-		DOCKER_REGISTRY_USER=$(CAR_OCI_REGISTRY_PREFIX) \
 		DOCKER_BUILD_CONTEXT=$(BUILD_CONTEXT) \
 		DOCKER_FILE_PATH=$(FILE_PATH) \
 		VERSION=$(VERSION) \
 		TAG=$(TAG) \
-		ADDITIONAL_ARGS="--build-arg http_proxy --build-arg https_proxy --build-arg CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) --build-arg CAR_OCI_REGISTRY_PREFIX=$(CAR_OCI_REGISTRY_PREFIX)" \
+		ADDITIONAL_ARGS="--build-arg http_proxy --build-arg https_proxy --build-arg CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) --build-arg CAR_PYPI_REPOSITORY_URL=$(CAR_PYPI_REPOSITORY_URL)" \
 		./docker-build.sh; \
 		status=$$?; \
 		rm docker-build.sh; \
 		exit $$status; \
 	else \
 		PROJECT=$(PROJECT) \
-		DOCKER_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) \
-		DOCKER_REGISTRY_USER=$(CAR_OCI_REGISTRY_PREFIX) \
 		DOCKER_BUILD_CONTEXT=$(BUILD_CONTEXT) \
 		DOCKER_FILE_PATH=$(FILE_PATH) \
 		VERSION=$(VERSION) \
 		TAG=$(TAG) \
-		ADDITIONAL_ARGS="--build-arg http_proxy --build-arg https_proxy --build-arg CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) --build-arg CAR_OCI_REGISTRY_PREFIX=$(CAR_OCI_REGISTRY_PREFIX)" \
+		ADDITIONAL_ARGS="--build-arg http_proxy --build-arg https_proxy --build-arg CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) --build-arg CAR_PYPI_REPOSITORY_URL=$(CAR_PYPI_REPOSITORY_URL)" \
 		/usr/local/bin/docker-build.sh; \
 		exit $$?; \
 	fi; 

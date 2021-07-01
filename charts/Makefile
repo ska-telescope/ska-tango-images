@@ -1,14 +1,14 @@
 KUBE_NAMESPACE ?= ska-tango-images#namespace to be used
 RELEASE_NAME ?= test## release name of the chart
-UMBRELLA_CHART_PATH ?= ska-tango-images/## Path of the umbrella chart to work with
-HELM_HOST ?= https://artefact.skatelescope.org## helm host url https
-MINIKUBE ?= true## Minikube or not
+UMBRELLA_CHART_PATH ?= ska-tango-umbrella/## Path of the umbrella chart to work with
+# HELM_HOST ?= https://artefact.skatelescope.org # helm host url https 
+MINIKUBE ?= true ## Minikube or not
 MARK ?= all
-IMAGE_TO_TEST ?= artefact.skatelescope.org/ska-tango-images/tango-itango:9.3.3.7## docker image that will be run for testing purpose
+IMAGE_TO_TEST ?= artefact.skao.int/ska-tango-images-tango-itango:9.3.4 ## TODO: UGUR docker image that will be run for testing purpose 
 CI_JOB_ID ?= local##pipeline job id
 TEST_RUNNER ?= test-mk-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
 TANGO_HOST ?= tango-host-databaseds-from-makefile-$(RELEASE_NAME):10000## TANGO_HOST is an input!
-CHARTS ?= tango-util tango-base ska-tango-images## list of charts to be published on gitlab -- umbrella charts for testing purpose
+CHARTS ?= ska-tango-util ska-tango-base ska-tango-umbrella## list of charts to be published on gitlab -- umbrella charts for testing purpose
 LINTING_OUTPUT=$(shell helm lint --with-subcharts $(UMBRELLA_CHART_PATH) | grep ERROR -c | tail -1)
 
 CI_PROJECT_PATH_SLUG ?= ska-tango-images
@@ -146,7 +146,7 @@ k8s_test = tar -c ../post-deployment/ | \
 # clean up the run to completion container
 # exit the saved status
 test: ## test the application on K8s
-	cp tango-base/values.yaml ../post-deployment/tango_values.yaml
+	cp ska-tango-base/values.yaml ../post-deployment/tango_values.yaml
 	$(call k8s_test,test); \
 		status=$$?; \
 		rm -fr build; \

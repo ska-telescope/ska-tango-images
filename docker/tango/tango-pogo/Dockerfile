@@ -1,6 +1,5 @@
-ARG CAR_OCI_REGISTRY_PREFIX
 ARG CAR_OCI_REGISTRY_HOST
-FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/tango-java:9.3.3.2
+FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-java:9.3.4
 
 USER root
 
@@ -18,7 +17,7 @@ RUN runtimeDeps='firefox-esr' \
 RUN buildDeps='wget' \
     && DEBIAN_FRONTEND=noninteractive apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends $buildDeps \
-    && POGO_DOWNLOAD_URL=https://artefact.skatelescope.org/repository/raw-internal/ska-tango-images/libraries/Pogo-9.6.31.jar \
+    && POGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/Pogo-9.6.31.jar \
     && cd /usr/local/share/java \
     && rm -f Pogo-*.jar \
     && wget --no-check-certificate "$POGO_DOWNLOAD_URL" -O Pogo-9.6.31.jar \

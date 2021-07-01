@@ -17,7 +17,7 @@ global:
   #   webjive: 
   #     enabled: false
 
-tango-base:
+ska-tango-base:
   itango:
     enabled: true
   jive:

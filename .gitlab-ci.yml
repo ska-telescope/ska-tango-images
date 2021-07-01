@@ -1,4 +1,4 @@
-image: artefact.skatelescope.org/ska-k8s-tools/docker-builder:0.2.14
+image: $SKA_K8S_TOOLS_DOCKER_BUILDER_IMAGE
 
 stages:
 - build_0
@@ -27,9 +27,7 @@ build_dependencies:
   - &build_push |
     cd docker 
     make BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER build
-    make CAR_OCI_REGISTRY_HOST="nexus.engageska-portugal.pt" -C $IMAGE_FOLDER build
     make BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER push
-    make CAR_OCI_REGISTRY_HOST="nexus.engageska-portugal.pt" BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER push
   only:
     changes:
     - docker/tango/tango-dependencies/**/*
@@ -286,7 +284,7 @@ test-chart:
     MINIKUBE: "false"
   tags:
   - k8srunner
-  image: artefact.skatelescope.org/ska-k8s-tools/deploy:0.4.11
+  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
   script:
   - cd charts/
   - kubectl version
@@ -314,7 +312,7 @@ test-chart:
       junit: build/reports/unit-tests.xml
 
 variables:
-    CHARTS_TO_PUBLISH: tango-util tango-base
+    CHARTS_TO_PUBLISH: ska-tango-util ska-tango-base
 # Ensure your .gitlab-ci.yml has "publish" stage defined!
 include:
   - project: 'ska-telescope/templates-repository'

@@ -3,13 +3,12 @@
 # python projects. This image should be used as an intermediate layer
 # alongside the pytango-builder image.
 #
-ARG CAR_OCI_REGISTRY_PREFIX
+ARG CAR_PYPI_REPOSITORY_URL
 ARG CAR_OCI_REGISTRY_HOST
-FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/pytango-builder:9.3.3.5 as buildenv
+FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:9.3.10 as buildenv
 
-FROM ${CAR_OCI_REGISTRY_HOST}/${CAR_OCI_REGISTRY_PREFIX}/tango-cpp:9.3.4.2
+FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp:9.3.5
 USER root
-
 # Permanently install Python and PyTango runtime dependencies:
 #
 # * libboost-python is required by PyTango;
@@ -42,7 +41,6 @@ COPY pip.conf /etc/pip.conf
 RUN mkdir /venv && ln -s /usr/* /venv/ && ln -s /usr/bin/python3 /venv/bin/python && ln -s /usr/local/bin/itango3 /venv/bin/itango3
 
 USER tango
-
 ENV PATH="/home/tango/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PATH}"
 
 ONBUILD COPY --chown=tango:tango . /app

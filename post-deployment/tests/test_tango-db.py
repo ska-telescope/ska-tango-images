@@ -21,7 +21,7 @@ def getValuesFile(values_file):
 @when(parsers.parse("I extract the DB config in the {device_name}"))
 def getDBConfig(device_name):
     try:
-        pytest.dbHost = 'tango-base-' + pytest.values_list['tangodb']['component']
+        pytest.dbHost = 'ska-tango-base-' + pytest.values_list['tangodb']['component']
         pytest.dbName = pytest.values_list['tangodb']['db']['db']
         pytest.dbUser = pytest.values_list['tangodb']['db']['user']
         pytest.dbPassword = pytest.values_list['tangodb']['db']['password']

@@ -1,4 +1,4 @@
-{{ define "tango-util.multidevice-job.tpl" }}
+{{ define "ska-tango-util.multidevice-job.tpl" }}
 
 ---
 {{ $labels := coalesce .local.Values.global.labels .local.Values.labels "label:none" }}
