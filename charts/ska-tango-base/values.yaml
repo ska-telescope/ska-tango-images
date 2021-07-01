@@ -166,7 +166,7 @@ jive:
   intent: enabling
   image:
     registry: artefact.skao.int
-    image: /ska-tango-images-tango-java
+    image: ska-tango-images-tango-java
     tag: 9.3.4
     pullPolicy: IfNotPresent
   resources:
