@@ -1,5 +1,5 @@
 {{- define "ska-tango-util.configuration.tpl" -}}
-{{ $default_tango_host := printf "%s-%s:10000" "databaseds-tango-base" .local.Release.Name }}
+{{ $default_tango_host := printf "%s-%s:10000" "databaseds-tango-base" .Release.Name }}
 {{ $tango_host := tpl (coalesce .Values.global.tango_host .Values.tango_host $default_tango_host | toString) . }}
 {{ $dsconfig := coalesce .Values.global.dsconfig .Values.dsconfig}}
 {{ $itango := coalesce .Values.global.itango .Values.itango}}
