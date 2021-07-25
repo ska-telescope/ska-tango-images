@@ -4,7 +4,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: rest-api-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  name: rest-api-{{ template "ska-tango-base.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
@@ -24,7 +24,7 @@ spec:
           pathType: Prefix
           backend:
            service:
-            name: {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}
+            name: {{ template "ska-tango-base.name" . }}-{{ .Values.tangorest.component }}
             port:
               number: 8080
 {{ else }}
@@ -32,7 +32,7 @@ spec:
 apiVersion: extensions/v1
 kind: Ingress
 metadata:
-  name: rest-api-{{ template "tango-base.name" . }}-{{ .Release.Name }}
+  name: rest-api-{{ template "ska-tango-base.name" . }}-{{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
   labels:
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
@@ -52,7 +52,7 @@ spec:
             pathType: Prefix
             backend:
             service:
-              name: {{ template "tango-base.name" . }}-{{ .Values.tangorest.component }}
+              name: {{ template "ska-tango-base.name" . }}-{{ .Values.tangorest.component }}
               port:
                 number: 8080
 

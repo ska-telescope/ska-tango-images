@@ -6,7 +6,7 @@
 kind: PersistentVolume
 apiVersion: v1
 metadata:
-  name: {{ template "tango-base.name" . }}-tangodb-storage
+  name: {{ template "ska-tango-base.name" . }}-tangodb-storage
   namespace: {{ .Release.Namespace }}
   labels:
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
@@ -20,14 +20,14 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: {{ template "tango-base.name" . }}-tangodb-storage-{{ .Release.Name }}/
+    path: {{ template "ska-tango-base.name" . }}-tangodb-storage-{{ .Release.Name }}/
 {{ end }}
 ---
 
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ template "tango-base.name" . }}-tangodb-storage
+  name: {{ template "ska-tango-base.name" . }}-tangodb-storage
   namespace: {{ .Release.Namespace }}
   labels:
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}

@@ -44,8 +44,8 @@ Below there is an example of a values file that can be used with the tango-util 
     deviceServers: 
         theexample: 
             name: "theexample-{{.Release.Name}}"
-            function: tango-example-powersupply
-            domain: tango-example
+            function: ska-tango-example-powersupply
+            domain: ska-tango-example
             instances: ["test"]
             polling: 1000
             entrypoints:
@@ -134,7 +134,7 @@ The device server configuration, like the above one, needs to be added to the va
             file: "data/theexample.yaml"
 
 Fields explained:
-    - **file** : This field specifies the path of the device server configuration block as shown above. Note:. This file should be included in a `data folder <https://gitlab.com/ska-telescope/tango-example/-/tree/master/charts/tango-example/data>`__ inside the chart.
+    - **file** : This field specifies the path of the device server configuration block as shown above. Note:. This file should be included in a `data folder <https://gitlab.com/ska-telescope/ska-tango-example/-/tree/master/charts/ska-tango-example/data>`__ inside the chart.
     - **polling** : This field is referenced in the above device server configuration block. In fact the tango-util device server definition template some of the field composing it (like the properties). In the above example the *polled_attr* property of the *test/motor/1* device takes its value from this field. As a consequence, this field allows us to change the value of the *polled_attr* property in the parent chart.
     - **instances** : If **instances** has values ​​in the value file, this takes precedence over the data file **instances** field.
 
@@ -145,8 +145,8 @@ The helm template multidevice-config creates a ConfigMap which contains the gene
 How to use the defined helm named template
 ++++++++++++++++++++++++++++++++++++++++++
 
-A example on how to set up your k8s namespace with the helm named templates, described in the beginning of this `section <#the-tango-util-helm-chart>`_, can be seen on `tango-example <https://gitlab.com/ska-telescope/tango-example>`_ repository.
-This templates are called by the below `template <https://gitlab.com/ska-telescope/tango-example/-/blob/master/charts/tango-example/templates/deviceservers.yaml>`_ present on the tango-example repository:
+A example on how to set up your k8s namespace with the helm named templates, described in the beginning of this `section <#the-tango-util-helm-chart>`_, can be seen on `ska-tango-example <https://gitlab.com/ska-telescope/ska-tango-example>`_ repository.
+This templates are called by the below `template <https://gitlab.com/ska-telescope/ska-tango-example/-/blob/master/charts/ska-tango-example/templates/deviceservers.yaml>`_ present on the ska-tango-example repository:
 
 .. code-block:: console
     :linenos:
@@ -160,19 +160,19 @@ This templates are called by the below `template <https://gitlab.com/ska-telesco
     {{- $filedeviceserver := $.Files.Get $deviceserver.file | fromYaml }}
     {{- $_ := set $filedeviceserver "instances" (coalesce $localchart.Values.global.instances $deviceserver.instances $filedeviceserver.instances) }}
     {{- $context := dict "name" $key "deviceserver" $filedeviceserver "image" $deviceserver.image "local" $localchart }}
-    {{ template "tango-util.multidevice-config.tpl" $context }}
-    {{ template "tango-util.multidevice-sacc-role.tpl" $context }}
-    {{ template "tango-util.multidevice-job.tpl" $context }}
-    {{ template "tango-util.multidevice-svc.tpl" $context }}
+    {{ template "ska-tango-util.multidevice-config.tpl" $context }}
+    {{ template "ska-tango-util.multidevice-sacc-role.tpl" $context }}
+    {{ template "ska-tango-util.multidevice-job.tpl" $context }}
+    {{ template "ska-tango-util.multidevice-svc.tpl" $context }}
 
     {{- else }}
 
     {{- $_ := set $deviceserver "instances" (coalesce $localchart.Values.global.instances $deviceserver.instances) }}
     {{- $context := dict "name" $key "deviceserver" $deviceserver "image" $deviceserver.image "local" $localchart }}
-    {{ template "tango-util.multidevice-config.tpl" $context }}
-    {{ template "tango-util.multidevice-sacc-role.tpl" $context }}
-    {{ template "tango-util.multidevice-job.tpl" $context }}
-    {{ template "tango-util.multidevice-svc.tpl" $context }}
+    {{ template "ska-tango-util.multidevice-config.tpl" $context }}
+    {{ template "ska-tango-util.multidevice-sacc-role.tpl" $context }}
+    {{ template "ska-tango-util.multidevice-job.tpl" $context }}
+    {{ template "ska-tango-util.multidevice-svc.tpl" $context }}
 
     {{- end }}
 

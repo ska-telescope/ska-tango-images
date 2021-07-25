@@ -4,7 +4,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "tango-base.name" . }}-{{ .Values.vnc.component }}
+  name: {{ template "ska-tango-base.name" . }}-{{ .Values.vnc.component }}
   namespace: {{ .Release.Namespace }}
   labels:
     component: {{ .Values.vnc.component }}
@@ -40,7 +40,7 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ template "tango-base.name" . }}-{{ .Values.vnc.component }}
+  name: {{ template "ska-tango-base.name" . }}-{{ .Values.vnc.component }}
   namespace: {{ .Release.Namespace }}
   labels:
     component: {{ .Values.vnc.component }}
@@ -58,7 +58,7 @@ spec:
       domain: {{ .Values.vnc.domain }}
       intent: {{ .Values.vnc.intent }}
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 6 }}
-  serviceName: {{ template "tango-base.name" . }}-{{ .Values.vnc.component }}
+  serviceName: {{ template "ska-tango-base.name" . }}-{{ .Values.vnc.component }}
   replicas:  {{ .Values.vnc.replicas }}
   template:
     metadata:
