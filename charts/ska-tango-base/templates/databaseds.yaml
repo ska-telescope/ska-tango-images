@@ -72,7 +72,7 @@ spec:
           - --sleep={{$sleep}}
           - --
           - /usr/local/bin/wait-for-it.sh
-          - {{ template "tango-base.name" . }}-{{ .Values.tangodb.component }}:3306
+          - {{ template "ska-tango-base.name" . }}-{{ .Values.tangodb.component }}:3306
           - --timeout=60
           - --strict
           - --
@@ -82,7 +82,7 @@ spec:
           - giop:tcp::10000
         env:
           - name: MYSQL_HOST
-            value: "{{ template "tango-base.name" . }}-{{ .Values.tangodb.component }}:3306"
+            value: "{{ template "ska-tango-base.name" . }}-{{ .Values.tangodb.component }}:3306"
           - name: MYSQL_DATABASE
             value: "{{ .Values.tangodb.db.db }}"
           - name: MYSQL_USER

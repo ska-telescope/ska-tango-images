@@ -2,7 +2,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "tango-base.name" -}}
+{{- define "ska-tango-base.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 {{/*
@@ -14,7 +14,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "tango-base.fullname" -}}
+{{- define "ska-tango-base.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -29,9 +29,9 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Common labels
 */}}
-{{- define "tango-base.labels" }}
-app: {{ template "tango-base.name" . }}
-chart: {{ template "tango-base.chart" . }}
+{{- define "ska-tango-base.labels" }}
+app: {{ template "ska-tango-base.name" . }}
+chart: {{ template "ska-tango-base.chart" . }}
 release: {{ .Release.Name }}
 heritage: {{ .Release.Service }}
 system: {{ .Values.system }}
@@ -40,6 +40,6 @@ telescope: {{ .Values.telescope }}
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "tango-base.chart" -}}
+{{- define "ska-tango-base.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}

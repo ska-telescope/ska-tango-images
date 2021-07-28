@@ -4,7 +4,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: {{ template "tango-base.name" . }}-{{ .Values.logviewer.component }}
+  name: {{ template "ska-tango-base.name" . }}-{{ .Values.logviewer.component }}
   namespace: {{ .Release.Namespace }}
   labels:
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
