@@ -14,11 +14,14 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 #
-PROJECT="ska-tango-images-"$(shell basename $(CURDIR))
+PROJECT=ska-tango-images-$(shell basename $(CURDIR))
 
 RELEASE_SUPPORT := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))/.make-release-support
 
 IMAGE_BUILDER ?= docker
+
+CAR_OCI_REGISTRY_HOST ?= artefact.skao.int
+CAR_PYPI_REPOSITORY_URL ?= https://artefact.skao.int/repository/pypi-internal/
 
 IMAGE=$(CAR_OCI_REGISTRY_HOST)/$(PROJECT)
 
@@ -44,19 +47,14 @@ pre-push:
 post-push:
 
 docker-build: .release
-	@if [ ! -f /usr/local/bin/docker-build.sh ] ; then \
-		curl -s https://gitlab.com/ska-telescope/ska-k8s-tools/-/raw/master/docker/docker-builder/scripts/docker-build.sh -o docker-build.sh; \
-		chmod +x docker-build.sh; \
-		PROJECT=$(PROJECT) \
-		DOCKER_BUILD_CONTEXT=$(BUILD_CONTEXT) \
-		DOCKER_FILE_PATH=$(FILE_PATH) \
-		VERSION=$(VERSION) \
-		TAG=$(TAG) \
-		ADDITIONAL_ARGS="--build-arg http_proxy --build-arg https_proxy --build-arg CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) --build-arg CAR_PYPI_REPOSITORY_URL=$(CAR_PYPI_REPOSITORY_URL)" \
-		./docker-build.sh; \
-		status=$$?; \
-		rm docker-build.sh; \
-		exit $$status; \
+	if [ ! -f /usr/local/bin/docker-build.sh ] ; then \
+		docker build -f $(FILE_PATH) \
+		-t $(CAR_OCI_REGISTRY_HOST)/$(PROJECT):$(VERSION) \
+		--build-arg http_proxy \
+		--build-arg https_proxy \
+		--build-arg CAR_OCI_REGISTRY_HOST=$(CAR_OCI_REGISTRY_HOST) \
+		--build-arg CAR_PYPI_REPOSITORY_URL=$(CAR_PYPI_REPOSITORY_URL) \
+		$(BUILD_CONTEXT); \
 	else \
 		PROJECT=$(PROJECT) \
 		DOCKER_BUILD_CONTEXT=$(BUILD_CONTEXT) \
