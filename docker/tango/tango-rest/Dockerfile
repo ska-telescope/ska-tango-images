@@ -1,34 +1,33 @@
 ARG CAR_OCI_REGISTRY_HOST
-FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:9.3.4 as buildenv
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:9.3.4"
+FROM $BASE_IMAGE AS buildenv
 
-RUN MTANGOREST_DOWNLOAD_URL=https://github.com/tango-controls/rest-server/releases/download/rest-server-1.14/rest-server-1.14.jar \
-    && DOCKERHOST=`awk '/^[a-z]+[0-9]+\t00000000/ { printf("%d.%d.%d.%d", "0x" substr($3, 7, 2), "0x" substr($3, 5, 2), "0x" substr($3, 3, 2), "0x" substr($3, 1, 2)) }' < /proc/net/route` \
-    && /usr/local/bin/wait-for-it.sh --host=$DOCKERHOST --port=3142 --timeout=3 --strict --quiet -- echo "Acquire::http::Proxy \"http://$DOCKERHOST:3142\";" > /etc/apt/apt.conf.d/30proxy \
-    && echo "Proxy detected on docker host - using for this build" || echo "No proxy detected on docker host" \
-    && buildDeps='ca-certificates curl libtcnative-1' \
-    && DEBIAN_FRONTEND=noninteractive apt-get update \
-    && apt-get -y install $buildDeps --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/* \
-    && mkdir /usr/local/lib/tango \
-    && cd /usr/local/lib/tango \
-    && curl -fsSL "$MTANGOREST_DOWNLOAD_URL" -o mtangorest.jar \
-    && apt-get purge -y --auto-remove $buildDeps
+ENV MTANGOREST_DOWNLOAD_URL=https://github.com/tango-controls/rest-server/releases/download/rest-server-1.14/rest-server-1.14.jar
 
-FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-java:9.3.4
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+    apt-get -y install ca-certificates curl libtcnative-1 --no-install-recommends
+
+RUN mkdir -p /usr/local/lib/tango
+
+WORKDIR /usr/local/lib/tango
+
+RUN curl -fsSL "$MTANGOREST_DOWNLOAD_URL" -o mtangorest.jar
+
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-java:9.3.4"
+FROM $BASE_IMAGE 
 
 COPY --from=buildenv /usr/local/lib/tango/mtangorest.jar /usr/local/lib/tango/mtangorest.jar
 
 USER root
 
-RUN runtimeDeps='supervisor libtcnative-1' \
-    && mkdir -p /usr/share/man/man1 \
-    && DOCKERHOST=`awk '/^[a-z]+[0-9]+\t00000000/ { printf("%d.%d.%d.%d", "0x" substr($3, 7, 2), "0x" substr($3, 5, 2), "0x" substr($3, 3, 2), "0x" substr($3, 1, 2)) }' < /proc/net/route` \
-    && /usr/local/bin/wait-for-it.sh --host=$DOCKERHOST --port=3142 --timeout=3 --strict --quiet -- echo "Acquire::http::Proxy \"http://$DOCKERHOST:3142\";" > /etc/apt/apt.conf.d/30proxy \
-    && echo "Proxy detected on docker host - using for this build" || echo "No proxy detected on docker host" \
-    && DEBIAN_FRONTEND=noninteractive apt-get update \
-    && DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends $runtimeDeps \
-    && ln -s /usr/lib/x86_64-linux-gnu/libtcnative-1.so /usr/lib/libtcnative-1.so \
-    && rm -rf /var/lib/apt/lists/* /etc/apt/apt.conf.d/30proxy
+RUN mkdir -p /usr/share/man/man1
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+    apt-get -y install supervisor libtcnative-1 --no-install-recommends
+
+RUN ln -s /usr/lib/x86_64-linux-gnu/libtcnative-1.so /usr/lib/libtcnative-1.so
+
+RUN rm -rf /var/lib/apt/lists/* /etc/apt/apt.conf.d/30proxy
 
 COPY tango_register_device.sh /usr/local/bin/
 

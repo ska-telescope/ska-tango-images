@@ -47,7 +47,7 @@ pre-push:
 post-push:
 
 docker-build: .release
-	if [ ! -f /usr/local/bin/docker-build.sh ] ; then \
+	@if [ ! -f /usr/local/bin/docker-build.sh ] ; then \
 		docker build -f $(FILE_PATH) \
 		-t $(CAR_OCI_REGISTRY_HOST)/$(PROJECT):$(VERSION) \
 		--build-arg http_proxy \

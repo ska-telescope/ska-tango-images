@@ -214,7 +214,7 @@ tangorest:
   image:
     registry: artefact.skao.int
     image: ska-tango-images-tango-rest
-    tag: 1.14.2
+    tag: 1.14.3
     pullPolicy: IfNotPresent
   resources:
     requests:
