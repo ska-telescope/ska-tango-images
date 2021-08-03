@@ -5,10 +5,24 @@
 #
 ARG CAR_PYPI_REPOSITORY_URL
 ARG CAR_OCI_REGISTRY_HOST
-FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:9.3.10 as buildenv
+ARG BUILDER_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:9.3.10"
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp:9.3.5"
 
-FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp:9.3.5
+FROM ${BUILDER_IMAGE} as buildenv
+FROM $BASE_IMAGE
+
+LABEL \
+      author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
+      description="This image includes the pytango framework with all its dependencies and no building tools" \
+      license="BSD-3-Clause" \
+      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-runtime" \
+      org.skatelescope.team="Systems Team" \
+      org.skatelescope.version="1.0.0" \
+      int.skao.application="PyTango Runtime"
+
 USER root
+
+ENV DEBIAN_FRONTEND=noninteractive
 # Permanently install Python and PyTango runtime dependencies:
 #
 # * libboost-python is required by PyTango;
@@ -16,18 +30,15 @@ USER root
 # * python3 is required as this image is intended for running Python Tango
 #   devices.
 #
-RUN runtimeDeps='libboost-python1.67.0 \
-		ca-certificates \
-		make \
-		curl \
-		python3 \
-		python3-distutils' \
-    && DOCKERHOST=`awk '/^[a-z]+[0-9]+\t00000000/ { printf("%d.%d.%d.%d", "0x" substr($3, 7, 2), "0x" substr($3, 5, 2), "0x" substr($3, 3, 2), "0x" substr($3, 1, 2)) }' < /proc/net/route` \
-    && /usr/local/bin/wait-for-it.sh --host=$DOCKERHOST --port=3142 --timeout=3 --strict --quiet -- echo "Acquire::http::Proxy \"http://$DOCKERHOST:3142\";" > /etc/apt/apt.conf.d/30proxy \
-    && echo "Proxy detected on docker host - using for this build" || echo "No proxy detected on docker host" \
-    && DEBIAN_FRONTEND=noninteractive apt-get update \
-    && apt-get -y install --no-install-recommends $runtimeDeps \
-    && rm -rf /var/lib/apt/lists/* /etc/apt/apt.conf.d/30proxy
+
+RUN apt-get update \
+    && apt-get -y install --no-install-recommends \
+      libboost-python1.67.0 \
+      ca-certificates \
+      make \
+      curl \
+      python3 \
+      python3-distutils
 
 # Copy across files that are used to help orchestrate container compositions
 # and test execution sequences

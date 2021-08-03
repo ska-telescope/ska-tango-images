@@ -9,13 +9,21 @@
 #
 ARG CAR_PYPI_REPOSITORY_URL
 ARG CAR_OCI_REGISTRY_HOST
-FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp:9.3.5
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp:9.3.5"
+FROM $BASE_IMAGE
+
+LABEL \
+      author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
+      description="This image includes the pytango framework with all its dependencies and building tools" \
+      license="BSD-3-Clause" \
+      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder" \
+      org.skatelescope.team="Systems Team" \
+      org.skatelescope.version="1.0.0" \
+      int.skao.application="PyTango Builder"
 
 USER root
-# Speed up image builds by adding apt proxy if detected on host
-RUN DOCKERHOST=`awk '/^[a-z]+[0-9]+\t00000000/ { printf("%d.%d.%d.%d", "0x" substr($3, 7, 2), "0x" substr($3, 5, 2), "0x" substr($3, 3, 2), "0x" substr($3, 1, 2)) }' < /proc/net/route` \
-    && /usr/local/bin/wait-for-it.sh --host=$DOCKERHOST --port=3142 --timeout=3 --strict --quiet -- echo "Acquire::http::Proxy \"http://$DOCKERHOST:3142\";" > /etc/apt/apt.conf.d/30proxy \
-    && echo "Proxy detected on docker host - using for this build" || echo "No proxy detected on docker host"
+
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Install build dependencies:
 #
@@ -24,22 +32,19 @@ RUN DOCKERHOST=`awk '/^[a-z]+[0-9]+\t00000000/ { printf("%d.%d.%d.%d", "0x" subs
 # * pkg-config is used to locate required libraries
 # * git is required for Python packages using katversion for release info
 #
-RUN buildDeps='build-essential \
+RUN apt-get update \
+    && apt-get -y install --no-install-recommends build-essential \
                libboost-python-dev \
                pkg-config \
                python3-distutils \
-               python3-pip \
                zlib1g-dev \
                curl \
-               git' \
-    && DEBIAN_FRONTEND=noninteractive apt-get update \
-    && apt-get -y install --no-install-recommends $buildDeps
+               git
 
-RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
+RUN curl -k https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 COPY pip.conf /etc/pip.conf
 
-RUN python3 -m pip install setuptools \
-    wheel
+RUN python3 -m pip install setuptools wheel
 
 WORKDIR /app
 

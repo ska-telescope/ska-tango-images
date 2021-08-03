@@ -59,7 +59,7 @@ databaseds:
   image:
     registry: artefact.skao.int
     image: ska-tango-images-tango-cpp
-    tag: 9.3.5
+    tag: 9.3.6
     pullPolicy: IfNotPresent
   resources:
     requests:
