@@ -1,5 +1,6 @@
 ARG CAR_OCI_REGISTRY_HOST
-FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-java:9.3.4
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-java:9.3.5"
+FROM $BASE_IMAGE
 
 USER root
 
