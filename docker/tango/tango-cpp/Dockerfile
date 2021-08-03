@@ -4,7 +4,7 @@
 # binaries.
 #
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILDER_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:9.3.4"
+ARG BUILDER_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:9.3.5"
 ARG BASE_IMAGE="debian:buster-slim"
 FROM $BUILDER_IMAGE as buildenv
 
