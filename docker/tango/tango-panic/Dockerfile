@@ -1,7 +1,15 @@
-ARG http_proxy
-ARG https_proxy
 ARG CAR_OCI_REGISTRY_HOST
-FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:9.3.6
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:9.3.6"
+FROM $BASE_IMAGE
+
+LABEL \
+      author="Andrew Bolin <andrew.bolin@csiro.au>, Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
+      description="This image is the Panic application available from the TANGO-community" \
+      license="BSD-3-Clause" \
+      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-panic" \
+      org.skatelescope.team="Systems Team" \
+      org.skatelescope.version="1.0.0" \
+      int.skao.application="Tango Panic"
 
 # # # NOTES
 # - pip2 crashes if the package we want isn't in the SKA repo,
@@ -11,22 +19,23 @@ FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:9.3.6
 #     so we make a symlink
 # - panic uses python 2, but 'python' maps to python3 in our base image,
 #     so we use sed to edit the PyAlarm launcher
-RUN [ ! -z "$http_proxy" ] && \
-        sudo echo "Acquire::http::Proxy \"$http_proxy\";" > /etc/apt/apt.conf.d/30proxy ||  \
-        echo "no proxy" && \
-    sudo mv /etc/pip.conf /tmp/ska_pip_conf && \
-    DEBIAN_FRONTEND=noninteractive && sudo apt update && \
-    sudo apt install -y \
-        python2.7 \
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN sudo mv /etc/pip.conf /tmp/ska_pip_conf
+
+RUN sudo apt-get update && \
+    sudo apt-get -y install python2.7 \
         python-pip \
-        exim4 \
-    && rm -rf /var/lib/apt/lists/ && \
-    ln -s /usr/lib/x86_64-linux-gnu/libboost_python27.so /usr/lib/x86_64-linux-gnu/libboost_python-py27.so && \
-    pip2 install panic && \
-    sudo mv /tmp/ska_pip_conf /etc/pip.conf && \
-    sudo sed -i.original 's/python/python2/g' `which PyAlarm`
+        exim4
+
+RUN sudo ln -s /usr/lib/x86_64-linux-gnu/libboost_python27.so /usr/lib/x86_64-linux-gnu/libboost_python-py27.so && \
+    pip2 install panic
+
+RUN sudo mv /tmp/ska_pip_conf /etc/pip.conf
+RUN sudo sed -i.original 's/python/python2/g' `which PyAlarm`
 
 COPY aliases /etc/
 COPY update-exim4.conf.conf /etc/exim4/
 COPY entrypoint.sh /app/
+
 ENTRYPOINT ["/app/entrypoint.sh"]

@@ -1,0 +1,17 @@
+ska-tango-images-pytango-builder-9.3.12
+ska-tango-images-pytango-runtime-9.3.12
+ska-tango-images-tango-admin-1.15.3
+ska-tango-images-tango-cpp:9.3.7
+ska-tango-images-tango-databaseds-5.16.3
+ska-tango-images-tango-db-10.4.13
+ska-tango-images-tango-dependencies-9.3.5
+ska-tango-images-tango-dsconfig-1.5.2
+ska-tango-images-tango-itango-9.3.6
+ska-tango-images-tango-java-9.3.5
+ska-tango-images-ska-tango-jive-7.22.3
+ska-tango-images-tango-libtango:9.3.6
+ska-tango-images-tango-pogo-9.6.32
+ska-tango-images-tango-pytango-9.3.6
+ska-tango-images-tango-rest-1.14.5
+ska-tango-images-tango-test-3.0.4
+ska-tango-images-tango-vnc-0.1.4
