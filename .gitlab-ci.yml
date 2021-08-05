@@ -296,6 +296,24 @@ build_tango-panic:
     - docker/tango/pytango-runtime/**/*
     - docker/tango/tango-pytango/**/*
 
+build_tango-panic:
+  retry: 2
+  stage: build_5
+  variables:
+    IMAGE_FOLDER: tango/tango-panic-gui
+  tags:
+  - k8srunner
+  script:
+  - *build_push
+  only:
+    changes:
+    - docker/tango/tango-panic-gui/**/*
+    - docker/tango/tango-dependencies/**/*
+    - docker/tango/tango-cpp/**/*
+    - docker/tango/pytango-builder/**/*
+    - docker/tango/pytango-runtime/**/*
+    - docker/tango/tango-pytango/**/*
+
 test-chart:
   stage: test
   variables:
