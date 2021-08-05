@@ -1,7 +1,6 @@
-ARG http_proxy
-ARG https_proxy
 ARG CAR_OCI_REGISTRY_HOST
-FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:9.3.6
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:9.3.6"
+FROM $BASE_IMAGE
 
 LABEL \
       author="Andrew Bolin <andrew.bolin@csiro.au>, Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
@@ -37,6 +36,8 @@ RUN sudo mv /tmp/ska_pip_conf /etc/pip.conf
 RUN sudo sed -i.original 's/python/python2/g' `which PyAlarm`
 
 # now the VNC stuff (ref. tango-vnc image in ska-tango-images repo)
+ENV DISPLAY=:20
+
 USER root
 
 RUN apt-get update && apt-mark hold iptables && \
