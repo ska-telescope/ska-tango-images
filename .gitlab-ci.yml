@@ -296,7 +296,7 @@ build_tango-panic:
     - docker/tango/pytango-runtime/**/*
     - docker/tango/tango-pytango/**/*
 
-build_tango-panic:
+build_tango-panic-gui:
   retry: 2
   stage: build_5
   variables:
