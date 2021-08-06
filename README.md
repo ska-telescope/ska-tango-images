@@ -12,20 +12,12 @@ When updating Dockerfiles, and especially the tags in the `.release` files,
 it is useful to know the hierarchy.  All downstream images must have the release
 tags updated.
 
-The release tags should match the underlying dependencies used.  E.g., for the
-first release of cppTango 9.3.4-rc4, use the tag `9.3.4-rc4`.  If there are
-subsequent modifications to a Dockerfile, but still using that cppTango release,
-add a suffix, e.g., `9.3.4-rc4.1`.  Further changes would then incremenent that
-suffix: `9.3.4-rc4.2`, etc.
+The release tags should match the underlying dependencies used where possible. 
 
-- ubuntu
-  - deploy/Dockerfile:FROM ubuntu:18.04
-  - tango-builder/Dockerfile:FROM ubuntu:18.04
 - debian-buster-slim
   - tango-dependencies/Dockerfile:FROM debian:buster-slim as buildenv
   - tango-dependencies/Dockerfile:FROM debian:buster-slim
     - tango-java/Dockerfile:FROM {nexus}/tango-dependencies
-        - hdbpp_viewer/Dockerfile:FROM {nexus}/tango-java
         - tango-jive/Dockerfile:FROM {nexus}/tango-java
         - tango-pogo/Dockerfile:FROM {nexus}/tango-java
         - tango-rest/Dockerfile:FROM {nexus}/tango-dependencies as buildenv
@@ -33,7 +25,6 @@ suffix: `9.3.4-rc4.2`, etc.
         - tango-vnc/Dockerfile:FROM {nexus}/tango-java
     - tango-cpp/Dockerfile:FROM {nexus}/tango-dependencies as buildenv
     - tango-cpp/Dockerfile:FROM debian:buster-slim
-      - tango-archiver/Dockerfile:FROM {nexus}/tango-cpp
       - tango-libtango/Dockerfile:FROM {nexus}/tango-cpp
         - tango-admin/Dockerfile:FROM {nexus}/tango-libtango
         - tango-test/Dockerfile:FROM {nexus}/tango-libtango
@@ -49,7 +40,6 @@ suffix: `9.3.4-rc4.2`, etc.
           - tango-itango/Dockerfile:FROM {nexus}/pytango-runtime
           - tango-pytango/Dockerfile:FROM {nexus}/pytango-builder as buildenv
           - tango-pytango/Dockerfile:FROM {nexus}/pytango-runtime
-      - tango-starter/Dockerfile:FROM {nexus}/tango-cpp
 - mariadb
   - tango-db/Dockerfile:FROM mariadb:10
 

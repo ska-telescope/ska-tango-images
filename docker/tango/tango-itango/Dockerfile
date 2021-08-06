@@ -1,7 +1,18 @@
 ARG CAR_OCI_REGISTRY_HOST
+ARG BUILDER_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:9.3.12"
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-runtime:9.3.12"
 
-FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:9.3.10 as buildenv
-FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-runtime:9.3.10
+FROM $BUILDER_IMAGE as buildenv
+FROM $BASE_IMAGE
+
+LABEL \
+      author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
+      description="This image includes the ITango console for the TANGO-controls framework" \
+      license="BSD-3-Clause" \
+      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-itango" \
+      org.skatelescope.team="Systems Team" \
+      org.skatelescope.version="1.0.0" \
+      int.skao.application="ITango"
 
 USER root 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y procps

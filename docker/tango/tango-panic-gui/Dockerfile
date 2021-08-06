@@ -1,7 +1,15 @@
-ARG http_proxy
-ARG https_proxy
 ARG CAR_OCI_REGISTRY_HOST
-FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:9.3.6
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:9.3.6"
+FROM $BASE_IMAGE
+
+LABEL \
+      author="Andrew Bolin <andrew.bolin@csiro.au>, Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
+      description="This image is the Panic GUI application available from the TANGO-community" \
+      license="BSD-3-Clause" \
+      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-panic-gui" \
+      org.skatelescope.team="Systems Team" \
+      org.skatelescope.version="1.0.0" \
+      int.skao.application="Tango Panic GUI"
 
 # # # NOTES
 # - pip2 crashes if the package we want isn't in the SKA repo,
@@ -12,22 +20,23 @@ FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:9.3.6
 #     so we make a symlink
 # - panic uses python 2, but 'python' maps to python3 in our base image,
 #     so we use sed to edit the PyAlarm launcher
-RUN [ ! -z "$http_proxy" ] && \
-        sudo echo "Acquire::http::Proxy \"$http_proxy\";" > /etc/apt/apt.conf.d/30proxy ||  \
-        echo "no proxy" && \
-    sudo mv /etc/pip.conf /tmp/ska_pip_conf && \
-    DEBIAN_FRONTEND=noninteractive && sudo apt update && \
-    sudo apt install -y \
-        python2.7 \
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN sudo mv /etc/pip.conf /tmp/ska_pip_conf
+
+RUN sudo apt-get update && \
+    sudo apt-get -y install python2.7 \
         python-pip \
-        python-qt4 \
-    && rm -rf /var/lib/apt/lists/ && \
-    ln -s /usr/lib/x86_64-linux-gnu/libboost_python27.so /usr/lib/x86_64-linux-gnu/libboost_python-py27.so && \
-    pip2 install panic lxml && \
-    sudo mv /tmp/ska_pip_conf /etc/pip.conf && \
-    sudo sed -i.original 's/python/python2/g' `which PyAlarm`
+        python-qt4
+
+RUN sudo ln -s /usr/lib/x86_64-linux-gnu/libboost_python27.so /usr/lib/x86_64-linux-gnu/libboost_python-py27.so && \
+    pip2 install panic lxml
+
+RUN sudo mv /tmp/ska_pip_conf /etc/pip.conf
+RUN sudo sed -i.original 's/python/python2/g' `which PyAlarm`
 
 # now the VNC stuff (ref. tango-vnc image in ska-tango-images repo)
+ENV DISPLAY=:20
 
 USER root
 
@@ -37,17 +46,14 @@ RUN apt-get update && apt-mark hold iptables && \
       psmisc \
       xdg-utils \
       x11-xserver-utils \
-      x11-utils && \
-    env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-      xfce4 && \
-    env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+      x11-utils  \
+      xfce4  \
       gtk3-engines-xfce \
       libgtk-3-bin \
       mousepad \
       xfce4-notifyd \
       xfce4-taskmanager \
-      xfce4-terminal && \
-    env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+      xfce4-terminal  \
       xfce4-battery-plugin \
       xfce4-clipman-plugin \
       xfce4-cpufreq-plugin \
@@ -66,28 +72,26 @@ RUN apt-get update && apt-mark hold iptables && \
       xfce4-timer-plugin \
       xfce4-verve-plugin \
       xfce4-weather-plugin \
-      xfce4-whiskermenu-plugin && \
-    env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+      xfce4-whiskermenu-plugin \
       libxv1 \
       mesa-utils \
-      mesa-utils-extra && \
-    sed -i 's%<property name="ThemeName" type="string" value="Xfce"/>%<property name="ThemeName" type="string" value="Raleigh"/>%' /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
+      mesa-utils-extra
 
-RUN apt-get update && apt-get install -y \
+RUN sed -i 's%<property name="ThemeName" type="string" value="Xfce"/>%<property name="ThemeName" type="string" value="Raleigh"/>%' /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
+
+RUN apt-get update && apt-get install -y \ 
     git \
     x11vnc \
     software-properties-common \
     unzip \
     curl \
     slim \
-    xvfb \
+    xvfb \ 
     novnc \
     python-websockify
 
 #Expose port 5920 to view display using VNC Viewer
 EXPOSE 5920
 EXPOSE 6081
-
-ENV DISPLAY=:20
 
 CMD Xvfb :20 -screen 0 1366x768x16 & x11vnc -passwd TestVNC -display :20 -N -forever & startxfce4 & websockify --web /usr/share/novnc 6081 localhost:5920

@@ -3,25 +3,28 @@
 # intermediate image, then creates a release image containing the compiled
 # binaries.
 #
-FROM debian:buster-slim as buildenv
+ARG BASE_IMAGE="debian:buster-slim"
+FROM $BASE_IMAGE as buildenv
+
+ENV ZEROMQ_DOWNLOAD_URL=https://github.com/zeromq/libzmq/archive/v4.3.2.tar.gz
+ENV CPPZMQ_DOWNLOAD_URL=https://github.com/zeromq/cppzmq/archive/v4.4.1.tar.gz
+ENV OMNIORB_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/omniORB-4.2.3.tar.bz2
+ENV DEBIAN_FRONTEND=noninteractive
 
 # Copy across files that are used to help orchestrate container compositions
 # and test execution sequences
 COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
 COPY retry.sh /usr/local/bin/retry
 
-RUN DOCKERHOST=`awk '/^[a-z]+[0-9]+\t00000000/ { printf("%d.%d.%d.%d", "0x" substr($3, 7, 2), "0x" substr($3, 5, 2), "0x" substr($3, 3, 2), "0x" substr($3, 1, 2)) }' < /proc/net/route` \
-    && /usr/local/bin/wait-for-it.sh --host=$DOCKERHOST --port=3142 --timeout=3 --strict --quiet -- echo "Acquire::http::Proxy \"http://$DOCKERHOST:3142\";" > /etc/apt/apt.conf.d/30proxy \
-    && echo "Proxy detected on docker host - using for this build" || echo "No proxy detected on docker host"
+RUN apt-get update && \
+    apt-get -y install --no-install-recommends \
+        autoconf automake build-essential ca-certificates \
+        curl libkrb5-dev libtool pkg-config unzip \
+        cmake python-dev python-pkgconfig
 
-RUN ZEROMQ_DOWNLOAD_URL=https://github.com/zeromq/libzmq/archive/v4.3.2.tar.gz \
-    && buildDeps='autoconf automake build-essential ca-certificates curl libkrb5-dev libtool pkg-config unzip' \
-    && DEBIAN_FRONTEND=noninteractive apt-get update \
-    && apt-get -y install $buildDeps --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/* \
-    && mkdir /usr/src/zeromq \
-    && cd /usr/src/zeromq \
-    && curl -kfsSL "$ZEROMQ_DOWNLOAD_URL" -o zeromq.tar.gz \
+RUN mkdir /usr/src/zeromq 
+WORKDIR /usr/src/zeromq    
+RUN curl -kfsSL "$ZEROMQ_DOWNLOAD_URL" -o zeromq.tar.gz \
     && tar xf zeromq.tar.gz -C /usr/src/zeromq --strip-components=1 \
     && ./autogen.sh \
     && ./configure --enable-static=no \
@@ -29,15 +32,9 @@ RUN ZEROMQ_DOWNLOAD_URL=https://github.com/zeromq/libzmq/archive/v4.3.2.tar.gz \
     && make -C /usr/src/zeromq install \
     && rm -r /usr/src/zeromq
 
-
-RUN CPPZMQ_DOWNLOAD_URL=https://github.com/zeromq/cppzmq/archive/v4.4.1.tar.gz \
-    && buildDeps='autoconf automake build-essential ca-certificates curl libkrb5-dev libtool pkg-config unzip cmake' \
-    && DEBIAN_FRONTEND=noninteractive apt-get update \
-    && apt-get -y install $buildDeps --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/* \
-    && mkdir /usr/src/cppzmq \
-    && cd /usr/src/cppzmq \
-    && curl -kfsSL "$CPPZMQ_DOWNLOAD_URL" -o cppzmq.tar.gz \
+RUN mkdir /usr/src/cppzmq 
+WORKDIR /usr/src/cppzmq
+RUN curl -kfsSL "$CPPZMQ_DOWNLOAD_URL" -o cppzmq.tar.gz \
     && tar xf cppzmq.tar.gz -C /usr/src/cppzmq --strip-components=1 \
     && mkdir build \
     && cd build \
@@ -46,14 +43,9 @@ RUN CPPZMQ_DOWNLOAD_URL=https://github.com/zeromq/cppzmq/archive/v4.4.1.tar.gz \
     && apt-get purge -y --auto-remove $buildDeps \
     && rm -r /usr/src/cppzmq
 
-RUN OMNIORB_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/omniORB-4.2.3.tar.bz2 \
-    && buildDeps='build-essential ca-certificates curl python-dev python-pkgconfig' \
-    && DEBIAN_FRONTEND=noninteractive apt-get update \
-    && apt-get -y install --no-install-recommends $buildDeps \
-    && rm -rf /var/lib/apt/lists/* \
-    && mkdir -p /usr/src/omniorb \
-    && cd /usr/src/omniorb \
-    && curl -kfsSL "$OMNIORB_DOWNLOAD_URL" -o omniorb.tar.bz2 \
+RUN mkdir /usr/src/omniorb 
+WORKDIR /usr/src/omniorb
+RUN curl -kfsSL "$OMNIORB_DOWNLOAD_URL" -o omniorb.tar.bz2 \
     && tar xf omniorb.tar.bz2 -C /usr/src/omniorb --strip-components=1 \
     && ./configure --enable-static=no \
     && make -C /usr/src/omniorb -j$(nproc) \
@@ -61,6 +53,16 @@ RUN OMNIORB_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-t
     && apt-get purge -y --auto-remove $buildDeps \
     && rm -r /usr/src/omniorb
 
-FROM debian:buster-slim
+FROM $BASE_IMAGE
+
+LABEL \
+      author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
+      description="This image includes all the depenencies needed for installing the TANGO-controls framework" \
+      license="BSD-3-Clause" \
+      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies" \
+      org.skatelescope.team="Systems Team" \
+      org.skatelescope.version="1.0.0" \
+      int.skao.application="Tango dependencies"
+
 COPY --from=buildenv /usr/local /usr/local
 

@@ -15,7 +15,7 @@ stages:
 # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#authenticating-to-the-container-registry
 before_script:
   - echo $CAR_OCI_REGISTRY_PASSWORD | docker login -u $CAR_OCI_REGISTRY_USERNAME --password-stdin $CAR_OCI_REGISTRY_HOST
-  - echo $DOCKER_REGISTRY_PASSWORD | docker login -u $DOCKER_REGISTRY_USERNAME --password-stdin $DOCKER_REGISTRY_HOST
+
 build_dependencies:
   retry: 2
   stage: build_1
@@ -272,6 +272,42 @@ build_tango-pytango:
   - *build_push
   only:
     changes:
+    - docker/tango/tango-dependencies/**/*
+    - docker/tango/tango-cpp/**/*
+    - docker/tango/pytango-builder/**/*
+    - docker/tango/pytango-runtime/**/*
+    - docker/tango/tango-pytango/**/*
+
+build_tango-panic:
+  retry: 2
+  stage: build_5
+  variables:
+    IMAGE_FOLDER: tango/tango-panic
+  tags:
+  - k8srunner
+  script:
+  - *build_push
+  only:
+    changes:
+    - docker/tango/tango-panic/**/*
+    - docker/tango/tango-dependencies/**/*
+    - docker/tango/tango-cpp/**/*
+    - docker/tango/pytango-builder/**/*
+    - docker/tango/pytango-runtime/**/*
+    - docker/tango/tango-pytango/**/*
+
+build_tango-panic-gui:
+  retry: 2
+  stage: build_5
+  variables:
+    IMAGE_FOLDER: tango/tango-panic-gui
+  tags:
+  - k8srunner
+  script:
+  - *build_push
+  only:
+    changes:
+    - docker/tango/tango-panic-gui/**/*
     - docker/tango/tango-dependencies/**/*
     - docker/tango/tango-cpp/**/*
     - docker/tango/pytango-builder/**/*
