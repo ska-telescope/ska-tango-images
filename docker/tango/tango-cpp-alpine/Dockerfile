@@ -1,4 +1,4 @@
-ARG BASE_IMAGE="python:3.10.0rc1-alpine3.14"
+ARG BASE_IMAGE="python:3.8.10-alpine3.13"
 FROM $BASE_IMAGE AS builder
 
 # Install build time dependencies
