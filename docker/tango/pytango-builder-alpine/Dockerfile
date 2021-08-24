@@ -46,7 +46,7 @@ RUN ln -s /usr/lib/libboost_python39.so.1.76.0 /usr/lib/libboost_python310.so &&
     ln -s /usr/lib/libboost_python39.so.1.76.0 /usr/lib/libboost_python.so
 
 # now install build requirements
-COPY builder-requirements.txt /requirements.txt
+COPY requirements.txt /requirements.txt
 RUN python3.10 -m pip install -r /requirements.txt
 
 ENV LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/usr/lib
