@@ -1,4 +1,4 @@
-ARG CAR_PYPI_REPOSITORY_URL="https://artefact.skao.int/repository/pypi-all/simple"
+ARG CAR_PYPI_REPOSITORY_URL
 ARG CAR_OCI_REGISTRY_HOST
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-cpp-alpine:0.1.0"
 FROM $BASE_IMAGE
