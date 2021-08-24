@@ -118,20 +118,20 @@ build_pytango-builder:
       - docker/tango/tango-cpp/**/*
       - docker/tango/pytango-builder/**/*
 
-#build_pytango-builder-alpine:
-#  retry: 2
-#  stage: build_3
-#  variables:
-#    IMAGE_FOLDER: tango/pytango-builder-alpine
-#  tags:
-#    - k8srunner
-#  script:
-#    - *build_push
-#  only:
-#    changes:
-#      - docker/tango/tango-dependencies/**/*
-#      - docker/tango/tango-cpp-alpine/**/*
-#      - docker/tango/pytango-builder-alpine/**/*
+build_pytango-builder-alpine:
+  retry: 2
+  stage: build_3
+  variables:
+    IMAGE_FOLDER: tango/pytango-builder-alpine
+  tags:
+    - k8srunner
+  script:
+    - *build_push
+  only:
+    changes:
+      - docker/tango/tango-dependencies/**/*
+      - docker/tango/tango-cpp-alpine/**/*
+      - docker/tango/pytango-builder-alpine/**/*
 
 
 build_tango-pogo:
