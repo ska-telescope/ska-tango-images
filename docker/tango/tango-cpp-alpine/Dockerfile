@@ -1,4 +1,4 @@
-ARG BASE_IMAGE="python:3.8.10-alpine3.13"
+ARG BASE_IMAGE="python:3.10.0rc1-alpine3.14"
 FROM $BASE_IMAGE AS builder
 
 # Install build time dependencies
@@ -75,7 +75,7 @@ RUN cd /usr/src && \
     make install
 
 # Now, create the final image minus the tools and source code
-ARG BASE_IMAGE="python:3.8.10-alpine3.13"
+ARG BASE_IMAGE="python:3.10.0rc1-alpine3.14"
 FROM $BASE_IMAGE
 LABEL \
       author="Piers Harding <Piers.Harding@skao.int>" \
