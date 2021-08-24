@@ -1,6 +1,6 @@
 ARG CAR_PYPI_REPOSITORY_URL
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILDER_BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-alpine:0.1.0"
+ARG BUILDER_BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-alpine:0.1.1"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.1.1"
 FROM $BUILDER_BASE_IMAGE AS builder
 
@@ -15,8 +15,6 @@ LABEL \
       int.skao.application="Tango Runtime"
 
 USER root
-
-ENV PIP_INDEX_URL=${CAR_PYPI_REPOSITORY_URL}
 
 # Install build time dependencies
 RUN apk add --update --no-cache curl \
@@ -36,7 +34,5 @@ RUN mkdir -p /etc/ld.so.conf.d && \
     ldconfig /etc/ld.so.conf.d
 
 USER tango
-
-ENV PIP_INDEX_URL=${CAR_PYPI_REPOSITORY_URL}
 
 ENV PATH="/home/tango/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PATH}"

@@ -13,8 +13,6 @@ LABEL \
 
 USER root
 
-ENV PIP_INDEX_URL=${CAR_PYPI_REPOSITORY_URL}
-
 # Install build time dependencies
 RUN apk add --update --no-cache curl \
     openssl ca-certificates \
