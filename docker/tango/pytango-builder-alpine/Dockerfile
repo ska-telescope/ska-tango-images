@@ -1,4 +1,3 @@
-ARG CAR_PYPI_REPOSITORY_URL="https://artefact.skao.int/repository/pypi-all/simple"
 ARG CAR_OCI_REGISTRY_HOST
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.1.5"
 
@@ -11,7 +10,6 @@ LABEL \
       int.skao.website="https://gitlab.com/ska-telescope/sdi/ska-ser-containerisation-and-orchestration" \
       int.skao.application="Tango Builder"
 USER root
-ENV PIP_INDEX_URL=${CAR_PYPI_REPOSITORY_URL}
 # Install build time dependencies
 RUN apk add --update --no-cache curl \
     openssl ca-certificates \

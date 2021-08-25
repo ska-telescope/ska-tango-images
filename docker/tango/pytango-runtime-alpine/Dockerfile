@@ -1,4 +1,3 @@
-ARG CAR_PYPI_REPOSITORY_URL="https://artefact.skao.int/repository/pypi-all/simple"
 ARG CAR_OCI_REGISTRY_HOST
 ARG BUILDER_BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-alpine:0.1.6"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.1.5"
@@ -13,7 +12,6 @@ LABEL \
       int.skao.website="https://gitlab.com/ska-telescope/sdi/ska-ser-containerisation-and-orchestration" \
       int.skao.application="Tango Runtime"
 USER root
-ENV PIP_INDEX_URL=${CAR_PYPI_REPOSITORY_URL}
 # Install build time dependencies
 RUN apk add --update --no-cache curl \
     openssl ca-certificates \
@@ -33,10 +31,9 @@ RUN mkdir -p /etc/ld.so.conf.d && \
 RUN mkdir /venv && ln -s /usr/* /venv/ && ln -s /usr/bin/python3 /venv/bin/python && ln -s /usr/local/bin/itango3 /venv/bin/itango3
 
 USER tango
-ENV PIP_INDEX_URL=${CAR_PYPI_REPOSITORY_URL}
 ENV PATH="/home/tango/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PATH}"
 
 
-ONBUILD COPY --chown=tango:tango . /app
-ONBUILD COPY --from=builder /usr/local/bin/ /usr/local/bin/
+#ONBUILD COPY --chown=tango:tango . /app
+#ONBUILD COPY --from=builder /usr/local/bin/ /usr/local/bin/
 ONBUILD WORKDIR /app
