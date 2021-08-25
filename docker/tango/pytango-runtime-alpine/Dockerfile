@@ -1,7 +1,7 @@
 ARG CAR_OCI_REGISTRY_HOST
 ARG BUILDER_BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-alpine:0.1.6"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.1.5"
-FROM $BUILDER_BASE_IMAGE AS builder
+FROM $BUILDER_BASE_IMAGE AS buildenv
 
 FROM $BASE_IMAGE
 LABEL \
@@ -35,5 +35,5 @@ ENV PATH="/home/tango/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/b
 
 
 #ONBUILD COPY --chown=tango:tango . /app
-#ONBUILD COPY --from=builder /usr/local/bin/ /usr/local/bin/
+ONBUILD COPY --from=buildenv /usr/local/bin/ /usr/local/bin/
 ONBUILD WORKDIR /app
