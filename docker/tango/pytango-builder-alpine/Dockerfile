@@ -35,5 +35,5 @@ RUN python3.10 -m pip install numpy==1.21.0
 RUN ln -s /usr/lib/libboost_python39.so.1.76.0 /usr/lib/libboost_python310.so && \
     ln -s /usr/lib/libboost_python39.so.1.76.0 /usr/lib/libboost_python.so
 # now install build requirements
-COPY builder-requirements.txt /requirements.txt
+COPY requirements.txt /requirements.txt
 RUN python3.10 -m pip install -r /requirements.txt
