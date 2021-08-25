@@ -1,5 +1,5 @@
 ARG BASE_IMAGE="python:3.10.0rc1-alpine3.14"
-FROM $BASE_IMAGE AS builder
+FROM $BASE_IMAGE AS buildenv
 
 # Install build time dependencies
 RUN apk add --update --no-cache curl \
@@ -77,7 +77,7 @@ LABEL \
       int.skao.website="https://gitlab.com/ska-telescope/sdi/ska-ser-containerisation-and-orchestration" \
       int.skao.application="Tango CPP"
 # copy the built library dependencies from the builder stage
-COPY --from=builder /usr/local /usr/local
+COPY --from=buildenv /usr/local /usr/local
 RUN apk add --update --no-cache mariadb-connector-c musl-utils sudo
 RUN ln -s /usr/local/lib/libtango.so.9.4.0 /usr/local/lib/libtango.so.9
 RUN adduser -h /home/tango -D tango
