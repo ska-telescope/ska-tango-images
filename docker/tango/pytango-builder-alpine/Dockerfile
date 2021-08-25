@@ -1,6 +1,6 @@
 ARG CAR_PYPI_REPOSITORY_URL="https://artefact.skao.int/repository/pypi-all/simple"
 ARG CAR_OCI_REGISTRY_HOST
-ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.1.4"
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.1.5"
 
 FROM $BASE_IMAGE
 LABEL \
@@ -37,3 +37,5 @@ RUN ln -s /usr/lib/libboost_python39.so.1.76.0 /usr/lib/libboost_python310.so &&
 # now install build requirements
 COPY requirements.txt /requirements.txt
 RUN python3.10 -m pip install -r /requirements.txt
+
+RUN mkdir /venv && ln -s /usr/* /venv/  && ln -s /usr/local/bin/itango3 /venv/bin/itango3
