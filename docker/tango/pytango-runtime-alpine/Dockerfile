@@ -19,16 +19,22 @@ RUN apk add --update --no-cache curl \
     openssl ca-certificates \
     boost py3-distutils-extra python3 py3-pip boost-python3 make libzmq
 COPY --from=builder /usr/local/lib/python3.10 /usr/local/lib/python3.10
+
 COPY pip.conf /etc/pip.conf
+
 ENV LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/usr/lib
+
 RUN mkdir -p /etc/ld.so.conf.d && \
     echo "include /etc/ld.so.conf.d/*.conf" > /etc/ld.so.conf && \
     echo "/usr/local/lib" > /etc/ld.so.conf.d/tango.conf && \
     echo "/usr/local/lib64" > /etc/ld.so.conf.d/tango.conf && \
     ldconfig /etc/ld.so.conf.d
+
 USER tango
 ENV PIP_INDEX_URL=${CAR_PYPI_REPOSITORY_URL}
 ENV PATH="/home/tango/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PATH}"
+
+RUN mkdir /venv && ln -s /usr/* /venv/ && ln -s /usr/bin/python3 /venv/bin/python && ln -s /usr/local/bin/itango3 /venv/bin/itango3
 
 ONBUILD COPY --chown=tango:tango . /app
 ONBUILD COPY --from=builder /usr/local/bin/ /usr/local/bin/
