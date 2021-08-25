@@ -78,7 +78,7 @@ LABEL \
       int.skao.application="Tango CPP"
 # copy the built library dependencies from the builder stage
 COPY --from=builder /usr/local /usr/local
-RUN apk add --update --no-cache mariadb-connector-c musl-utils
+RUN apk add --update --no-cache mariadb-connector-c musl-utils sudo
 RUN ln -s /usr/local/lib/libtango.so.9.4.0 /usr/local/lib/libtango.so.9
 RUN adduser -h /home/tango -D tango
 RUN echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango \
