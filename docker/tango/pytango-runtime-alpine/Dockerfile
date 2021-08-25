@@ -16,7 +16,7 @@ USER root
 RUN apk add --update --no-cache curl \
     openssl ca-certificates \
     boost py3-distutils-extra python3 py3-pip boost-python3 make libzmq
-COPY --from=builder /usr/local/lib/python3.10 /usr/local/lib/python3.10
+COPY --from=buildenv /usr/local/lib/python3.10 /usr/local/lib/python3.10
 
 COPY pip.conf /etc/pip.conf
 
