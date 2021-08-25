@@ -34,6 +34,6 @@ USER tango
 ENV PATH="/home/tango/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PATH}"
 
 
-#ONBUILD COPY --chown=tango:tango . /app
+ONBUILD COPY --chown=tango:tango . /app
 ONBUILD COPY --from=buildenv /usr/local/bin/ /usr/local/bin/
 ONBUILD WORKDIR /app
