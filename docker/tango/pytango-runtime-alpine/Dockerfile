@@ -30,11 +30,12 @@ RUN mkdir -p /etc/ld.so.conf.d && \
     echo "/usr/local/lib64" > /etc/ld.so.conf.d/tango.conf && \
     ldconfig /etc/ld.so.conf.d
 
+RUN mkdir /venv && ln -s /usr/* /venv/ && ln -s /usr/bin/python3 /venv/bin/python && ln -s /usr/local/bin/itango3 /venv/bin/itango3
+
 USER tango
 ENV PIP_INDEX_URL=${CAR_PYPI_REPOSITORY_URL}
 ENV PATH="/home/tango/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PATH}"
 
-RUN mkdir /venv && ln -s /usr/* /venv/ && ln -s /usr/bin/python3 /venv/bin/python && ln -s /usr/local/bin/itango3 /venv/bin/itango3
 
 ONBUILD COPY --chown=tango:tango . /app
 ONBUILD COPY --from=builder /usr/local/bin/ /usr/local/bin/
