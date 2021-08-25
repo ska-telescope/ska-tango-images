@@ -75,7 +75,7 @@ RUN cd /usr/src && \
     make install
 
 # Now, create the final image minus the tools and source code
-ARG BASE_IMAGE="python:3.10.0rc1-alpine3.14"
+ARG BASE_IMAGE="python:3.8.10-alpine3.13"
 FROM $BASE_IMAGE
 LABEL \
       author="Piers Harding <Piers.Harding@skao.int>" \
@@ -90,7 +90,7 @@ COPY --from=builder /usr/local /usr/local
 
 RUN apk add --update --no-cache mariadb-connector-c musl-utils
 
-RUN ln -s /usr/local/lib/libtango.so.9.4.0 /usr/local/lib/libtango.so.9
+RUN ln -s /usr/local/lib64/libtango.so.9.4.0 /usr/local/lib64/libtango.so.9
 
 RUN adduser -h /home/tango -D tango
 

@@ -1,7 +1,7 @@
-ARG CAR_PYPI_REPOSITORY_URL
-ARG CAR_OCI_REGISTRY_HOST="https://artefact.skao.int/repository/pypi-all/simple"
-ARG BUILDER_BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-alpine:0.1.2"
-ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.1.2"
+ARG CAR_PYPI_REPOSITORY_URL="https://artefact.skao.int/repository/pypi-all/simple"
+ARG CAR_OCI_REGISTRY_HOST
+ARG BUILDER_BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-alpine:0.1.3"
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.1.3"
 FROM $BUILDER_BASE_IMAGE AS builder
 
 FROM $BASE_IMAGE
@@ -23,7 +23,7 @@ RUN apk add --update --no-cache curl \
     openssl ca-certificates \
     boost py3-distutils-extra python3 py3-pip boost-python3 make libzmq
 
-COPY --from=builder /usr/local/lib/python3.10 /usr/local/lib/python3.10
+COPY --from=builder /usr/local/lib/python3.8 /usr/local/lib/python3.8
 
 COPY pip.conf /etc/pip.conf
 
