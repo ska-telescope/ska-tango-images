@@ -290,22 +290,6 @@ build_tango-itango:
     - docker/tango/pytango-runtime/**/*
     - docker/tango/tango-itango/**/*
 
-build_tango-itango-alpine:
-  retry: 2
-  stage: build_5
-  variables:
-    IMAGE_FOLDER: tango/tango-itango-alpine
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-cpp-alpine/**/*
-    - docker/tango/pytango-builder-alpine/**/*
-    - docker/tango/pytango-runtime-alpine/**/*
-    - docker/tango/tango-itango-alpine/**/*
-
 build_tango-vnc:
   retry: 2
   stage: build_5
@@ -413,6 +397,9 @@ variables:
 include:
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/helm_publish.yml'
+
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/build_push.yml'
 
 # Create Gitlab CI badges from CI metrics
 # https://developer.skatelescope.org/en/latest/tools/continuousintegration.html#automated-collection-of-ci-health-metrics-as-part-of-the-ci-pipeline
