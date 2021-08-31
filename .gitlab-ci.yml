@@ -59,6 +59,20 @@ build_tango-cpp:
     - docker/tango/tango-dependencies/**/*
     - docker/tango/tango-cpp/**/*
 
+build_tango-cpp-alpine:
+  retry: 2
+  stage: build_2
+  variables:
+    IMAGE_FOLDER: tango/tango-cpp-alpine
+  tags:
+  - k8srunner
+  script:
+  - *build_push
+  only:
+    changes:
+    - docker/tango/tango-cpp-alpine/**/*
+
+
 build_tango-java:
   retry: 2
   stage: build_2
@@ -102,6 +116,21 @@ build_pytango-builder:
       - docker/tango/tango-dependencies/**/*
       - docker/tango/tango-cpp/**/*
       - docker/tango/pytango-builder/**/*
+
+build_pytango-builder-alpine:
+  retry: 2
+  stage: build_3
+  variables:
+    IMAGE_FOLDER: tango/pytango-builder-alpine
+  tags:
+    - k8srunner
+  script:
+    - *build_push
+  only:
+    changes:
+      - docker/tango/tango-cpp-alpine/**/*
+      - docker/tango/pytango-builder-alpine/**/*
+
 
 build_tango-pogo:
   retry: 2
@@ -163,6 +192,21 @@ build_pytango-runtime:
     - docker/tango/tango-cpp/**/*
     - docker/tango/pytango-builder/**/*
     - docker/tango/pytango-runtime/**/*
+
+build_pytango-runtime-alpine:
+  retry: 2
+  stage: build_4
+  variables:
+    IMAGE_FOLDER: tango/pytango-runtime-alpine
+  tags:
+  - k8srunner
+  script:
+  - *build_push
+  only:
+    changes:
+    - docker/tango/tango-cpp-alpine/**/*
+    - docker/tango/pytango-builder-alpine/**/*
+    - docker/tango/pytango-runtime-alpine/**/*
 
 build_tango-admin:
   retry: 2
@@ -358,3 +402,4 @@ include:
 # https://developer.skatelescope.org/en/latest/tools/continuousintegration.html#automated-collection-of-ci-health-metrics-as-part-of-the-ci-pipeline
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/post_step.yml'
+
