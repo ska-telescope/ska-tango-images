@@ -4,7 +4,7 @@ ARG BASE_IMAGE="python:3.8.10-alpine3.13"
 FROM $BUILDER_IMAGE AS buildenv
 
 # build and install tangoidl
-RUN cd /usr/src && \
+RUN mkdir /usr/src && cd /usr/src && \
     git clone https://gitlab.com/tango-controls/tango-idl && \
     cd tango-idl && \
     mkdir build && \
