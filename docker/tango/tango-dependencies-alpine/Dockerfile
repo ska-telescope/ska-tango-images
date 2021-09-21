@@ -22,11 +22,11 @@ RUN apk add --virtual build-dependencies \
     linux-headers \
     git cmake
     
-# build and install libzmq at v4.2.0
+# build and install libzmq at v4.3.4
 RUN mkdir /usr/src && cd /usr/src && \
     git clone https://github.com/zeromq/libzmq && \
     cd libzmq && \
-    git checkout v4.2.0 && \
+    git checkout v4.3.4 && \
     mkdir build && \
     cd build && \
     cmake -DENABLE_DRAFTS=OFF -DWITH_DOC=OFF -DZMQ_BUILD_TESTS=OFF .. && \
