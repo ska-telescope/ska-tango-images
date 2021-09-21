@@ -32,6 +32,22 @@ build_dependencies:
     changes:
     - docker/tango/tango-dependencies/**/*
 
+build_dependencies-alpine:
+  retry: 2
+  stage: build_1
+  variables:
+    IMAGE_FOLDER: tango/tango-dependencies-alpine
+  tags:
+  - k8srunner
+  script: 
+  - &build_push |
+    cd docker 
+    make BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER build
+    make BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER push
+  only:
+    changes:
+    - docker/tango/tango-dependencies-alpine/**/*
+
 build_tango-db:
   retry: 2
   stage: build_1
