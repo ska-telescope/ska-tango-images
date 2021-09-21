@@ -11,7 +11,9 @@ LABEL \
       int.skao.team="Systems Team" \
       int.skao.website="https://gitlab.com/ska-telescope/sdi/ska-ser-containerisation-and-orchestration" \
       int.skao.application="Tango Runtime"
+      
 USER root
+
 # Install build time dependencies
 RUN apk add --update --no-cache curl \
     openssl ca-certificates \
