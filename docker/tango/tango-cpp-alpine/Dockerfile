@@ -1,87 +1,61 @@
-ARG BASE_IMAGE="python:3.10.0rc1-alpine3.14"
+ARG BASE_IMAGE="alpine:3.13"
 FROM $BASE_IMAGE AS buildenv
 
 # Copy across files that are used to help orchestrate container compositions
 # and test execution sequences
 COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
-COPY retry.sh /usr/local/bin/retry
-
+COPY retry.sh /usr/local/bin/retry.sh
 
 # Install build time dependencies
-RUN apk add --update --no-cache curl \
-    openssl ca-certificates \
-    file mariadb-connector-c-dev pkgconf-dev \
-    g++ python3-dev make czmq-dev \
-    libffi-dev openssl-dev boost-dev
-    
+RUN apk add --update --no-cache curl pkgconf-dev\
+    g++ python3-dev libzmq make zeromq-dev 
+
 RUN apk add --virtual build-dependencies \
-    build-base alpine-sdk \
-    linux-headers \
     git cmake
-    
-# build and install libzmq at v4.3.4
-RUN cd /usr/src && \
-    git clone https://github.com/zeromq/libzmq && \
-    cd libzmq && \
-    git checkout v4.3.4 && \
-    mkdir build && \
-    cd build && \
-    cmake -DENABLE_DRAFTS=OFF -DWITH_DOC=OFF -DZMQ_BUILD_TESTS=OFF .. && \
-    make && \
-    make install
-    
+
 # build and install cpp zmq at v4.7.1
-RUN cd /usr/src && \
-    git clone https://github.com/zeromq/cppzmq && \
-    cd cppzmq && \
-    git checkout v4.7.1 && \
-    mkdir build && \
-    cd build && \
-    cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. && \
-    make && \
-    make install
+RUN git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq && \
+    export PKG_CONFIG_PATH=/usr/local/zmq/lib/pkgconfig && \
+    cmake -B /cppzmq/build -DCPPZMQ_BUILD_TESTS=OFF /cppzmq && \
+    make -C /cppzmq/build install
     
 # build and install omniORB at 4.2.4
-RUN cd /usr/src && \
-    wget -O - "https://nav.dl.sourceforge.net/project/omniorb/omniORB/omniORB-4.2.4/omniORB-4.2.4.tar.bz2" | tar jxf - && \
-    cd omniORB-4.2.4 && \
-    ./configure && \
+RUN curl -L https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.4/omniORB-4.2.4.tar.bz2/download -o /omniORB.tar.bz2 && \
+    mkdir /omniORB && \
+    tar xaf /omniORB.tar.bz2 --strip-components=1 -C /omniORB && \
+    cd /omniORB && \
+    ./configure  && \
     make && \
     make install
-    
+
 # build and install tangoidl
-RUN cd /usr/src && \
-    git clone https://gitlab.com/tango-controls/tango-idl && \
-    cd tango-idl && \
-    mkdir build && \
-    cd build && \
-    cmake .. && \
-    make install
+RUN git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl && \
+    cmake -B /idl/build /idl && \
+    make -C /idl/build install   
     
+
 # build and install cppTango
-    # git checkout 9.3.4 - only head works at the moment
-RUN cd /usr/src && \
-    git clone https://gitlab.com/tango-controls/cppTango && \
-    cd cppTango && \
-    sed -i '1s/^/#include <sys\/types.h>\n#include <bits\/alltypes.h>\n/' /usr/src/cppTango/log4tango/include/log4tango/FileAppender.hh && \
+RUN git clone --depth 1 https://gitlab.com/tango-controls/cppTango /cppTango && \
+    cd /cppTango && \
+    sed -i '1s/^/#include <sys\/types.h>\n#include <bits\/alltypes.h>\n/' /cppTango/log4tango/include/log4tango/FileAppender.hh && \
     mkdir build && \
     cd build && \
     PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig" cmake .. && \
     make && \
     make install
-    
+
 # build and install tango_admin
-RUN cd /usr/src && \
-    git clone https://gitlab.com/tango-controls/tango_admin.git && \
-    cd tango_admin && \
+RUN git clone https://gitlab.com/tango-controls/tango_admin.git /tango_admin && \
+    cd /tango_admin && \
     mkdir build && \
     cd build && \
-    PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig" cmake .. && \
+    PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig" cmake .. -DBUILD_TESTING=OFF && \
     make && \
     make install
     
 # Now, create the final image minus the tools and source code
-ARG BASE_IMAGE="python:3.10.0rc1-alpine3.14"
+ARG BASE_IMAGE="python:3.8.10-alpine3.13"
+FROM $BASE_IMAGE 
 LABEL \
       author="Piers Harding <Piers.Harding@skao.int>" \
       description="This image illustrates build dependencies" \
