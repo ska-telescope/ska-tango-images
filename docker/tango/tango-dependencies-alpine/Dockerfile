@@ -33,14 +33,14 @@ RUN mkdir /usr/src && cd /usr/src && \
     make && \
     make install
     
-# build and install cpp zmq at v4.2.3
+# build and install cpp zmq at v4.7.1
 RUN cd /usr/src && \
     git clone https://github.com/zeromq/cppzmq && \
     cd cppzmq && \
-    git checkout v4.2.3 && \
+    git checkout v4.7.1 && \
     mkdir build && \
     cd build && \
-    cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. && \
+    cmake  -DCPPZMQ_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local .. && \
     make && \
     make install
 

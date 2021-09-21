@@ -1,7 +1,18 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILDER_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine:0.1.0"
+ARG BUILDER_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine:0.1.1"
 ARG BASE_IMAGE="python:3.8.10-alpine3.13"
 FROM $BUILDER_IMAGE AS buildenv
+
+# Install build time dependencies
+RUN apk add --update --no-cache curl \
+    openssl ca-certificates \
+    file pkgconf-dev \
+    g++ python3-dev make czmq-dev \
+    libffi-dev openssl-dev boost-dev
+RUN apk add --virtual build-dependencies \
+    build-base alpine-sdk \
+    linux-headers \
+    git cmake
 
 # build and install tangoidl
 RUN mkdir /usr/src && cd /usr/src && \
