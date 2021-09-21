@@ -1,5 +1,5 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.2.2"
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.2.3"
 
 FROM $BASE_IMAGE
 
@@ -25,6 +25,7 @@ RUN apk add --no-cache --virtual build-dependencies \
     
 # setup pip ready for package installs
 COPY pip.conf /etc/pip.conf
+
 RUN pip3 install setuptools \
     wheel
     
@@ -41,4 +42,13 @@ RUN python3.8 -m pip install numpy==1.21.0
 COPY requirements.txt /requirements.txt
 RUN python3.8 -m pip install -r /requirements.txt
 
+ENV LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/usr/lib
+
+RUN mkdir -p /etc/ld.so.conf.d && \
+    echo "include /etc/ld.so.conf.d/*.conf" > /etc/ld.so.conf && \
+    echo "/usr/local/lib" > /etc/ld.so.conf.d/tango.conf && \
+    echo "/usr/local/lib64" > /etc/ld.so.conf.d/tango.conf && \
+    ldconfig /etc/ld.so.conf.d
+
 RUN mkdir /venv && ln -s /usr/* /venv/  && ln -s /usr/local/bin/itango3 /venv/bin/itango3
+
