@@ -1,43 +1,8 @@
-ARG BASE_IMAGE="python:3.10.0rc1-alpine3.14"
-FROM $BASE_IMAGE AS buildenv
+ARG CAR_OCI_REGISTRY_HOST
+ARG BUILDER_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine:0.1.0"
+ARG BASE_IMAGE="python:3.8.10-alpine3.13"
+FROM $BUILDER_IMAGE AS buildenv
 
-# Install build time dependencies
-RUN apk add --update --no-cache curl \
-    openssl ca-certificates \
-    file mariadb-connector-c-dev pkgconf-dev \
-    g++ python3-dev make czmq-dev \
-    libffi-dev openssl-dev boost-dev
-RUN apk add --virtual build-dependencies \
-    build-base alpine-sdk \
-    linux-headers \
-    git cmake
-# build and install libzmq at v4.2.0
-RUN cd /usr/src && \
-    git clone https://github.com/zeromq/libzmq && \
-    cd libzmq && \
-    git checkout v4.2.0 && \
-    mkdir build && \
-    cd build && \
-    cmake -DENABLE_DRAFTS=OFF -DWITH_DOC=OFF -DZMQ_BUILD_TESTS=OFF .. && \
-    make && \
-    make install
-# build and install cpp zmq at v4.2.3
-RUN cd /usr/src && \
-    git clone https://github.com/zeromq/cppzmq && \
-    cd cppzmq && \
-    git checkout v4.2.3 && \
-    mkdir build && \
-    cd build && \
-    cmake -DCMAKE_INSTALL_PREFIX=/usr/local .. && \
-    make && \
-    make install
-# build and install omniORB at 4.2.4
-RUN cd /usr/src && \
-    wget -O - "https://nav.dl.sourceforge.net/project/omniorb/omniORB/omniORB-4.2.4/omniORB-4.2.4.tar.bz2" | tar jxf - && \
-    cd omniORB-4.2.4 && \
-    ./configure && \
-    make && \
-    make install
 # build and install tangoidl
 RUN cd /usr/src && \
     git clone https://gitlab.com/tango-controls/tango-idl && \
@@ -66,8 +31,8 @@ RUN cd /usr/src && \
     PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig" cmake .. && \
     make && \
     make install
+
 # Now, create the final image minus the tools and source code
-ARG BASE_IMAGE="python:3.10.0rc1-alpine3.14"
 FROM $BASE_IMAGE
 LABEL \
       author="Piers Harding <Piers.Harding@skao.int>" \
