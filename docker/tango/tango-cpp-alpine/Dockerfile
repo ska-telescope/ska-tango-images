@@ -7,16 +7,21 @@ COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
 COPY retry.sh /usr/local/bin/retry.sh
 
 # Install build time dependencies
-RUN apk add --update --no-cache curl pkgconf-dev\
-    g++ python3-dev libzmq make zeromq-dev 
-
+RUN apk add --update --no-cache curl \
+    openssl ca-certificates \
+    file mariadb-connector-c-dev pkgconf-dev \
+    g++ python3-dev make czmq-dev libzmq zeromq-dev\
+    libffi-dev openssl-dev boost-dev
+    
 RUN apk add --virtual build-dependencies \
+    build-base alpine-sdk \
+    linux-headers \
     git cmake
 
 # build and install cpp zmq at v4.7.1
 RUN git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq && \
     export PKG_CONFIG_PATH=/usr/local/zmq/lib/pkgconfig && \
-    cmake -B /cppzmq/build -DCPPZMQ_BUILD_TESTS=OFF /cppzmq && \
+    cmake -B /cppzmq/build -DCPPZMQ_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local /cppzmq && \
     make -C /cppzmq/build install
     
 # build and install omniORB at 4.2.4
@@ -30,7 +35,7 @@ RUN curl -L https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.4
 
 # build and install tangoidl
 RUN git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl && \
-    cmake -B /idl/build /idl && \
+    cmake -B /idl/build -DCMAKE_INSTALL_PREFIX=/usr/local/ /idl && \
     make -C /idl/build install   
     
 
