@@ -23,8 +23,8 @@ RUN git clone -b v4.2.0 --depth 1 https://github.com/zeromq/libzmq /libzmq && \
     cmake -B /libzmq/build -DCMAKE_INSTALL_PREFIX=/usr/local -DENABLE_DRAFTS=OFF -DWITH_DOC=OFF -DZMQ_BUILD_TESTS=OFF /libzmq  && \
     make -C /libzmq/build install
 
-# build and install cpp zmq at v4.7.1
-RUN git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq && \
+# build and install cpp zmq at v4.2.3
+RUN git clone -b v4.2.3 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq && \
     cmake -B /cppzmq/build -DCPPZMQ_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local /cppzmq && \
     make -C /cppzmq/build install
     
@@ -44,7 +44,7 @@ RUN git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl && 
     
 
 # build and install cppTango
-RUN git clone --depth 1 https://gitlab.com/tango-controls/cppTango /cppTango && \
+RUN git clone -b 9.3-backports --depth 1 https://gitlab.com/tango-controls/cppTango /cppTango && \
     cd /cppTango && \
     sed -i '1s/^/#include <sys\/types.h>\n#include <bits\/alltypes.h>\n/' /cppTango/log4tango/include/log4tango/FileAppender.hh && \
     mkdir build && \
