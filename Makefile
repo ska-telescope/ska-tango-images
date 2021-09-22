@@ -1,5 +1,7 @@
 BASE = $(shell pwd)
 
+HELM_CHARTS_TO_PUBLISH = ska-tango-util ska-tango-base
+
 # include all makefile templates
 include .make/*.mk
 

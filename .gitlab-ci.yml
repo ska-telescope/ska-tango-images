@@ -23,9 +23,9 @@ build_dependencies:
     IMAGE_FOLDER: tango/tango-dependencies
   tags:
   - k8srunner
-  script: 
+  script:
   - &build_push |
-    cd docker 
+    cd docker
     make BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER build
     make BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER push
   only:
@@ -39,9 +39,9 @@ build_dependencies-alpine:
     IMAGE_FOLDER: tango/tango-dependencies-alpine
   tags:
   - k8srunner
-  script: 
+  script:
   - &build_push |
-    cd docker 
+    cd docker
     make BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER build
     make BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER push
   only:
@@ -407,15 +407,30 @@ test-chart:
     reports:
       junit: build/reports/unit-tests.xml
 
-variables:
-    CHARTS_TO_PUBLISH: ska-tango-util ska-tango-base
-# Ensure your .gitlab-ci.yml has "publish" stage defined!
+# # Ensure your .gitlab-ci.yml has "publish" stage defined!
+# include:
+#   - project: 'ska-telescope/templates-repository'
+#     file: 'gitlab-ci/includes/helm_publish.yml'
+
+# # Create Gitlab CI badges from CI metrics
+# # https://developer.skatelescope.org/en/latest/tools/continuousintegration.html#automated-collection-of-ci-health-metrics-as-part-of-the-ci-pipeline
+#   - project: 'ska-telescope/templates-repository'
+#     file: 'gitlab-ci/includes/post_step.yml'
+
 include:
   - project: 'ska-telescope/templates-repository'
-    file: 'gitlab-ci/includes/helm_publish.yml'
-
-# Create Gitlab CI badges from CI metrics
-# https://developer.skatelescope.org/en/latest/tools/continuousintegration.html#automated-collection-of-ci-health-metrics-as-part-of-the-ci-pipeline
+    ref: st-901-write-empty-templates
+    file: 'gitlab-ci/includes/oci-image.gitlab-ci.yml'
   - project: 'ska-telescope/templates-repository'
-    file: 'gitlab-ci/includes/post_step.yml'
+    ref: st-901-write-empty-templates
+    file: 'gitlab-ci/includes/helm-chart.gitlab-ci.gitlab-ci.yml'
+  - project: 'ska-telescope/templates-repository'
+    ref: st-901-write-empty-templates
+    file: 'gitlab-ci/includes/docs.gitlab-ci.yml'
+  - project: 'ska-telescope/templates-repository'
+    ref: st-901-write-empty-templates
+    file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'
 
+# override variables
+variables:
+    CHARTS_TO_PUBLISH: ska-tango-util ska-tango-base
