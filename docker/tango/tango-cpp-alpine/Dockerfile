@@ -1,4 +1,5 @@
 ARG CAR_OCI_REGISTRY_HOST
+ARG BASE_IMAGE="python:3.9-alpine3.14"
 ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine:0.2.0"
 FROM $BUILD_IMAGE AS buildenv
 
@@ -48,7 +49,6 @@ RUN git clone https://gitlab.com/tango-controls/tango_admin.git /tango_admin && 
     make install
 
 # Now, create the final image minus the tools and source code
-ARG BASE_IMAGE="python:3.9-alpine3.14"
 FROM $BASE_IMAGE 
 LABEL \
       author="Piers Harding <Piers.Harding@skao.int>" \
