@@ -1,4 +1,5 @@
-ARG BASE_IMAGE="python:3.8.12-alpine3.14"
+ARG CAR_OCI_REGISTRY_HOST
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencias-alpine:0.2.0"
 FROM $BASE_IMAGE AS buildenv
 
 # Copy across files that are used to help orchestrate container compositions
@@ -10,32 +11,13 @@ COPY retry.sh /usr/local/bin/retry.sh
 RUN apk add --update --no-cache curl \
     openssl ca-certificates \
     file mariadb-connector-c-dev pkgconf-dev \
-    g++ python3-dev make czmq-dev \
+    g++ python3-dev python3 make czmq-dev \
     libffi-dev openssl-dev boost-dev libsodium-dev
     
 RUN apk add --virtual build-dependencies \
     build-base alpine-sdk \
     linux-headers \
     git cmake
-
-# build and install libzmq at v4.3.4
-RUN git clone -b v4.3.4 --depth 1 https://github.com/zeromq/libzmq /libzmq && \
-    cmake -B /libzmq/build -DCMAKE_INSTALL_PREFIX=/usr/local -DENABLE_DRAFTS=OFF -DWITH_DOC=OFF -DZMQ_BUILD_TESTS=OFF /libzmq  && \
-    make -C /libzmq/build install
-
-# build and install cpp zmq at v4.8.1
-RUN git clone -b v4.8.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq && \
-    cmake -B /cppzmq/build -DCPPZMQ_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local /cppzmq && \
-    make -C /cppzmq/build install
-    
-# build and install omniORB at 4.2.4
-RUN curl -L https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.4/omniORB-4.2.4.tar.bz2/download -o /omniORB.tar.bz2 && \
-    mkdir /omniORB && \
-    tar xaf /omniORB.tar.bz2 --strip-components=1 -C /omniORB && \
-    cd /omniORB && \
-    ./configure --prefix=/usr/local/ && \
-    make && \
-    make install
 
 # build and install tangoidl
 RUN git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl && \
@@ -67,7 +49,7 @@ RUN git clone https://gitlab.com/tango-controls/tango_admin.git /tango_admin && 
     make install
     
 # Now, create the final image minus the tools and source code
-ARG BASE_IMAGE="python:3.8.12-alpine3.14"
+ARG BASE_IMAGE="python:3.9-alpine3.14"
 FROM $BASE_IMAGE 
 LABEL \
       author="Piers Harding <Piers.Harding@skao.int>" \
