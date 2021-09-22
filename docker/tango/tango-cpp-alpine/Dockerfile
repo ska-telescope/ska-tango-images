@@ -11,7 +11,7 @@ RUN apk add --update --no-cache curl \
     openssl ca-certificates \
     file mariadb-connector-c-dev pkgconf-dev \
     g++ python3-dev make czmq-dev \
-    libffi-dev openssl-dev boost-dev
+    libffi-dev openssl-dev boost-dev libsodium-dev
     
 RUN apk add --virtual build-dependencies \
     build-base alpine-sdk \
