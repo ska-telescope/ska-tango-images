@@ -1,6 +1,6 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine:0.2.0"
-FROM $BASE_IMAGE AS buildenv
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine:0.2.0"
+FROM $BUILD_IMAGE AS buildenv
 
 # Copy across files that are used to help orchestrate container compositions
 # and test execution sequences
@@ -13,7 +13,7 @@ RUN apk add --update --no-cache curl \
     file mariadb-connector-c-dev pkgconf-dev \
     g++ python3-dev python3 make czmq-dev \
     libffi-dev openssl-dev boost-dev libsodium-dev
-    
+
 RUN apk add --virtual build-dependencies \
     build-base alpine-sdk \
     linux-headers \
@@ -23,7 +23,6 @@ RUN apk add --virtual build-dependencies \
 RUN git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl && \
     cmake -B /idl/build -DCMAKE_INSTALL_PREFIX=/usr/local/ /idl && \
     make -C /idl/build install   
-    
 
 # build and install cppTango
 RUN git clone --depth 1 https://gitlab.com/tango-controls/cppTango /cppTango && \
@@ -47,7 +46,7 @@ RUN git clone https://gitlab.com/tango-controls/tango_admin.git /tango_admin && 
     PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig" cmake .. -DBUILD_TESTING=OFF && \
     make && \
     make install
-    
+
 # Now, create the final image minus the tools and source code
 ARG BASE_IMAGE="python:3.9-alpine3.14"
 FROM $BASE_IMAGE 
@@ -58,7 +57,7 @@ LABEL \
       int.skao.team="Systems Team" \
       int.skao.website="https://gitlab.com/ska-telescope/sdi/ska-ser-containerisation-and-orchestration" \
       int.skao.application="Tango CPP"
-      
+
 # copy the built library dependencies from the builder stage
 COPY --from=buildenv /usr/local /usr/local
 
@@ -69,6 +68,5 @@ RUN ln -s /usr/local/lib/libtango.so.9.4.0 /usr/local/lib/libtango.so.9
 RUN adduser -h /home/tango -D tango
 RUN echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango \
     && chmod 0440 /etc/sudoers.d/tango
-    
-USER tango
 
+USER tango
