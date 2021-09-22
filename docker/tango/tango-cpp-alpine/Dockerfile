@@ -1,4 +1,4 @@
-ARG BASE_IMAGE="alpine:3.13"
+ARG BASE_IMAGE="python:3.8.10-alpine3.13"
 FROM $BASE_IMAGE AS buildenv
 
 # Copy across files that are used to help orchestrate container compositions
@@ -29,7 +29,7 @@ RUN curl -L https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.4
     mkdir /omniORB && \
     tar xaf /omniORB.tar.bz2 --strip-components=1 -C /omniORB && \
     cd /omniORB && \
-    ./configure  && \
+    ./configure --prefix=/usr/local/ && \
     make && \
     make install
 
