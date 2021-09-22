@@ -1,6 +1,8 @@
 ARG BASE_IMAGE="python:3.8.10-alpine3.13"
 FROM $BASE_IMAGE AS buildenv
 
+ENV TANGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/tango-9.3.4.tar.gz
+
 # Copy across files that are used to help orchestrate container compositions
 # and test execution sequences
 COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
@@ -10,7 +12,7 @@ COPY retry.sh /usr/local/bin/retry.sh
 RUN apk add --update --no-cache curl \
     openssl ca-certificates \
     file mariadb-connector-c-dev pkgconf-dev \
-    g++ python3-dev make czmq-dev \
+    g++ python3-dev make czmq-dev python \
     libffi-dev openssl-dev boost-dev
     
 RUN apk add --virtual build-dependencies \
@@ -37,30 +39,15 @@ RUN curl -L https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.4
     make && \
     make install
 
-# build and install tangoidl
-RUN git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl && \
-    cmake -B /idl/build -DCMAKE_INSTALL_PREFIX=/usr/local/ /idl && \
-    make -C /idl/build install   
-    
-
-# build and install cppTango
-RUN git clone -b 9.3-backports --depth 1 https://gitlab.com/tango-controls/cppTango /cppTango && \
-    cd /cppTango && \
-    sed -i '1s/^/#include <sys\/types.h>\n#include <bits\/alltypes.h>\n/' /cppTango/log4tango/include/log4tango/FileAppender.hh && \
-    mkdir build && \
-    cd build && \
-    PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig" cmake .. && \
-    make && \
-    make install
-
-# build and install tango_admin
-RUN git clone https://gitlab.com/tango-controls/tango_admin.git /tango_admin && \
-    cd /tango_admin && \
-    mkdir build && \
-    cd build && \
-    PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig" cmake .. -DBUILD_TESTING=OFF && \
-    make && \
-    make install
+RUN mkdir -p /usr/src/tango
+WORKDIR /usr/src/tango
+RUN curl -fsSL "$TANGO_DOWNLOAD_URL" -o tango.tar.gz \
+    && tar xf tango.tar.gz -C /usr/src/tango --strip-components=1 \
+    && ./configure --with-zmq=/usr/local --with-omni=/usr/local --with-mysqlclient-prefix=/usr --enable-static=no \
+    && make -C /usr/src/tango -j$(nproc) \
+    && make -C /usr/src/tango install \
+    && ldconfig \
+    && rm -r /usr/src/tango
     
 # Now, create the final image minus the tools and source code
 ARG BASE_IMAGE="python:3.8.10-alpine3.13"
@@ -76,7 +63,7 @@ LABEL \
 # copy the built library dependencies from the builder stage
 COPY --from=buildenv /usr/local /usr/local
 
-RUN apk add --update --no-cache mariadb-connector-c musl-utils sudo
+RUN apk add --update --no-cache libmariadb3 mariadb-connector-c musl-utils sudo
 
 RUN ln -s /usr/local/lib/libtango.so.9.4.0 /usr/local/lib/libtango.so.9
 
