@@ -12,7 +12,7 @@ COPY retry.sh /usr/local/bin/retry.sh
 RUN apk add --update --no-cache curl \
     openssl ca-certificates \
     file mariadb-connector-c-dev pkgconf-dev \
-    g++ python3-dev make czmq-dev python \
+    g++ python3-dev make czmq-dev python3 \
     libffi-dev openssl-dev boost-dev
     
 RUN apk add --virtual build-dependencies \
