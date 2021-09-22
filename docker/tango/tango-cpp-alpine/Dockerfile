@@ -10,7 +10,7 @@ COPY retry.sh /usr/local/bin/retry.sh
 RUN apk add --update --no-cache curl \
     openssl ca-certificates \
     file mariadb-connector-c-dev pkgconf-dev \
-    g++ python3-dev make czmq-dev libzmq zeromq-dev\
+    g++ python3-dev make czmq-dev \
     libffi-dev openssl-dev boost-dev
     
 RUN apk add --virtual build-dependencies \
@@ -18,9 +18,13 @@ RUN apk add --virtual build-dependencies \
     linux-headers \
     git cmake
 
+# build and install libzmq at v4.2.0
+RUN git clone -b v4.2.0 --depth 1 https://github.com/zeromq/libzmq /libzmq && \
+    cmake -B /libzmq/build -DCMAKE_INSTALL_PREFIX=/usr/local -DENABLE_DRAFTS=OFF -DWITH_DOC=OFF -DZMQ_BUILD_TESTS=OFF /libzmq  && \
+    make -C /libzmq/build install
+
 # build and install cpp zmq at v4.7.1
 RUN git clone -b v4.7.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq && \
-    export PKG_CONFIG_PATH=/usr/local/zmq/lib/pkgconfig && \
     cmake -B /cppzmq/build -DCPPZMQ_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local /cppzmq && \
     make -C /cppzmq/build install
     
