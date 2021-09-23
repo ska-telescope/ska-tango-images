@@ -374,6 +374,18 @@ build_tango-panic-gui:
     - docker/tango/pytango-runtime/**/*
     - docker/tango/tango-pytango/**/*
 
+test-chart-templates:
+  stage: test
+  variables:
+    MINIKUBE: "false"
+  tags:
+  - k8srunner
+  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
+  script:
+    - helm plugin install https://github.com/quintush/helm-unittest
+    - cd charts/
+    - make chart_test
+
 test-chart:
   stage: test
   variables:
