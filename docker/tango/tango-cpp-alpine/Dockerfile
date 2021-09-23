@@ -6,7 +6,7 @@ FROM $BUILD_IMAGE AS buildenv
 # Copy across files that are used to help orchestrate container compositions
 # and test execution sequences
 COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
-COPY retry.sh /usr/local/bin/retry.sh
+COPY retry.sh /usr/local/bin/retry
 
 # Install build time dependencies
 RUN apk add --update --no-cache curl \
