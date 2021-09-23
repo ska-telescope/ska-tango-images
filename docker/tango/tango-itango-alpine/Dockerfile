@@ -14,8 +14,6 @@ LABEL \
       org.skatelescope.version="1.0.0" \
       int.skao.application="ITango"
 
-USER root 
-
 USER tango
 # create ipython profile to so that itango doesn't fail if ipython hasn't run yet
 RUN ipython profile create
