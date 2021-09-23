@@ -108,6 +108,9 @@ chart_lint: clean dep-up## lint check the helm chart
 	echo "<testsuites><testsuite errors=\"$(LINTING_OUTPUT)\" failures=\"0\" name=\"helm-lint\" skipped=\"0\" tests=\"0\" time=\"0.000\" timestamp=\"$(shell date)\"> </testsuite> </testsuites>" > build/linting.xml
 	exit $(LINTING_OUTPUT)
 
+chart_test: #clean dep-up
+	mkdir -p build; helm unittest ska-tango-base/ --helm3 --with-subchart --output-file build/chart_template_tests.xml; \
+
 wait:## wait for pods to be ready
 	@echo "Waiting for pods to be ready"
 	@date
