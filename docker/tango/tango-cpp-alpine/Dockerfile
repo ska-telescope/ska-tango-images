@@ -25,9 +25,10 @@ RUN git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl && 
     cmake -B /idl/build -DCMAKE_INSTALL_PREFIX=/usr/local/ /idl && \
     make -C /idl/build install   
 
-# build and install cppTango
+## build and install cppTango
+## latest main version is not working using previous commit
 RUN git clone --depth 1 https://gitlab.com/tango-controls/cppTango /cppTango && \
-    cd /cppTango && \
+    cd /cppTango && git checkout 1575524ada0a3f8fe97b4040c07da7c83fced325 && \
     sed -i '1s/^/#include <sys\/types.h>\n#include <bits\/alltypes.h>\n/' /cppTango/log4tango/include/log4tango/FileAppender.hh && \
     mkdir build && \    
     cmake . -B build \  
