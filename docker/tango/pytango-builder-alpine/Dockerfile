@@ -33,12 +33,15 @@ WORKDIR /app
 ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig
 
 # Install numpy manually before PyTango and other requirements to ensure we
-# build PyTango with numpy support.
-RUN python3.9 -m pip install numpy==1.21.0
+# build PyTango with numpy support. 
+# yarl and multidict need also to be added here
+RUN MULTIDICT_NO_EXTENSIONS=1 python3.9 -m pip install multidict \
+    && YARL_NO_EXTENSIONS=1 python3.9 -m pip install yarl \
+    && python3.9 -m pip install numpy==1.21.0
 
 # now install build requirements
 COPY requirements.txt /requirements.txt
-RUN YARL_NO_EXTENSIONS=1 python3.9 -m pip install yarl && python3.9 -m pip install -r /requirements.txt
+RUN python3.9 -m pip install -r /requirements.txt
 
 ENV LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/usr/lib
 
