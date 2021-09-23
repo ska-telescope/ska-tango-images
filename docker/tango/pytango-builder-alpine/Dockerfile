@@ -38,7 +38,7 @@ RUN python3.9 -m pip install numpy==1.21.0
 
 # now install build requirements
 COPY requirements.txt /requirements.txt
-RUN python3.9 -m pip install -r /requirements.txt
+RUN YARL_NO_EXTENSIONS=1 python3.9 -m pip install yarl && python3.9 -m pip install -r /requirements.txt
 
 ENV LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/usr/lib
 
