@@ -35,7 +35,7 @@ ENV TANGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tan
 RUN apk add --update --no-cache curl \
     ca-certificates
 
-RUN mkdir -p /usr/src/tango
+RUN mkdir -p /usr/src/tango && mkdir /docker-entrypoint-initdb.d
 
 WORKDIR /usr/src/tango
 
@@ -50,7 +50,7 @@ RUN mkdir -p dbinit/include \
     && sed -i "s|@TANGO_DB_NAME@|tango|g" dbinit/create_db.sql \
     && sed -i "s|@TANGO_DB_NAME@|tango|g" dbinit/include/create_db_tables.sql \
     && sed -i "s|@TANGO_DB_NAME@|tango|g" dbinit/include/stored_proc.sql \
-    && sed -i "s|^source create_db_tables.sql$|source /docker-entrypoint-initdb.d/include/create_db_tables.sql|g" dbinit/create_db.sql \
+    && sed -i "s|^source create_db_tables.sql$|source /docker-+-initdb.d/include/create_db_tables.sql|g" dbinit/create_db.sql \
     && sed -i "s|^source stored_proc.sql$|source /docker-entrypoint-initdb.d/include/stored_proc.sql|g" dbinit/create_db.sql \
     && sed -i "/CREATE DATABASE tango;/d" dbinit/create_db.sql \
     && cp -r dbinit/* /docker-entrypoint-initdb.d
