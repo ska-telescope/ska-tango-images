@@ -62,8 +62,7 @@ FROM $BASE_IMAGE
 
 # ENV LC_ALL=en_GB.UTF-8
 
-RUN apk add --upgrade --no-cache  \
-    mariadb mariadb-client tzdata bash
+RUN apk add --upgrade --no-cache bash
 
 # # comment out a few problematic configuration values
 # RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/my.cnf && \
