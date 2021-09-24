@@ -48,9 +48,9 @@ build_dependencies-alpine:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-dependencies-alpine
-  only:
-    changes:
-    - images/ska-tango-images-tango-dependencies-alpine/*
+  # only:
+  #   changes:
+  #   - images/ska-tango-images-tango-dependencies-alpine/*
 
 # build_tango-db:
 #   retry: 2
