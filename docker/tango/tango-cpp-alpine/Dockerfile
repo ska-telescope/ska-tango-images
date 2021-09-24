@@ -1,12 +1,7 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BASE_IMAGE="python:3.9-alpine3.14"
+ARG BASE_IMAGE="python:3.9.7-alpine3.14"
 ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine:0.2.1"
 FROM $BUILD_IMAGE AS buildenv
-
-# Copy across files that are used to help orchestrate container compositions
-# and test execution sequences
-COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
-COPY retry.sh /usr/local/bin/retry.sh
 
 # Install build time dependencies
 RUN apk add --update --no-cache curl \
@@ -68,7 +63,6 @@ RUN ln -s /usr/local/lib/libtango.so.9.4.0 /usr/local/lib/libtango.so.9
 
 # create the user tango and add it to sudoers, for some reason we need to add it to the tango group
 RUN adduser -h /home/tango -D tango && \
-    echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango && \
-    adduser tango tango
+    echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango
 
 USER tango

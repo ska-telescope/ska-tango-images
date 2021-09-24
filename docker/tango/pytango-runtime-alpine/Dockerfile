@@ -1,6 +1,6 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILDER_BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-alpine:0.2.3"
-ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.2.13"
+ARG BUILDER_BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-alpine:0.2.4"
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.2.14"
 FROM $BUILDER_BASE_IMAGE AS buildenv
 
 FROM $BASE_IMAGE
@@ -15,14 +15,12 @@ LABEL \
 USER root
 
 # Install build time dependencies
-RUN apk add --update --no-cache curl \
+RUN apk add --update --no-cache curl bash \
     openssl ca-certificates \
     boost py3-distutils-extra python3 py3-pip boost-python3 make libzmq
 
 # Copy across files that are used to help orchestrate container compositions
 # and test execution sequences    
-COPY --from=buildenv /usr/local/bin/wait-for-it.sh /usr/local/bin/wait-for-it.sh
-COPY --from=buildenv /usr/local/bin/retry /usr/local/bin/retry
 COPY --from=buildenv /usr/local/lib/python3.9 /usr/local/lib/python3.9
 
 COPY pip.conf /etc/pip.conf

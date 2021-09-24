@@ -1,6 +1,6 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILDER_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-alpine:0.2.2"
-ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-runtime-alpine:0.2.2"
+ARG BUILDER_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-alpine:0.2.3"
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-runtime-alpine:0.2.3"
 
 FROM $BUILDER_IMAGE as buildenv
 FROM $BASE_IMAGE
@@ -13,6 +13,9 @@ LABEL \
       org.skatelescope.team="Systems Team" \
       org.skatelescope.version="1.0.0" \
       int.skao.application="ITango"
+
+USER root
+RUN apk add --update --no-cache procps
 
 USER tango
 # create ipython profile to so that itango doesn't fail if ipython hasn't run yet
