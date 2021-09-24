@@ -1,5 +1,8 @@
 image: $SKA_K8S_TOOLS_DOCKER_BUILDER_IMAGE
 
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
 stages:
 - lint
 - build
@@ -461,5 +464,6 @@ include:
     file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'
 
 # override variables
-variables:
-    HELM_CHARTS_TO_PUBLISH: ska-tango-util ska-tango-base
+helm-chart-publish:
+  variables:
+      HELM_CHARTS_TO_PUBLISH: ska-tango-util ska-tango-base
