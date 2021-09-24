@@ -446,6 +446,7 @@ include:
   #   file: 'gitlab-ci/includes/oci-image.gitlab-ci.yml'
   # do a custom set of build stages
   - project: 'ska-telescope/templates-repository'
+    ref: st-901-refactor-oci-lint
     file: 'gitlab-ci/includes/oci-image-lint.gitlab-ci.yml'
   # - project: 'ska-telescope/templates-repository'
   #   file: 'gitlab-ci/includes/oci-image-publish.gitlab-ci.yml'
