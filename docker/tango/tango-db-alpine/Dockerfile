@@ -1,5 +1,5 @@
 
-ARG BASE_IMAGE="jbergstroem/mariadb-alpine:latest"
+ARG BASE_IMAGE="yobasystems/alpine-mariadb:latest"
 FROM $BASE_IMAGE AS builder
 
 ### Install and Setup Mariadb
@@ -35,7 +35,7 @@ ENV TANGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tan
 RUN apk add --update --no-cache curl \
     ca-certificates
 
-RUN mkdir -p /usr/src/tango && mkdir /docker-entrypoint-initdb.d
+RUN mkdir -p /usr/src/tango 
 
 WORKDIR /usr/src/tango
 
