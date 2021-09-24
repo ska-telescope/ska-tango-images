@@ -24,7 +24,7 @@ RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/my.cnf && \
 VOLUME /var/lib/mysql
 
 COPY docker-entrypoint.sh /usr/local/bin/
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 EXPOSE 3306
 
@@ -79,7 +79,7 @@ RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/my.cnf && \
 VOLUME /var/lib/mysql
 
 COPY docker-entrypoint.sh /usr/local/bin/
-ENTRYPOINT ["docker-entrypoint.sh"]
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 EXPOSE 3306
 
