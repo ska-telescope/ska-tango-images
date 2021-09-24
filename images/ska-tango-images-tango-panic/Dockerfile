@@ -21,18 +21,20 @@ LABEL \
 #     so we use sed to edit the PyAlarm launcher
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN sudo mv /etc/pip.conf /tmp/ska_pip_conf
+USER root
 
-RUN sudo apt-get update && \
-    sudo apt-get -y install python2.7 \
+RUN mv /etc/pip.conf /tmp/ska_pip_conf
+
+RUN apt-get update && \
+    apt-get -y install python2.7 \
         python-pip \
         exim4
 
-RUN sudo ln -s /usr/lib/x86_64-linux-gnu/libboost_python27.so /usr/lib/x86_64-linux-gnu/libboost_python-py27.so && \
+RUN ln -s /usr/lib/x86_64-linux-gnu/libboost_python27.so /usr/lib/x86_64-linux-gnu/libboost_python-py27.so && \
     pip2 install panic
 
-RUN sudo mv /tmp/ska_pip_conf /etc/pip.conf
-RUN sudo sed -i.original 's/python/python2/g' `which PyAlarm`
+RUN mv /tmp/ska_pip_conf /etc/pip.conf
+RUN sed -i.original 's/python/python2/g' `which PyAlarm`
 
 COPY aliases /etc/
 COPY update-exim4.conf.conf /etc/exim4/

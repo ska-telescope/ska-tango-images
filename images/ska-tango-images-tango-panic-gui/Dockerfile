@@ -22,18 +22,18 @@ LABEL \
 #     so we use sed to edit the PyAlarm launcher
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN sudo mv /etc/pip.conf /tmp/ska_pip_conf
+RUN mv /etc/pip.conf /tmp/ska_pip_conf
 
-RUN sudo apt-get update && \
-    sudo apt-get -y install python2.7 \
+RUN apt-get update && \
+    apt-get -y install python2.7 \
         python-pip \
         python-qt4
 
-RUN sudo ln -s /usr/lib/x86_64-linux-gnu/libboost_python27.so /usr/lib/x86_64-linux-gnu/libboost_python-py27.so && \
+RUN ln -s /usr/lib/x86_64-linux-gnu/libboost_python27.so /usr/lib/x86_64-linux-gnu/libboost_python-py27.so && \
     pip2 install panic lxml
 
-RUN sudo mv /tmp/ska_pip_conf /etc/pip.conf
-RUN sudo sed -i.original 's/python/python2/g' `which PyAlarm`
+RUN mv /tmp/ska_pip_conf /etc/pip.conf
+RUN sed -i.original 's/python/python2/g' `which PyAlarm`
 
 # now the VNC stuff (ref. tango-vnc image in ska-tango-images repo)
 ENV DISPLAY=:20
@@ -79,14 +79,14 @@ RUN apt-get update && apt-mark hold iptables && \
 
 RUN sed -i 's%<property name="ThemeName" type="string" value="Xfce"/>%<property name="ThemeName" type="string" value="Raleigh"/>%' /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
 
-RUN apt-get update && apt-get install -y \ 
+RUN apt-get update && apt-get install -y \
     git \
     x11vnc \
     software-properties-common \
     unzip \
     curl \
     slim \
-    xvfb \ 
+    xvfb \
     novnc \
     python-websockify
 
