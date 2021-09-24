@@ -13,10 +13,19 @@ LABEL \
       int.skao.application="Tango Runtime"
 USER root
 # Install build time dependencies
-RUN apk add --update --no-cache curl \
-    openssl ca-certificates \
-    boost py3-distutils-extra python3 py3-pip boost-python3 make libzmq
-COPY --from=buildenv /usr/local/lib/python3.10 /usr/local/lib/python3.10
+RUN apk add --update --no-cache \
+    bash \
+    boost \
+    boost-python3 \
+    ca-certificates \
+    curl \
+    libzmq \
+    make \
+    openssl \
+    py3-distutils-extra \
+    py3-pip \
+    python3
+COPY --from=buildenv /usr/local/lib/python3.9 /usr/local/lib/python3.9
 
 COPY pip.conf /etc/pip.conf
 
@@ -28,7 +37,10 @@ RUN mkdir -p /etc/ld.so.conf.d && \
     echo "/usr/local/lib64" > /etc/ld.so.conf.d/tango.conf && \
     ldconfig /etc/ld.so.conf.d
 
-RUN mkdir /venv && ln -s /usr/* /venv/ && ln -s /usr/bin/python3 /venv/bin/python && ln -s /usr/local/bin/itango3 /venv/bin/itango3
+RUN mkdir /venv && \
+    ln -s /usr/* /venv/ && \
+    ln -s /usr/bin/python3 /venv/bin/python && \
+    ln -s /usr/local/bin/itango3 /venv/bin/itango3
 
 USER tango
 ENV PATH="/home/tango/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PATH}"

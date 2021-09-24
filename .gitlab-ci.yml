@@ -1,12 +1,12 @@
 image: $SKA_K8S_TOOLS_DOCKER_BUILDER_IMAGE
 
 stages:
-- build_0
+# - build_0
 - build_1
-- build_2
-- build_3
-- build_4
-- build_5
+# - build_2
+# - build_3
+# - build_4
+# - build_5
 # - push
 - test
 - publish
@@ -48,18 +48,35 @@ build_dependencies-alpine:
     changes:
     - docker/tango/tango-dependencies-alpine/**/*
 
-# build_tango-db:
-#   retry: 2
-#   stage: build_1
-#   variables:
-#     IMAGE_FOLDER: tango/tango-db
-#   tags:
-#   - k8srunner
-#   script:
-#   - *build_push
-#   only:
-#     changes:
-#     - docker/tango/tango-db/**/*
+
+
+build_tango-db:
+  retry: 2
+  stage: build_1
+  variables:
+    IMAGE_FOLDER: tango/tango-db
+  tags:
+  - k8srunner
+  script:
+  - *build_push
+  only:
+    changes:
+    - docker/tango/tango-db/**/*
+
+
+build_tango-db-alpine:
+  retry: 2
+  stage: build_1
+  variables:
+    IMAGE_FOLDER: tango/tango-db-alpine
+  tags:
+  - k8srunner
+  script:
+  - *build_push
+  only:
+    changes:
+    - docker/tango/tango-db-alpine/**/*
+
 
 # build_tango-cpp:
 #   retry: 2
@@ -289,6 +306,19 @@ build_dependencies-alpine:
 #     - docker/tango/pytango-runtime/**/*
 #     - docker/tango/tango-dsconfig/**/*
 
+build_tango-dsconfig-alpine:
+  retry: 2
+  stage: build_5
+  variables:
+    IMAGE_FOLDER: tango/tango-dsconfig-alpine
+  tags:
+  - k8srunner
+  script:
+  - *build_push
+  only:
+    changes:
+    - docker/tango/tango-dsconfig-alpine/**/*
+
 # build_tango-itango:
 #   retry: 2
 #   stage: build_5
@@ -305,6 +335,19 @@ build_dependencies-alpine:
 #     - docker/tango/pytango-builder/**/*
 #     - docker/tango/pytango-runtime/**/*
 #     - docker/tango/tango-itango/**/*
+
+build_tango-itango-alpine:
+  retry: 2
+  stage: build_5
+  variables:
+    IMAGE_FOLDER: tango/tango-itango-alpine
+  tags:
+  - k8srunner
+  script:
+  - *build_push
+  only:
+    changes:
+    - docker/tango/tango-itango-alpine/**/*
 
 # build_tango-vnc:
 #   retry: 2
@@ -337,6 +380,20 @@ build_dependencies-alpine:
 #     - docker/tango/pytango-builder/**/*
 #     - docker/tango/pytango-runtime/**/*
 #     - docker/tango/tango-pytango/**/*
+
+build_tango-pytango-alpine:
+  retry: 2
+  stage: build_5
+  variables:
+    IMAGE_FOLDER: tango/tango-pytango-alpine
+  tags:
+  - k8srunner
+  script:
+  - *build_push
+  only:
+    changes:
+    - docker/tango/tango-pytango-alpine/**/*
+
 
 # build_tango-panic:
 #   retry: 2
