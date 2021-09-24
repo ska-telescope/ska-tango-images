@@ -1,12 +1,12 @@
 image: $SKA_K8S_TOOLS_DOCKER_BUILDER_IMAGE
 
 stages:
-- build_0
+# - build_0
 - build_1
-- build_2
-- build_3
-- build_4
-- build_5
+# - build_2
+# - build_3
+# - build_4
+# - build_5
 # - push
 - test
 - publish
@@ -412,23 +412,23 @@ build_tango-db-alpine:
 #     - docker/tango/pytango-runtime/**/*
 #     - docker/tango/tango-pytango/**/*
 
-build_tango-panic-gui:
-  retry: 2
-  stage: build_5
-  variables:
-    IMAGE_FOLDER: tango/tango-panic-gui
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-panic-gui/**/*
-    - docker/tango/tango-dependencies/**/*
-    - docker/tango/tango-cpp/**/*
-    - docker/tango/pytango-builder/**/*
-    - docker/tango/pytango-runtime/**/*
-    - docker/tango/tango-pytango/**/*
+# build_tango-panic-gui:
+#   retry: 2
+#   stage: build_5
+#   variables:
+#     IMAGE_FOLDER: tango/tango-panic-gui
+#   tags:
+#   - k8srunner
+#   script:
+#   - *build_push
+#   only:
+#     changes:
+#     - docker/tango/tango-panic-gui/**/*
+#     - docker/tango/tango-dependencies/**/*
+#     - docker/tango/tango-cpp/**/*
+#     - docker/tango/pytango-builder/**/*
+#     - docker/tango/pytango-runtime/**/*
+#     - docker/tango/tango-pytango/**/*
 
 test-chart:
   stage: test
