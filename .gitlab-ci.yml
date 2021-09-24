@@ -61,6 +61,20 @@ build_tango-db:
     changes:
     - docker/tango/tango-db/**/*
 
+build_tango-db-alpine:
+  retry: 2
+  stage: build_1
+  variables:
+    IMAGE_FOLDER: tango/tango-db-alpine
+  tags:
+  - k8srunner
+  script:
+  - *build_push
+  only:
+    changes:
+    - docker/tango/tango-db-alpine/**/*
+
+
 build_tango-cpp:
   retry: 2
   stage: build_2

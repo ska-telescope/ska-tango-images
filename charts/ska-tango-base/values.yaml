@@ -126,8 +126,8 @@ tangodb:
   intent: production
   image:
     registry: artefact.skao.int
-    image: ska-tango-images-tango-db
-    tag: 10.4.13
+    image: ska-tango-images-tango-db-alpine
+    tag: 0.1.0
     pullPolicy: IfNotPresent
   db:
     rootpw: secret
