@@ -87,10 +87,12 @@ LABEL \
       author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
       description="This image is the tango db (MariaDB) from the TANGO-community" \
       license="BSD-3-Clause" \
-      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-db" \
+      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-db-alpine" \
       org.skatelescope.team="Systems Team" \
       org.skatelescope.version="1.0.0" \
       int.skao.application="Tango DB"
+
+RUN apk add bash
 
 COPY --from=builder /docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
 COPY sql_mode.cnf /etc/mysql/conf.d
