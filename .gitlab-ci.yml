@@ -506,7 +506,7 @@ include:
 # Docs pages
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/docs-pages.gitlab-ci.yml'
-    ref: st-901-write-empty-templates
+    # ref: master
 
 # .post step finalisers eg: badges
   - project: 'ska-telescope/templates-repository'
