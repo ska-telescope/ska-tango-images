@@ -1,34 +1,34 @@
 
-ARG BASE_IMAGE="alpine:3.14"
+ARG BASE_IMAGE="bianjp/mariadb-alpine:latest"
 FROM $BASE_IMAGE AS builder
 
 ### Install and Setup Mariadb
 
-ENV LC_ALL=en_GB.UTF-8
+# ENV LC_ALL=en_GB.UTF-8
 
-RUN mkdir /docker-entrypoint-initdb.d && \
-    apk add --upgrade --no-cache  \
-    mariadb mariadb-client tzdata 
+# RUN mkdir /docker-entrypoint-initdb.d && \
+#     apk add --upgrade --no-cache  \
+#     mariadb mariadb-client tzdata 
 
-# comment out a few problematic configuration values
-RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/my.cnf && \
-    sed -i  's/^skip-networking/#&/' /etc/my.cnf.d/mariadb-server.cnf && \
-    # don't reverse lookup hostnames, they are usually another container
-    sed -i '/^\[mysqld]$/a skip-host-cache\nskip-name-resolve' /etc/my.cnf && \
-    # always run as user mysql
-    sed -i '/^\[mysqld]$/a user=mysql' /etc/my.cnf && \
-    # allow custom configurations
-    echo -e '\n!includedir /etc/mysql/conf.d/' >> /etc/my.cnf && \
-    mkdir -p /etc/mysql/conf.d/
+# # comment out a few problematic configuration values
+# RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/my.cnf && \
+#     sed -i  's/^skip-networking/#&/' /etc/my.cnf.d/mariadb-server.cnf && \
+#     # don't reverse lookup hostnames, they are usually another container
+#     sed -i '/^\[mysqld]$/a skip-host-cache\nskip-name-resolve' /etc/my.cnf && \
+#     # always run as user mysql
+#     sed -i '/^\[mysqld]$/a user=mysql' /etc/my.cnf && \
+#     # allow custom configurations
+#     echo -e '\n!includedir /etc/mysql/conf.d/' >> /etc/my.cnf && \
+#     mkdir -p /etc/mysql/conf.d/
 
-VOLUME /var/lib/mysql
+# VOLUME /var/lib/mysql
 
-COPY docker-entrypoint.sh /usr/local/bin/
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+# COPY docker-entrypoint.sh /usr/local/bin/
+# ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
-EXPOSE 3306
+# EXPOSE 3306
 
-CMD ["mysqld_safe"]
+# CMD ["mysqld_safe"]
 
 ENV TANGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/tango-9.3.4.tar.gz
 
@@ -58,32 +58,33 @@ RUN mkdir -p dbinit/include \
 FROM $BASE_IMAGE
 
 ### Install and Setup Mariadb
+# USER root
 
-ENV LC_ALL=en_GB.UTF-8
+# ENV LC_ALL=en_GB.UTF-8
 
-RUN mkdir /docker-entrypoint-initdb.d && \
-    apk add --upgrade --no-cache  \
-    mariadb mariadb-client tzdata bash
+# RUN mkdir /docker-entrypoint-initdb.d && \
+#     apk add --upgrade --no-cache  \
+#     mariadb mariadb-client tzdata bash
 
-# comment out a few problematic configuration values
-RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/my.cnf && \
-    sed -i  's/^skip-networking/#&/' /etc/my.cnf.d/mariadb-server.cnf && \
-    # don't reverse lookup hostnames, they are usually another container
-    sed -i '/^\[mysqld]$/a skip-host-cache\nskip-name-resolve' /etc/my.cnf && \
-    # always run as user mysql
-    sed -i '/^\[mysqld]$/a user=mysql' /etc/my.cnf && \
-    # allow custom configurations
-    echo -e '\n!includedir /etc/mysql/conf.d/' >> /etc/my.cnf && \
-    mkdir -p /etc/mysql/conf.d/
+# # comment out a few problematic configuration values
+# RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/my.cnf && \
+#     sed -i  's/^skip-networking/#&/' /etc/my.cnf.d/mariadb-server.cnf && \
+#     # don't reverse lookup hostnames, they are usually another container
+#     sed -i '/^\[mysqld]$/a skip-host-cache\nskip-name-resolve' /etc/my.cnf && \
+#     # always run as user mysql
+#     sed -i '/^\[mysqld]$/a user=mysql' /etc/my.cnf && \
+#     # allow custom configurations
+#     echo -e '\n!includedir /etc/mysql/conf.d/' >> /etc/my.cnf && \
+#     mkdir -p /etc/mysql/conf.d/
 
-VOLUME /var/lib/mysql
+# VOLUME /var/lib/mysql
 
-COPY docker-entrypoint.sh /usr/local/bin/
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+# COPY docker-entrypoint.sh /usr/local/bin/
+# ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
-EXPOSE 3306
+# EXPOSE 3306
 
-CMD ["mysqld_safe"]
+# CMD ["mysqld_safe"]
 
 LABEL \
       author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
