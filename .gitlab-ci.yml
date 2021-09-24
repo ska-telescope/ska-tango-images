@@ -1,6 +1,8 @@
 image: $SKA_K8S_TOOLS_DOCKER_BUILDER_IMAGE
 
 stages:
+- lint
+- build
 # - build_0
 - build_1
 # - build_2
@@ -496,8 +498,8 @@ include:
   # do a custom set of build stages
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/oci-image-lint.gitlab-ci.yml'
-  - project: 'ska-telescope/templates-repository'
-    file: 'gitlab-ci/includes/oci-image-publish.gitlab-ci.yml'
+  # - project: 'ska-telescope/templates-repository'
+  #   file: 'gitlab-ci/includes/oci-image-publish.gitlab-ci.yml'
 
 # Helm Charts
   - project: 'ska-telescope/templates-repository'
