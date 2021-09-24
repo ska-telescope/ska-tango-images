@@ -1,6 +1,6 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILDER_BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-alpine:0.2.4"
-ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.2.14"
+ARG BUILDER_BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-alpine:0.2.5"
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.2.15"
 FROM $BUILDER_BASE_IMAGE AS buildenv
 
 FROM $BASE_IMAGE
@@ -21,7 +21,7 @@ RUN apk add --update --no-cache curl bash \
 
 # Copy across files that are used to help orchestrate container compositions
 # and test execution sequences    
-COPY --from=buildenv /usr/local/lib/python3.9 /usr/local/lib/python3.9
+COPY --from=buildenv /usr/local/lib/python3.8 /usr/local/lib/python3.8
 
 COPY pip.conf /etc/pip.conf
 

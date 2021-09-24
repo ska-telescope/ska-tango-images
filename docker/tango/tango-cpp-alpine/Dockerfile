@@ -1,5 +1,5 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BASE_IMAGE="python:3.9.7-alpine3.14"
+ARG BASE_IMAGE="python:3.8.12-alpine3.14"
 ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine:0.2.1"
 FROM $BUILD_IMAGE AS buildenv
 
