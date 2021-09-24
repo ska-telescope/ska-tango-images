@@ -42,6 +42,7 @@ RUN curl -L https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.4
     make install
 
 FROM $BASE_IMAGE
+
 LABEL \
       author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
       description="This image includes all the depenencies needed for installing the TANGO-controls framework" \
@@ -50,5 +51,6 @@ LABEL \
       org.skatelescope.team="Systems Team" \
       org.skatelescope.version="1.0.0" \
       int.skao.application="Tango dependencies"
+      
 COPY --from=buildenv /usr/local /usr/local
 
