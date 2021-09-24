@@ -1,5 +1,5 @@
 
-ARG BASE_IMAGE="bianjp/mariadb-alpine:latest"
+ARG BASE_IMAGE="jbergstroem/mariadb-alpine:latest"
 FROM $BASE_IMAGE AS builder
 
 ### Install and Setup Mariadb
