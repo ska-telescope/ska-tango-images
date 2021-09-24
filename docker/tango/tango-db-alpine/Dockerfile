@@ -39,7 +39,7 @@ LABEL \
       org.skatelescope.version="1.0.0" \
       int.skao.application="Tango DB"
 
-RUN addgroup -S mysql && adduser -S -g mysql mysql
+RUN addgroup --system mysql && adduser --system --group mysql mysql
 
 
 
