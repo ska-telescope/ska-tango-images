@@ -41,7 +41,7 @@ RUN MULTIDICT_NO_EXTENSIONS=1 python3 -m pip install multidict \
 
 # now install build requirements
 COPY requirements.txt /requirements.txt
-RUN python3.9 -m pip install -r /requirements.txt
+RUN python3 -m pip install -r /requirements.txt
 
 ENV LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/usr/lib
 
