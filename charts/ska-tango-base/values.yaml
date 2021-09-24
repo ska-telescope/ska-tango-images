@@ -127,7 +127,7 @@ tangodb:
   image:
     registry: artefact.skao.int
     image: ska-tango-images-tango-db-alpine
-    tag: 0.0.10
+    tag: 0.0.11
     pullPolicy: IfNotPresent
   db:
     rootpw: secret
