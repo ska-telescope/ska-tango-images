@@ -8,7 +8,7 @@ stages:
 # - build_2
 # - build_3
 # - build_4
-- build_5
+# - build_5
 # - push
 - test
 - publish
@@ -19,454 +19,412 @@ stages:
 before_script:
   - echo $CAR_OCI_REGISTRY_PASSWORD | docker login -u $CAR_OCI_REGISTRY_USERNAME --password-stdin $CAR_OCI_REGISTRY_HOST
 
-build_dependencies:
+
+.image_builder_template:
+  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
   retry: 2
-  stage: build_1
-  variables:
-    IMAGE_FOLDER: tango/tango-dependencies
   tags:
-  - k8srunner
+    - k8srunner
+  before_script:
+    - '[ -f .make/oci.mk ] || exit 1'
+    - 'make help | grep oci.mk:oci-build'
   script:
-  - &build_push |
-    cd docker
-    make BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER build
-    make BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER push
+    - make oci-build OCI_IMAGE=${OCI_IMAGE} CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}
+
+build_dependencies:
+  stage: build_1
+  extends:
+    - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-dependencies
   only:
     changes:
-    - docker/tango/tango-dependencies/**/*
+    - images/ska-tango-images-tango-dependencies/**/*
 
 build_dependencies-alpine:
   retry: 2
   stage: build_1
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/tango-dependencies-alpine
-  tags:
-  - k8srunner
-  script:
-  - &build_push |
-    cd docker
-    make BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER build
-    make BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER push
+    OCI_IMAGE: ska-tango-images-tango-dependencies-alpine
   only:
     changes:
-    - docker/tango/tango-dependencies-alpine/**/*
-
-
+    - images/ska-tango-images-tango-dependencies-alpine/**/*
 
 build_tango-db:
   retry: 2
   stage: build_1
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/tango-db
-  tags:
-  - k8srunner
-  script:
-  - *build_push
+    OCI_IMAGE: ska-tango-images-tango-db
   only:
     changes:
-    - docker/tango/tango-db/**/*
-
+    - images/ska-tango-images-tango-db/**/*
 
 build_tango-db-alpine:
   retry: 2
   stage: build_1
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/tango-db-alpine
-  tags:
-  - k8srunner
-  script:
-  - *build_push
+    OCI_IMAGE: ska-tango-images-tango-db-alpine
   only:
     changes:
-    - docker/tango/tango-db-alpine/**/*
-
+    - images/ska-tango-images-tango-db-alpine/**/*
 
 # build_tango-cpp:
 #   retry: 2
 #   stage: build_2
+#   extends:
+#   - .image_builder_template
 #   variables:
-#     IMAGE_FOLDER: tango/tango-cpp
-#   tags:
-#   - k8srunner
-#   script:
-#   - *build_push
+#     OCI_IMAGE: ska-tango-images-tango-cpp
 #   only:
 #     changes:
-#     - docker/tango/tango-dependencies/**/*
-#     - docker/tango/tango-cpp/**/*
+#     - images/ska-tango-images-tango-dependencies/**/*
+#     - images/ska-tango-images-tango-cpp/**/*
 
 # build_tango-cpp-alpine:
 #   retry: 2
 #   stage: build_2
+#   extends:
+#   - .image_builder_template
 #   variables:
-#     IMAGE_FOLDER: tango/tango-cpp-alpine
-#   tags:
-#   - k8srunner
-#   script:
-#   - *build_push
+#     OCI_IMAGE: ska-tango-images-tango-cpp-alpine
 #   only:
 #     changes:
-#     - docker/tango/tango-cpp-alpine/**/*
+#     - images/ska-tango-images-tango-cpp-alpine/**/*
 
 
 # build_tango-java:
 #   retry: 2
 #   stage: build_2
+#   extends:
+#   - .image_builder_template
 #   variables:
-#     IMAGE_FOLDER: tango/tango-java
-#   tags:
-#   - k8srunner
-#   script:
-#   - *build_push
+#     OCI_IMAGE: ska-tango-images-tango-java
 #   only:
 #     changes:
-#     - docker/tango/tango-dependencies/**/*
-#     - docker/tango/tango-java/**/*
+#     - images/ska-tango-images-tango-dependencies/**/*
+#     - images/ska-tango-images-tango-java/**/*
 
 # build_tango-rest:
 #   retry: 2
 #   stage: build_3
+#   extends:
+#   - .image_builder_template
 #   variables:
-#     IMAGE_FOLDER: tango/tango-rest
-#   tags:
-#   - k8srunner
-#   script:
-#   - *build_push
+#     OCI_IMAGE: ska-tango-images-tango-rest
 #   only:
 #     changes:
-#     - docker/tango/tango-dependencies/**/*
-#     - docker/tango/tango-cpp/**/*
-#     - docker/tango/tango-rest/**/*
+#     - images/ska-tango-images-tango-dependencies/**/*
+#     - images/ska-tango-images-tango-cpp/**/*
+#     - images/ska-tango-images-tango-rest/**/*
 
 # build_pytango-builder:
 #   retry: 2
 #   stage: build_3
+#   extends:
+#   - .image_builder_template
 #   variables:
-#     IMAGE_FOLDER: tango/pytango-builder
-#   tags:
-#     - k8srunner
-#   script:
-#     - *build_push
+#     OCI_IMAGE: ska-tango-images-pytango-builder
 #   only:
 #     changes:
-#       - docker/tango/tango-dependencies/**/*
-#       - docker/tango/tango-cpp/**/*
-#       - docker/tango/pytango-builder/**/*
+#       - images/ska-tango-images-tango-dependencies/**/*
+#       - images/ska-tango-images-tango-cpp/**/*
+#       - images/ska-tango-images-pytango-builder/**/*
 
 # build_pytango-builder-alpine:
 #   retry: 2
 #   stage: build_3
+#   extends:
+#   - .image_builder_template
 #   variables:
-#     IMAGE_FOLDER: tango/pytango-builder-alpine
-#   tags:
-#     - k8srunner
-#   script:
-#     - *build_push
+#     OCI_IMAGE: ska-tango-images-pytango-builder-alpine
 #   only:
 #     changes:
-#       - docker/tango/tango-cpp-alpine/**/*
-#       - docker/tango/pytango-builder-alpine/**/*
+#       - images/ska-tango-images-tango-cpp-alpine/**/*
+#       - images/ska-tango-images-pytango-builder-alpine/**/*
 
 
 # build_tango-pogo:
 #   retry: 2
 #   stage: build_3
+#   extends:
+#   - .image_builder_template
 #   variables:
-#     IMAGE_FOLDER: tango/tango-pogo
-#   tags:
-#   - k8srunner
-#   script:
-#   - *build_push
+#     OCI_IMAGE: ska-tango-images-tango-pogo
 #   only:
 #     changes:
-#     - docker/tango/tango-dependencies/**/*
-#     - docker/tango/tango-java/**/*
-#     - docker/tango/tango-pogo/**/*
+#     - images/ska-tango-images-tango-dependencies/**/*
+#     - images/ska-tango-images-tango-java/**/*
+#     - images/ska-tango-images-tango-pogo/**/*
 
 # build_tango-libtango:
 #   retry: 2
 #   stage: build_3
+#   extends:
+#   - .image_builder_template
 #   variables:
-#     IMAGE_FOLDER: tango/tango-libtango
-#   tags:
-#   - k8srunner
-#   script:
-#   - *build_push
+#     OCI_IMAGE: ska-tango-images-tango-libtango
 #   only:
 #     changes:
-#     - docker/tango/tango-dependencies/**/*
-#     - docker/tango/tango-cpp/**/*
-#     - docker/tango/tango-libtango/**/*
+#     - images/ska-tango-images-tango-dependencies/**/*
+#     - images/ska-tango-images-tango-cpp/**/*
+#     - images/ska-tango-images-tango-libtango/**/*
 
 # build_tango-jive:
 #   retry: 2
 #   stage: build_3
+#   extends:
+#   - .image_builder_template
 #   variables:
-#     IMAGE_FOLDER: tango/tango-jive
-#   tags:
-#   - k8srunner
-#   script:
-#   - *build_push
+#     OCI_IMAGE: ska-tango-images-tango-jive
 #   only:
 #     changes:
-#     - docker/tango/tango-dependencies/**/*
-#     - docker/tango/tango-java/**/*
-#     - docker/tango/tango-jive/**/*
+#     - images/ska-tango-images-tango-dependencies/**/*
+#     - images/ska-tango-images-tango-java/**/*
+#     - images/ska-tango-images-tango-jive/**/*
 
 # build_pytango-runtime:
 #   retry: 2
 #   stage: build_4
+#   extends:
+#   - .image_builder_template
 #   variables:
-#     IMAGE_FOLDER: tango/pytango-runtime
-#   tags:
-#   - k8srunner
-#   script:
-#   - *build_push
+#     OCI_IMAGE: ska-tango-images-pytango-runtime
 #   only:
 #     changes:
-#     - docker/tango/tango-dependencies/**/*
-#     - docker/tango/tango-cpp/**/*
-#     - docker/tango/pytango-builder/**/*
-#     - docker/tango/pytango-runtime/**/*
+#     - images/ska-tango-images-tango-dependencies/**/*
+#     - images/ska-tango-images-tango-cpp/**/*
+#     - images/ska-tango-images-pytango-builder/**/*
+#     - images/ska-tango-images-pytango-runtime/**/*
 
 # build_pytango-runtime-alpine:
 #   retry: 2
 #   stage: build_4
+#   extends:
+#   - .image_builder_template
 #   variables:
-#     IMAGE_FOLDER: tango/pytango-runtime-alpine
-#   tags:
-#   - k8srunner
-#   script:
-#   - *build_push
+#     OCI_IMAGE: ska-tango-images-pytango-runtime-alpine
 #   only:
 #     changes:
-#     - docker/tango/tango-cpp-alpine/**/*
-#     - docker/tango/pytango-builder-alpine/**/*
-#     - docker/tango/pytango-runtime-alpine/**/*
+#     - images/ska-tango-images-tango-cpp-alpine/**/*
+#     - images/ska-tango-images-pytango-builder-alpine/**/*
+#     - images/ska-tango-images-pytango-runtime-alpine/**/*
 
 # build_tango-admin:
 #   retry: 2
 #   stage: build_4
+#   extends:
+#   - .image_builder_template
 #   variables:
-#     IMAGE_FOLDER: tango/tango-admin
-#   tags:
-#   - k8srunner
-#   script:
-#   - *build_push
+#     OCI_IMAGE: ska-tango-images-tango-admin
 #   only:
 #     changes:
-#     - docker/tango/tango-dependencies/**/*
-#     - docker/tango/tango-cpp/**/*
-#     - docker/tango/tango-libtango/**/*
-#     - docker/tango/tango-admin/**/*
+#     - images/ska-tango-images-tango-dependencies/**/*
+#     - images/ska-tango-images-tango-cpp/**/*
+#     - images/ska-tango-images-tango-libtango/**/*
+#     - images/ska-tango-images-tango-admin/**/*
 
 # build_tango-databaseds:
 #   retry: 2
 #   stage: build_4
+#   extends:
+#   - .image_builder_template
 #   variables:
-#     IMAGE_FOLDER: tango/tango-databaseds
-#   tags:
-#   - k8srunner
-#   script:
-#   - *build_push
+#     OCI_IMAGE: ska-tango-images-tango-databaseds
 #   only:
 #     changes:
-#     - docker/tango/tango-dependencies/**/*
-#     - docker/tango/tango-cpp/**/*
-#     - docker/tango/tango-libtango/**/*
-#     - docker/tango/tango-databaseds/**/*
+#     - images/ska-tango-images-tango-dependencies/**/*
+#     - images/ska-tango-images-tango-cpp/**/*
+#     - images/ska-tango-images-tango-libtango/**/*
+#     - images/ska-tango-images-tango-databaseds/**/*
 
 # build_tango-test:
 #   retry: 2
 #   stage: build_4
+#   extends:
+#   - .image_builder_template
 #   variables:
-#     IMAGE_FOLDER: tango/tango-test
-#   tags:
-#   - k8srunner
-#   script:
-#   - *build_push
+#     OCI_IMAGE: ska-tango-images-tango-test
 #   only:
 #     changes:
-#     - docker/tango/tango-dependencies/**/*
-#     - docker/tango/tango-cpp/**/*
-#     - docker/tango/tango-libtango/**/*
-#     - docker/tango/tango-test/**/*
+#     - images/ska-tango-images-tango-dependencies/**/*
+#     - images/ska-tango-images-tango-cpp/**/*
+#     - images/ska-tango-images-tango-libtango/**/*
+#     - images/ska-tango-images-tango-test/**/*
 
 # build_tango-dsconfig:
 #   retry: 2
 #   stage: build_5
+#   extends:
+#   - .image_builder_template
 #   variables:
-#     IMAGE_FOLDER: tango/tango-dsconfig
-#   tags:
-#   - k8srunner
-#   script:
-#   - *build_push
+#     OCI_IMAGE: ska-tango-images-tango-dsconfig
 #   only:
 #     changes:
-#     - docker/tango/tango-dependencies/**/*
-#     - docker/tango/tango-cpp/**/*
-#     - docker/tango/pytango-builder/**/*
-#     - docker/tango/pytango-runtime/**/*
-#     - docker/tango/tango-dsconfig/**/*
+#     - images/ska-tango-images-tango-dependencies/**/*
+#     - images/ska-tango-images-tango-cpp/**/*
+#     - images/ska-tango-images-pytango-builder/**/*
+#     - images/ska-tango-images-pytango-runtime/**/*
+#     - images/ska-tango-images-tango-dsconfig/**/*
 
-build_tango-dsconfig-alpine:
-  retry: 2
-  stage: build_5
-  variables:
-    IMAGE_FOLDER: tango/tango-dsconfig-alpine
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-dsconfig-alpine/**/*
+# build_tango-dsconfig-alpine:
+#   retry: 2
+#   stage: build_5
+#   extends:
+#   - .image_builder_template
+#   variables:
+#     OCI_IMAGE: ska-tango-images-tango-dsconfig-alpine
+#   only:
+#     changes:
+#     - images/ska-tango-images-tango-dsconfig-alpine/**/*
 
 # build_tango-itango:
 #   retry: 2
 #   stage: build_5
+#   extends:
+#   - .image_builder_template
 #   variables:
-#     IMAGE_FOLDER: tango/tango-itango
-#   tags:
-#   - k8srunner
-#   script:
-#   - *build_push
+#     OCI_IMAGE: ska-tango-images-tango-itango
 #   only:
 #     changes:
-#     - docker/tango/tango-dependencies/**/*
-#     - docker/tango/tango-cpp/**/*
-#     - docker/tango/pytango-builder/**/*
-#     - docker/tango/pytango-runtime/**/*
-#     - docker/tango/tango-itango/**/*
+#     - images/ska-tango-images-tango-dependencies/**/*
+#     - images/ska-tango-images-tango-cpp/**/*
+#     - images/ska-tango-images-pytango-builder/**/*
+#     - images/ska-tango-images-pytango-runtime/**/*
+#     - images/ska-tango-images-tango-itango/**/*
 
-build_tango-itango-alpine:
-  retry: 2
-  stage: build_5
-  variables:
-    IMAGE_FOLDER: tango/tango-itango-alpine
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-itango-alpine/**/*
+# build_tango-itango-alpine:
+#   retry: 2
+#   stage: build_5
+#   extends:
+#   - .image_builder_template
+#   variables:
+#     OCI_IMAGE: ska-tango-images-tango-itango-alpine
+#   only:
+#     changes:
+#     - images/ska-tango-images-tango-itango-alpine/**/*
 
 # build_tango-vnc:
 #   retry: 2
 #   stage: build_5
+#   extends:
+#   - .image_builder_template
 #   variables:
-#     IMAGE_FOLDER: tango/tango-vnc
-#   tags:
-#   - k8srunner
-#   script:
-#   - *build_push
+#     OCI_IMAGE: ska-tango-images-tango-vnc
 #   only:
 #     changes:
-#     - docker/tango/tango-dependencies/**/*
-#     - docker/tango/tango-java/**/*
-#     - docker/tango/tango-vnc/**/*
+#     - images/ska-tango-images-tango-dependencies/**/*
+#     - images/ska-tango-images-tango-java/**/*
+#     - images/ska-tango-images-tango-vnc/**/*
 
 # build_tango-pytango:
 #   retry: 2
 #   stage: build_5
+#   extends:
+#   - .image_builder_template
 #   variables:
-#     IMAGE_FOLDER: tango/tango-pytango
-#   tags:
-#   - k8srunner
-#   script:
-#   - *build_push
+#     OCI_IMAGE: ska-tango-images-tango-pytango
 #   only:
 #     changes:
-#     - docker/tango/tango-dependencies/**/*
-#     - docker/tango/tango-cpp/**/*
-#     - docker/tango/pytango-builder/**/*
-#     - docker/tango/pytango-runtime/**/*
-#     - docker/tango/tango-pytango/**/*
+#     - images/ska-tango-images-tango-dependencies/**/*
+#     - images/ska-tango-images-tango-cpp/**/*
+#     - images/ska-tango-images-pytango-builder/**/*
+#     - images/ska-tango-images-pytango-runtime/**/*
+#     - images/ska-tango-images-tango-pytango/**/*
 
-build_tango-pytango-alpine:
-  retry: 2
-  stage: build_5
-  variables:
-    IMAGE_FOLDER: tango/tango-pytango-alpine
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-pytango-alpine/**/*
-
+# build_tango-pytango-alpine:
+#   retry: 2
+#   stage: build_5
+#   extends:
+#   - .image_builder_template
+#   variables:
+#     OCI_IMAGE: ska-tango-images-tango-pytango-alpine
+#   only:
+#     changes:
+#     - images/ska-tango-images-tango-pytango-alpine/**/*
 
 # build_tango-panic:
 #   retry: 2
 #   stage: build_5
+#   extends:
+#   - .image_builder_template
 #   variables:
-#     IMAGE_FOLDER: tango/tango-panic
-#   tags:
-#   - k8srunner
-#   script:
-#   - *build_push
+#     OCI_IMAGE: ska-tango-images-tango-panic
 #   only:
 #     changes:
-#     - docker/tango/tango-panic/**/*
-#     - docker/tango/tango-dependencies/**/*
-#     - docker/tango/tango-cpp/**/*
-#     - docker/tango/pytango-builder/**/*
-#     - docker/tango/pytango-runtime/**/*
-#     - docker/tango/tango-pytango/**/*
+#     - images/ska-tango-images-tango-panic/**/*
+#     - images/ska-tango-images-tango-dependencies/**/*
+#     - images/ska-tango-images-tango-cpp/**/*
+#     - images/ska-tango-images-pytango-builder/**/*
+#     - images/ska-tango-images-pytango-runtime/**/*
+#     - images/ska-tango-images-tango-pytango/**/*
 
 # build_tango-panic-gui:
 #   retry: 2
 #   stage: build_5
+#   extends:
+#   - .image_builder_template
 #   variables:
-#     IMAGE_FOLDER: tango/tango-panic-gui
-#   tags:
-#   - k8srunner
-#   script:
-#   - *build_push
+#     OCI_IMAGE: ska-tango-images-tango-panic-gui
 #   only:
 #     changes:
-#     - docker/tango/tango-panic-gui/**/*
-#     - docker/tango/tango-dependencies/**/*
-#     - docker/tango/tango-cpp/**/*
-#     - docker/tango/pytango-builder/**/*
-#     - docker/tango/pytango-runtime/**/*
-#     - docker/tango/tango-pytango/**/*
+#     - images/ska-tango-images-tango-panic-gui/**/*
+#     - images/ska-tango-images-tango-dependencies/**/*
+#     - images/ska-tango-images-tango-cpp/**/*
+#     - images/ska-tango-images-pytango-builder/**/*
+#     - images/ska-tango-images-pytango-runtime/**/*
+#     - images/ska-tango-images-tango-pytango/**/*
 
-test-chart:
-  stage: test
-  variables:
-    MINIKUBE: "false"
-  tags:
-  - k8srunner
-  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
-  script:
-  - cd charts/
-  - kubectl version
-  - helm version
-  - make install-chart
-  - make wait
-  - make test
-  - make chart_lint
-  - mkdir -p ../build/reports
-  - mv build/report.xml ../build/reports/unit-tests.xml
-  - mv build/linting.xml ../build/reports/linting.xml
-  after_script:
-  - cd charts/
-  - make uninstall-chart
-  - make delete_namespace
-  environment:
-    name: test
-    kubernetes:
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - "build/"
-    reports:
-      junit: build/reports/unit-tests.xml
+# test-chart:
+#   stage: test
+#   variables:
+#     MINIKUBE: "false"
+#   tags:
+#   - k8srunner
+#   image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
+#   script:
+#   - cd charts/
+#   - kubectl version
+#   - helm version
+#   - make install-chart
+#   - make wait
+#   - make test
+#   - make chart_lint
+#   - mkdir -p ../build/reports
+#   - mv build/report.xml ../build/reports/unit-tests.xml
+#   - mv build/linting.xml ../build/reports/linting.xml
+#   after_script:
+#   - cd charts/
+#   - make uninstall-chart
+#   - make delete_namespace
+#   environment:
+#     name: test
+#     kubernetes:
+#       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
+#   artifacts:
+#     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+#     paths:
+#       - "build/"
+#     reports:
+#       junit: build/reports/unit-tests.xml
 
+
+
+
+
+
+
+
+
+#############################################################
+#############################################################
+#############################################################
+#############################################################
 # # Ensure your .gitlab-ci.yml has "publish" stage defined!
 # include:
 #   - project: 'ska-telescope/templates-repository'
@@ -476,19 +434,6 @@ test-chart:
 # # https://developer.skatelescope.org/en/latest/tools/continuousintegration.html#automated-collection-of-ci-health-metrics-as-part-of-the-ci-pipeline
 #   - project: 'ska-telescope/templates-repository'
 #     file: 'gitlab-ci/includes/post_step.yml'
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 # Include CI templates
