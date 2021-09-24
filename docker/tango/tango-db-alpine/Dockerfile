@@ -7,11 +7,8 @@ FROM $BASE_IMAGE AS builder
 ENV LC_ALL=en_GB.UTF-8
 
 RUN mkdir /docker-entrypoint-initdb.d && \
-    apk -U upgrade && \
-    apk add --no-cache mariadb mariadb-client && \
-    apk add --no-cache tzdata && \
-    # clean up
-    rm -rf /var/cache/apk/*
+    apk add --upgrade --no-cache  \
+    mariadb mariadb-client tzdata 
 
 # comment out a few problematic configuration values
 RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/my.cnf && \
@@ -26,7 +23,12 @@ RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/my.cnf && \
 
 VOLUME /var/lib/mysql
 
+COPY docker-entrypoint.sh /usr/local/bin/
+ENTRYPOINT ["docker-entrypoint.sh"]
+
 EXPOSE 3306
+
+CMD ["mysqld_safe"]
 
 ENV TANGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/tango-9.3.4.tar.gz
 
@@ -53,8 +55,6 @@ RUN mkdir -p dbinit/include \
     && sed -i "/CREATE DATABASE tango;/d" dbinit/create_db.sql \
     && cp -r dbinit/* /docker-entrypoint-initdb.d
 
-RUN rm -r /usr/src/tango
-
 FROM $BASE_IMAGE
 
 ### Install and Setup Mariadb
@@ -62,11 +62,8 @@ FROM $BASE_IMAGE
 ENV LC_ALL=en_GB.UTF-8
 
 RUN mkdir /docker-entrypoint-initdb.d && \
-    apk -U upgrade && \
-    apk add --no-cache mariadb mariadb-client && \
-    apk add --no-cache tzdata && \
-    # clean up
-    rm -rf /var/cache/apk/*
+    apk add --upgrade --no-cache  \
+    mariadb mariadb-client tzdata bash
 
 # comment out a few problematic configuration values
 RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/my.cnf && \
@@ -81,7 +78,12 @@ RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/my.cnf && \
 
 VOLUME /var/lib/mysql
 
+COPY docker-entrypoint.sh /usr/local/bin/
+ENTRYPOINT ["docker-entrypoint.sh"]
+
 EXPOSE 3306
+
+CMD ["mysqld_safe"]
 
 LABEL \
       author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
@@ -92,7 +94,6 @@ LABEL \
       org.skatelescope.version="1.0.0" \
       int.skao.application="Tango DB"
 
-RUN apk add bash
-
 COPY --from=builder /docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
 COPY sql_mode.cnf /etc/mysql/conf.d
+
