@@ -62,9 +62,8 @@ FROM $BASE_IMAGE
 
 # ENV LC_ALL=en_GB.UTF-8
 
-# RUN mkdir /docker-entrypoint-initdb.d && \
-#     apk add --upgrade --no-cache  \
-#     mariadb mariadb-client tzdata bash
+RUN apk add --upgrade --no-cache  \
+    mariadb mariadb-client tzdata bash
 
 # # comment out a few problematic configuration values
 # RUN sed -Ei 's/^(bind-address|log)/#&/' /etc/my.cnf && \
