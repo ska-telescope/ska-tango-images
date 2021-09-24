@@ -67,8 +67,8 @@ LABEL \
       org.skatelescope.team="Systems Team" \
       org.skatelescope.version="1.0.0" \
       int.skao.application="Tango DB"
-      
-RUN addgroup --system mysql && adduser --system --group mysql mysql
+
+RUN adduser --system --group mysql mysql
 
 COPY --from=builder /docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
 COPY sql_mode.cnf /etc/my
