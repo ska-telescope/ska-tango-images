@@ -30,7 +30,7 @@ before_script:
   before_script:
     - '[ -f .make/oci.mk ] || exit 1'
     - 'make help | grep oci.mk:oci-build'
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - echo $CAR_OCI_REGISTRY_PASSWORD | docker login -u $CAR_OCI_REGISTRY_USERNAME --password-stdin $CAR_OCI_REGISTRY_HOST
   script:
     - make oci-build OCI_IMAGE=${OCI_IMAGE} CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
@@ -56,27 +56,27 @@ build_dependencies-alpine:
   #   changes:
   #   - images/ska-tango-images-tango-dependencies-alpine/*
 
-# build_tango-db:
-#   retry: 2
-#   stage: build_1
-#   extends:
-#   - .image_builder_template
-#   variables:
-#     OCI_IMAGE: ska-tango-images-tango-db
-#   only:
-#     changes:
-#     - images/ska-tango-images-tango-db/*
+build_tango-db:
+  retry: 2
+  stage: build_1
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-db
+  only:
+    changes:
+    - images/ska-tango-images-tango-db/*
 
-# build_tango-db-alpine:
-#   retry: 2
-#   stage: build_1
-#   extends:
-#   - .image_builder_template
-#   variables:
-#     OCI_IMAGE: ska-tango-images-tango-db-alpine
-#   only:
-#     changes:
-#     - images/ska-tango-images-tango-db-alpine/*
+build_tango-db-alpine:
+  retry: 2
+  stage: build_1
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-db-alpine
+  only:
+    changes:
+    - images/ska-tango-images-tango-db-alpine/*
 
 # build_tango-cpp:
 #   retry: 2
