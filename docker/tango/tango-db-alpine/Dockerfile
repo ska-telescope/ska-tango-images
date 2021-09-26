@@ -44,6 +44,8 @@ RUN mkdir /docker-entrypoint-initdb.d && \
 
 # purge and re-create /var/lib/mysql with appropriate ownership
 # and other stuff done in the official debian image
+CMD ["/bin/bash"]
+RUN addgroup --system mysql && adduser --system -G mysql mysql
 
 RUN rm -rf /var/lib/apt/lists/* && \
 # purge and re-create /var/lib/mysql with appropriate ownership
@@ -63,8 +65,9 @@ RUN chmod -R 755 /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 EXPOSE 3306
-CMD ["mysqld"]
 
 COPY --from=buildenv /docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
 COPY sql_mode.cnf /etc/mysql/conf.d
+
+CMD ["mysqld"]
 
