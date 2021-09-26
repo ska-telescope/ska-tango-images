@@ -39,7 +39,8 @@ LABEL \
       int.skao.application="Tango DB"
 
 RUN mkdir /docker-entrypoint-initdb.d && \
-    apk add --no-cache --update mariadb mariadb-common mariadb-client bash 
+    apk add --no-cache --update mariadb mariadb-common mariadb-client && \
+    mariadb-server-utils pwgen tzdata bash 
 
 # purge and re-create /var/lib/mysql with appropriate ownership
 # and other stuff done in the official debian image
@@ -58,7 +59,7 @@ RUN rm -rf /var/lib/apt/lists/* && \
 		| xargs -rt -0 sed -Ei 's/^(bind-address|log|user\s)/#&/' 
 
 VOLUME /var/lib/mysql
-COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh && chmod -R 755 /usr/local/bin/docker-entrypoint.sh
 ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 EXPOSE 3306
