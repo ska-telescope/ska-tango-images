@@ -38,6 +38,9 @@ LABEL \
       org.skatelescope.version="1.0.0" \
       int.skao.application="Tango DB"
 
+# add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
+RUN addgroup --system mysql && adduser --system -G mysql mysql
+
 RUN mkdir /docker-entrypoint-initdb.d && \
     apk add --no-cache --update mariadb mariadb-common \
     su-exec mariadb-client  mariadb-server-utils tzdata pwgen bash 
@@ -45,7 +48,6 @@ RUN mkdir /docker-entrypoint-initdb.d && \
 # purge and re-create /var/lib/mysql with appropriate ownership
 # and other stuff done in the official debian image
 CMD ["/bin/bash"]
-RUN addgroup --system mysql && adduser --system -G mysql mysql
 
 RUN rm -rf /var/lib/apt/lists/* && \
 # purge and re-create /var/lib/mysql with appropriate ownership
