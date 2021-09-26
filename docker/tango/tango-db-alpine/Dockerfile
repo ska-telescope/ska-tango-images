@@ -43,7 +43,7 @@ RUN addgroup --system mysql && adduser --system -G mysql mysql
 
 RUN mkdir /docker-entrypoint-initdb.d && \
     apk add --no-cache --update su-exec bash \
-    libjemalloc2 pwgen tzdata xz-utils zstd \    
+    pwgen tzdata xz zstd \    
     mariadb mariadb-common mariadb-client  mariadb-server-utils
 
 # purge and re-create /var/lib/mysql with appropriate ownership
