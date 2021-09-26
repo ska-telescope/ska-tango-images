@@ -41,9 +41,9 @@ build_dependencies:
     - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-dependencies
-  only:
-    changes:
-    - images/ska-tango-images-tango-dependencies/*
+  # only:
+  #   changes:
+  #   - images/ska-tango-images-tango-dependencies/*
 
 build_dependencies-alpine:
   retry: 2
@@ -63,9 +63,9 @@ build_tango-db:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-db
-  only:
-    changes:
-    - images/ska-tango-images-tango-db/*
+  # only:
+  #   changes:
+  #   - images/ska-tango-images-tango-db/*
 
 build_tango-db-alpine:
   retry: 2
@@ -74,9 +74,9 @@ build_tango-db-alpine:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-db-alpine
-  only:
-    changes:
-    - images/ska-tango-images-tango-db-alpine/*
+  # only:
+  #   changes:
+  #   - images/ska-tango-images-tango-db-alpine/*
 
 # build_tango-cpp:
 #   retry: 2
