@@ -47,7 +47,6 @@ RUN mkdir /docker-entrypoint-initdb.d && \
 # purge and re-create /var/lib/mysql with appropriate ownership
 # and other stuff done in the official debian image
 
-CMD ["bash"]
 RUN rm -rf /var/lib/apt/lists/* && \
 # purge and re-create /var/lib/mysql with appropriate ownership
 	rm -rf /var/lib/mysql && \
