@@ -40,7 +40,7 @@ LABEL \
 
 RUN mkdir /docker-entrypoint-initdb.d && \
     apk add --no-cache --update mariadb mariadb-common \
-    gosu mariadb-client  mariadb-server-utils tzdata pwgen bash 
+    su-exec mariadb-client  mariadb-server-utils tzdata pwgen bash 
 
 # purge and re-create /var/lib/mysql with appropriate ownership
 # and other stuff done in the official debian image
