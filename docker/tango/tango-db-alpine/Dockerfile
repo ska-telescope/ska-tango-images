@@ -42,8 +42,9 @@ LABEL \
 RUN addgroup --system mysql && adduser --system -G mysql mysql
 
 RUN mkdir /docker-entrypoint-initdb.d && \
-    apk add --no-cache --update mariadb mariadb-common \
-    su-exec mariadb-client  mariadb-server-utils tzdata pwgen bash 
+    apk add --no-cache --update su-exec bash \
+    libjemalloc2 pwgen tzdata xz-utils zstd \    
+    mariadb mariadb-common mariadb-client  mariadb-server-utils
 
 # purge and re-create /var/lib/mysql with appropriate ownership
 # and other stuff done in the official debian image
