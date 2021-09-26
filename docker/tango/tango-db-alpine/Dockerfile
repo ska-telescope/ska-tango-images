@@ -58,9 +58,8 @@ RUN rm -rf /var/lib/apt/lists/* && \
 		| xargs -rt -0 sed -Ei 's/^(bind-address|log|user\s)/#&/' 
 
 VOLUME /var/lib/mysql
-COPY docker-entrypoint.sh /usr/local/bin/
-RUN ln -s usr/local/bin/docker-entrypoint.sh / # backwards compat
-ENTRYPOINT ["docker-entrypoint.sh"]
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 EXPOSE 3306
 CMD ["mysqld"]
