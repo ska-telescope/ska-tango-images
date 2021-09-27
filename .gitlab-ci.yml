@@ -11,7 +11,7 @@ stages:
 - build_2
 - build_3
 - build_4
-# - build_5
+- build_5
 # - push
 - test
 - publish
@@ -228,7 +228,7 @@ build_pytango-runtime-alpine:
   variables:
     OCI_IMAGE: ska-tango-images-pytango-runtime-alpine
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp-alpine:0.2.15
-    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine:0.2.0
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine:0.2.5
   # only:
   #   changes:
   #   - images/ska-tango-images-tango-cpp-alpine/*
@@ -280,13 +280,16 @@ build_tango-test:
     - images/ska-tango-images-tango-libtango/*
     - images/ska-tango-images-tango-test/*
 
-# build_tango-dsconfig:
-#   retry: 2
-#   stage: build_5
-#   extends:
-#   - .image_builder_template
-#   variables:
-#     OCI_IMAGE: ska-tango-images-tango-dsconfig
+build_tango-dsconfig:
+  retry: 2
+  stage: build_5
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-dsconfig
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:9.3.13
+    # .release is wrong XXXXXXXX!!!!!!!!!!!!
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime:9.3.13
 #   only:
 #     changes:
 #     - images/ska-tango-images-tango-dependencies/*
