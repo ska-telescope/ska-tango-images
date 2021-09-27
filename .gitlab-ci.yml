@@ -211,15 +211,14 @@ build_pytango-runtime:
     OCI_IMAGE: ska-tango-images-pytango-runtime
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp:9.3.7
     BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:9.3.13
-  only:
-    changes:
-    - images/ska-tango-images-tango-dependencies/*
-    - images/ska-tango-images-tango-cpp/*
-    - images/ska-tango-images-pytango-builder/*
-    - images/ska-tango-images-pytango-runtime/*
+  # only:
+  #   changes:
+  #   - images/ska-tango-images-tango-dependencies/*
+  #   - images/ska-tango-images-tango-cpp/*
+  #   - images/ska-tango-images-pytango-builder/*
+  #   - images/ska-tango-images-pytango-runtime/*
 
 
-### !!! alpine pytango builder BROKEN !!!
 build_pytango-runtime-alpine:
   retry: 2
   stage: build_4
@@ -229,11 +228,11 @@ build_pytango-runtime-alpine:
     OCI_IMAGE: ska-tango-images-pytango-runtime-alpine
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp-alpine:0.2.15
     BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine:0.2.5
-  # only:
-  #   changes:
-  #   - images/ska-tango-images-tango-cpp-alpine/*
-  #   - images/ska-tango-images-pytango-builder-alpine/*
-  #   - images/ska-tango-images-pytango-runtime-alpine/*
+  only:
+    changes:
+    - images/ska-tango-images-tango-cpp-alpine/*
+    - images/ska-tango-images-pytango-builder-alpine/*
+    - images/ska-tango-images-pytango-runtime-alpine/*
 
 build_tango-admin:
   retry: 2
