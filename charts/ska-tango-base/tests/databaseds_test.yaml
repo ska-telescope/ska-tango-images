@@ -123,5 +123,5 @@ tests:
           path: spec.template.spec.containers[0].env
           content: 
             name: MYSQL_PASSWORD
-            value: tango5
+            value: tango
         
