@@ -1,5 +1,6 @@
 ARG CAR_OCI_REGISTRY_HOST
-FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-libtango:9.3.6
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-libtango:9.3.6"
+FROM $BASE_IMAGE
 
 LABEL \
       author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \

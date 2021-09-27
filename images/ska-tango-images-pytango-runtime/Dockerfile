@@ -1,43 +1,58 @@
+#
+# This Dockerfile creates a Docker image intended to be a base runtime for SKA
+# python projects. This image should be used as an intermediate layer
+# alongside the pytango-builder image.
+#
+ARG CAR_PYPI_REPOSITORY_URL
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILDER_BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-alpine:0.2.5"
-ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.2.15"
-FROM $BUILDER_BASE_IMAGE AS buildenv
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:9.3.13"
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp:9.3.7"
 
+FROM ${BUILD_IMAGE} as buildenv
 FROM $BASE_IMAGE
+
 LABEL \
-      author="Piers Harding <Piers.Harding@skao.int>" \
-      description="This image illustrates build dependencies" \
-      license="Apache2.0" \
-      int.skao.team="Systems Team" \
-      int.skao.website="https://gitlab.com/ska-telescope/sdi/ska-ser-containerisation-and-orchestration" \
-      int.skao.application="Tango Runtime"
+      author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
+      description="This image includes the pytango framework with all its dependencies and no building tools" \
+      license="BSD-3-Clause" \
+      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-runtime" \
+      org.skatelescope.team="Systems Team" \
+      org.skatelescope.version="1.0.0" \
+      int.skao.application="PyTango Runtime"
 
 USER root
 
-# Install build time dependencies
-RUN apk add --update --no-cache curl bash \
-    openssl ca-certificates \
-    boost py3-distutils-extra python3 py3-pip boost-python3 make libzmq
+ENV DEBIAN_FRONTEND=noninteractive
+# Permanently install Python and PyTango runtime dependencies:
+#
+# * libboost-python is required by PyTango;
+# * make is required to manage execution of the tests inside the container
+# * python3 is required as this image is intended for running Python Tango
+#   devices.
+#
+
+RUN apt-get update \
+    && apt-get -y install --no-install-recommends \
+      libboost-python1.67.0 \
+      ca-certificates \
+      make \
+      curl \
+      python3 \
+      python3-distutils
 
 # Copy across files that are used to help orchestrate container compositions
 # and test execution sequences
-COPY --from=buildenv /usr/local/lib/python3.8 /usr/local/lib/python3.8
+COPY --from=buildenv /usr/local/bin/wait-for-it.sh /usr/local/bin/wait-for-it.sh
+COPY --from=buildenv /usr/local/bin/retry /usr/local/bin/retry
+COPY --from=buildenv /usr/local/lib/python3.7 /usr/local/lib/python3.7
 
+RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 COPY pip.conf /etc/pip.conf
-
-ENV LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/usr/lib
-
-RUN mkdir -p /etc/ld.so.conf.d && \
-    echo "include /etc/ld.so.conf.d/*.conf" > /etc/ld.so.conf && \
-    echo "/usr/local/lib" > /etc/ld.so.conf.d/tango.conf && \
-    echo "/usr/local/lib64" > /etc/ld.so.conf.d/tango.conf && \
-    ldconfig /etc/ld.so.conf.d
 
 RUN mkdir /venv && ln -s /usr/* /venv/ && ln -s /usr/bin/python3 /venv/bin/python && ln -s /usr/local/bin/itango3 /venv/bin/itango3
 
 USER tango
 ENV PATH="/home/tango/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PATH}"
-
 
 ONBUILD COPY --chown=tango:tango . /app
 ONBUILD COPY --from=buildenv /usr/local/bin/ /usr/local/bin/

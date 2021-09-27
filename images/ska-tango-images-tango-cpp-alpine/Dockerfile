@@ -1,5 +1,5 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BASE_IMAGE="python:3.8.12-alpine3.14"
+ARG BASE_IMAGE="python:3.9.6-alpine3.14"
 ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine:0.2.1"
 FROM $BUILD_IMAGE AS buildenv
 
@@ -7,7 +7,7 @@ FROM $BUILD_IMAGE AS buildenv
 RUN apk add --update --no-cache curl \
     openssl ca-certificates \
     file mariadb-connector-c-dev pkgconf-dev \
-    g++ python3-dev python3 make czmq-dev \
+    g++ python3-dev make czmq-dev \
     libffi-dev openssl-dev boost-dev libsodium-dev
 
 RUN apk add --virtual build-dependencies \
@@ -57,12 +57,14 @@ LABEL \
 # copy the built library dependencies from the builder stage
 COPY --from=buildenv /usr/local /usr/local
 
-RUN apk add --update --no-cache mariadb-connector-c musl-utils sudo
+RUN apk add --update --no-cache mariadb-connector-c musl-utils sudo bash
 
 RUN ln -s /usr/local/lib/libtango.so.9.4.0 /usr/local/lib/libtango.so.9
 
 # create the user tango and add it to sudoers, for some reason we need to add it to the tango group
 RUN adduser -h /home/tango -D tango && \
     echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango
+
+RUN touch /usr/local/bin/DataBaseds
 
 USER tango
