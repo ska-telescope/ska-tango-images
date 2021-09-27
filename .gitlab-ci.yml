@@ -158,7 +158,6 @@ build_pytango-builder-alpine:
     - *build_push
   only:
     changes:
-      - docker/tango/tango-cpp-alpine/**/*
       - docker/tango/pytango-builder-alpine/**/*
 
 
@@ -203,8 +202,6 @@ build_tango-libtango-alpine:
   - *build_push
   only:
     changes:
-    - docker/tango/tango-dependencies-alpine/**/*
-    - docker/tango/tango-cpp-alpine/**/*
     - docker/tango/tango-libtango-alpine/**/*
 
 
@@ -250,8 +247,6 @@ build_pytango-runtime-alpine:
   - *build_push
   only:
     changes:
-    - docker/tango/tango-cpp-alpine/**/*
-    - docker/tango/pytango-builder-alpine/**/*
     - docker/tango/pytango-runtime-alpine/**/*
 
 build_tango-admin:
