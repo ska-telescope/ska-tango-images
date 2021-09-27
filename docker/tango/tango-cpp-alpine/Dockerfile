@@ -65,6 +65,6 @@ RUN ln -s /usr/local/lib/libtango.so.9.4.0 /usr/local/lib/libtango.so.9
 RUN adduser -h /home/tango -D tango && \
     echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango
 
-RUN touch /usr/local/bin/DataBaseds
+RUN touch /usr/local/bin/DataBaseds && chown tango /usr/local/bin/DataBaseds
 
 USER tango
