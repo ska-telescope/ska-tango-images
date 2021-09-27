@@ -44,6 +44,12 @@ RUN git clone https://gitlab.com/tango-controls/tango_admin.git /tango_admin && 
     make && \
     make install
 
+# build and install tangodatabase
+RUN git clone --depth 1  https://gitlab.com/tango-controls/TangoDatabase.git /tangodb && \
+    cmake -B /tangodb/build -DCMAKE_INSTALL_PREFIX=/usr/local/ /tangodb && \
+    make -C /tangodb/build install   
+
+
 # Now, create the final image minus the tools and source code
 FROM $BASE_IMAGE 
 LABEL \
@@ -58,8 +64,6 @@ LABEL \
 COPY --from=buildenv /usr/local /usr/local
 
 RUN apk add --update --no-cache mariadb-connector-c musl-utils sudo bash
-
-RUN ln -s /usr/local/lib/libtango.so.9.4.0 /usr/local/lib/libtango.so.9
 
 # create the user tango and add it to sudoers, for some reason we need to add it to the tango group
 RUN adduser -h /home/tango -D tango && \
