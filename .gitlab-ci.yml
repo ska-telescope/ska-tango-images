@@ -52,9 +52,9 @@ build_dependencies-alpine:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-dependencies-alpine
-  # only:
-  #   changes:
-  #   - images/ska-tango-images-tango-dependencies-alpine/*
+  only:
+    changes:
+    - images/ska-tango-images-tango-dependencies-alpine/*
 
 build_tango-db:
   retry: 2
@@ -146,7 +146,6 @@ build_pytango-builder:
       - images/ska-tango-images-tango-cpp/*
       - images/ska-tango-images-pytango-builder/*
 
-### !!! alpine pytango builder BROKEN !!!
 build_pytango-builder-alpine:
   retry: 2
   stage: build_3
@@ -155,10 +154,10 @@ build_pytango-builder-alpine:
   variables:
     OCI_IMAGE: ska-tango-images-pytango-builder-alpine
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp-alpine:0.2.15
-#   only:
-#     changes:
-#       - images/ska-tango-images-tango-cpp-alpine/*
-#       - images/ska-tango-images-pytango-builder-alpine/*
+  only:
+    changes:
+      - images/ska-tango-images-tango-cpp-alpine/*
+      - images/ska-tango-images-pytango-builder-alpine/*
 
 
 build_tango-pogo:
@@ -212,12 +211,12 @@ build_pytango-runtime:
     OCI_IMAGE: ska-tango-images-pytango-runtime
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp:9.3.7
     BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:9.3.13
-  # only:
-  #   changes:
-  #   - images/ska-tango-images-tango-dependencies/*
-  #   - images/ska-tango-images-tango-cpp/*
-  #   - images/ska-tango-images-pytango-builder/*
-  #   - images/ska-tango-images-pytango-runtime/*
+  only:
+    changes:
+    - images/ska-tango-images-tango-dependencies/*
+    - images/ska-tango-images-tango-cpp/*
+    - images/ska-tango-images-pytango-builder/*
+    - images/ska-tango-images-pytango-runtime/*
 
 
 ### !!! alpine pytango builder BROKEN !!!
@@ -228,13 +227,13 @@ build_pytango-runtime-alpine:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-pytango-runtime-alpine
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp-alpine:0.2.0
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp-alpine:0.2.15
     BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine:0.2.0
-  only:
-    changes:
-    - images/ska-tango-images-tango-cpp-alpine/*
-    - images/ska-tango-images-pytango-builder-alpine/*
-    - images/ska-tango-images-pytango-runtime-alpine/*
+  # only:
+  #   changes:
+  #   - images/ska-tango-images-tango-cpp-alpine/*
+  #   - images/ska-tango-images-pytango-builder-alpine/*
+  #   - images/ska-tango-images-pytango-runtime-alpine/*
 
 build_tango-admin:
   retry: 2
@@ -244,12 +243,12 @@ build_tango-admin:
   variables:
     OCI_IMAGE: ska-tango-images-tango-admin
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-libtango:9.3.6
-  # only:
-  #   changes:
-  #   - images/ska-tango-images-tango-dependencies/*
-  #   - images/ska-tango-images-tango-cpp/*
-  #   - images/ska-tango-images-tango-libtango/*
-  #   - images/ska-tango-images-tango-admin/*
+  only:
+    changes:
+    - images/ska-tango-images-tango-dependencies/*
+    - images/ska-tango-images-tango-cpp/*
+    - images/ska-tango-images-tango-libtango/*
+    - images/ska-tango-images-tango-admin/*
 
 build_tango-databaseds:
   retry: 2
@@ -259,12 +258,12 @@ build_tango-databaseds:
   variables:
     OCI_IMAGE: ska-tango-images-tango-databaseds
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-libtango:9.3.6
-  # only:
-  #   changes:
-  #   - images/ska-tango-images-tango-dependencies/*
-  #   - images/ska-tango-images-tango-cpp/*
-  #   - images/ska-tango-images-tango-libtango/*
-  #   - images/ska-tango-images-tango-databaseds/*
+  only:
+    changes:
+    - images/ska-tango-images-tango-dependencies/*
+    - images/ska-tango-images-tango-cpp/*
+    - images/ska-tango-images-tango-libtango/*
+    - images/ska-tango-images-tango-databaseds/*
 
 build_tango-test:
   retry: 2
@@ -274,12 +273,12 @@ build_tango-test:
   variables:
     OCI_IMAGE: ska-tango-images-tango-test
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-libtango:9.3.6
-  # only:
-  #   changes:
-  #   - images/ska-tango-images-tango-dependencies/*
-  #   - images/ska-tango-images-tango-cpp/*
-  #   - images/ska-tango-images-tango-libtango/*
-  #   - images/ska-tango-images-tango-test/*
+  only:
+    changes:
+    - images/ska-tango-images-tango-dependencies/*
+    - images/ska-tango-images-tango-cpp/*
+    - images/ska-tango-images-tango-libtango/*
+    - images/ska-tango-images-tango-test/*
 
 # build_tango-dsconfig:
 #   retry: 2
