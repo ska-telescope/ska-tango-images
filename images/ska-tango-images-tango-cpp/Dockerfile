@@ -4,9 +4,9 @@
 # binaries.
 #
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILDER_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:9.3.5"
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:9.3.5"
 ARG BASE_IMAGE="debian:buster-slim"
-FROM $BUILDER_IMAGE as buildenv
+FROM $BUILD_IMAGE as buildenv
 
 ENV TANGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/tango-9.3.4.tar.gz
 ENV DEBIAN_FRONTEND=noninteractive

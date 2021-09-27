@@ -1,8 +1,8 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILDER_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:9.3.5"
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:9.3.5"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-java:9.3.5"
 
-FROM $BUILDER_IMAGE AS buildenv
+FROM $BUILD_IMAGE AS buildenv
 
 ENV MTANGOREST_DOWNLOAD_URL=https://github.com/tango-controls/rest-server/releases/download/rest-server-1.14/rest-server-1.14.jar
 

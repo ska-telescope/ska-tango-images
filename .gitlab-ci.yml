@@ -8,7 +8,7 @@ stages:
 - build
 # - build_0
 - build_1
-# - build_2
+- build_2
 # - build_3
 # - build_4
 # - build_5
@@ -33,7 +33,7 @@ before_script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - echo $CAR_OCI_REGISTRY_PASSWORD | docker login -u $CAR_OCI_REGISTRY_USERNAME --password-stdin $CAR_OCI_REGISTRY_HOST
   script:
-    - make oci-build OCI_IMAGE=${OCI_IMAGE} CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME} RELEASE_CONTEXT_DIR=images/${OCI_IMAGE}
+    - make oci-build OCI_IMAGE=${OCI_IMAGE} CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME} RELEASE_CONTEXT_DIR=images/${OCI_IMAGE} OCI_BUILD_ADDITIONAL_ARGS=" --build-arg BUILD_IMAGE --build-arg BASE_IMAGE "
 
 build_dependencies:
   stage: build_1
@@ -41,9 +41,9 @@ build_dependencies:
     - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-dependencies
-  # only:
-  #   changes:
-  #   - images/ska-tango-images-tango-dependencies/*
+  only:
+    changes:
+    - images/ska-tango-images-tango-dependencies/*
 
 build_dependencies-alpine:
   retry: 2
@@ -52,9 +52,9 @@ build_dependencies-alpine:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-dependencies-alpine
-  # only:
-  #   changes:
-  #   - images/ska-tango-images-tango-dependencies-alpine/*
+  only:
+    changes:
+    - images/ska-tango-images-tango-dependencies-alpine/*
 
 build_tango-db:
   retry: 2
@@ -63,9 +63,9 @@ build_tango-db:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-db
-  # only:
-  #   changes:
-  #   - images/ska-tango-images-tango-db/*
+  only:
+    changes:
+    - images/ska-tango-images-tango-db/*
 
 build_tango-db-alpine:
   retry: 2
@@ -74,118 +74,128 @@ build_tango-db-alpine:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-db-alpine
-  # only:
-  #   changes:
-  #   - images/ska-tango-images-tango-db-alpine/*
+  only:
+    changes:
+    - images/ska-tango-images-tango-db-alpine/*
 
-# build_tango-cpp:
-#   retry: 2
-#   stage: build_2
-#   extends:
-#   - .image_builder_template
-#   variables:
-#     OCI_IMAGE: ska-tango-images-tango-cpp
-#   only:
-#     changes:
-#     - images/ska-tango-images-tango-dependencies/*
-#     - images/ska-tango-images-tango-cpp/*
+build_tango-cpp:
+  retry: 2
+  stage: build_2
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-cpp
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-dependencies:9.3.5
+  only:
+    changes:
+    - images/ska-tango-images-tango-dependencies/*
+    - images/ska-tango-images-tango-cpp/*
 
-# build_tango-cpp-alpine:
-#   retry: 2
-#   stage: build_2
-#   extends:
-#   - .image_builder_template
-#   variables:
-#     OCI_IMAGE: ska-tango-images-tango-cpp-alpine
+build_tango-cpp-alpine:
+  retry: 2
+  stage: build_2
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-cpp-alpine
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-dependencies-alpine:0.2.1
 #   only:
 #     changes:
 #     - images/ska-tango-images-tango-cpp-alpine/*
 
 
-# build_tango-java:
-#   retry: 2
-#   stage: build_2
-#   extends:
-#   - .image_builder_template
-#   variables:
-#     OCI_IMAGE: ska-tango-images-tango-java
-#   only:
-#     changes:
-#     - images/ska-tango-images-tango-dependencies/*
-#     - images/ska-tango-images-tango-java/*
+build_tango-java:
+  retry: 2
+  stage: build_2
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-java
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-dependencies:9.3.5
+  only:
+    changes:
+    - images/ska-tango-images-tango-dependencies/*
+    - images/ska-tango-images-tango-java/*
 
-# build_tango-rest:
-#   retry: 2
-#   stage: build_3
-#   extends:
-#   - .image_builder_template
-#   variables:
-#     OCI_IMAGE: ska-tango-images-tango-rest
+build_tango-rest:
+  retry: 2
+  stage: build_3
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-rest
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java:9.3.5
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-dependencies:9.3.5
 #   only:
 #     changes:
 #     - images/ska-tango-images-tango-dependencies/*
 #     - images/ska-tango-images-tango-cpp/*
 #     - images/ska-tango-images-tango-rest/*
 
-# build_pytango-builder:
-#   retry: 2
-#   stage: build_3
-#   extends:
-#   - .image_builder_template
-#   variables:
-#     OCI_IMAGE: ska-tango-images-pytango-builder
+build_pytango-builder:
+  retry: 2
+  stage: build_3
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-pytango-builder
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp:9.3.7
 #   only:
 #     changes:
 #       - images/ska-tango-images-tango-dependencies/*
 #       - images/ska-tango-images-tango-cpp/*
 #       - images/ska-tango-images-pytango-builder/*
 
-# build_pytango-builder-alpine:
-#   retry: 2
-#   stage: build_3
-#   extends:
-#   - .image_builder_template
-#   variables:
-#     OCI_IMAGE: ska-tango-images-pytango-builder-alpine
+build_pytango-builder-alpine:
+  retry: 2
+  stage: build_3
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-pytango-builder-alpine
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp-alpine:0.2.15
 #   only:
 #     changes:
 #       - images/ska-tango-images-tango-cpp-alpine/*
 #       - images/ska-tango-images-pytango-builder-alpine/*
 
 
-# build_tango-pogo:
-#   retry: 2
-#   stage: build_3
-#   extends:
-#   - .image_builder_template
-#   variables:
-#     OCI_IMAGE: ska-tango-images-tango-pogo
+build_tango-pogo:
+  retry: 2
+  stage: build_3
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-pogo
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java:9.3.5
 #   only:
 #     changes:
 #     - images/ska-tango-images-tango-dependencies/*
 #     - images/ska-tango-images-tango-java/*
 #     - images/ska-tango-images-tango-pogo/*
 
-# build_tango-libtango:
-#   retry: 2
-#   stage: build_3
-#   extends:
-#   - .image_builder_template
-#   variables:
-#     OCI_IMAGE: ska-tango-images-tango-libtango
+build_tango-libtango:
+  retry: 2
+  stage: build_3
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-libtango
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp:9.3.7
 #   only:
 #     changes:
 #     - images/ska-tango-images-tango-dependencies/*
 #     - images/ska-tango-images-tango-cpp/*
 #     - images/ska-tango-images-tango-libtango/*
 
-# build_tango-jive:
-#   retry: 2
-#   stage: build_3
-#   extends:
-#   - .image_builder_template
-#   variables:
-#     OCI_IMAGE: ska-tango-images-tango-jive
+build_tango-jive:
+  retry: 2
+  stage: build_3
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-jive
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java:9.3.5
 #   only:
 #     changes:
 #     - images/ska-tango-images-tango-dependencies/*

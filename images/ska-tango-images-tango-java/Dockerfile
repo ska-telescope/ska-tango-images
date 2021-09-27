@@ -4,7 +4,8 @@
 # binaries.
 #
 ARG CAR_OCI_REGISTRY_HOST
-FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:9.3.5
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:9.3.5"
+FROM $BUILD_IMAGE
 
 LABEL \
       author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
