@@ -1,8 +1,8 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILDER_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-alpine:0.2.3"
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-alpine:0.2.3"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-runtime-alpine:0.2.3"
 
-FROM $BUILDER_IMAGE as buildenv
+FROM $BUILD_IMAGE as buildenv
 FROM $BASE_IMAGE
 
 LABEL \

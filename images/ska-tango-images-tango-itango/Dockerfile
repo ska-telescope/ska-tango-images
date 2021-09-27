@@ -1,8 +1,8 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILDER_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:9.3.12"
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:9.3.12"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-runtime:9.3.12"
 
-FROM $BUILDER_IMAGE as buildenv
+FROM $BUILD_IMAGE as buildenv
 FROM $BASE_IMAGE
 
 LABEL \
@@ -14,7 +14,7 @@ LABEL \
       org.skatelescope.version="1.0.0" \
       int.skao.application="ITango"
 
-USER root 
+USER root
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y procps
 
 USER tango
