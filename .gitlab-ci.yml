@@ -192,6 +192,22 @@ build_tango-libtango:
     - docker/tango/tango-cpp/**/*
     - docker/tango/tango-libtango/**/*
 
+build_tango-libtango-alpine:
+  retry: 2
+  stage: build_3
+  variables:
+    IMAGE_FOLDER: tango/tango-libtango-alpine
+  tags:
+  - k8srunner
+  script:
+  - *build_push
+  only:
+    changes:
+    - docker/tango/tango-dependencies-alpine/**/*
+    - docker/tango/tango-cpp-alpine/**/*
+    - docker/tango/tango-libtango-alpine/**/*
+
+
 build_tango-jive:
   retry: 2
   stage: build_3
@@ -269,6 +285,22 @@ build_tango-databaseds:
     - docker/tango/tango-cpp/**/*
     - docker/tango/tango-libtango/**/*
     - docker/tango/tango-databaseds/**/*
+
+build_tango-databaseds-alpine:
+  retry: 2
+  stage: build_4
+  variables:
+    IMAGE_FOLDER: tango/tango-databaseds-alpine
+  tags:
+  - k8srunner
+  script:
+  - *build_push
+  only:
+    changes:
+    - docker/tango/tango-dependencies-alpine/**/*
+    - docker/tango/tango-cpp-alpine/**/*
+    - docker/tango/tango-libtango-alpine/**/*
+    - docker/tango/tango-databaseds-alpine/**/*
 
 build_tango-test:
   retry: 2
