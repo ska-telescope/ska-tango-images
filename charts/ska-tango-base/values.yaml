@@ -58,8 +58,8 @@ databaseds:
   intent: production
   image:
     registry: artefact.skao.int
-    image: ska-tango-images-tango-cpp-alpine
-    tag: 0.2.19
+    image: ska-tango-images-tango-cpp
+    tag: 9.3.7
     pullPolicy: IfNotPresent
   resources:
     requests:
