@@ -1,0 +1,39 @@
+---
+suite: ingress
+templates:
+  - ingress.yaml
+tests:
+  - it: should have one document rendered.
+    asserts:
+      - hasDocuments:
+          count: 1
+
+  - it: should have the correct apiVersion, networking.k8s.io/v1, for the Ingress resource.
+    documentIndex: 0
+    asserts:
+      - isKind:
+          of: Ingress
+      - isAPIVersion:
+          of: networking.k8s.io/v1
+
+  - it: should have a service of tango rest listening on port 8080.
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.name
+          value: ska-tango-base-tango-rest
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.port.number
+          value: 8080
+
+  - it: should have a Ingress resource with pods having labels.
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: metadata.labels
+          value:
+            app: ska-tango-images
+            component: tango-rest
+            function: tango-http-interface
+            domain: tango-configuration
+            intent: enabling
