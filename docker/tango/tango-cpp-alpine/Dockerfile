@@ -1,13 +1,13 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BASE_IMAGE="python:3.8.12-alpine3.14"
-ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine:0.2.1"
+ARG BASE_IMAGE="python:3.9.6-alpine3.14"
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine:0.2.2"
 FROM $BUILD_IMAGE AS buildenv
 
 # Install build time dependencies
 RUN apk add --update --no-cache curl \
     openssl ca-certificates \
     file mariadb-connector-c-dev pkgconf-dev \
-    g++ python3-dev python3 make czmq-dev \
+    g++ python3-dev make czmq-dev \
     libffi-dev openssl-dev boost-dev libsodium-dev
 
 RUN apk add --virtual build-dependencies \
@@ -57,7 +57,7 @@ LABEL \
 # copy the built library dependencies from the builder stage
 COPY --from=buildenv /usr/local /usr/local
 
-RUN apk add --update --no-cache mariadb-connector-c musl-utils sudo
+RUN apk add --update --no-cache mariadb-connector-c musl-utils sudo bash
 
 RUN ln -s /usr/local/lib/libtango.so.9.4.0 /usr/local/lib/libtango.so.9
 
