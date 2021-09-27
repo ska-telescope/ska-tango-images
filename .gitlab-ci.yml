@@ -393,6 +393,8 @@ build_tango-panic-gui:
 
 variables:
     CHARTS_TO_PUBLISH: ska-tango-util ska-tango-base
+    CICD_MAKE_BRANCH: st-933-publish-raw-packages
+    
 # Ensure your .gitlab-ci.yml has "publish" stage defined!
 include:
   # - project: 'ska-telescope/templates-repository'
