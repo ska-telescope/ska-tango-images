@@ -9,7 +9,7 @@ stages:
 # - build_0
 - build_1
 - build_2
-# - build_3
+- build_3
 # - build_4
 # - build_5
 # - push
