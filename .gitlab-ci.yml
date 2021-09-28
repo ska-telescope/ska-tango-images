@@ -498,7 +498,7 @@ test-chart:
   - make install-chart
   - make wait
   - make test
-  - mkdir -p ./build/reports
+  - mkdir -p ./build/reports ./build/htmlcov
   - mv build/report.xml ./build/reports/unit-tests.xml
   after_script:
   - make uninstall-chart
