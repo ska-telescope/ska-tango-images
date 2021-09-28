@@ -33,6 +33,17 @@ before_script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - echo $CAR_OCI_REGISTRY_PASSWORD | docker login -u $CAR_OCI_REGISTRY_USERNAME --password-stdin $CAR_OCI_REGISTRY_HOST
   script:
+    - |
+      if [[ -n "${BUILD_IMAGE}" ]]; then
+        IMG="${BUILD_IMAGE##*/}";
+        VERS=$(make show-version RELEASE_CONTEXT_DIR=images/);
+        export BUILD_IMAGE="${BUILD_IMAGE}:${VERS}";
+      fi;
+      if [[ -n "${BASE_IMAGE}" ]]; then
+        IMG="${BASE_IMAGE##*/}";
+        VERS=$(make show-version RELEASE_CONTEXT_DIR=images/);
+        export BASE_IMAGE="${BASE_IMAGE}:${VERS}";
+      fi;
     - make oci-build OCI_IMAGE=${OCI_IMAGE} CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME} RELEASE_CONTEXT_DIR=images/${OCI_IMAGE} OCI_BUILD_ADDITIONAL_ARGS=" --build-arg BUILD_IMAGE --build-arg BASE_IMAGE "
 
 build_dependencies:
@@ -85,7 +96,7 @@ build_tango-cpp:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-cpp
-    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-dependencies:9.3.5
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-dependencies
   only:
     changes:
     - images/ska-tango-images-tango-dependencies/*
@@ -112,7 +123,7 @@ build_tango-java:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-java
-    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-dependencies:9.3.5
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-dependencies
   only:
     changes:
     - images/ska-tango-images-tango-dependencies/*
@@ -125,8 +136,8 @@ build_tango-rest:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-rest
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java:9.3.5
-    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-dependencies:9.3.5
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-dependencies
   only:
     changes:
     - images/ska-tango-images-tango-dependencies/*
@@ -140,7 +151,7 @@ build_pytango-builder:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-pytango-builder
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp:9.3.7
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp
   only:
     changes:
       - images/ska-tango-images-tango-dependencies/*
@@ -154,7 +165,7 @@ build_pytango-builder-alpine:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-pytango-builder-alpine
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp-alpine:0.2.15
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp-alpine
   only:
     changes:
       - images/ska-tango-images-tango-cpp-alpine/*
@@ -168,7 +179,7 @@ build_tango-pogo:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-pogo
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java:9.3.5
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java
   only:
     changes:
     - images/ska-tango-images-tango-dependencies/*
@@ -182,7 +193,7 @@ build_tango-libtango:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-libtango
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp:9.3.7
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp
   only:
     changes:
     - images/ska-tango-images-tango-dependencies/*
@@ -196,7 +207,7 @@ build_tango-jive:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-jive
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java:9.3.5
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java
   only:
     changes:
     - images/ska-tango-images-tango-dependencies/*
@@ -210,8 +221,8 @@ build_pytango-runtime:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-pytango-runtime
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp:9.3.7
-    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:9.3.13
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder
   only:
     changes:
     - images/ska-tango-images-tango-dependencies/*
@@ -227,8 +238,8 @@ build_pytango-runtime-alpine:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-pytango-runtime-alpine
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp-alpine:0.2.15
-    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine:0.2.5
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp-alpine
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine
   only:
     changes:
     - images/ska-tango-images-tango-cpp-alpine/*
@@ -242,7 +253,7 @@ build_tango-admin:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-admin
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-libtango:9.3.6
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-libtango
   only:
     changes:
     - images/ska-tango-images-tango-dependencies/*
@@ -257,7 +268,7 @@ build_tango-databaseds:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-databaseds
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-libtango:9.3.6
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-libtango
   only:
     changes:
     - images/ska-tango-images-tango-dependencies/*
@@ -272,7 +283,7 @@ build_tango-test:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-test
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-libtango:9.3.6
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-libtango
   only:
     changes:
     - images/ska-tango-images-tango-dependencies/*
@@ -287,8 +298,8 @@ build_tango-dsconfig:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-dsconfig
-    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:9.3.13
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime:9.3.13
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime
   only:
     changes:
     - images/ska-tango-images-tango-dependencies/*
@@ -304,8 +315,8 @@ build_tango-dsconfig-alpine:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-dsconfig-alpine
-    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine:0.2.5
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime-alpine:0.2.0
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime-alpine
   only:
     changes:
     - images/ska-tango-images-pytango-builder-alpine/*
@@ -319,8 +330,8 @@ build_tango-itango:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-itango
-    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:9.3.13
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime:9.3.13
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime
   only:
     changes:
     - images/ska-tango-images-tango-dependencies/*
@@ -336,8 +347,8 @@ build_tango-itango-alpine:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-itango-alpine
-    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine:0.2.5
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime-alpine:0.2.0
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime-alpine
   only:
     changes:
     - images/ska-tango-images-pytango-builder-alpine/*
@@ -351,7 +362,7 @@ build_tango-vnc:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-vnc
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java:9.3.5
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java
   only:
     changes:
     - images/ska-tango-images-tango-dependencies/*
@@ -365,8 +376,8 @@ build_tango-pytango:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-pytango
-    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:9.3.13
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime:9.3.13
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime
   only:
     changes:
     - images/ska-tango-images-tango-dependencies/*
@@ -382,8 +393,8 @@ build_tango-pytango-alpine:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-pytango-alpine
-    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine:0.2.5
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime-alpine:0.2.0
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime-alpine
   only:
     changes:
     - images/ska-tango-images-pytango-builder-alpine/*
@@ -396,7 +407,7 @@ build_tango-panic:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-panic
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:9.3.13
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder
   only:
     changes:
     - images/ska-tango-images-tango-panic/*
@@ -413,7 +424,7 @@ build_tango-panic-gui:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-panic-gui
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:9.3.13
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder
   only:
     changes:
     - images/ska-tango-images-tango-panic-gui/*
