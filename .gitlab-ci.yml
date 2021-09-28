@@ -61,6 +61,20 @@ build_tango-db:
     changes:
     - docker/tango/tango-db/**/*
 
+build_tango-db-alpine:
+  retry: 2
+  stage: build_1
+  variables:
+    IMAGE_FOLDER: tango/tango-db-alpine
+  tags:
+  - k8srunner
+  script:
+  - *build_push
+  only:
+    changes:
+    - docker/tango/tango-db-alpine/**/*
+
+
 build_tango-cpp:
   retry: 2
   stage: build_2
@@ -129,8 +143,6 @@ build_pytango-builder:
     - *build_push
   only:
     changes:
-      - docker/tango/tango-dependencies/**/*
-      - docker/tango/tango-cpp/**/*
       - docker/tango/pytango-builder/**/*
 
 build_pytango-builder-alpine:
@@ -144,7 +156,6 @@ build_pytango-builder-alpine:
     - *build_push
   only:
     changes:
-      - docker/tango/tango-cpp-alpine/**/*
       - docker/tango/pytango-builder-alpine/**/*
 
 
@@ -178,6 +189,20 @@ build_tango-libtango:
     - docker/tango/tango-cpp/**/*
     - docker/tango/tango-libtango/**/*
 
+build_tango-libtango-alpine:
+  retry: 2
+  stage: build_3
+  variables:
+    IMAGE_FOLDER: tango/tango-libtango-alpine
+  tags:
+  - k8srunner
+  script:
+  - *build_push
+  only:
+    changes:
+    - docker/tango/tango-libtango-alpine/**/*
+
+
 build_tango-jive:
   retry: 2
   stage: build_3
@@ -204,9 +229,6 @@ build_pytango-runtime:
   - *build_push
   only:
     changes:
-    - docker/tango/tango-dependencies/**/*
-    - docker/tango/tango-cpp/**/*
-    - docker/tango/pytango-builder/**/*
     - docker/tango/pytango-runtime/**/*
 
 build_pytango-runtime-alpine:
@@ -220,8 +242,6 @@ build_pytango-runtime-alpine:
   - *build_push
   only:
     changes:
-    - docker/tango/tango-cpp-alpine/**/*
-    - docker/tango/pytango-builder-alpine/**/*
     - docker/tango/pytango-runtime-alpine/**/*
 
 build_tango-admin:
@@ -256,6 +276,22 @@ build_tango-databaseds:
     - docker/tango/tango-libtango/**/*
     - docker/tango/tango-databaseds/**/*
 
+build_tango-databaseds-alpine:
+  retry: 2
+  stage: build_4
+  variables:
+    IMAGE_FOLDER: tango/tango-databaseds-alpine
+  tags:
+  - k8srunner
+  script:
+  - *build_push
+  only:
+    changes:
+    - docker/tango/tango-dependencies-alpine/**/*
+    - docker/tango/tango-cpp-alpine/**/*
+    - docker/tango/tango-libtango-alpine/**/*
+    - docker/tango/tango-databaseds-alpine/**/*
+
 build_tango-test:
   retry: 2
   stage: build_4
@@ -289,6 +325,20 @@ build_tango-dsconfig:
     - docker/tango/pytango-runtime/**/*
     - docker/tango/tango-dsconfig/**/*
 
+build_tango-dsconfig-alpine:
+  retry: 2
+  stage: build_5
+  variables:
+    IMAGE_FOLDER: tango/tango-dsconfig-alpine
+  tags:
+  - k8srunner
+  script:
+  - *build_push
+  only:
+    changes:
+    - docker/tango/tango-dsconfig-alpine/**/*
+
+
 build_tango-itango:
   retry: 2
   stage: build_5
@@ -305,6 +355,20 @@ build_tango-itango:
     - docker/tango/pytango-builder/**/*
     - docker/tango/pytango-runtime/**/*
     - docker/tango/tango-itango/**/*
+
+build_tango-itango-alpine:
+  retry: 2
+  stage: build_5
+  variables:
+    IMAGE_FOLDER: tango/tango-itango-alpine
+  tags:
+  - k8srunner
+  script:
+  - *build_push
+  only:
+    changes:
+    - docker/tango/tango-itango-alpine/**/*
+
 
 build_tango-vnc:
   retry: 2
@@ -337,6 +401,20 @@ build_tango-pytango:
     - docker/tango/pytango-builder/**/*
     - docker/tango/pytango-runtime/**/*
     - docker/tango/tango-pytango/**/*
+
+build_tango-pytango-alpine:
+  retry: 2
+  stage: build_5
+  variables:
+    IMAGE_FOLDER: tango/tango-pytango-alpine
+  tags:
+  - k8srunner
+  script:
+  - *build_push
+  only:
+    changes:
+    - docker/tango/tango-pytango-alpine/**/*
+
 
 build_tango-panic:
   retry: 2
