@@ -144,14 +144,14 @@ wait:## wait for pods to be ready
 # capture the output of the test in a tar file
 # stream the tar file base64 encoded to the Pod logs
 #
-k8s_test = tar -c ../tests/post-deployment/ | \
+k8s_test = tar -c tests/post-deployment/ | \
 		kubectl run $(TEST_RUNNER) \
 		--namespace $(KUBE_NAMESPACE) -i --wait --restart=Never \
 		--image-pull-policy=IfNotPresent \
 		--image=$(IMAGE_TO_TEST) \
 		--limits='cpu=1000m,memory=500Mi' \
 		--requests='cpu=900m,memory=400Mi' -- \
-		/bin/bash -c "mkdir testing && tar xv --directory testing --strip-components 3 --warning=all && cd testing && \
+		/bin/bash -c "mkdir testing && tar xv --directory testing --strip-components 2 --warning=all && cd testing && \
 		make KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(RELEASE_NAME) TANGO_HOST=$(TANGO_HOST) MARK=$(MARK) $1 && \
 		tar -czvf /tmp/build.tgz build && \
 		echo '~~~~BOUNDARY~~~~' && \
@@ -159,6 +159,7 @@ k8s_test = tar -c ../tests/post-deployment/ | \
 		echo '~~~~BOUNDARY~~~~'" \
 		2>&1
 
+# call 'k8s_test' and pass it arg 'test' - look for $1
 # run the test function
 # save the status
 # clean out build dir
@@ -168,8 +169,7 @@ k8s_test = tar -c ../tests/post-deployment/ | \
 # clean up the run to completion container
 # exit the saved status
 test: ## test the application on K8s
-	cd charts; \
-	cp ska-tango-base/values.yaml ../tests/post-deployment/tango_values.yaml; \
+	cp charts/ska-tango-base/values.yaml tests/post-deployment/tango_values.yaml; \
 	$(call k8s_test,test); \
 		status=$$?; \
 		rm -fr build; \
@@ -177,8 +177,8 @@ test: ## test the application on K8s
 		perl -ne 'BEGIN {$$on=0;}; if (index($$_, "~~~~BOUNDARY~~~~")!=-1){$$on+=1;next;}; print if $$on % 2;' | \
 		base64 -d | tar -xzf -; \
 		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
-		rm ../post-deployment/tango_values.yaml; \
-		echo "Status set at \"$$status\" in charts/Makefile test target"; \
+		rm tests/post-deployment/tango_values.yaml; \
+		echo "Status set at \"$$status\" in ./Makefile test target"; \
 		exit $$status
 
 show:
