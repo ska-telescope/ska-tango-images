@@ -378,13 +378,13 @@ build_tango-pytango:
     OCI_IMAGE: ska-tango-images-tango-pytango
     BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime
-  only:
-    changes:
-    - images/ska-tango-images-tango-dependencies/*
-    - images/ska-tango-images-tango-cpp/*
-    - images/ska-tango-images-pytango-builder/*
-    - images/ska-tango-images-pytango-runtime/*
-    - images/ska-tango-images-tango-pytango/*
+  # only:
+  #   changes:
+  #   - images/ska-tango-images-tango-dependencies/*
+  #   - images/ska-tango-images-tango-cpp/*
+  #   - images/ska-tango-images-pytango-builder/*
+  #   - images/ska-tango-images-pytango-runtime/*
+  #   - images/ska-tango-images-tango-pytango/*
 
 build_tango-pytango-alpine:
   retry: 2
@@ -395,10 +395,10 @@ build_tango-pytango-alpine:
     OCI_IMAGE: ska-tango-images-tango-pytango-alpine
     BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime-alpine
-  only:
-    changes:
-    - images/ska-tango-images-pytango-builder-alpine/*
-    - images/ska-tango-images-tango-pytango-alpine/*
+  # only:
+  #   changes:
+  #   - images/ska-tango-images-pytango-builder-alpine/*
+  #   - images/ska-tango-images-tango-pytango-alpine/*
 
 build_tango-panic:
   retry: 2
@@ -408,14 +408,14 @@ build_tango-panic:
   variables:
     OCI_IMAGE: ska-tango-images-tango-panic
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder
-  only:
-    changes:
-    - images/ska-tango-images-tango-panic/*
-    - images/ska-tango-images-tango-dependencies/*
-    - images/ska-tango-images-tango-cpp/*
-    - images/ska-tango-images-pytango-builder/*
-    - images/ska-tango-images-pytango-runtime/*
-    - images/ska-tango-images-tango-pytango/*
+  # only:
+  #   changes:
+  #   - images/ska-tango-images-tango-panic/*
+  #   - images/ska-tango-images-tango-dependencies/*
+  #   - images/ska-tango-images-tango-cpp/*
+  #   - images/ska-tango-images-pytango-builder/*
+  #   - images/ska-tango-images-pytango-runtime/*
+  #   - images/ska-tango-images-tango-pytango/*
 
 build_tango-panic-gui:
   retry: 2
@@ -425,14 +425,14 @@ build_tango-panic-gui:
   variables:
     OCI_IMAGE: ska-tango-images-tango-panic-gui
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder
-  only:
-    changes:
-    - images/ska-tango-images-tango-panic-gui/*
-    - images/ska-tango-images-tango-dependencies/*
-    - images/ska-tango-images-tango-cpp/*
-    - images/ska-tango-images-pytango-builder/*
-    - images/ska-tango-images-pytango-runtime/*
-    - images/ska-tango-images-tango-pytango/*
+  # only:
+  #   changes:
+  #   - images/ska-tango-images-tango-panic-gui/*
+  #   - images/ska-tango-images-tango-dependencies/*
+  #   - images/ska-tango-images-tango-cpp/*
+  #   - images/ska-tango-images-pytango-builder/*
+  #   - images/ska-tango-images-pytango-runtime/*
+  #   - images/ska-tango-images-tango-pytango/*
 
 # test-chart:
 #   stage: test
