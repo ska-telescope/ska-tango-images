@@ -6,13 +6,11 @@ variables:
 stages:
 - lint
 - build
-# - build_0
 - build_1
 - build_2
 - build_3
 - build_4
 - build_5
-# - push
 - test
 - publish
 - pages
@@ -500,7 +498,6 @@ test-chart:
   - make install-chart
   - make wait
   - make test
-  # - make chart_lint
   - mkdir -p ../build/reports
   - mv build/report.xml ../build/reports/unit-tests.xml
   - mv build/linting.xml ../build/reports/linting.xml
@@ -520,36 +517,14 @@ test-chart:
       junit: build/reports/unit-tests.xml
 
 
-
-
-
-
-
-
-
-#############################################################
-#############################################################
-#############################################################
-#############################################################
-# # Ensure your .gitlab-ci.yml has "publish" stage defined!
-# include:
-#   - project: 'ska-telescope/templates-repository'
-#     file: 'gitlab-ci/includes/helm_publish.yml'
-
-# # Create Gitlab CI badges from CI metrics
-# # https://developer.skatelescope.org/en/latest/tools/continuousintegration.html#automated-collection-of-ci-health-metrics-as-part-of-the-ci-pipeline
-#   - project: 'ska-telescope/templates-repository'
-#     file: 'gitlab-ci/includes/post_step.yml'
-
-
 # Include CI templates
 include:
 # OCI Images
   # do a custom set of build stages
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/oci-image-lint.gitlab-ci.yml'
-  # - project: 'ska-telescope/templates-repository'
-  #   file: 'gitlab-ci/includes/oci-image-publish.gitlab-ci.yml'
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/oci-image-publish.gitlab-ci.yml'
 
 # Helm Charts
   - project: 'ska-telescope/templates-repository'
@@ -563,8 +538,3 @@ include:
 # .post step finalisers eg: badges
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'
-
-# # override variables
-# helm-chart-publish:
-#   variables:
-#       HELM_CHARTS_TO_PUBLISH: ska-tango-util ska-tango-base
