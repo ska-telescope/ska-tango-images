@@ -33,6 +33,7 @@ before_script:
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - echo $CAR_OCI_REGISTRY_PASSWORD | docker login -u $CAR_OCI_REGISTRY_USERNAME --password-stdin $CAR_OCI_REGISTRY_HOST
   script:
+    - echo "BUILD_IMAGE=${BUILD_IMAGE} BASE_IMAGE=${BASE_IMAGE}"
     - |
       if [[ -n "${BUILD_IMAGE}" ]]; then
         IMG="${BUILD_IMAGE##*/}";
@@ -44,6 +45,7 @@ before_script:
         VERS=$(make show-version RELEASE_CONTEXT_DIR=images/);
         export BASE_IMAGE="${BASE_IMAGE}:${VERS}";
       fi;
+    - echo "BUILD_IMAGE=${BUILD_IMAGE} BASE_IMAGE=${BASE_IMAGE}"
     - make oci-build OCI_IMAGE=${OCI_IMAGE} CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME} RELEASE_CONTEXT_DIR=images/${OCI_IMAGE} OCI_BUILD_ADDITIONAL_ARGS=" --build-arg BUILD_IMAGE --build-arg BASE_IMAGE "
 
 build_dependencies:
