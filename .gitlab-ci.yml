@@ -55,7 +55,7 @@ build_dependencies:
   variables:
     OCI_IMAGE: ska-tango-images-tango-dependencies
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "push"'
       changes:
       - images/ska-tango-images-tango-dependencies/*
 
