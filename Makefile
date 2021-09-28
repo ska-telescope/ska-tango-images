@@ -14,10 +14,12 @@ CI_JOB_ID ?= local##pipeline job id
 TEST_RUNNER ?= test-mk-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
 TANGO_HOST ?= tango-host-databaseds-from-makefile-$(RELEASE_NAME):10000## TANGO_HOST is an input!
 CHARTS ?= ska-tango-util ska-tango-base ska-tango-umbrella## list of charts to be published on gitlab -- umbrella charts for testing purpose
-LINTING_OUTPUT=$(shell helm lint --with-subcharts $(UMBRELLA_CHART_PATH) | grep ERROR -c | tail -1)
+# LINTING_OUTPUT=$(shell helm lint --with-subcharts $(UMBRELLA_CHART_PATH) | grep ERROR -c | tail -1)
 
 CI_PROJECT_PATH_SLUG ?= ska-tango-images
 CI_ENVIRONMENT_SLUG ?= ska-tango-images
+
+RELEASE_SUPPORT := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))/.make-release-support
 
 # include OCI Images support
 include .make/oci.mk
@@ -84,22 +86,43 @@ dep-up: ## update dependencies for every charts in the env var CHARTS
 
 install-chart: clean dep-up namespace## install the helm chart with name RELEASE_NAME and path UMBRELLA_CHART_PATH on the namespace KUBE_NAMESPACE
 	@cd charts; \
+	SET_VALS="$${SET_VALS} --set dsconfig.image.tag=$$(. $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-dsconfig setContextHelper; getVersion)"; \
+	SET_VALS="$${SET_VALS} --set itango.image.tag=$$(. $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-itango setContextHelper; getVersion)"; \
+	SET_VALS="$${SET_VALS} --set databaseds.image.tag=$$(. $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-cpp setContextHelper; getVersion)"; \
+	SET_VALS="$${SET_VALS} --set deviceServers[0].image.tag=$$(. $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-java setContextHelper; getVersion)"; \
+	SET_VALS="$${SET_VALS} --set tangodb.image.tag=$$(. $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-db-alpine setContextHelper; getVersion)"; \
+	SET_VALS="$${SET_VALS} --set jive.image.tag=$$(. $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-java setContextHelper; getVersion)"; \
+	SET_VALS="$${SET_VALS} --set vnc.image.tag=$$(. $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-vnc setContextHelper; getVersion)"; \
+	SET_VALS="$${SET_VALS} --set tangorest.image.tag=$$(. $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-rest setContextHelper; getVersion)"; \
+	SET_VALS="$${SET_VALS} --set logviewer.image.tag=$$(. $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-java setContextHelper; getVersion)"; \
 	sed -e 's/CI_PROJECT_PATH_SLUG/$(CI_PROJECT_PATH_SLUG)/' ci-values.yaml > generated_values.yaml; \
+	cat ska-tango-base/values.yaml| sed 's/registry:.*/registry: registry.gitlab.com\/ska-telescope\/ska-tango-images/' >> generated_values.yaml; \
 	sed -e 's/CI_ENVIRONMENT_SLUG/$(CI_ENVIRONMENT_SLUG)/' generated_values.yaml > values.yaml; \
 	helm install $(RELEASE_NAME) \
 		--set global.minikube=$(MINIKUBE) \
 		--set global.tango_host=$(TANGO_HOST) \
 		--values values.yaml \
+		$${SET_VALS} \
 		$(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE); \
 	 rm generated_values.yaml; \
 	 rm values.yaml
 
 template-chart: clean dep-up## install the helm chart with name RELEASE_NAME and path UMBRELLA_CHART_PATH on the namespace KUBE_NAMESPACE
-	@sed -e 's/CI_PROJECT_PATH_SLUG/$(CI_PROJECT_PATH_SLUG)/' ci-values.yaml > generated_values.yaml; \
+	@SET_VALS="$${SET_VALS} --set dsconfig.image.tag=$$(. $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-dsconfig setContextHelper; getVersion)"; \
+	SET_VALS="$${SET_VALS} --set itango.image.tag=$$(. $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-itango setContextHelper; getVersion)"; \
+	SET_VALS="$${SET_VALS} --set databaseds.image.tag=$$(. $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-cpp setContextHelper; getVersion)"; \
+	SET_VALS="$${SET_VALS} --set deviceServers[0].image.tag=$$(. $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-java setContextHelper; getVersion)"; \
+	SET_VALS="$${SET_VALS} --set tangodb.image.tag=$$(. $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-db-alpine setContextHelper; getVersion)"; \
+	SET_VALS="$${SET_VALS} --set jive.image.tag=$$(. $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-java setContextHelper; getVersion)"; \
+	SET_VALS="$${SET_VALS} --set vnc.image.tag=$$(. $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-vnc setContextHelper; getVersion)"; \
+	SET_VALS="$${SET_VALS} --set tangorest.image.tag=$$(. $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-rest setContextHelper; getVersion)"; \
+	SET_VALS="$${SET_VALS} --set logviewer.image.tag=$$(. $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-java setContextHelper; getVersion)"; \
+	sed -e 's/CI_PROJECT_PATH_SLUG/$(CI_PROJECT_PATH_SLUG)/' ci-values.yaml > generated_values.yaml; \
 	sed -e 's/CI_ENVIRONMENT_SLUG/$(CI_ENVIRONMENT_SLUG)/' generated_values.yaml > values.yaml; \
 	helm template $(RELEASE_NAME) \
 	--set global.minikube=$(MINIKUBE) \
 	--set global.tango_host=$(TANGO_HOST) \
+	$${SET_VALS} \
 	--values values.yaml \
 	--debug \
 	 $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE); \
@@ -120,9 +143,6 @@ uninstall-chart: ## uninstall the ska-tango-images helm chart on the namespace s
 	 helm uninstall  $(RELEASE_NAME) --namespace $(KUBE_NAMESPACE)
 
 reinstall-chart: uninstall-chart install-chart ## reinstall the ska-tango-images helm chart on the namespace ska-tango-images
-
-upgrade-chart: ## upgrade the ska-tango-images helm chart on the namespace ska-tango-images
-	@helm upgrade --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) $(RELEASE_NAME) $(UMBRELLA_CHART_PATH) --namespace $(KUBE_NAMESPACE)
 
 # chart_lint: clean dep-up## lint check the helm chart
 # 	mkdir -p build; helm lint $(UMBRELLA_CHART_PATH) --with-subcharts --namespace $(KUBE_NAMESPACE); \
