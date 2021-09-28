@@ -56,7 +56,8 @@ build_dependencies:
     OCI_IMAGE: ska-tango-images-tango-dependencies
   rules:
     - if: '$FORCE_REBUILD == "yes"'
-    - changes:
+    - if: '$CI_PIPELINE_SOURCE == "push" || $CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
       - images/ska-tango-images-tango-dependencies/*
 
 # build_dependencies-alpine:
