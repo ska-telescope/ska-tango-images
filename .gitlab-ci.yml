@@ -498,10 +498,9 @@ test-chart:
   - make install-chart
   - make wait
   - make test
-  - mkdir -p ../build/reports
-  - mv build/report.xml ../build/reports/unit-tests.xml
+  - mkdir -p ./build/reports
+  - mv build/report.xml ./build/reports/unit-tests.xml
   after_script:
-  - cd charts/
   - make uninstall-chart
   - make delete_namespace
   environment:
