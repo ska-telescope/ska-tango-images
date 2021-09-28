@@ -22,7 +22,7 @@ RUN git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl && 
 
 ## build and install cppTango
 ## latest main version is not working using previous commit
-RUN git clone https://gitlab.com/tango-controls/cppTango /cppTango && \
+RUN git clone https://gitlab.com/tango-controls/cppTango.git /cppTango && \
     cd /cppTango && git checkout 1575524ada0a3f8fe97b4040c07da7c83fced325 && \
     sed -i '1s/^/#include <sys\/types.h>\n#include <bits\/alltypes.h>\n/' /cppTango/log4tango/include/log4tango/FileAppender.hh && \
     mkdir build && \    
@@ -44,13 +44,7 @@ RUN git clone https://gitlab.com/tango-controls/tango_admin.git /tango_admin && 
     make && \
     make install
 
-RUN git clone --depth 1  https://gitlab.com/tango-controls/TangoDatabase.git /tangodb && \
-    cd /tangodb && \
-    mkdir build && \
-    cd build && \
-    PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig" cmake .. -DBUILD_TESTING=OFF && \
-    make && \
-    make install
+
 
 # Now, create the final image minus the tools and source code
 FROM $BASE_IMAGE 
@@ -74,4 +68,3 @@ RUN adduser -h /home/tango -D tango && \
     echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango
 
 USER tango
-CMD ["bash"]

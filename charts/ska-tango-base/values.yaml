@@ -27,7 +27,7 @@ dsconfig:
   image:
     registry: artefact.skao.int
     image: ska-tango-images-tango-dsconfig-alpine
-    tag: 0.1.0
+    tag: 0.1.1
     pullPolicy: IfNotPresent
 
 itango:
