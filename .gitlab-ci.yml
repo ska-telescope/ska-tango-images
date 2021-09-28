@@ -495,20 +495,19 @@ test-chart:
   - k8srunner
   image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
   script:
-  - cd charts/
   - kubectl version
   - helm version
-  - make -f ../Makefile install-chart
-  - make -f ../Makefile wait
-  - make -f ../Makefile test
-  - make -f ../Makefile chart_lint
+  - make install-chart
+  - make wait
+  - make test
+  # - make chart_lint
   - mkdir -p ../build/reports
   - mv build/report.xml ../build/reports/unit-tests.xml
   - mv build/linting.xml ../build/reports/linting.xml
   after_script:
   - cd charts/
-  - make -f ../Makefile uninstall-chart
-  - make -f ../Makefile delete_namespace
+  - make uninstall-chart
+  - make delete_namespace
   environment:
     name: test
     kubernetes:
