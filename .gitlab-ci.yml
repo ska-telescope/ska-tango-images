@@ -58,6 +58,8 @@ build_dependencies:
     - if: '$FORCE_REBUILD == "yes"'
     - changes:
       - images/ska-tango-images-tango-dependencies/*
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      when: never
 
 # build_dependencies-alpine:
 #   retry: 2
