@@ -37,12 +37,12 @@ before_script:
     - |
       if [[ -n "${BUILD_IMAGE}" ]]; then
         IMG="${BUILD_IMAGE##*/}";
-        VERS=$(make show-version RELEASE_CONTEXT_DIR=images/);
+        VERS=$(make show-version RELEASE_CONTEXT_DIR=images/${IMG});
         export BUILD_IMAGE="${BUILD_IMAGE}:${VERS}";
       fi;
       if [[ -n "${BASE_IMAGE}" ]]; then
         IMG="${BASE_IMAGE##*/}";
-        VERS=$(make show-version RELEASE_CONTEXT_DIR=images/);
+        VERS=$(make show-version RELEASE_CONTEXT_DIR=images/${IMG});
         export BASE_IMAGE="${BASE_IMAGE}:${VERS}";
       fi;
     - echo "BUILD_IMAGE=${BUILD_IMAGE} BASE_IMAGE=${BASE_IMAGE}"
