@@ -1,5 +1,5 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.2.15"
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.2.16"
 FROM $BASE_IMAGE
 
 LABEL \
@@ -37,7 +37,7 @@ ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig
 # yarl and multidict need also to be added here
 RUN MULTIDICT_NO_EXTENSIONS=1 python3.9 -m pip install multidict \
     && YARL_NO_EXTENSIONS=1 python3.9 -m pip install yarl \
-    && python3.9 -m pip install numpy==1.19.2
+    && python3.9 -m pip install numpy==1.21.0
 
 # now install build requirements
 COPY requirements.txt /requirements.txt
