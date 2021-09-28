@@ -21,3 +21,4 @@ charts/ska-tango-base/secrets/tls.key
 charts/ska-tango-base/charts/tango-util-0.1.0.tgz
 charts/ska-tango-base/charts/*
 charts/ska-tango-base/Chart.lock
+charts/ska-tango-umbrella/charts
