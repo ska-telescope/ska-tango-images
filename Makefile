@@ -151,7 +151,7 @@ k8s_test = tar -c ../tests/post-deployment/ | \
 		--image=$(IMAGE_TO_TEST) \
 		--limits='cpu=1000m,memory=500Mi' \
 		--requests='cpu=900m,memory=400Mi' -- \
-		/bin/bash -c "mkdir testing && tar xv --directory testing --strip-components 1 --warning=all && cd testing && \
+		/bin/bash -c "mkdir testing && tar xv --directory testing --strip-components 3 --warning=all && cd testing && \
 		make KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(RELEASE_NAME) TANGO_HOST=$(TANGO_HOST) MARK=$(MARK) $1 && \
 		tar -czvf /tmp/build.tgz build && \
 		echo '~~~~BOUNDARY~~~~' && \
