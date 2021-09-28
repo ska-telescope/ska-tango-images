@@ -151,8 +151,8 @@ ska-tango-base:
     intent: production
     image:
       registry: ${OCI_REGISTRY}
-      image: ska-tango-images-tango-db-alpine
-      tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-db-alpine setContextHelper; getVersion)
+      image: ska-tango-images-tango-db
+      tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-db setContextHelper; getVersion)
       pullPolicy: IfNotPresent
     db:
       rootpw: secret
