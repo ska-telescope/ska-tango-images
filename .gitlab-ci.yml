@@ -498,17 +498,17 @@ test-chart:
   - cd charts/
   - kubectl version
   - helm version
-  - make install-chart
-  - make wait
-  - make test
-  - make chart_lint
+  - make -f ../Makefile install-chart
+  - make -f ../Makefile wait
+  - make -f ../Makefile test
+  - make -f ../Makefile chart_lint
   - mkdir -p ../build/reports
   - mv build/report.xml ../build/reports/unit-tests.xml
   - mv build/linting.xml ../build/reports/linting.xml
   after_script:
   - cd charts/
-  - make uninstall-chart
-  - make delete_namespace
+  - make -f ../Makefile uninstall-chart
+  - make -f ../Makefile delete_namespace
   environment:
     name: test
     kubernetes:
