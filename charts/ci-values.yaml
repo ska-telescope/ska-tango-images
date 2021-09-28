@@ -8,7 +8,7 @@ global:
   #     enabled: false
   #   archiver:
   #     enabled: false
-  #   webjive: 
+  #   webjive:
   #     enabled: false
 
 # tango-base:
