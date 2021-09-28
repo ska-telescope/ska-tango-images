@@ -55,7 +55,8 @@ build_dependencies:
   variables:
     OCI_IMAGE: ska-tango-images-tango-dependencies
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "push"'
+    - if: '$FORCE_REBUILD == "yes"' 
+    - if: '$CI_PIPELINE_SOURCE == "push"' ## To eliminate duplicate detached MRs
       changes:
       - images/ska-tango-images-tango-dependencies/*
 
