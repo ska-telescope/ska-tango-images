@@ -1,0 +1,145 @@
+---
+suite: tango-rest
+templates:
+  - tango-rest.yaml
+tests:
+  - it: should have two documents rendered.
+    set:
+      tangorest:
+        enabled: true
+    asserts:
+      - hasDocuments:
+          count: 2
+
+  - it: should have the correct apiVersion, apps/v1, for the Deployment resource.
+    set:
+      tangorest:
+        enabled: true
+    documentIndex: 1
+    asserts:
+      - isKind:
+          of: Deployment
+      - isAPIVersion:
+          of: apps/v1
+
+  - it: should have the correct apiVersion, v1, for the Service resource.
+    set:
+      tangorest:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - isKind:
+          of: Service
+      - isAPIVersion:
+          of: v1
+
+  - it: should have a service of type NodePort listening on port 8080.
+    set:
+      tangorest:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.type
+          value: NodePort
+      - equal:
+          path: spec.ports[0].port
+          value: 8080
+      - equal:
+          path: spec.ports[0].name
+          value: rest
+
+  - it: should have the tango rest listening on port 8080.
+    set:
+      tangorest:
+        enabled: true
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].containerPort
+          value: 8080
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].protocol
+          value: TCP
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].name
+          value: rest
+
+  - it: should have a Service that routes traffic to the pods with labels.
+    set:
+      tangorest:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.selector
+          value:
+            app: ska-tango-images
+            component: tango-rest
+            domain: tango-configuration
+            function: tango-http-interface
+            intent: enabling
+
+  - it: should have a Deployment with pods having labels.
+    set:
+      tangorest:
+        enabled: true
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.selector.matchLabels
+          value:
+            app: ska-tango-images
+            component: tango-rest
+            domain: tango-configuration
+            function: tango-http-interface
+            intent: enabling
+
+  - it: should have one replica of the Deployment
+    set:
+      tangorest:
+        enabled: true
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 3
+
+  - it: should use the docker image artefact.skao.int/ska-tango-images-tango-rest.
+    set:
+      tangorest:
+        enabled: true
+    documentIndex: 1
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: artefact.skao.int/ska-tango-images-tango-rest
+
+  - it: should pull the image if it is not present.
+    set:
+      tangorest:
+        enabled: true
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: IfNotPresent
+
+  - it: should set the correct environment variables for the tango rest.
+    set:
+      tangorest:
+        enabled: true
+    documentIndex: 1
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: TANGO_HOST
+            value: databaseds-tango-base-RELEASE-NAME:10000
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: JAVA_OPTS
+            value: -Xmx4G -Xshare:off -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5009
+
+        
