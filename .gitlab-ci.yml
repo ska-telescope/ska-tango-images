@@ -58,7 +58,6 @@ build_dependencies:
     - if: '$FORCE_REBUILD == "yes"'
     - changes:
       - images/ska-tango-images-tango-dependencies/*
-    - when: never
 
 # build_dependencies-alpine:
 #   retry: 2
