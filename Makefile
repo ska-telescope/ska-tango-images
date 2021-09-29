@@ -174,7 +174,7 @@ k8s_test = tar -c tests/post-deployment/ | \
 # base64 payload is given a boundary "~~~~BOUNDARY~~~~" and extracted using perl
 # clean up the run to completion container
 # exit the saved status
-test: ## test the application on K8s
+test: helm-pre-publish ## test the application on K8s
 	cp charts/ska-tango-base/values.yaml tests/post-deployment/tango_values.yaml; \
 	$(call k8s_test,test); \
 		status=$$?; \
