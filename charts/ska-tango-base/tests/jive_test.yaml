@@ -1,0 +1,90 @@
+---
+suite: jive
+templates:
+  - jive.yaml
+tests:
+  - it: should have one document rendered.
+    set:
+      jive:
+        enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+
+  - it: should have the correct apiVersion, v1, for the Pod resource.
+    set:
+      jive:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - isKind:
+          of: Pod
+      - isAPIVersion:
+          of: v1
+
+  - it: should use the docker image artefact.skao.int/ska-tango-images-tango-java.
+    set:
+      jive:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - matchRegex:
+          path: spec.containers[0].image
+          pattern: artefact.skao.int/ska-tango-images-tango-java
+
+  - it: should pull the image if it is not present.
+    set:
+      jive:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.containers[0].imagePullPolicy
+          value: IfNotPresent
+
+  - it: should set the correct environment variables for the Tango host.
+    set:
+      jive:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - contains:
+          path: spec.containers[0].env
+          content:
+            name: XAUTHORITY
+            value: "/tmp/.Xauthority"
+      - contains:
+          path: spec.containers[0].env
+          content:
+            name: DISPLAY
+            value: ":0"
+      - contains:
+          path: spec.containers[0].env
+          content:
+            name: TANGO_HOST
+            value: "databaseds-tango-base-{{.Release.Name}}:10000"
+
+
+
+  - it: should have a Pod having Volume.
+    set:
+      jive:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.volumes[0]
+          value:
+            name: xauthority
+            hostPath:
+              path: /home/ubuntu/.Xauthority
+
+  - it: should have a Pod having restartPolicy.
+    set:
+      jive:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.restartPolicy
+          value: Always
