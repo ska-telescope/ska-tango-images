@@ -3,7 +3,7 @@ suite: deviceservers
 templates:
   - deviceservers.yaml
 tests:
-  - it: should have two documents rendered.
+  - it: should have seven documents rendered.
     asserts:
       - hasDocuments:
           count: 7
