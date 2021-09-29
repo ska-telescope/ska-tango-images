@@ -58,6 +58,7 @@ build_dependencies:
   variables:
     OCI_IMAGE: ska-tango-images-tango-dependencies
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_1"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"' ## To eliminate duplicate detached MRs
       changes:
@@ -71,6 +72,7 @@ build_dependencies-alpine:
   variables:
     OCI_IMAGE: ska-tango-images-tango-dependencies-alpine
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_1"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -84,6 +86,7 @@ build_tango-db:
   variables:
     OCI_IMAGE: ska-tango-images-tango-db
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -97,6 +100,7 @@ build_tango-db-alpine:
   variables:
     OCI_IMAGE: ska-tango-images-tango-db-alpine
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_1"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -111,6 +115,7 @@ build_tango-cpp:
     OCI_IMAGE: ska-tango-images-tango-cpp
     BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-dependencies
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_2"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -126,6 +131,7 @@ build_tango-cpp-alpine:
     OCI_IMAGE: ska-tango-images-tango-cpp-alpine
     BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-dependencies-alpine
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_2"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -141,6 +147,7 @@ build_tango-java:
     OCI_IMAGE: ska-tango-images-tango-java
     BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-dependencies
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_2"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -157,6 +164,7 @@ build_tango-rest:
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java
     BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-dependencies
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_3"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -173,6 +181,7 @@ build_pytango-builder:
     OCI_IMAGE: ska-tango-images-pytango-builder
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_3"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -189,6 +198,7 @@ build_pytango-builder-alpine:
     OCI_IMAGE: ska-tango-images-pytango-builder-alpine
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp-alpine
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_3"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -204,6 +214,7 @@ build_tango-pogo:
     OCI_IMAGE: ska-tango-images-tango-pogo
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_3"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -220,6 +231,7 @@ build_tango-libtango:
     OCI_IMAGE: ska-tango-images-tango-libtango
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_3"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -236,6 +248,7 @@ build_tango-jive:
     OCI_IMAGE: ska-tango-images-tango-jive
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_3"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -253,6 +266,7 @@ build_pytango-runtime:
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp
     BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $FORCE_REBUILD == "build_4"'
       changes:
@@ -271,6 +285,7 @@ build_pytango-runtime-alpine:
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp-alpine
     BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_4"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -287,6 +302,7 @@ build_tango-admin:
     OCI_IMAGE: ska-tango-images-tango-admin
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-libtango
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_4"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -304,6 +320,7 @@ build_tango-databaseds:
     OCI_IMAGE: ska-tango-images-tango-databaseds
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-libtango
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_4"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -321,6 +338,7 @@ build_tango-test:
     OCI_IMAGE: ska-tango-images-tango-test
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-libtango
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_4"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -339,6 +357,7 @@ build_tango-dsconfig:
     BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_5"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -358,6 +377,7 @@ build_tango-dsconfig-alpine:
     BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime-alpine
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_5"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -375,6 +395,7 @@ build_tango-itango:
     BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_5"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -394,6 +415,7 @@ build_tango-itango-alpine:
     BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime-alpine
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_5"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -410,6 +432,7 @@ build_tango-vnc:
     OCI_IMAGE: ska-tango-images-tango-vnc
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_5"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -427,6 +450,7 @@ build_tango-pytango:
     BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_5"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -446,6 +470,7 @@ build_tango-pytango-alpine:
     BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime-alpine
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_5"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -461,6 +486,7 @@ build_tango-panic:
     OCI_IMAGE: ska-tango-images-tango-panic
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_5"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
@@ -480,6 +506,7 @@ build_tango-panic-gui:
     OCI_IMAGE: ska-tango-images-tango-panic-gui
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder
   rules:
+    - if: '$CI_COMMIT_TAG'
     - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_5"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       changes:
