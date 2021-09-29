@@ -1,0 +1,5 @@
+RELEASE_CONTEXT_DIR=/home/piers/git/public/ska-telescope/ska-tango-images//
+RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-dependencies/
+RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-dependencies/
+RELEASE_CONTEXT_DIR=/home/piers/git/public/ska-telescope/ska-tango-images//
+RELEASE_CONTEXT_DIR=/home/piers/git/public/ska-telescope/ska-tango-images//
