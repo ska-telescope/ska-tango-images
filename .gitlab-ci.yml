@@ -44,6 +44,8 @@ before_script:
         export BASE_IMAGE="${BASE_IMAGE}:${VERS}";
       fi;
     - echo "Image dependencies set to BUILD_IMAGE=${BUILD_IMAGE} BASE_IMAGE=${BASE_IMAGE}"
+    - echo "Check/pulling ${OCI_IMAGE} image to build:"
+    - 'VERS=$(make show-version RELEASE_CONTEXT_DIR=images/${OCI_IMAGE}) docker pull ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/${OCI_IMAGE}:${VERS} || true'
     - make oci-build OCI_IMAGE=${OCI_IMAGE} CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME} RELEASE_CONTEXT_DIR=images/${OCI_IMAGE} OCI_BUILD_ADDITIONAL_ARGS=" --build-arg BUILD_IMAGE --build-arg BASE_IMAGE "
 
 build_dependencies:
@@ -52,11 +54,11 @@ build_dependencies:
     - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-dependencies
-  rules:
-    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_1"'
-    - if: '$CI_PIPELINE_SOURCE == "push"' ## To eliminate duplicate detached MRs
-      changes:
-      - images/ska-tango-images-tango-dependencies/*
+  # rules:
+  #   - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_1"'
+  #   - if: '$CI_PIPELINE_SOURCE == "push"' ## To eliminate duplicate detached MRs
+  #     changes:
+  #     - images/ska-tango-images-tango-dependencies/*
 
 build_dependencies-alpine:
   retry: 2
