@@ -68,7 +68,7 @@ delete_namespace: ## delete the kubernetes namespace
 		kubectl describe namespace $(KUBE_NAMESPACE) && kubectl delete namespace $(KUBE_NAMESPACE); \
 	fi
 
-package: ## package charts
+package: helm-pre-publish ## package charts
 	@echo "Packaging helm charts. Any existing file won't be overwritten."; \
 	mkdir -p ./tmp
 	@for i in $(CHARTS); do \
@@ -78,7 +78,13 @@ package: ## package charts
 	cd ./repository && helm repo index .; \
 	rm -rf ./tmp
 
-dep-up: ## update dependencies for every charts in the env var CHARTS
+helm-pre-publish: ## hook before helm chart publish
+	@echo "helm-pre-publish: generating charts/ska-tango-base/values.yaml"
+	@cd charts/ska-tango-base && bash ./values.yaml.sh
+
+helm-pre-lint: helm-pre-publish ## make sure auto-generate values.yaml happens
+
+dep-up: helm-pre-publish ## update dependencies for every charts in the env var CHARTS
 	@cd charts; \
 	for i in $(CHARTS); do \
 		helm dependency update $${i}; \
@@ -130,7 +136,7 @@ reinstall-chart: uninstall-chart install-chart ## reinstall the ska-tango-images
 # 	echo "<testsuites><testsuite errors=\"$(LINTING_OUTPUT)\" failures=\"0\" name=\"helm-lint\" skipped=\"0\" tests=\"0\" time=\"0.000\" timestamp=\"$(shell date)\"> </testsuite> </testsuites>" > build/linting.xml
 # 	exit $(LINTING_OUTPUT)
 
-wait:## wait for pods to be ready
+wait: ## wait for pods to be ready
 	@echo "Waiting for pods to be ready"
 	@date
 	@kubectl -n $(KUBE_NAMESPACE) get pods
