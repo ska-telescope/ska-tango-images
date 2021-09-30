@@ -527,7 +527,7 @@ test-chart:
   script:
   - kubectl version
   - helm version
-  - make install-chart
+  - make install-chart CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
   - make wait
   - make test
   - mkdir -p ./build/reports ./build/htmlcov

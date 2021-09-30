@@ -91,8 +91,7 @@ dep-up: helm-pre-publish ## update dependencies for every charts in the env var 
 	done;
 
 install-chart: clean dep-up namespace## install the helm chart with name RELEASE_NAME and path UMBRELLA_CHART_PATH on the namespace KUBE_NAMESPACE
-	RELEASE_SUPPORT=$(RELEASE_SUPPORT) bash ./scripts/generate-values.sh; \
-	cd charts; \
+	@cd charts; \
 	sed -e 's/CI_PROJECT_PATH_SLUG/$(CI_PROJECT_PATH_SLUG)/' ci-values.yaml > generated_values.yaml; \
 	sed -e 's/CI_ENVIRONMENT_SLUG/$(CI_ENVIRONMENT_SLUG)/' generated_values.yaml > values.yaml; \
 	helm install $(RELEASE_NAME) \
@@ -104,7 +103,7 @@ install-chart: clean dep-up namespace## install the helm chart with name RELEASE
 	 rm values.yaml
 
 template-chart: clean dep-up## install the helm chart with name RELEASE_NAME and path UMBRELLA_CHART_PATH on the namespace KUBE_NAMESPACE
-	@RELEASE_SUPPORT=$(RELEASE_SUPPORT) bash ./scripts/generate-values.sh; \
+	@cd charts; \
 	sed -e 's/CI_PROJECT_PATH_SLUG/$(CI_PROJECT_PATH_SLUG)/' ci-values.yaml > generated_values.yaml; \
 	sed -e 's/CI_ENVIRONMENT_SLUG/$(CI_ENVIRONMENT_SLUG)/' generated_values.yaml > values.yaml; \
 	helm template $(RELEASE_NAME) \
