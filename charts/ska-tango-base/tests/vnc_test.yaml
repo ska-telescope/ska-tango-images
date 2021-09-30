@@ -1,0 +1,161 @@
+---
+suite: vnc
+templates:
+  - vnc.yaml
+tests:
+  - it: should have two documents rendered.
+    set:
+      vnc:
+        enabled: true
+    asserts:
+      - hasDocuments:
+          count: 2
+
+  - it: should have the correct apiVersion, v1, for the Service resource.
+    set:
+      vnc:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - isKind:
+          of: Service
+      - isAPIVersion:
+          of: v1
+
+  - it: should have a service of type NodePort listening on port 5920 and 6081.
+    set:
+      vnc:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.type
+          value: NodePort
+      - equal:
+          path: spec.ports
+          value:
+          - name: vncport
+            port: 5920
+            protocol: TCP
+          - name: novncport
+            port: 6081
+            protocol: TCP
+
+  - it: should have a Service that routes traffic to the pods with labels.
+    set:
+      vnc:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.selector
+          value:
+            app: ska-tango-images
+            component: vnc-gui
+            domain: interactive-testing
+            function: generic-tango-vnc-gui
+            intent: enabling
+
+
+  - it: should have the correct apiVersion, apps/v1, for the StatefulSet resource.
+    set:
+      vnc:
+        enabled: true
+    documentIndex: 1
+    asserts:
+      - isKind:
+          of: StatefulSet
+      - isAPIVersion:
+          of: apps/v1
+
+  - it: should set the service name to its own cluster hostname.
+    set:
+      vnc:
+        enabled: true
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.serviceName
+          value: ska-tango-base-vnc-gui
+
+  - it: should have a Statfulset with pods having labels.
+    set:
+      vnc:
+        enabled: true
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.selector.matchLabels
+          value:
+            app: ska-tango-images
+            component: vnc-gui
+            domain: interactive-testing
+            function: generic-tango-vnc-gui
+            intent: enabling
+
+  - it: should have one replica of the statefulset
+    set:
+      vnc:
+        enabled: true
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 3
+
+  - it: should have a Statfulset with pods having template labels.
+    set:
+      vnc:
+        enabled: true
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels
+          value:
+            app: ska-tango-images
+            component: vnc-gui
+            domain: interactive-testing
+            function: generic-tango-vnc-gui
+            intent: enabling
+
+  - it: should use the docker image artefact.skao.int/ska-tango-images-tango-vnc.
+    set:
+      vnc:
+        enabled: true
+    documentIndex: 1
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: artefact.skao.int/ska-tango-images-tango-vnc
+
+  - it: should pull the image if it is not present.
+    set:
+      vnc:
+        enabled: true
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: IfNotPresent
+
+  - it: should set the correct environment variables for the KUBE_NAMESPACE.
+    set:
+      vnc:
+        enabled: true
+    documentIndex: 1
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: KUBE_NAMESPACE
+            value: NAMESPACE
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: TANGO_HOST
+            value: databaseds-tango-base-{{.Release.Name}}:10000
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: HELM_RELEASE
+            value: RELEASE-NAME
