@@ -16,7 +16,7 @@ RUN apk add --update --no-cache curl \
     openssl ca-certificates \
     file pkgconf-dev \
     g++ python3-dev make czmq-dev libsodium-dev \
-    libffi-dev openssl-dev boost-dev
+    libffi-dev openssl-dev boost-dev libstdc++
 RUN apk add --virtual build-dependencies \
     build-base alpine-sdk \
     linux-headers \
@@ -25,12 +25,12 @@ RUN apk add --virtual build-dependencies \
 # build and install libzmq at v4.3.4
 RUN git clone -b v4.3.4 --depth 1 https://github.com/zeromq/libzmq /libzmq && \
     cmake -B /libzmq/build -DCMAKE_INSTALL_PREFIX=/usr/local -DENABLE_DRAFTS=OFF -DWITH_DOC=OFF -DZMQ_BUILD_TESTS=OFF /libzmq  && \
-    make -C /libzmq/build install
+    make -j$(nproc) -C /libzmq/build install
 
 # build and install cpp zmq at v4.8.1
 RUN git clone -b v4.8.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq && \
     cmake -B /cppzmq/build -DCPPZMQ_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local /cppzmq && \
-    make -C /cppzmq/build install
+    make -j$(nproc) -C /cppzmq/build install
 
 # build and install omniORB at 4.2.4
 RUN curl -L https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.4/omniORB-4.2.4.tar.bz2/download -o /omniORB.tar.bz2 && \
@@ -38,7 +38,7 @@ RUN curl -L https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.4
     tar xaf /omniORB.tar.bz2 --strip-components=1 -C /omniORB && \
     cd /omniORB && \
     ./configure --prefix=/usr/local/ && \
-    make && \
+    make -j$(nproc) && \
     make install
 
 FROM $BASE_IMAGE
