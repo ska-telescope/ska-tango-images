@@ -546,15 +546,29 @@ test-chart:
     reports:
       junit: build/reports/unit-tests.xml
 
+# Custom OCI Image publish stage
+oci-image-publish: #Executed on a tag for CAR
+  stage: publish
+  image: $SKA_K8S_TOOLS_DOCKER_BUILDER_IMAGE
+  tags:
+    - k8srunner
+  before_script:
+    - '[ -f .make/oci.mk ] || (echo "File oci.mk not included in Makefile; exit 1")'
+    - 'make help | grep oci.mk:oci-publish'
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - echo $CAR_OCI_REGISTRY_PASSWORD | docker login -u $CAR_OCI_REGISTRY_USERNAME --password-stdin $CAR_OCI_REGISTRY_HOST
+  script:
+    - make custom-oci-publish-all
+  rules:
+    - if: '$CI_COMMIT_TAG'
+
 
 # Include CI templates
 include:
 # OCI Images
-  # do a custom set of build stages
+  # do a custom set of build and publish stages
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/oci-image-lint.gitlab-ci.yml'
-  - project: 'ska-telescope/templates-repository'
-    file: 'gitlab-ci/includes/oci-image-publish.gitlab-ci.yml'
 
 # Helm Charts
   - project: 'ska-telescope/templates-repository'
