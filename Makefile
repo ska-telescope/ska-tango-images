@@ -2,6 +2,7 @@ BASE = $(shell pwd)
 
 HELM_CHARTS_TO_PUBLISH ?= ska-tango-util ska-tango-base
 OCI_IMAGES ?= ska-tango-images-tango-dependencies ska-tango-images-tango-dependencies-alpine ska-tango-images-tango-db ska-tango-images-tango-cpp ska-tango-images-tango-cpp-alpine ska-tango-images-tango-java ska-tango-images-tango-rest ska-tango-images-pytango-builder ska-tango-images-pytango-builder-alpine ska-tango-images-tango-pogo ska-tango-images-tango-libtango ska-tango-images-tango-jive ska-tango-images-pytango-runtime ska-tango-images-pytango-runtime-alpine ska-tango-images-tango-admin ska-tango-images-tango-databaseds ska-tango-images-tango-test ska-tango-images-tango-dsconfig ska-tango-images-tango-itango ska-tango-images-tango-vnc ska-tango-images-tango-pytango ska-tango-images-tango-panic ska-tango-images-tango-panic-gui
+OCI_IMAGES_TO_PUBLISH ?= $(OCI_IMAGES)
 
 KUBE_NAMESPACE ?= ska-tango-images#namespace to be used
 RELEASE_NAME ?= test## release name of the chart
@@ -68,7 +69,7 @@ delete_namespace: ## delete the kubernetes namespace
 		kubectl describe namespace $(KUBE_NAMESPACE) && kubectl delete namespace $(KUBE_NAMESPACE); \
 	fi
 
-package: ## package charts
+package: helm-pre-publish ## package charts
 	@echo "Packaging helm charts. Any existing file won't be overwritten."; \
 	mkdir -p ./tmp
 	@for i in $(CHARTS); do \
@@ -78,15 +79,23 @@ package: ## package charts
 	cd ./repository && helm repo index .; \
 	rm -rf ./tmp
 
-dep-up: ## update dependencies for every charts in the env var CHARTS
+helm-pre-publish: ## hook before helm chart publish
+	@echo "helm-pre-publish: generating charts/ska-tango-base/values.yaml"
+	@cd charts/ska-tango-base && bash ./values.yaml.sh
+
+helm-pre-lint: helm-pre-publish ## make sure auto-generate values.yaml happens
+
+custom-oci-publish-all: ## Custom Publish all OCI Images in OCI_IMAGES_TO_PUBLISH using image local .release
+	$(foreach ociimage,$(OCI_IMAGES_TO_PUBLISH), make oci-publish OCI_IMAGE=$(ociimage) RELEASE_CONTEXT_DIR=images/$(ociimage);)
+
+dep-up: helm-pre-publish ## update dependencies for every charts in the env var CHARTS
 	@cd charts; \
 	for i in $(CHARTS); do \
 		helm dependency update $${i}; \
 	done;
 
 install-chart: clean dep-up namespace## install the helm chart with name RELEASE_NAME and path UMBRELLA_CHART_PATH on the namespace KUBE_NAMESPACE
-	RELEASE_SUPPORT=$(RELEASE_SUPPORT) bash ./scripts/generate-values.sh; \
-	cd charts; \
+	@cd charts; \
 	sed -e 's/CI_PROJECT_PATH_SLUG/$(CI_PROJECT_PATH_SLUG)/' ci-values.yaml > generated_values.yaml; \
 	sed -e 's/CI_ENVIRONMENT_SLUG/$(CI_ENVIRONMENT_SLUG)/' generated_values.yaml > values.yaml; \
 	helm install $(RELEASE_NAME) \
@@ -98,7 +107,7 @@ install-chart: clean dep-up namespace## install the helm chart with name RELEASE
 	 rm values.yaml
 
 template-chart: clean dep-up## install the helm chart with name RELEASE_NAME and path UMBRELLA_CHART_PATH on the namespace KUBE_NAMESPACE
-	@RELEASE_SUPPORT=$(RELEASE_SUPPORT) bash ./scripts/generate-values.sh; \
+	@cd charts; \
 	sed -e 's/CI_PROJECT_PATH_SLUG/$(CI_PROJECT_PATH_SLUG)/' ci-values.yaml > generated_values.yaml; \
 	sed -e 's/CI_ENVIRONMENT_SLUG/$(CI_ENVIRONMENT_SLUG)/' generated_values.yaml > values.yaml; \
 	helm template $(RELEASE_NAME) \
@@ -130,7 +139,7 @@ reinstall-chart: uninstall-chart install-chart ## reinstall the ska-tango-images
 # 	echo "<testsuites><testsuite errors=\"$(LINTING_OUTPUT)\" failures=\"0\" name=\"helm-lint\" skipped=\"0\" tests=\"0\" time=\"0.000\" timestamp=\"$(shell date)\"> </testsuite> </testsuites>" > build/linting.xml
 # 	exit $(LINTING_OUTPUT)
 
-wait:## wait for pods to be ready
+wait: ## wait for pods to be ready
 	@echo "Waiting for pods to be ready"
 	@date
 	@kubectl -n $(KUBE_NAMESPACE) get pods
@@ -168,7 +177,7 @@ k8s_test = tar -c tests/post-deployment/ | \
 # base64 payload is given a boundary "~~~~BOUNDARY~~~~" and extracted using perl
 # clean up the run to completion container
 # exit the saved status
-test: ## test the application on K8s
+test: helm-pre-publish ## test the application on K8s
 	cp charts/ska-tango-base/values.yaml tests/post-deployment/tango_values.yaml; \
 	$(call k8s_test,test); \
 		status=$$?; \

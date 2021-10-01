@@ -1,3 +1,39 @@
+#!/bin/bash
+
+RELEASE_SUPPORT="${RELEASE_SUPPORT:-../../.make/.make-release-support}"
+VALUES_YAML=values.yaml
+CAR_OCI_REGISTRY_HOST="${CAR_OCI_REGISTRY_HOST:-artefact.skao.int}"
+CI_COMMIT_SHORT_SHA="${CI_COMMIT_SHORT_SHA:-blah}"
+SUFFIX=""
+
+# Disabled this as it complicates the rules: changes: - pxh 30/09/2021
+# Check if this is a dev build
+# if [[ "${CAR_OCI_REGISTRY_HOST}" == registry.gitlab.com* ]] || [[ -z "${CAR_OCI_REGISTRY_HOST}" ]]; then
+#     SUFFIX="-dev.${CI_COMMIT_SHORT_SHA}"  #"-" is used as "+" causes the docker building process to fail
+# fi
+
+cat <<EOF > ${VALUES_YAML}
+# Default values for tango-base.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+global:
+  annotations:
+    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+  # by setting this parameter we can disable the lower level sub-system tango-base, archiver and webjive
+  # sub-system:
+  #   tango-base:
+  #     enabled: false
+  #   archiver:
+  #     enabled: false
+  #   webjive:
+  #     enabled: false
+
+# tango-base:
+#   enabled: true
+
+
 # Default values for tango-base.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
@@ -25,9 +61,9 @@ annotations:
 
 dsconfig:
   image:
-    registry: artefact.skao.int
+    registry: ${CAR_OCI_REGISTRY_HOST}
     image: ska-tango-images-tango-dsconfig
-    tag: 1.5.2
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-dsconfig setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
 
 itango:
@@ -37,9 +73,9 @@ itango:
   domain: interactive-testing
   intent: enabling
   image:
-    registry: artefact.skao.int
+    registry: ${CAR_OCI_REGISTRY_HOST}
     image: ska-tango-images-tango-itango
-    tag: 9.3.6
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-itango setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -57,9 +93,9 @@ databaseds:
   domain: tango-configuration
   intent: production
   image:
-    registry: artefact.skao.int
+    registry: ${CAR_OCI_REGISTRY_HOST}
     image: ska-tango-images-tango-cpp
-    tag: 9.3.7
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-cpp setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -103,9 +139,9 @@ deviceServers:
           devices:
           - name: "sys/tg_test/1"
     image:
-      registry: artefact.skao.int
+      registry: ${CAR_OCI_REGISTRY_HOST}
       image: ska-tango-images-tango-java
-      tag: 9.3.5
+      tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-java setContextHelper; getVersion)${SUFFIX}
       pullPolicy: IfNotPresent
     resources:
       requests:
@@ -125,9 +161,9 @@ tangodb:
   domain: tango-configuration
   intent: production
   image:
-    registry: artefact.skao.int
+    registry: ${CAR_OCI_REGISTRY_HOST}
     image: ska-tango-images-tango-db
-    tag: 10.4.13
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-db setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   db:
     rootpw: secret
@@ -165,9 +201,9 @@ jive:
   domain: interactive-testing
   intent: enabling
   image:
-    registry: artefact.skao.int
+    registry: ${CAR_OCI_REGISTRY_HOST}
     image: ska-tango-images-tango-java
-    tag: 9.3.5
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-java setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -190,9 +226,9 @@ vnc:
   nodeport_novnc: 32082
   replicas: 3
   image:
-    registry: artefact.skao.int
+    registry: ${CAR_OCI_REGISTRY_HOST}
     image: ska-tango-images-tango-vnc
-    tag: 0.1.4
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-vnc setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -212,9 +248,9 @@ tangorest:
   domain: tango-configuration
   intent: enabling
   image:
-    registry: artefact.skao.int
+    registry: ${CAR_OCI_REGISTRY_HOST}
     image: ska-tango-images-tango-rest
-    tag: 1.14.5
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-rest setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -233,9 +269,9 @@ logviewer:
   domain: interactive-testing
   intent: enabling
   image:
-    registry: artefact.skao.int
+    registry: ${CAR_OCI_REGISTRY_HOST}
     image: ska-tango-images-tango-java
-    tag: 9.3.5
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-java setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -257,3 +293,5 @@ nodeSelector: {}
 affinity: {}
 
 tolerations: []
+
+EOF
