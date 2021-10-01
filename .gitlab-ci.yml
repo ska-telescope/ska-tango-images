@@ -188,6 +188,25 @@ build_tango-rest:
       - images/ska-tango-images-tango-cpp/*
       - images/ska-tango-images-tango-rest/*
 
+build_tango-rest-alpine:
+  retry: 2
+  stage: build_3
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-rest-alpine
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-dependencies
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_3"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+      - images/ska-tango-images-tango-dependencies-alpine/*
+      - images/ska-tango-images-tango-cpp-alpine/*
+      - images/ska-tango-images-tango-rest-alpine/*
+
+
 build_pytango-builder:
   retry: 2
   stage: build_3
@@ -237,6 +256,24 @@ build_tango-pogo:
       - images/ska-tango-images-tango-dependencies/*
       - images/ska-tango-images-tango-java/*
       - images/ska-tango-images-tango-pogo/*
+
+build_tango-pogo-alpine:
+  retry: 2
+  stage: build_3
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-pogo
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java-alpine
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_3"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+      - images/ska-tango-images-tango-dependencies-alpine/*
+      - images/ska-tango-images-tango-java-alpine/*
+      - images/ska-tango-images-tango-pogo-alpine/*
+
 
 build_tango-libtango:
   retry: 2
@@ -473,6 +510,24 @@ build_tango-vnc:
       - images/ska-tango-images-tango-dependencies/*
       - images/ska-tango-images-tango-java/*
       - images/ska-tango-images-tango-vnc/*
+
+build_tango-vnc-alpine:
+  retry: 2
+  stage: build_5
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-vnc-alpine
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java-alpine
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_5"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+      - images/ska-tango-images-tango-dependencies-alpine/*
+      - images/ska-tango-images-tango-java-alpine/*
+      - images/ska-tango-images-tango-vnc-alpine/*
+
 
 build_tango-pytango:
   retry: 2
