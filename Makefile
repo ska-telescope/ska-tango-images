@@ -41,6 +41,18 @@ include .make/release.mk
 # include your own private variables for custom deployment configuration
 -include PrivateRules.mak
 
+oci-bump-patch-release: ## Bump patch release for all OCI Image .release files in ./images/<dir>
+	$(foreach ociimage,$(OCI_IMAGES_TO_PUBLISH), make bump-patch-release RELEASE_CONTEXT_DIR=images/$(ociimage);)
+
+oci-bump-minor-release: ## Bump minor release for all OCI Image .release files in ./images/<dir>
+	$(foreach ociimage,$(OCI_IMAGES_TO_PUBLISH), make bump-minor-release RELEASE_CONTEXT_DIR=images/$(ociimage);)
+
+oci-bump-major-release: ## Bump major release for all OCI Image .release files in ./images/<dir>
+	$(foreach ociimage,$(OCI_IMAGES_TO_PUBLISH), make bump-major-release RELEASE_CONTEXT_DIR=images/$(ociimage);)
+
+custom-oci-publish-all: ## Custom Publish all OCI Images in OCI_IMAGES_TO_PUBLISH using image local .release
+	$(foreach ociimage,$(OCI_IMAGES_TO_PUBLISH), make oci-publish OCI_IMAGE=$(ociimage) RELEASE_CONTEXT_DIR=images/$(ociimage);)
+
 clean: ## clean out references to chart tgz's
 	@cd charts/ && rm -f ./*/charts/*.tgz ./*/Chart.lock ./*/requirements.lock
 
@@ -85,9 +97,6 @@ helm-pre-publish: ## hook before helm chart publish
 	@cd charts/ska-tango-base && bash ./values.yaml.sh
 
 helm-pre-lint: helm-pre-publish ## make sure auto-generate values.yaml happens
-
-custom-oci-publish-all: ## Custom Publish all OCI Images in OCI_IMAGES_TO_PUBLISH using image local .release
-	$(foreach ociimage,$(OCI_IMAGES_TO_PUBLISH), make oci-publish OCI_IMAGE=$(ociimage) RELEASE_CONTEXT_DIR=images/$(ociimage);)
 
 dep-up: helm-pre-publish ## update dependencies for every charts in the env var CHARTS
 	@cd charts; \
