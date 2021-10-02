@@ -84,9 +84,10 @@ make-a-release: ## Step through the process of bumping .release and creating a t
 	fi;
 
 	@printf "\nStep 2: Select and bump OCI Image .release's \n Tell me which of the following OCI_IMAGES_TO_PUBLISH list to bump patch release for: $(OCI_IMAGES_TO_PUBLISH)\n"; \
-	read -p "$(POWDER_BLUE)Enter list here: " OCI_IMAGES_TO_RELEASE; \
+	read -p "$(POWDER_BLUE)Enter list here$(NORMAL): " OCI_IMAGES_TO_RELEASE; \
 	printf "\n You provided: $${OCI_IMAGES_TO_RELEASE}\n"; \
-	read -p "$(POWDER_BLUE)Do you wish to continue (you will be prompted at each step)$(NORMAL) $(YELLOW)[N/y]$	if [[ "y" == "$${SHALL_WE}" ]] || [[ "Y" == "$${SHALL_WE}" ]]; then \
+	read -p "$(POWDER_BLUE)Do you wish to continue (you will be prompted at each step)$(NORMAL) $(YELLOW)[N/y]$(NORMAL): " SHALL_WE; \
+	if [[ "y" == "$${SHALL_WE}" ]] || [[ "Y" == "$${SHALL_WE}" ]]; then \
 		echo "$(GREEN) OK - ✨ bumping patch .release files ...$(NORMAL)"; \
 		make oci-bump-patch-release OCI_IMAGES_TO_PUBLISH="$${OCI_IMAGES_TO_RELEASE}"; \
 	else \
@@ -95,7 +96,8 @@ make-a-release: ## Step through the process of bumping .release and creating a t
 	fi;
 
 	@printf "\nStep 3: Bump project .release AND update Helm Chart release\n"; \
-	read -p "$(POWDER_BLUE)Do you wish to continue (you will be prompted at each step)$(NORMAL) $(YELLOW)[N/y]$	if [[ "y" == "$${SHALL_WE}" ]] || [[ "Y" == "$${SHALL_WE}" ]]; then \
+	read -p "$(POWDER_BLUE)Do you wish to continue (you will be prompted at each step)$(NORMAL) $(YELLOW)[N/y]$(NORMAL): " SHALL_WE; \
+	if [[ "y" == "$${SHALL_WE}" ]] || [[ "Y" == "$${SHALL_WE}" ]]; then \
 		echo "$(GREEN) OK - ✨ bumping patch om project .release file and updating Helm Charts ...$(NORMAL)"; \
 		make bump-patch-release && make set-helm-release; \
 	else \
@@ -104,7 +106,8 @@ make-a-release: ## Step through the process of bumping .release and creating a t
 	fi;
 
 	@printf "\nStep 4: Commit .release and $(YELLOW)ANY$(NORMAL) outstanding changes, and set project git tag\n"; \
-	read -p "$(POWDER_BLUE)Do you wish to continue (you will be prompted at each step)$(NORMAL) $(YELLOW)[N/y]$	if [[ "y" == "$${SHALL_WE}" ]] || [[ "Y" == "$${SHALL_WE}" ]]; then \
+	read -p "$(POWDER_BLUE)Do you wish to continue (you will be prompted at each step)$(NORMAL) $(YELLOW)[N/y]$(NORMAL): " SHALL_WE; \
+	if [[ "y" == "$${SHALL_WE}" ]] || [[ "Y" == "$${SHALL_WE}" ]]; then \
 		echo "$(GREEN) OK - ✨ doing commit and tag ...$(NORMAL)"; \
 		make create-git-tag; \
 	else \
@@ -113,7 +116,8 @@ make-a-release: ## Step through the process of bumping .release and creating a t
 	fi;
 
 	@printf "\nStep 5: Push changes and tag\n"; \
-	read -p "$(POWDER_BLUE)Do you wish to continue (you will be prompted at each step)$(NORMAL) $(YELLOW)[N/y]$	if [[ "y" == "$${SHALL_WE}" ]] || [[ "Y" == "$${SHALL_WE}" ]]; then \
+	read -p "$(POWDER_BLUE)Do you wish to continue (you will be prompted at each step)$(NORMAL) $(YELLOW)[N/y]$(NORMAL): " SHALL_WE; \
+	if [[ "y" == "$${SHALL_WE}" ]] || [[ "Y" == "$${SHALL_WE}" ]]; then \
 		echo "$(GREEN) OK - ✨ doing push ...$(NORMAL)"; \
 		make push-git-tag; \
 		echo "$(LIME_YELLOW)🌟 All done! 🌟$(NORMAL)"; \
