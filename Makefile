@@ -98,7 +98,7 @@ make-a-release: ## Step through the process of bumping .release and creating a t
 	@printf "\nStep 3: Bump project .release AND update Helm Chart release\n"; \
 	read -p "$(POWDER_BLUE)Do you wish to continue (you will be prompted at each step)$(NORMAL) $(YELLOW)[N/y]$(NORMAL): " SHALL_WE; \
 	if [[ "y" == "$${SHALL_WE}" ]] || [[ "Y" == "$${SHALL_WE}" ]]; then \
-		echo "$(GREEN) OK - ✨ bumping patch om project .release file and updating Helm Charts ...$(NORMAL)"; \
+		echo "$(GREEN) OK - ✨ bumping patch on project .release file and updating Helm Charts ...$(NORMAL)"; \
 		make bump-patch-release && make set-helm-release; \
 	else \
 		printf "$(RED) 😱 OK - aborting$(NORMAL).\n 💀"; \
