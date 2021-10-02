@@ -579,6 +579,9 @@ test-chart:
       - "build/"
     reports:
       junit: build/reports/unit-tests.xml
+  rules:
+    # don't run on master as the new images are not available yet (on Merge)
+    - if: '$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
 
 # Custom OCI Image publish stage
 oci-image-publish: #Executed on a tag for CAR
