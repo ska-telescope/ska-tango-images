@@ -62,7 +62,7 @@ LABEL \
 # copy the built library dependencies from the builder stage
 COPY --from=buildenv /usr/local /usr/local
 
-RUN apk add --update --no-cache mariadb-connector-c  sudo libstdc++ libsodium-dev
+RUN apk add --update --no-cache mariadb-connector-c  sudo libstdc++ libsodium-dev bash
 
 # create the user tango and add it to sudoers
 RUN adduser -h /home/tango -D tango && \
