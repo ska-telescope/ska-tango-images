@@ -7,7 +7,7 @@ FROM $BUILD_IMAGE AS buildenv
 RUN apk add --update --no-cache curl \
     openssl ca-certificates \
     file mariadb-connector-c-dev pkgconf-dev \
-    g++ python3-dev python3 make czmq-dev \
+    g++ python3-dev python3 make czmq-dev bash\
     libffi-dev openssl-dev boost-dev libsodium-dev libstdc++
 
 RUN apk add --virtual build-dependencies \
