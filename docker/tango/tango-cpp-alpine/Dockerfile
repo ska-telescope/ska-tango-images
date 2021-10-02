@@ -65,7 +65,7 @@ COPY --from=buildenv /usr/local /usr/local
 RUN apk add --update --no-cache mariadb-connector-c  sudo libstdc++ libsodium-dev bash
 
 # create the user tango and add it to sudoers
-RUN adduser -h /home/tango -D tango && \
+RUN adduser -h /home/tango -s /bin/bash -D tango && \
     echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango 
 
 USER tango
