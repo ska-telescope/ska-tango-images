@@ -62,7 +62,7 @@ POWDER_BLUE=$(shell tput setaf 153)
 BLUE=$(shell tput setaf 4)
 NORMAL=$(shell tput sgr0)
 
-make-a-release: VERSION := $(shell . $(RELEASE_SUPPORT); RELEASE_CONTEXT_DIR=$(RELEASE_CONTEXT_DIR)
+make-a-release: VERSION := $(shell . $(RELEASE_SUPPORT) ; RELEASE_CONTEXT_DIR=$(RELEASE_CONTEXT_DIR) setContextHelper; getVersion)
 make-a-release: ## Step through the process of bumping .release and creating a tag
 	@clear; \
 	printf "This is a guild to creating a release of ska-tango-images, including OCI Images and Helm Charts.\n You $(YELLOW) 🔥MUST🔥$(NORMAL) first have merged your Merge Request!!!\nThe steps are:\n * git checkout master && git pull \n * Select and bump OCI Image .release's \n * bump project .release AND update Helm Chart release \n * Commit .release and $(YELLOW)ANY$(NORMAL) outstanding changes, and set project git tag \n * Push changes and tag \n\n $(LIME_YELLOW)✋ The current git status (outstanding) is:$(NORMAL) \n $$(git status -b) \n"; \
