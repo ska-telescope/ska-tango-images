@@ -580,8 +580,9 @@ test-chart:
     reports:
       junit: build/reports/unit-tests.xml
   rules:
+    - if: '$CI_COMMIT_TAG'
     # don't run on master as the new images are not available yet (on Merge)
-    - if: '$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
 
 # Custom OCI Image publish stage
 oci-image-publish: #Executed on a tag for CAR
@@ -598,6 +599,34 @@ oci-image-publish: #Executed on a tag for CAR
     - make custom-oci-publish-all
   rules:
     - if: '$CI_COMMIT_TAG'
+
+
+
+
+helm-chart-lint-test:
+  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
+  stage: lint
+  tags:
+    - k8srunner
+  before_script:
+    - '[ -f .make/k8s.mk ] || (echo "File k8s.mk not included in Makefile; exit 1")'
+    - 'make help | grep helm.mk:helm-lint'
+  script:
+    - make helm-lint
+  artifacts:
+    paths:
+      - build/
+    when: always
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+      exists:
+        - charts/*
+
+
+
+
+
+
 
 
 # Include CI templates
