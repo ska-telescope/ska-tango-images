@@ -53,6 +53,75 @@ oci-bump-major-release: ## Bump major release for all OCI Image .release files i
 custom-oci-publish-all: ## Custom Publish all OCI Images in OCI_IMAGES_TO_PUBLISH using image local .release
 	$(foreach ociimage,$(OCI_IMAGES_TO_PUBLISH), make oci-publish OCI_IMAGE=$(ociimage) RELEASE_CONTEXT_DIR=images/$(ociimage);)
 
+# Colour bank https://stackoverflow.com/questions/4332478/read-the-current-text-color-in-a-xterm/4332530#4332530
+RED=$(shell tput setaf 1)
+GREEN=$(shell tput setaf 2)
+YELLOW=$(shell tput setaf 3)
+LIME_YELLOW=$(shell tput setaf 190)
+POWDER_BLUE=$(shell tput setaf 153)
+BLUE=$(shell tput setaf 4)
+NORMAL=$(shell tput sgr0)
+
+make-a-release: ## Step through the process of bumping .release and creating a tag
+	@clear; \
+	printf "This is a guild to creating a release of ska-tango-images, including OCI Images and Helm Charts.\n You $(YELLOW) 🔥MUST🔥$(NORMAL) first have merged your Merge Request!!!\nThe steps are:\n * git checkout master && git pull \n * Select and bump OCI Image .release's \n * bump project .release AND update Helm Chart release \n * Commit .release and $(YELLOW)ANY$(NORMAL) outstanding changes, and set project git tag \n * Push changes and tag \n\n $(LIME_YELLOW)✋ The current git status (outstanding) is:$(NORMAL) \n $$(git status -b) \n"; \
+	read -p "$(POWDER_BLUE)Do you wish to continue (you will be prompted at each step)$(NORMAL) $(YELLOW)[N/y]$(NORMAL): " SHALL_WE; \
+	if [[ "y" == "$${SHALL_WE}" ]] || [[ "Y" == "$${SHALL_WE}" ]]; then \
+		echo "$(GREEN)❗ OK - lets build a release ...$(NORMAL)"; \
+	else \
+		printf "$(RED) 😱 OK - aborting$(NORMAL).\n 💀"; \
+		exit 1; \
+	fi;
+
+	@printf "\nStep 1: >> git checkout master && git pull\nswitching from branch: $$(git branch --show-current) to master\n"; \
+	read -p "$(POWDER_BLUE)Do you wish to continue (you will be prompted at each step)$(NORMAL) $(YELLOW)[N/y]$(NORMAL): " SHALL_WE; \
+	if [[ "y" == "$${SHALL_WE}" ]] || [[ "Y" == "$${SHALL_WE}" ]]; then \
+		echo "$(GREEN) OK - ✨ lets switch to master and pull ...$(NORMAL)"; \
+		git checkout master && git pull; \
+	else \
+		printf "$(RED) 😱 OK - aborting$(NORMAL).\n 💀"; \
+		exit 1; \
+	fi;
+
+	@printf "\nStep 2: Select and bump OCI Image .release's \n Tell me which of the following OCI_IMAGES_TO_PUBLISH list to bump patch release for: $(OCI_IMAGES_TO_PUBLISH)\n"; \
+	read -p "$(POWDER_BLUE)Enter list here: " OCI_IMAGES_TO_RELEASE; \
+	printf "\n You provided: $${OCI_IMAGES_TO_RELEASE}\n"; \
+	read -p "$(POWDER_BLUE)Do you wish to continue (you will be prompted at each step)$(NORMAL) $(YELLOW)[N/y]$	if [[ "y" == "$${SHALL_WE}" ]] || [[ "Y" == "$${SHALL_WE}" ]]; then \
+		echo "$(GREEN) OK - ✨ bumping patch .release files ...$(NORMAL)"; \
+		make oci-bump-patch-release OCI_IMAGES_TO_PUBLISH="$${OCI_IMAGES_TO_RELEASE}"; \
+	else \
+		printf "$(RED) 😱 OK - aborting$(NORMAL).\n 💀"; \
+		exit 1; \
+	fi;
+
+	@printf "\nStep 3: Bump project .release AND update Helm Chart release\n"; \
+	read -p "$(POWDER_BLUE)Do you wish to continue (you will be prompted at each step)$(NORMAL) $(YELLOW)[N/y]$	if [[ "y" == "$${SHALL_WE}" ]] || [[ "Y" == "$${SHALL_WE}" ]]; then \
+		echo "$(GREEN) OK - ✨ bumping patch om project .release file and updating Helm Charts ...$(NORMAL)"; \
+		make bump-patch-release && make set-helm-release; \
+	else \
+		printf "$(RED) 😱 OK - aborting$(NORMAL).\n 💀"; \
+		exit 1; \
+	fi;
+
+	@printf "\nStep 4: Commit .release and $(YELLOW)ANY$(NORMAL) outstanding changes, and set project git tag\n"; \
+	read -p "$(POWDER_BLUE)Do you wish to continue (you will be prompted at each step)$(NORMAL) $(YELLOW)[N/y]$	if [[ "y" == "$${SHALL_WE}" ]] || [[ "Y" == "$${SHALL_WE}" ]]; then \
+		echo "$(GREEN) OK - ✨ doing commit and tag ...$(NORMAL)"; \
+		make create-git-tag; \
+	else \
+		printf "$(RED) 😱 OK - aborting$(NORMAL).\n 💀"; \
+		exit 1; \
+	fi;
+
+	@printf "\nStep 5: Push changes and tag\n"; \
+	read -p "$(POWDER_BLUE)Do you wish to continue (you will be prompted at each step)$(NORMAL) $(YELLOW)[N/y]$	if [[ "y" == "$${SHALL_WE}" ]] || [[ "Y" == "$${SHALL_WE}" ]]; then \
+		echo "$(GREEN) OK - ✨ doing push ...$(NORMAL)"; \
+		make push-git-tag; \
+		echo "$(LIME_YELLOW)🌟 All done! 🌟$(NORMAL)"; \
+	else \
+		printf "$(RED) 😱 OK - aborting$(NORMAL).\n 💀"; \
+		exit 1; \
+	fi;
+
 clean: ## clean out references to chart tgz's
 	@cd charts/ && rm -f ./*/charts/*.tgz ./*/Chart.lock ./*/requirements.lock
 
