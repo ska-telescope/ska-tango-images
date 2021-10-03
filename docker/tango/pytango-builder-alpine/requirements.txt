@@ -1,4 +1,4 @@
-numpy==1.19.2
+numpy==1.21.0
 pytango==9.3.3
 flake8
 flake8_formatter_junit_xml
