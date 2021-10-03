@@ -64,7 +64,7 @@ NORMAL=$(shell tput sgr0)
 
 make-a-release: ## Step through the process of bumping .release and creating a tag
 	@clear; \
-	printf "This is a guild to creating a release of ska-tango-images, including OCI Images and Helm Charts.\n You $(YELLOW) 🔥MUST🔥$(NORMAL) first have merged your Merge Request!!!\nThe steps are:\n * git checkout master && git pull \n * Select and bump OCI Image .release's \n * bump project .release AND update Helm Chart release \n * Commit .release and $(YELLOW)ANY$(NORMAL) outstanding changes, and set project git tag \n * Push changes and tag \n\n $(LIME_YELLOW)✋ The current git status (outstanding) is:$(NORMAL) \n $$(git status -b) \n"; \
+	printf "This is a guild to creating a release of ska-tango-images, including OCI Images and Helm Charts.\n You $(YELLOW) 🔥MUST🔥$(NORMAL) first have merged your Merge Request!!!\nThe steps are:\n * git checkout master && git pull \n * Select and bump OCI Image .release's \n * bump project .release  $(YELLOW)AND$(NORMAL) update Helm Chart release  $(YELLOW)AND$(NORMAL) the tango-util version dependency in tango-base \n * Commit .release and $(YELLOW)ANY$(NORMAL) outstanding changes, and set project git tag \n * Push changes and tag \n\n $(LIME_YELLOW)✋ The current git status (outstanding) is:$(NORMAL) \n $$(git status -b) \n"; \
 	read -p "$(POWDER_BLUE)Do you wish to continue (you will be prompted at each step)$(NORMAL) $(YELLOW)[N/y]$(NORMAL): " SHALL_WE; \
 	if [[ "y" == "$${SHALL_WE}" ]] || [[ "Y" == "$${SHALL_WE}" ]]; then \
 		echo "$(GREEN)❗ OK - lets build a release ...$(NORMAL)"; \
