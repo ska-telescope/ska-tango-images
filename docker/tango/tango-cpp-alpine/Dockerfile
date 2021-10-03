@@ -54,10 +54,11 @@ COPY --from=buildenv /usr/local /usr/local
 
 RUN apk add --update --no-cache sudo libstdc++ bash libsodium-dev mariadb-connector-c  
 
-# create the user tango and add it to sudoers
-RUN adduser -h /home/tango -s /bin/bash -D tango && \
+# for some reason we are getting the wron DataBaseds name
+# also create the user tango and add it to sudoers
+RUN ln -s /usr/local/bin/Databaseds /usr/local/bin/DataBaseds && \
+    adduser -h /home/tango -s /bin/bash -D tango && \
     echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango 
 
 USER tango
-CMD ["bash"]
 
