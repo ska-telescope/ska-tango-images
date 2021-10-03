@@ -1,6 +1,6 @@
 ARG CAR_OCI_REGISTRY_HOST
 ARG BASE_IMAGE="python:3.9.6-alpine3.14"
-ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine:0.2.3"
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine:0.3.0"
 FROM $BUILD_IMAGE AS buildenv
 
 # Install build time dependencies
@@ -37,7 +37,7 @@ RUN git clone https://gitlab.com/tango-controls/tango_admin.git /tango_admin && 
 # build and install TangoDatabase
 RUN git clone --depth 1 https://gitlab.com/tango-controls/TangoDatabase.git /TangoDatabase && \
     cmake -B /TangoDatabase/build -DCMAKE_INSTALL_PREFIX=/usr/local/ /TangoDatabase && \
-    make  -j$(nproc) -C /TangoDatabase/build install   
+    make  -j$(nproc) -C /TangoDatabase/build install   && ldconfig
 
 # Now, create the final image minus the tools and source code
 FROM $BASE_IMAGE 
