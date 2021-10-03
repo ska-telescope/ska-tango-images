@@ -4,15 +4,10 @@ ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-al
 FROM $BUILD_IMAGE AS buildenv
 
 # Install build time dependencies
-RUN apk add --update --no-cache curl \
-    openssl ca-certificates \
-    file mariadb-connector-c-dev pkgconf-dev \
-    g++ python3-dev python3 make czmq-dev bash\
-    libffi-dev openssl-dev boost-dev libsodium-dev libstdc++
+RUN apk add --update --no-cache make bash\
+    libsodium-dev libstdc++ g++ mariadb-connector-c-dev
 
 RUN apk add --virtual build-dependencies \
-    build-base alpine-sdk \
-    linux-headers \
     git cmake
 
 # build and install tangoidl
@@ -22,9 +17,8 @@ RUN git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl && 
 
 ## build and install cppTango
 ## latest main version is not working using previous commit
-RUN git clone https://gitlab.com/tango-controls/cppTango /cppTango && \
-    cd /cppTango && git checkout 1575524ada0a3f8fe97b4040c07da7c83fced325 && \
-    sed -i '1s/^/#include <sys\/types.h>\n#include <bits\/alltypes.h>\n/' /cppTango/log4tango/include/log4tango/FileAppender.hh && \
+RUN git clone --depth 1  https://gitlab.com/tango-controls/cppTango /cppTango && \
+    cd /cppTango && \
     mkdir build && \    
     cmake . -B build \  
       -DBUILD_TESTING=OFF \  
@@ -37,12 +31,8 @@ RUN git clone https://gitlab.com/tango-controls/cppTango /cppTango && \
 
 # build and install tango_admin
 RUN git clone https://gitlab.com/tango-controls/tango_admin.git /tango_admin && \
-    cd /tango_admin && \
-    mkdir build && \
-    cd build && \
-    PKG_CONFIG_PATH="/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig" cmake .. -DBUILD_TESTING=OFF && \
-    make  -j$(nproc) && \
-    make  install
+    cmake -B /tango_admin/build -DCMAKE_INSTALL_PREFIX=/usr/local/ /tango_admin && \
+    make  -j$(nproc) -C /tango_admin/build install   
 
 # build and install TangoDatabase
 RUN git clone --depth 1 https://gitlab.com/tango-controls/TangoDatabase.git /TangoDatabase && \
@@ -62,10 +52,11 @@ LABEL \
 # copy the built library dependencies from the builder stage
 COPY --from=buildenv /usr/local /usr/local
 
-RUN apk add --update --no-cache mariadb-connector-c  sudo libstdc++ libsodium-dev bash
+RUN apk add --update --no-cache sudo libstdc++ bash libsodium-dev mariadb-connector-c  
 
 # create the user tango and add it to sudoers
 RUN adduser -h /home/tango -s /bin/bash -D tango && \
     echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango 
 
 USER tango
+

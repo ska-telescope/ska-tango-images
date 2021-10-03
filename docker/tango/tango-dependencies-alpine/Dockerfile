@@ -6,20 +6,13 @@
 ARG BASE_IMAGE="python:3.9.6-alpine3.14"
 FROM $BASE_IMAGE as buildenv
 
-# Copy across files that are used to help orchestrate container compositions
-# and test execution sequences
-COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
-COPY retry.sh /usr/local/bin/retry
 
 # Install build time dependencies
-RUN apk add --update --no-cache curl \
+RUN apk add --update --no-cache bash curl \
     openssl ca-certificates \
-    file pkgconf-dev \
-    g++ python3-dev make czmq-dev libsodium-dev \
-    libffi-dev openssl-dev boost-dev
+    libstdc++ \
+    g++ make libsodium-dev 
 RUN apk add --virtual build-dependencies \
-    build-base alpine-sdk \
-    linux-headers \
     git cmake
     
 # build and install libzmq at v4.3.4
@@ -52,5 +45,11 @@ LABEL \
       org.skatelescope.version="1.0.0" \
       int.skao.application="Tango dependencies"
       
+RUN apk add --update --no-cache bash libstdc++
+
 COPY --from=buildenv /usr/local /usr/local
+# Copy across files that are used to help orchestrate container compositions
+# and test execution sequences
+COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
+COPY retry.sh /usr/local/bin/retry
 
