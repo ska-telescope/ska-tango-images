@@ -59,4 +59,5 @@ RUN adduser -h /home/tango -s /bin/bash -D tango && \
     echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango 
 
 USER tango
+CMD ["bash"]
 
