@@ -101,9 +101,10 @@ make-a-release: ## Step through the process of bumping .release and creating a t
 		echo "$(GREEN) OK - ✨ bumping patch on project .release file and updating Helm Charts ...$(NORMAL)"; \
 		make bump-patch-release && make helm-set-release; \
 		NEW_VERSION=$$(. $(RELEASE_SUPPORT) ; RELEASE_CONTEXT_DIR=$(RELEASE_CONTEXT_DIR) setContextHelper; getVersion); \
-		sed -i.x -e "s/^  version:.*/  version: ${NEW_VERSION}/g" charts/ska-tango-base/Chart.yaml; \
+		sed -i.x -e "N;s/\(name: ska-tango-util.*version:\).*/\1 $${NEW_VERSION}/;P;D" charts/ska-tango-base/Chart.yaml; \
 		rm -f charts/*/Chart.yaml.x; \
 		printf "\n $(LIME_YELLOW)✋ The updated git status (outstanding) is:$(NORMAL) \n $$(git status -b) \n"; \
+		printf "\n $(LIME_YELLOW)✋ The git diff is:$(NORMAL) \n $$(git diff) \n"; \
 	else \
 		printf "$(RED) 😱 OK - aborting$(NORMAL).\n 💀"; \
 		exit 1; \
@@ -129,7 +130,6 @@ make-a-release: ## Step through the process of bumping .release and creating a t
 		printf "$(RED) 😱 OK - aborting$(NORMAL).\n 💀"; \
 		exit 1; \
 	fi;
-
 
 clean: ## clean out references to chart tgz's
 	@cd charts/ && rm -f ./*/charts/*.tgz ./*/Chart.lock ./*/requirements.lock
