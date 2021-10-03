@@ -280,3 +280,20 @@ test: helm-pre-publish ## test the application on K8s
 
 show:
 	echo $$TANGO_HOST
+
+
+OCI_SUPPORT := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))/.make/.make-oci-support
+
+xoci-publish:
+	@. $(OCI_SUPPORT) ; \
+	OCI_NEXUS_REPO=$(OCI_NEXUS_REPO) \
+	ociImageExists "$(OCI_IMAGE)" "$(VERSION)" && (echo "oci-publish:WARNING: $(CAR_OCI_REGISTRY_HOST)/$(OCI_IMAGE):$(VERSION) already exists, skipping " >&2; exit 0) ;
+	# pull GitLab registry version and then push to CAR
+	@echo "oci-do-publish: Pulling $${CI_REGISTRY}/$${CI_PROJECT_NAMESPACE}/$${CI_PROJECT_NAME}/$(OCI_IMAGE):$(VERSION)-dev.$${CI_COMMIT_SHORT_SHA}"
+	$(OCI_BUILDER) pull $${CI_REGISTRY}/$${CI_PROJECT_NAMESPACE}/$${CI_PROJECT_NAME}/$(OCI_IMAGE):$(VERSION)-dev.$${CI_COMMIT_SHORT_SHA}
+	$(OCI_BUILDER) tag $${CI_REGISTRY}/$${CI_PROJECT_NAMESPACE}/$${CI_PROJECT_NAME}/$(OCI_IMAGE):$(VERSION)-dev.$${CI_COMMIT_SHORT_SHA} $(CAR_OCI_REGISTRY_HOST)/$(OCI_IMAGE):$(VERSION)
+	@echo "oci-do-publish: Pushing to $(CAR_OCI_REGISTRY_HOST)/$(OCI_IMAGE):$(VERSION)"
+	$(OCI_BUILDER) push $(CAR_OCI_REGISTRY_HOST)/$(OCI_IMAGE):$(VERSION)
+
+xoci-publish-all: ## Publish all OCI Images in OCI_IMAGES_TO_PUBLISH
+	$(foreach ociimage,$(OCI_IMAGES_TO_PUBLISH), make xoci-publish OCI_IMAGE=$(ociimage);)
