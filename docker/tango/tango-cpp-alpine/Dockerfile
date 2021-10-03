@@ -37,7 +37,7 @@ RUN git clone https://gitlab.com/tango-controls/tango_admin.git /tango_admin && 
 # build and install TangoDatabase
 RUN git clone --depth 1 https://gitlab.com/tango-controls/TangoDatabase.git /TangoDatabase && \
     cmake -B /TangoDatabase/build -DCMAKE_INSTALL_PREFIX=/usr/local/ /TangoDatabase && \
-    make  -j$(nproc) -C /TangoDatabase/build install   && ldconfig
+    make  -j$(nproc) -C /TangoDatabase/build install 
 
 # Now, create the final image minus the tools and source code
 FROM $BASE_IMAGE 
