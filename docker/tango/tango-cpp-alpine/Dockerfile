@@ -17,8 +17,8 @@ RUN git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl && 
 
 ## build and install cppTango
 ## latest main version is not working using previous commit
-RUN git clone --depth 1  https://gitlab.com/tango-controls/cppTango /cppTango && \
-    cd /cppTango && \
+RUN git clone https://gitlab.com/tango-controls/cppTango /cppTango && \
+    cd /cppTango && git checkout 1575524ada0a3f8fe97b4040c07da7c83fced325 && \
     mkdir build && \    
     cmake . -B build \  
       -DBUILD_TESTING=OFF \  
