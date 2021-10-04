@@ -16,7 +16,7 @@ USER root
 
 # Install build time dependencies
 RUN apk add --update --no-cache curl bash \
-    openssl ca-certificates libstdc++ \
+    openssl ca-certificates libstdc++ g++  libsodium-dev \
     boost py3-distutils-extra py3-pip boost-python3 make libzmq
 
 # Copy across files that are used to help orchestrate container compositions
