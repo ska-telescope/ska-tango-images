@@ -1,6 +1,6 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-alpine:0.2.6"
-ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.2.16"
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-alpine:0.0.0"
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.0.0"
 FROM $BUILD_IMAGE AS buildenv
 
 FROM $BASE_IMAGE
@@ -11,16 +11,16 @@ LABEL \
       int.skao.team="Systems Team" \
       int.skao.website="https://gitlab.com/ska-telescope/sdi/ska-ser-containerisation-and-orchestration" \
       int.skao.application="Tango Runtime"
-
+      
 USER root
 
 # Install build time dependencies
 RUN apk add --update --no-cache curl bash \
-    openssl ca-certificates \
+    openssl ca-certificates libstdc++ g++  libsodium-dev \
     boost py3-distutils-extra py3-pip boost-python3 make libzmq
 
 # Copy across files that are used to help orchestrate container compositions
-# and test execution sequences
+# and test execution sequences    
 COPY --from=buildenv /usr/local/lib/python3.9 /usr/local/lib/python3.9
 
 COPY pip.conf /etc/pip.conf
