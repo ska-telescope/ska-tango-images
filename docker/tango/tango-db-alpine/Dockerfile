@@ -1,22 +1,17 @@
 ARG BASE_IMAGE="alpine:3.14"
 FROM $BASE_IMAGE AS buildenv
 
-ENV TANGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/tango-9.3.4.tar.gz
+RUN apk add --update --no-cache git
 
-RUN apk add --no-cache --update curl ca-certificates
 
-RUN mkdir -p /usr/src/tango
+# clone TangoDatabase
+RUN git clone --depth 1 https://gitlab.com/tango-controls/TangoDatabase.git /TangoDatabase 
 
-WORKDIR /usr/src/tango
-
-RUN curl -fsSL "$TANGO_DOWNLOAD_URL" -o tango.tar.gz && \
-    tar xf tango.tar.gz -C /usr/src/tango --strip-components=1
-
-# create dump from tango tar gz and move it into the folder docker-entrypoint-initdb.d
-RUN mkdir /docker-entrypoint-initdb.d && mkdir -p dbinit/include \
-    && cp cppserver/database/create_db.sql.in dbinit/create_db.sql \
-    && cp cppserver/database/create_db_tables.sql.in dbinit/include/create_db_tables.sql \
-    && cp cppserver/database/stored_proc.sql.in dbinit/include/stored_proc.sql \
+# move file from repo into docker-entrypoint-initdb.d
+RUN mkdir /docker-entrypoint-initdb.d && cd /TangoDatabase && mkdir -p dbinit/include  \
+    && cp create_db.sql.in dbinit/create_db.sql \
+    && cp create_db_tables.sql.in dbinit/include/create_db_tables.sql \
+    && cp stored_proc.sql.in dbinit/include/stored_proc.sql \
     && sed -i "s|@TANGO_DB_NAME@|tango|g" dbinit/create_db.sql \
     && sed -i "s|@TANGO_DB_NAME@|tango|g" dbinit/include/create_db_tables.sql \
     && sed -i "s|@TANGO_DB_NAME@|tango|g" dbinit/include/stored_proc.sql \
@@ -25,7 +20,6 @@ RUN mkdir /docker-entrypoint-initdb.d && mkdir -p dbinit/include \
     && sed -i "/CREATE DATABASE tango;/d" dbinit/create_db.sql \
     && cp -r dbinit/* /docker-entrypoint-initdb.d
 
-RUN rm -r /usr/src/tango
 
 FROM $BASE_IMAGE
 
@@ -43,13 +37,10 @@ RUN addgroup --system mysql && adduser --system -G mysql mysql
 
 RUN mkdir /docker-entrypoint-initdb.d && \
     apk add --no-cache --update su-exec bash \
-    pwgen tzdata xz zstd \    
+    pwgen tzdata xz zstd coreutils\    
     mariadb mariadb-common mariadb-client  mariadb-server-utils
 
 # purge and re-create /var/lib/mysql with appropriate ownership
-# and other stuff done in the official debian image
-CMD ["/bin/bash"]
-
 RUN rm -rf /var/lib/apt/lists/* && \
 # purge and re-create /var/lib/mysql with appropriate ownership
 	rm -rf /var/lib/mysql && \
@@ -73,4 +64,3 @@ COPY --from=buildenv /docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
 COPY sql_mode.cnf /etc/mysql/conf.d
 
 CMD ["mysqld"]
-
