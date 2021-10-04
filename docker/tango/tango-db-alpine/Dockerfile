@@ -63,4 +63,4 @@ EXPOSE 3306
 COPY --from=buildenv /docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
 COPY sql_mode.cnf /etc/mysql/conf.d
 
-CMD ["mysqld"]
+CMD ["mysqld_safe"]
