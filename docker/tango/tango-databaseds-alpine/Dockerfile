@@ -1,5 +1,5 @@
 ARG CAR_OCI_REGISTRY_HOST
-FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-libtango-alpine:0.1.0
+FROM ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-libtango-alpine:0.3.0
 
 LABEL \
       author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
