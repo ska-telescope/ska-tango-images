@@ -27,7 +27,7 @@ dsconfig:
   image:
     registry: artefact.skao.int
     image: ska-tango-images-tango-dsconfig-alpine
-    tag: 0.1.1
+    tag: 0.3.1
     pullPolicy: IfNotPresent
 
 itango:
@@ -38,8 +38,8 @@ itango:
   intent: enabling
   image:
     registry: artefact.skao.int
-    image: ska-tango-images-tango-itango
-    tag: 9.3.6
+    image: ska-tango-images-tango-itango-alpine
+    tag: 0.3.0
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -59,7 +59,7 @@ databaseds:
   image:
     registry: artefact.skao.int
     image: ska-tango-images-tango-cpp-alpine
-    tag: 0.3.2
+    tag: 0.3.4
     pullPolicy: IfNotPresent
   resources:
     requests:
