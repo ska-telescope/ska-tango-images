@@ -36,31 +36,24 @@ LABEL \
 RUN addgroup --system mysql && adduser --system -G mysql mysql
 
 RUN mkdir /docker-entrypoint-initdb.d && \
-    apk add --no-cache --update su-exec bash \
-    pwgen tzdata xz zstd coreutils\    
-    mariadb mariadb-common mariadb-client  mariadb-server-utils
+    apk add --no-cache --update su-exec \
+    coreutils mariadb mariadb-common mariadb-client 
 
-# purge and re-create /var/lib/mysql with appropriate ownership
-RUN rm -rf /var/lib/apt/lists/* && \
-# purge and re-create /var/lib/mysql with appropriate ownership
-	rm -rf /var/lib/mysql && \
-	mkdir -p /var/lib/mysql /var/run/mysqld && \
-	chown -R mysql:mysql /var/lib/mysql /var/run/mysqld && \
-# ensure that /var/run/mysqld (used for socket and lock files) is writable regardless of the UID our mysqld instance ends up having at runtime
-	chmod 777 /var/run/mysqld && \
-# comment out a few problematic configuration values
-	find /etc/mysql/ -name '*.cnf' -print0 \
-		| xargs -0 grep -lE '^(bind-address|log|user\s)' \
-		| xargs -rt -0 sed -Ei 's/^(bind-address|log|user\s)/#&/' 
+SHELL ["/bin/ash", "-euo", "pipefail", "-c"]
 
-VOLUME /var/lib/mysql
-COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh 
-RUN chmod -R 755 /usr/local/bin/docker-entrypoint.sh
-ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
+RUN touch /usr/share/mariadb/mysql_test_db.sql && \
+  mkdir /run/mysqld && \
+  chown mysql:mysql /etc/my.cnf.d/ /run/mysqld /usr/share/mariadb/mysql_system_tables_data.sql
+
+COPY run.sh /run.sh
+# Used in run.sh as a default config
+COPY sql_mode.cnf /etc/mysql/conf.d
+
+VOLUME ["/var/lib/mysql"]
+ENTRYPOINT ["/run.sh"]
 
 EXPOSE 3306
 
 COPY --from=buildenv /docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
-COPY sql_mode.cnf /etc/mysql/conf.d
 
-CMD ["mysqld_safe"]
+CMD ["mysqld"]
