@@ -55,6 +55,8 @@ COPY --from=buildenv /usr/local /usr/local
 
 RUN apk add --update --no-cache sudo libstdc++ bash libsodium-dev mariadb-connector-c  
 
+RUN ln -s /usr/local/lib/libtango.so.9.4.0 /usr/local/lib/libtango.so.9
+
 # for some reason we are getting the wron DataBaseds name
 # also create the user tango and add it to sudoers
 RUN ln -s /usr/local/bin/Databaseds /usr/local/bin/DataBaseds && \
