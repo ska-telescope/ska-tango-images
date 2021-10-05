@@ -16,7 +16,7 @@ tests:
       - isAPIVersion:
           of: networking.k8s.io/v1
 
-  - it: should have a service of tango rest listening on port 8080.
+  - it: should have a service of tango rest listening on port 8080 for nginx.
     documentIndex: 0
     asserts:
       - equal:
@@ -25,6 +25,32 @@ tests:
       - equal:
           path: spec.rules[0].http.paths[0].backend.service.port.number
           value: 8080
+      - equal:
+          path: metadata.annotations
+          value:
+            kubernetes.io/ingress.class: nginx
+            nginx.ingress.kubernetes.io/rewrite-target: "/$1"
+            app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+            app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+
+  - it: should have a service of tango rest listening on port 8080 for traefik.
+    set:
+       ingress.nginx: false
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.name
+          value: ska-tango-base-tango-rest
+      - equal:
+          path: spec.rules[0].http.paths[0].backend.service.port.number
+          value: 8080
+      - equal:
+          path: metadata.annotations
+          value:
+            kubernetes.io/ingress.class: traefik
+            traefik.ingress.kubernetes.io/request-modifier: "ReplacePathRegex: /NAMESPACE/(.*) /$1"
+            app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+            app.gitlab.com/env: CI_ENVIRONMENT_SLUG
 
   - it: should have a Ingress resource with pods having labels.
     documentIndex: 0
