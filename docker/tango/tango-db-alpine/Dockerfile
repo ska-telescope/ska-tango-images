@@ -21,7 +21,7 @@ RUN mkdir /docker-entrypoint-initdb.d && cd /TangoDatabase && mkdir -p dbinit/in
     && cp -r dbinit/* /docker-entrypoint-initdb.d
 
 
-FROM nimmis/alpine-mariadb
+FROM $BASE_IMAGE
 
 LABEL \
       author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
@@ -32,9 +32,21 @@ LABEL \
       org.skatelescope.version="1.0.0" \
       int.skao.application="Tango DB"
 
+# add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
+RUN addgroup --system mysql && adduser --system -G mysql mysql
+
 RUN mkdir /docker-entrypoint-initdb.d && \
-    apk add --no-cache --update su-exec \
-    coreutils mariadb mariadb-common mariadb-client 
+    apk add --no-cache --update bash \
+    mysql mysql-client coreutils
 
 COPY --from=buildenv /docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
 COPY sql_mode.cnf /etc/mysql/conf.d
+
+
+VOLUME /var/lib/mysql
+
+COPY docker-entrypoint.sh /usr/local/bin/
+ENTRYPOINT ["docker-entrypoint.sh"]
+
+EXPOSE 3306
+CMD ["/usr/bin/mysqld"]
