@@ -21,7 +21,7 @@ RUN mkdir /docker-entrypoint-initdb.d && cd /TangoDatabase && mkdir -p dbinit/in
     && cp -r dbinit/* /docker-entrypoint-initdb.d
 
 
-FROM $BASE_IMAGE
+FROM nimmis/alpine-mariadb
 
 LABEL \
       author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
@@ -39,21 +39,5 @@ RUN mkdir /docker-entrypoint-initdb.d && \
     apk add --no-cache --update su-exec \
     coreutils mariadb mariadb-common mariadb-client 
 
-SHELL ["/bin/ash", "-euo", "pipefail", "-c"]
-
-RUN touch /usr/share/mariadb/mysql_test_db.sql && \
-  mkdir /run/mysqld && \
-  chown mysql:mysql /etc/my.cnf.d/ /run/mysqld /usr/share/mariadb/mysql_system_tables_data.sql
-
-COPY run.sh /run.sh
-# Used in run.sh as a default config
-COPY sql_mode.cnf /etc/mysql/conf.d
-
-VOLUME ["/var/lib/mysql"]
-ENTRYPOINT ["/run.sh"]
-
-EXPOSE 3306
-
 COPY --from=buildenv /docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
-
-CMD ["mysqld"]
+COPY sql_mode.cnf /etc/mysql/conf.d
