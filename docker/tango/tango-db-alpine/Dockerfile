@@ -46,7 +46,4 @@ COPY sql_mode.cnf /etc/mysql/conf.d
 VOLUME /var/lib/mysql
 
 COPY docker-entrypoint.sh /usr/local/bin/
-ENTRYPOINT ["docker-entrypoint.sh"]
-
 EXPOSE 3306
-CMD ["/usr/bin/mysqld"]
