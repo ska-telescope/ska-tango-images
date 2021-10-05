@@ -32,9 +32,6 @@ LABEL \
       org.skatelescope.version="1.0.0" \
       int.skao.application="Tango DB"
 
-# add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
-RUN addgroup --system mysql && adduser --system -G mysql mysql
-
 RUN mkdir /docker-entrypoint-initdb.d && \
     apk add --no-cache --update su-exec \
     coreutils mariadb mariadb-common mariadb-client 
