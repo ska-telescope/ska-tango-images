@@ -68,13 +68,13 @@ EOF
 	    fi
 	fi
 
-	/usr/bin/mysqld --user=mysql --bootstrap --verbose=0 --skip-networking=0 < $tfile
+	/usr/bin/mysqld --user=mysql --bootstrap --verbose=0 < $tfile
 	rm -f $tfile
 
 	for f in /docker-entrypoint-initdb.d/*; do
 		case "$f" in
-			*.sql)    echo "$0: running $f"; /usr/bin/mysqld --user=mysql --bootstrap --verbose=0 --skip-networking=0 < "$f"; echo ;;
-			*.sql.gz) echo "$0: running $f"; gunzip -c "$f" | /usr/bin/mysqld --user=mysql --bootstrap --verbose=0  --skip-networking=0 < "$f"; echo ;;
+			*.sql)    echo "$0: running $f"; /usr/bin/mysqld --user=mysql --bootstrap --verbose=0  < "$f"; echo ;;
+			*.sql.gz) echo "$0: running $f"; gunzip -c "$f" | /usr/bin/mysqld --user=mysql --bootstrap --verbose=0  < "$f"; echo ;;
 			*)        echo "$0: ignoring or entrypoint initdb empty $f" ;;
 		esac
 		echo
@@ -84,7 +84,7 @@ EOF
 	echo 'MySQL init process done. Ready for start up.'
 	echo
 
-	echo "exec /usr/bin/mysqld --user=mysql --console --skip-networking=0" "$@"
+	echo "exec /usr/bin/mysqld --user=mysql --console " "$@"
 fi
 
 # execute any pre-exec scripts
