@@ -96,5 +96,5 @@ do
 	fi
 done
 
-exec /usr/bin/mysqld --user=mysql --console --skip-networking=0 $@
+exec /usr/bin/mysqld --user=mysql --console  $@
 
