@@ -21,7 +21,7 @@ RUN mkdir /docker-entrypoint-initdb.d && cd /TangoDatabase && mkdir -p dbinit/in
     && cp -r dbinit/* /docker-entrypoint-initdb.d
 
 
-FROM yobasystems/alpine-mariadb
+FROM $BASE_IMAGE
 
 LABEL \
       author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
@@ -32,7 +32,20 @@ LABEL \
       org.skatelescope.version="1.0.0" \
       int.skao.application="Tango DB"
 
-RUN apk add --update --no-cache pwgen tzdata xz zstd
+RUN apk add --update --no-cache mariadb mariadb-client mariadb-server-utils pwgen\
+    tzdata xz zstd
+
+ADD run.sh /scripts/run.sh
+RUN mkdir /docker-entrypoint-initdb.d && \
+    mkdir /scripts/pre-exec.d && \
+    mkdir /scripts/pre-init.d && \
+    chmod -R 755 /scripts
+
+EXPOSE 3306
+
+VOLUME ["/var/lib/mysql"]
+
+ENTRYPOINT ["/scripts/run.sh"]
 
 COPY --from=buildenv /docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
 COPY sql_mode.cnf /etc/mysql/conf.d

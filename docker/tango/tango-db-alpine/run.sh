@@ -1,103 +1,100 @@
 #!/bin/sh
-set -eo pipefail
 
-touch /tmp/init
+# execute any pre-init scripts
+for i in /scripts/pre-init.d/*sh
+do
+	if [ -e "${i}" ]; then
+		echo "[i] pre-init.d - processing $i"
+		. "${i}"
+	fi
+done
 
-# Check if a user is mounting their own config
-if [ -z "$(ls -A /etc/my.cnf.d/* 2> /dev/null)" ]; then
-  # This needs to be run both for initialization and general startup
-  # sed into /tmp/ since the user won't have access to create new
-  # files in /etc/
-  cp /tmp/my.cnf /etc/my.cnf.d/
-  [ -n "${SKIP_INNODB}" ] || [ -f "/var/lib/mysql/noinnodb" ] &&
-    sed -i -e '/\[mariadb\]/a skip_innodb = yes\ndefault_storage_engine = MyISAM\ndefault_tmp_storage_engine = MyISAM' \
-        -e '/^innodb/d' /etc/my.cnf.d/my.cnf
+if [ -d "/run/mysqld" ]; then
+	echo "[i] mysqld already present, skipping creation"
+	chown -R mysql:mysql /run/mysqld
+else
+	echo "[i] mysqld not found, creating...."
+	mkdir -p /run/mysqld
+	chown -R mysql:mysql /run/mysqld
 fi
 
-MYSQLD_OPTS="--user=mysql"
-MYSQLD_OPTS="${MYSQLD_OPTS} --skip-name-resolve"
-MYSQLD_OPTS="${MYSQLD_OPTS} --skip-host-cache"
-MYSQLD_OPTS="${MYSQLD_OPTS} --skip-slave-start"
-# Listen to signals, most importantly CTRL+C
-MYSQLD_OPTS="${MYSQLD_OPTS} --debug-gdb"
+if [ -d /var/lib/mysql/mysql ]; then
+	echo "[i] MySQL directory already present, skipping creation"
+	chown -R mysql:mysql /var/lib/mysql
+else
+	echo "[i] MySQL data directory not found, creating initial DBs"
 
-# No previous installation
-if [ -z "$(ls -A /var/lib/mysql/ 2> /dev/null)" ]; then
-  [ -n "${SKIP_INNODB}" ] && touch /var/lib/mysql/noinnodb
-  [ -n "${MYSQL_ROOT_PASSWORD}" ] && \
-    echo "set password for 'root'@'%' = PASSWORD('${MYSQL_ROOT_PASSWORD}');" >> /tmp/init
+	chown -R mysql:mysql /var/lib/mysql
 
-  INSTALL_OPTS="--user=mysql"
-  INSTALL_OPTS="${INSTALL_OPTS} --cross-bootstrap"
-  INSTALL_OPTS="${INSTALL_OPTS} --rpm"
-  # https://github.com/MariaDB/server/commit/b9f3f068
-  INSTALL_OPTS="${INSTALL_OPTS} --auth-root-authentication-method=normal"
-  INSTALL_OPTS="${INSTALL_OPTS} --skip-test-db"
-  INSTALL_OPTS="${INSTALL_OPTS} --datadir=/var/lib/mysql"
-  eval /usr/bin/mysql_install_db "${INSTALL_OPTS}"
+	mysql_install_db --user=mysql --ldata=/var/lib/mysql > /dev/null
 
-  if [ -n "${MYSQL_DATABASE}" ]; then
-    [ -n "${MYSQL_CHARSET}" ] || MYSQL_CHARSET="utf8"
-    [ -n "${MYSQL_COLLATION}" ] && MYSQL_COLLATION="collate '${MYSQL_COLLATION}'"
-    echo "create database if not exists \`${MYSQL_DATABASE}\` character set '${MYSQL_CHARSET}' ${MYSQL_COLLATION}; " >> /tmp/init
-  fi
-  if [ -n "${MYSQL_USER}" ] && [ "${MYSQL_DATABASE}" ]; then
-    echo "grant all on \`${MYSQL_DATABASE}\`.* to '${MYSQL_USER}'@'%' identified by '${MYSQL_PASSWORD}'; " >> /tmp/init
-  fi
-  echo "flush privileges;" >> /tmp/init
+	if [ "$MYSQL_ROOT_PASSWORD" = "" ]; then
+		MYSQL_ROOT_PASSWORD=`pwgen 16 1`
+		echo "[i] MySQL root Password: $MYSQL_ROOT_PASSWORD"
+	fi
 
-  # Execute custom scripts provided by a user. This will spawn a mysqld and
-  # pass scripts to it. Since we're already up an running we might as well
-  # pass the init script and avoid it later.
-  if [ "$(ls -A /docker-entrypoint-initdb.d 2> /dev/null)" ]; then
-    # Download the mysql client since we will need it to feed data to our server.
-    # This kind of sucks but seems unavoidable since using --init-file
-    # has size restrictions:
-    #   ERROR: 1105  Boostrap file error. Query size exceeded 20000 bytes near <snip>
-    # The other option is to embed the client, but since one of the goals is to
-    # Strive for the smallest possible size, this seems to be the only option.
-    echo "init: installing mysql client"
-    apk add -q --no-cache mariadb-client
+	MYSQL_DATABASE=${MYSQL_DATABASE:-""}
+	MYSQL_USER=${MYSQL_USER:-""}
+	MYSQL_PASSWORD=${MYSQL_PASSWORD:-""}
 
-    SOCKET="/run/mysqld/mysqld.sock"
-    MYSQL_CMD="mysql"
+	tfile=`mktemp`
+	if [ ! -f "$tfile" ]; then
+	    return 1
+	fi
 
-    # Start a mysqld we will use to pass init stuff to. Can't use the same options
-    # as a standard instance; pass them manually.
-    mysqld --user=mysql --silent-startup --skip-networking --socket=${SOCKET} > /dev/null 2>&1 &
-    PID="$!"
+	cat << EOF > $tfile
+USE mysql;
+FLUSH PRIVILEGES ;
+GRANT ALL ON *.* TO 'root'@'%' identified by '$MYSQL_ROOT_PASSWORD' WITH GRANT OPTION ;
+GRANT ALL ON *.* TO 'root'@'localhost' identified by '$MYSQL_ROOT_PASSWORD' WITH GRANT OPTION ;
+SET PASSWORD FOR 'root'@'localhost'=PASSWORD('${MYSQL_ROOT_PASSWORD}') ;
+DROP DATABASE IF EXISTS test ;
+FLUSH PRIVILEGES ;
+EOF
 
-    # perhaps trap this to avoid issues on slow systems?
-    sleep 1
+	if [ "$MYSQL_DATABASE" != "" ]; then
+	    echo "[i] Creating database: $MYSQL_DATABASE"
+		if [ "$MYSQL_CHARSET" != "" ] && [ "$MYSQL_COLLATION" != "" ]; then
+			echo "[i] with character set [$MYSQL_CHARSET] and collation [$MYSQL_COLLATION]"
+			echo "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\` CHARACTER SET $MYSQL_CHARSET COLLATE $MYSQL_COLLATION;" >> $tfile
+		else
+			echo "[i] with character set: 'utf8' and collation: 'utf8_general_ci'"
+			echo "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\` CHARACTER SET utf8 COLLATE utf8_general_ci;" >> $tfile
+		fi
 
-    # Run the init script
-    echo "init: updating system tables"
-    eval "${MYSQL_CMD}" < /tmp/init
+	 if [ "$MYSQL_USER" != "" ]; then
+		echo "[i] Creating user: $MYSQL_USER with password $MYSQL_PASSWORD"
+		echo "GRANT ALL ON \`$MYSQL_DATABASE\`.* to '$MYSQL_USER'@'%' IDENTIFIED BY '$MYSQL_PASSWORD';" >> $tfile
+	    fi
+	fi
 
-    # Default scope is our newly created database
-    MYSQL_CMD="${MYSQL_CMD} ${MYSQL_DATABASE} "
+	/usr/bin/mysqld --user=mysql --bootstrap --verbose=0 --skip-networking=0 < $tfile
+	rm -f $tfile
 
-    for f in /docker-entrypoint-initdb.d/*; do
-      case "${f}" in
-        *.sh)     echo "init: executing ${f}"; /bin/sh "${f}" ;;
-        *.sql)    echo "init: adding ${f}"; eval "${MYSQL_CMD}" < "${f}" ;;
-        *.sql.gz) echo "init: adding ${f}"; gunzip -c "${f}" | eval "${MYSQL_CMD}" ;;
-        *)        echo "init: ignoring ${f}: not a recognized format" ;;
-      esac
-    done
+	for f in /docker-entrypoint-initdb.d/*; do
+		case "$f" in
+			*.sql)    echo "$0: running $f"; /usr/bin/mysqld --user=mysql --bootstrap --verbose=0 --skip-networking=0 < "$f"; echo ;;
+			*.sql.gz) echo "$0: running $f"; gunzip -c "$f" | /usr/bin/mysqld --user=mysql --bootstrap --verbose=0  --skip-networking=0 < "$f"; echo ;;
+			*)        echo "$0: ignoring or entrypoint initdb empty $f" ;;
+		esac
+		echo
+	done
 
-    # Clean up
-    kill -s TERM "${PID}"
-    echo "init: removing mysql client"
-    apk del -q --no-cache mariadb-client
-  else
-    MYSQLD_OPTS="${MYSQLD_OPTS} --init-file=/tmp/init"
-  fi
+	echo
+	echo 'MySQL init process done. Ready for start up.'
+	echo
+
+	echo "exec /usr/bin/mysqld --user=mysql --console --skip-networking=0" "$@"
 fi
 
-# make sure directory permissions are correct before starting up
-# https://github.com/jbergstroem/mariadb-alpine/issues/54
-chown -R mysql:mysql /var/lib/mysql
+# execute any pre-exec scripts
+for i in /scripts/pre-exec.d/*sh
+do
+	if [ -e "${i}" ]; then
+		echo "[i] pre-exec.d - processing $i"
+		. ${i}
+	fi
+done
 
-eval exec /usr/bin/mysqld "${MYSQLD_OPTS}"
+exec /usr/bin/mysqld --user=mysql --console --skip-networking=0 $@
 
