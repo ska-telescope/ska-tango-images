@@ -1,378 +1,555 @@
 image: $SKA_K8S_TOOLS_DOCKER_BUILDER_IMAGE
 
+variables:
+  GIT_SUBMODULE_STRATEGY: recursive
+
 stages:
-- build_0
+- lint
+- build
 - build_1
 - build_2
 - build_3
 - build_4
 - build_5
-# - push
 - test
 - publish
+- pages
 - cleanup_build
 
 # https://docs.gitlab.com/ee/ci/docker/using_docker_build.html#authenticating-to-the-container-registry
 before_script:
   - echo $CAR_OCI_REGISTRY_PASSWORD | docker login -u $CAR_OCI_REGISTRY_USERNAME --password-stdin $CAR_OCI_REGISTRY_HOST
 
-build_dependencies:
+.image_builder_template:
+  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
   retry: 2
-  stage: build_1
-  variables:
-    IMAGE_FOLDER: tango/tango-dependencies
   tags:
-  - k8srunner
-  script: 
-  - &build_push |
-    cd docker 
-    make BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER build
-    make BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER push
-  only:
-    changes:
-    - docker/tango/tango-dependencies/**/*
+    - k8srunner
+  before_script:
+    - '[ -f .make/oci.mk ] || exit 1'
+    - 'make help | grep oci.mk:oci-build'
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - echo $CAR_OCI_REGISTRY_PASSWORD | docker login -u $CAR_OCI_REGISTRY_USERNAME --password-stdin $CAR_OCI_REGISTRY_HOST
+  script:
+    - echo "Incoming BUILD_IMAGE=${BUILD_IMAGE} BASE_IMAGE=${BASE_IMAGE}"
+    - |
+      if [[ -n "${BUILD_IMAGE}" ]]; then
+        IMG="${BUILD_IMAGE##*/}";
+        VERS=$(make show-version RELEASE_CONTEXT_DIR=images/${IMG});
+        export BUILD_IMAGE="${BUILD_IMAGE}:${VERS}";
+      fi;
+      if [[ -n "${BASE_IMAGE}" ]]; then
+        IMG="${BASE_IMAGE##*/}";
+        VERS=$(make show-version RELEASE_CONTEXT_DIR=images/${IMG});
+        export BASE_IMAGE="${BASE_IMAGE}:${VERS}";
+      fi;
+    - echo "Image dependencies set to BUILD_IMAGE=${BUILD_IMAGE} BASE_IMAGE=${BASE_IMAGE}"
+    - |
+      echo "Check/pulling ${OCI_IMAGE} image to build:";
+      export VERS=$(make show-version RELEASE_CONTEXT_DIR=images/${OCI_IMAGE});
+      export IMG=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/${OCI_IMAGE}:${VERS};
+      echo "Image to build: ${IMG}"; docker pull ${IMG} || true;
+    - make oci-build OCI_IMAGE=${OCI_IMAGE} CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME} RELEASE_CONTEXT_DIR=images/${OCI_IMAGE} OCI_BUILD_ADDITIONAL_ARGS=" --build-arg BUILD_IMAGE --build-arg BASE_IMAGE "
+
+build_dependencies:
+  stage: build_1
+  extends:
+    - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-dependencies
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_1"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH' ## To eliminate duplicate detached MRs and not on merge to master
+      changes:
+      - images/ska-tango-images-tango-dependencies/*
 
 build_dependencies-alpine:
   retry: 2
   stage: build_1
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/tango-dependencies-alpine
-  tags:
-  - k8srunner
-  script: 
-  - &build_push |
-    cd docker 
-    make BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER build
-    make BUILD_ARGS="--no-cache" -C $IMAGE_FOLDER push
-  only:
-    changes:
-    - docker/tango/tango-dependencies-alpine/**/*
+    OCI_IMAGE: ska-tango-images-tango-dependencies-alpine
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_1"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-dependencies-alpine/*
 
 build_tango-db:
   retry: 2
   stage: build_1
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/tango-db
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-db/**/*
+    OCI_IMAGE: ska-tango-images-tango-db
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_1"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-db/*
+
+build_tango-db-alpine:
+  retry: 2
+  stage: build_1
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-db-alpine
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_1"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-db-alpine/*
 
 build_tango-cpp:
   retry: 2
   stage: build_2
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/tango-cpp
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-dependencies/**/*
-    - docker/tango/tango-cpp/**/*
+    OCI_IMAGE: ska-tango-images-tango-cpp
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-dependencies
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_2"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-dependencies/*
+      - images/ska-tango-images-tango-cpp/*
 
 build_tango-cpp-alpine:
   retry: 2
   stage: build_2
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/tango-cpp-alpine
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-cpp-alpine/**/*
-
+    OCI_IMAGE: ska-tango-images-tango-cpp-alpine
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-dependencies-alpine
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_2"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-dependencies-alpine/*
+      - images/ska-tango-images-tango-cpp-alpine/*
 
 build_tango-java:
   retry: 2
   stage: build_2
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/tango-java
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-dependencies/**/*
-    - docker/tango/tango-java/**/*
+    OCI_IMAGE: ska-tango-images-tango-java
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-dependencies
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_2"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-dependencies/*
+      - images/ska-tango-images-tango-java/*
+
+build_tango-java-alpine:
+  retry: 2
+  stage: build_2
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-java-alpine
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-dependencies-alpine
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_2"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+      - images/ska-tango-images-tango-dependencies-alpine/*
+      - images/ska-tango-images-tango-java-alpine/*
 
 build_tango-rest:
   retry: 2
   stage: build_3
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/tango-rest
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-dependencies/**/*
-    - docker/tango/tango-cpp/**/*
-    - docker/tango/tango-rest/**/*
+    OCI_IMAGE: ska-tango-images-tango-rest
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-dependencies
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_3"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-dependencies/*
+      - images/ska-tango-images-tango-cpp/*
+      - images/ska-tango-images-tango-rest/*
 
 build_pytango-builder:
   retry: 2
   stage: build_3
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/pytango-builder
-  tags:
-    - k8srunner
-  script:
-    - *build_push
-  only:
-    changes:
-      - docker/tango/tango-dependencies/**/*
-      - docker/tango/tango-cpp/**/*
-      - docker/tango/pytango-builder/**/*
+    OCI_IMAGE: ska-tango-images-pytango-builder
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_3"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-dependencies/*
+      - images/ska-tango-images-tango-cpp/*
+      - images/ska-tango-images-pytango-builder/*
 
 build_pytango-builder-alpine:
   retry: 2
   stage: build_3
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/pytango-builder-alpine
-  tags:
-    - k8srunner
-  script:
-    - *build_push
-  only:
-    changes:
-      - docker/tango/tango-cpp-alpine/**/*
-      - docker/tango/pytango-builder-alpine/**/*
-
+    OCI_IMAGE: ska-tango-images-pytango-builder-alpine
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp-alpine
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_3"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-cpp-alpine/*
+      - images/ska-tango-images-pytango-builder-alpine/*
 
 build_tango-pogo:
   retry: 2
   stage: build_3
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/tango-pogo
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-dependencies/**/*
-    - docker/tango/tango-java/**/*
-    - docker/tango/tango-pogo/**/*
+    OCI_IMAGE: ska-tango-images-tango-pogo
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_3"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-dependencies/*
+      - images/ska-tango-images-tango-java/*
+      - images/ska-tango-images-tango-pogo/*
 
 build_tango-libtango:
   retry: 2
   stage: build_3
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/tango-libtango
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-dependencies/**/*
-    - docker/tango/tango-cpp/**/*
-    - docker/tango/tango-libtango/**/*
+    OCI_IMAGE: ska-tango-images-tango-libtango
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_3"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-dependencies/*
+      - images/ska-tango-images-tango-cpp/*
+      - images/ska-tango-images-tango-libtango/*
 
 build_tango-jive:
   retry: 2
   stage: build_3
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/tango-jive
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-dependencies/**/*
-    - docker/tango/tango-java/**/*
-    - docker/tango/tango-jive/**/*
+    OCI_IMAGE: ska-tango-images-tango-jive
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_3"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-dependencies/*
+      - images/ska-tango-images-tango-java/*
+      - images/ska-tango-images-tango-jive/*
+
+build_tango-jive-alpine:
+  retry: 2
+  stage: build_3
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-jive-alpine
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java-alpine
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_3"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+      changes:
+      - images/ska-tango-images-tango-dependencies-alpine/*
+      - images/ska-tango-images-tango-java-alpine/*
+      - images/ska-tango-images-tango-jive-alpine/*
+
 
 build_pytango-runtime:
   retry: 2
   stage: build_4
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/pytango-runtime
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-dependencies/**/*
-    - docker/tango/tango-cpp/**/*
-    - docker/tango/pytango-builder/**/*
-    - docker/tango/pytango-runtime/**/*
+    OCI_IMAGE: ska-tango-images-pytango-runtime
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" || $FORCE_REBUILD == "build_4"'
+      changes:
+      - images/ska-tango-images-tango-dependencies/*
+      - images/ska-tango-images-tango-cpp/*
+      - images/ska-tango-images-pytango-builder/*
+      - images/ska-tango-images-pytango-runtime/*
 
 build_pytango-runtime-alpine:
   retry: 2
   stage: build_4
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/pytango-runtime-alpine
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-cpp-alpine/**/*
-    - docker/tango/pytango-builder-alpine/**/*
-    - docker/tango/pytango-runtime-alpine/**/*
+    OCI_IMAGE: ska-tango-images-pytango-runtime-alpine
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp-alpine
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_4"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-cpp-alpine/*
+      - images/ska-tango-images-pytango-builder-alpine/*
+      - images/ska-tango-images-pytango-runtime-alpine/*
 
 build_tango-admin:
   retry: 2
   stage: build_4
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/tango-admin
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-dependencies/**/*
-    - docker/tango/tango-cpp/**/*
-    - docker/tango/tango-libtango/**/*
-    - docker/tango/tango-admin/**/*
+    OCI_IMAGE: ska-tango-images-tango-admin
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-libtango
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_4"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-dependencies/*
+      - images/ska-tango-images-tango-cpp/*
+      - images/ska-tango-images-tango-libtango/*
+      - images/ska-tango-images-tango-admin/*
 
 build_tango-databaseds:
   retry: 2
   stage: build_4
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/tango-databaseds
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-dependencies/**/*
-    - docker/tango/tango-cpp/**/*
-    - docker/tango/tango-libtango/**/*
-    - docker/tango/tango-databaseds/**/*
+    OCI_IMAGE: ska-tango-images-tango-databaseds
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-libtango
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_4"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-dependencies/*
+      - images/ska-tango-images-tango-cpp/*
+      - images/ska-tango-images-tango-libtango/*
+      - images/ska-tango-images-tango-databaseds/*
 
 build_tango-test:
   retry: 2
   stage: build_4
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/tango-test
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-dependencies/**/*
-    - docker/tango/tango-cpp/**/*
-    - docker/tango/tango-libtango/**/*
-    - docker/tango/tango-test/**/*
+    OCI_IMAGE: ska-tango-images-tango-test
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-libtango
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_4"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-dependencies/*
+      - images/ska-tango-images-tango-cpp/*
+      - images/ska-tango-images-tango-libtango/*
+      - images/ska-tango-images-tango-test/*
 
 build_tango-dsconfig:
   retry: 2
   stage: build_5
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/tango-dsconfig
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-dependencies/**/*
-    - docker/tango/tango-cpp/**/*
-    - docker/tango/pytango-builder/**/*
-    - docker/tango/pytango-runtime/**/*
-    - docker/tango/tango-dsconfig/**/*
+    OCI_IMAGE: ska-tango-images-tango-dsconfig
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_5"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-dependencies/*
+      - images/ska-tango-images-tango-cpp/*
+      - images/ska-tango-images-pytango-builder/*
+      - images/ska-tango-images-pytango-runtime/*
+      - images/ska-tango-images-tango-dsconfig/*
+
+build_tango-dsconfig-alpine:
+  retry: 2
+  stage: build_5
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-dsconfig-alpine
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime-alpine
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_5"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-pytango-builder-alpine/*
+      - images/ska-tango-images-pytango-runtime-alpine/*
+      - images/ska-tango-images-tango-dsconfig-alpine/*
 
 build_tango-itango:
   retry: 2
   stage: build_5
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/tango-itango
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-dependencies/**/*
-    - docker/tango/tango-cpp/**/*
-    - docker/tango/pytango-builder/**/*
-    - docker/tango/pytango-runtime/**/*
-    - docker/tango/tango-itango/**/*
+    OCI_IMAGE: ska-tango-images-tango-itango
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_5"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-dependencies/*
+      - images/ska-tango-images-tango-cpp/*
+      - images/ska-tango-images-pytango-builder/*
+      - images/ska-tango-images-pytango-runtime/*
+      - images/ska-tango-images-tango-itango/*
+
+build_tango-itango-alpine:
+  retry: 2
+  stage: build_5
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-itango-alpine
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime-alpine
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_5"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-pytango-builder-alpine/*
+      - images/ska-tango-images-pytango-runtime-alpine/*
+      - images/ska-tango-images-tango-itango-alpine/*
 
 build_tango-vnc:
   retry: 2
   stage: build_5
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/tango-vnc
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-dependencies/**/*
-    - docker/tango/tango-java/**/*
-    - docker/tango/tango-vnc/**/*
+    OCI_IMAGE: ska-tango-images-tango-vnc
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_5"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-dependencies/*
+      - images/ska-tango-images-tango-java/*
+      - images/ska-tango-images-tango-vnc/*
 
 build_tango-pytango:
   retry: 2
   stage: build_5
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/tango-pytango
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-dependencies/**/*
-    - docker/tango/tango-cpp/**/*
-    - docker/tango/pytango-builder/**/*
-    - docker/tango/pytango-runtime/**/*
-    - docker/tango/tango-pytango/**/*
+    OCI_IMAGE: ska-tango-images-tango-pytango
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_5"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-dependencies/*
+      - images/ska-tango-images-tango-cpp/*
+      - images/ska-tango-images-pytango-builder/*
+      - images/ska-tango-images-pytango-runtime/*
+      - images/ska-tango-images-tango-pytango/*
+
+build_tango-pytango-alpine:
+  retry: 2
+  stage: build_5
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-pytango-alpine
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime-alpine
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_5"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-pytango-builder-alpine/*
+      - images/ska-tango-images-tango-pytango-alpine/*
 
 build_tango-panic:
   retry: 2
   stage: build_5
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/tango-panic
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-panic/**/*
-    - docker/tango/tango-dependencies/**/*
-    - docker/tango/tango-cpp/**/*
-    - docker/tango/pytango-builder/**/*
-    - docker/tango/pytango-runtime/**/*
-    - docker/tango/tango-pytango/**/*
+    OCI_IMAGE: ska-tango-images-tango-panic
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_5"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-panic/*
+      - images/ska-tango-images-tango-dependencies/*
+      - images/ska-tango-images-tango-cpp/*
+      - images/ska-tango-images-pytango-builder/*
+      - images/ska-tango-images-pytango-runtime/*
+      - images/ska-tango-images-tango-pytango/*
 
 build_tango-panic-gui:
   retry: 2
   stage: build_5
+  extends:
+  - .image_builder_template
   variables:
-    IMAGE_FOLDER: tango/tango-panic-gui
-  tags:
-  - k8srunner
-  script:
-  - *build_push
-  only:
-    changes:
-    - docker/tango/tango-panic-gui/**/*
-    - docker/tango/tango-dependencies/**/*
-    - docker/tango/tango-cpp/**/*
-    - docker/tango/pytango-builder/**/*
-    - docker/tango/pytango-runtime/**/*
-    - docker/tango/tango-pytango/**/*
+    OCI_IMAGE: ska-tango-images-tango-panic-gui
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_5"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-panic-gui/*
+      - images/ska-tango-images-tango-dependencies/*
+      - images/ska-tango-images-tango-cpp/*
+      - images/ska-tango-images-pytango-builder/*
+      - images/ska-tango-images-pytango-runtime/*
+      - images/ska-tango-images-tango-pytango/*
 
 test-chart-templates:
   stage: test
@@ -394,18 +571,14 @@ test-chart:
   - k8srunner
   image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
   script:
-  - cd charts/
   - kubectl version
   - helm version
-  - make install-chart
+  - make install-chart CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
   - make wait
   - make test
-  - make chart_lint
-  - mkdir -p ../build/reports
-  - mv build/report.xml ../build/reports/unit-tests.xml
-  - mv build/linting.xml ../build/reports/linting.xml
+  - mkdir -p ./build/reports ./build/htmlcov
+  - mv build/report.xml ./build/reports/unit-tests.xml
   after_script:
-  - cd charts/
   - make uninstall-chart
   - make delete_namespace
   environment:
@@ -418,16 +591,43 @@ test-chart:
       - "build/"
     reports:
       junit: build/reports/unit-tests.xml
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    # don't run on master as the new images are not available yet (on Merge)
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
 
-variables:
-    CHARTS_TO_PUBLISH: ska-tango-util ska-tango-base
-# Ensure your .gitlab-ci.yml has "publish" stage defined!
+# Custom OCI Image publish stage
+oci-image-publish: #Executed on a tag for CAR
+  stage: publish
+  image: $SKA_K8S_TOOLS_DOCKER_BUILDER_IMAGE
+  tags:
+    - k8srunner
+  before_script:
+    - '[ -f .make/oci.mk ] || (echo "File oci.mk not included in Makefile; exit 1")'
+    - 'make help | grep oci.mk:oci-publish'
+    - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+    - echo $CAR_OCI_REGISTRY_PASSWORD | docker login -u $CAR_OCI_REGISTRY_USERNAME --password-stdin $CAR_OCI_REGISTRY_HOST
+  script:
+    - make custom-oci-publish-all
+  rules:
+    - if: '$CI_COMMIT_TAG'
+
+# Include CI templates
 include:
+# OCI Images
+  # do a custom set of build and publish stages
   - project: 'ska-telescope/templates-repository'
-    file: 'gitlab-ci/includes/helm_publish.yml'
+    file: 'gitlab-ci/includes/oci-image-lint.gitlab-ci.yml'
 
-# Create Gitlab CI badges from CI metrics
-# https://developer.skatelescope.org/en/latest/tools/continuousintegration.html#automated-collection-of-ci-health-metrics-as-part-of-the-ci-pipeline
+# Helm Charts
   - project: 'ska-telescope/templates-repository'
-    file: 'gitlab-ci/includes/post_step.yml'
+    file: 'gitlab-ci/includes/helm-chart.gitlab-ci.yml'
 
+# Docs pages
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/docs-pages.gitlab-ci.yml'
+    # ref: master
+
+# .post step finalisers eg: badges
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'
