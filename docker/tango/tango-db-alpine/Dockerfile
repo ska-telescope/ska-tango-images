@@ -7,7 +7,7 @@ RUN apk add --update --no-cache git
 # clone TangoDatabase
 RUN git clone --depth 1 https://gitlab.com/tango-controls/TangoDatabase.git /TangoDatabase 
 
-# move file from repo into docker-entrypoint-initdb.d
+# move file from repo into docker-entrypoint-initdb.d 
 RUN mkdir /docker-entrypoint-initdb.d && cd /TangoDatabase && mkdir -p dbinit/include  \
     && cp create_db.sql.in dbinit/create_db.sql \
     && cp create_db_tables.sql.in dbinit/include/create_db_tables.sql \
