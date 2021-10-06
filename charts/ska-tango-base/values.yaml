@@ -166,8 +166,8 @@ jive:
   intent: enabling
   image:
     registry: artefact.skao.int
-    image: ska-tango-images-tango-java
-    tag: 9.3.5
+    image: ska-tango-images-tango-java-alpine
+    tag: 0.0.1
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -213,8 +213,8 @@ tangorest:
   intent: enabling
   image:
     registry: artefact.skao.int
-    image: ska-tango-images-tango-rest
-    tag: 1.14.5
+    image: ska-tango-images-tango-rest-alpine
+    tag: 0.0.1
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -234,8 +234,8 @@ logviewer:
   intent: enabling
   image:
     registry: artefact.skao.int
-    image: ska-tango-images-tango-java
-    tag: 9.3.5
+    image: ska-tango-images-tango-java-alpine
+    tag: 0.0.1
     pullPolicy: IfNotPresent
   resources:
     requests:
