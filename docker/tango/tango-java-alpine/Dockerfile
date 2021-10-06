@@ -17,7 +17,7 @@ RUN apk add --update --no-cache make bash sudo \
     curl openssl ca-certificates \
     java-cacerts wget autoconf automake libtool g++ 
 
-ENV JAVA_HOME /opt/openjdk-18
+ENV JAVA_HOME /usr
 ENV PATH $JAVA_HOME/bin:$PATH
 ENV JAVA_VERSION 18-ea+11
 ENV LOG4J=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/log4j-1.2.17.tar.gz
