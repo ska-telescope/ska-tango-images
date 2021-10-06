@@ -4,7 +4,7 @@
 # binaries.
 #
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILD_IMAGE ${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine:0.3.0
+ARG BUILD_IMAGE=${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine:0.3.0
 ARG BASE_IMAGE="alpine:3.14"
 FROM $BUILD_IMAGE AS buildenv
 
