@@ -117,6 +117,20 @@ build_tango-java:
     - docker/tango/tango-dependencies/**/*
     - docker/tango/tango-java/**/*
 
+build_tango-java-alpine:
+  retry: 2
+  stage: build_2
+  variables:
+    IMAGE_FOLDER: tango/tango-java-alpine
+  tags:
+  - k8srunner
+  script:
+  - *build_push
+  only:
+    changes:
+    - docker/tango/tango-java-alpine/**/*
+
+
 build_tango-rest:
   retry: 2
   stage: build_3
