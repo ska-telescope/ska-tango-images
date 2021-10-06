@@ -561,6 +561,14 @@ test-chart-templates:
   script:
     - helm plugin install https://github.com/quintush/helm-unittest
     - make chart_test
+    - mkdir -p ./build/reports
+    - mv charts/build/chart_template_tests.xml ./build/reports/chart_template_tests.xml
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - "build/"
+    reports:
+      junit: build/reports/chart_template_tests.xml
 
 test-chart:
   stage: test
