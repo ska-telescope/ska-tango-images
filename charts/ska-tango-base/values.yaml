@@ -104,8 +104,8 @@ deviceServers:
           - name: "sys/tg_test/1"
     image:
       registry: artefact.skao.int
-      image: ska-tango-images-tango-java
-      tag: 9.3.5
+      image: ska-tango-images-tango-java-alpine
+      tag: 0.0.1
       pullPolicy: IfNotPresent
     resources:
       requests:
