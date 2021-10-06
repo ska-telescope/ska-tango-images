@@ -146,6 +146,20 @@ build_tango-rest:
     - docker/tango/tango-cpp/**/*
     - docker/tango/tango-rest/**/*
 
+build_tango-rest-alpine:
+  retry: 2
+  stage: build_3
+  variables:
+    IMAGE_FOLDER: tango/tango-rest-alpine
+  tags:
+  - k8srunner
+  script:
+  - *build_push
+  only:
+    changes:
+    - docker/tango/tango-rest-alpine/**/*
+
+
 build_pytango-builder:
   retry: 2
   stage: build_3
