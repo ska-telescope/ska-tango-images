@@ -561,6 +561,7 @@ test-chart-integration:
   script:
     - pip3 install kubetest kubernetes==17.17.0
     - helm version
+    - kubectl config view > tests/chart-integration-tests/KUBECONFIG
     - make chart_integration_test CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
 
 test-chart:
