@@ -3,17 +3,14 @@
 # intermediate image, then creates a release image containing the compiled
 # binaries.
 #
-ARG BASE_IMAGE="python:3.9.6-alpine3.13"
+ARG BASE_IMAGE="python:3.9.6-alpine3.14"
 FROM $BASE_IMAGE as buildenv
 
 
 # Install build time dependencies
 RUN apk add --update --no-cache bash curl \
-    openssl ca-certificates \
-    libstdc++ \
-    g++ make libsodium-dev 
-RUN apk add --virtual build-dependencies \
-    git cmake
+    openssl ca-certificates libstdc++ \
+    g++ make libsodium-dev git cmake
     
 # build and install libzmq at v4.3.4
 RUN git clone -b v4.3.4 --depth 1 https://github.com/zeromq/libzmq /libzmq && \
@@ -45,7 +42,7 @@ LABEL \
       org.skatelescope.version="1.0.0" \
       int.skao.application="Tango dependencies"
       
-RUN apk add --update --no-cache bash libstdc++
+RUN apk add --update --no-cache bash libstdc++ libsodium-dev
 
 COPY --from=buildenv /usr/local /usr/local
 # Copy across files that are used to help orchestrate container compositions
