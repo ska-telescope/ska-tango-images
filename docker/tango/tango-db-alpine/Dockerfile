@@ -38,7 +38,7 @@ LABEL \
 RUN addgroup --system mysql && adduser --system -G mysql mysql
 
 RUN apk add --update --no-cache mariadb mariadb-client mariadb-server-utils pwgen \
-    tzdata xz zstd bash
+    tzdata xz zstd bash socat
 
 COPY run.sh /scripts/run.sh
 RUN mkdir /docker-entrypoint-initdb.d && \
