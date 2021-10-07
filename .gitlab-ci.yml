@@ -560,7 +560,8 @@ test-chart-integration:
   image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
   script:
     - pip3 install kubetest kubernetes==17.17.0
-    - make chart_integration_test
+    - helm version
+    - make chart_integration_test CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
 
 test-chart:
   stage: test
