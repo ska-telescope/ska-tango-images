@@ -231,7 +231,7 @@ chart_integration_test: #helm-pre-publish #clean dep-up
 	cd charts/ska-tango-base && bash ./values.yaml.sh; cd -;\
 	helm package charts/ska-tango-util/ -d charts/ska-tango-base/charts/; \
 	cd charts/ska-tango-base/; helm template -s templates/tangodb.yaml . -n test > gen_tangodb.yaml; sed -i 's/-dirty//g' gen_tangodb.yaml;cd -;\
-	cd tests/chart-integration-tests/; pytest -s . --kube-config=$(KUBECONFIG); \
+	cd tests/chart-integration-tests/; pytest -s . --kube-config=/builds/U4A3yYGS/0/ska-telescope/ska-tango-images.tmp/KUBECONFIG; \
 
 wait: ## wait for pods to be ready
 	@echo "Waiting for pods to be ready"
