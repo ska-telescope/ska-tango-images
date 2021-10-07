@@ -8,7 +8,7 @@ FROM $BASE_IMAGE as buildenv
 
 
 # Install build time dependencies
-RUN apk add --update --no-cache bash curl \
+RUN apk --update add --no-cache bash curl \
     openssl ca-certificates libstdc++ \
     g++ make libsodium-dev git cmake
     
@@ -42,7 +42,7 @@ LABEL \
       org.skatelescope.version="1.0.0" \
       int.skao.application="Tango dependencies"
       
-RUN apk add --update --no-cache bash libstdc++ libsodium-dev
+RUN apk --update add  --no-cache bash libstdc++ libsodium-dev
 
 COPY --from=buildenv /usr/local /usr/local
 # Copy across files that are used to help orchestrate container compositions
