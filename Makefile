@@ -227,6 +227,11 @@ reinstall-chart: uninstall-chart install-chart ## reinstall the ska-tango-images
 # 	echo "<testsuites><testsuite errors=\"$(LINTING_OUTPUT)\" failures=\"0\" name=\"helm-lint\" skipped=\"0\" tests=\"0\" time=\"0.000\" timestamp=\"$(shell date)\"> </testsuite> </testsuites>" > build/linting.xml
 # 	exit $(LINTING_OUTPUT)
 
+chart_integration_test: #helm-pre-publish #clean dep-up
+	cd charts/ska-tango-base && bash ./values.yaml.sh; cd -;\
+	cd charts/ska-tango-base/; helm template -s templates/tangodb.yaml . -n test > gen_tangodb.yaml; sed -i 's/-dirty//g' gen_tangodb.yaml;cd -;\
+	cd tests/chart-integration-tests/; pytest -s . --kube-config=~/.kube/config; \
+
 wait: ## wait for pods to be ready
 	@echo "Waiting for pods to be ready"
 	@date
@@ -241,7 +246,7 @@ wait: ## wait for pods to be ready
 # capture the output of the test in a tar file
 # stream the tar file base64 encoded to the Pod logs
 #
-k8s_test = tar -c tests/post-deployment/ | \
+k8s_test = tar -c tests/chart-integration-tests/ | \
 		kubectl run $(TEST_RUNNER) \
 		--namespace $(KUBE_NAMESPACE) -i --wait --restart=Never \
 		--image-pull-policy=IfNotPresent \
