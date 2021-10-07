@@ -229,8 +229,9 @@ reinstall-chart: uninstall-chart install-chart ## reinstall the ska-tango-images
 
 chart_integration_test: #helm-pre-publish #clean dep-up
 	cd charts/ska-tango-base && bash ./values.yaml.sh; cd -;\
+	helm package charts/ska-tango-util/ -d charts/ska-tango-base/charts/; \
 	cd charts/ska-tango-base/; helm template -s templates/tangodb.yaml . -n test > gen_tangodb.yaml; sed -i 's/-dirty//g' gen_tangodb.yaml;cd -;\
-	cd tests/chart-integration-tests/; pytest -s . --kube-config=~/.kube/config; \
+	cd tests/chart-integration-tests/; pytest -s . --kube-config=$(KUBECONFIG); \
 
 wait: ## wait for pods to be ready
 	@echo "Waiting for pods to be ready"
