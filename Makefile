@@ -279,7 +279,7 @@ test: helm-pre-publish ## test the application on K8s
 		kubectl --namespace $(KUBE_NAMESPACE) logs $(TEST_RUNNER) | \
 		perl -ne 'BEGIN {$$on=0;}; if (index($$_, "~~~~BOUNDARY~~~~")!=-1){$$on+=1;next;}; print if $$on % 2;' | \
 		base64 -d | tar -xzf -; \
-		kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
+		cd /builds/U4A3yYGS/0/ska-telescope/ska-tango-images.tmp/; ls -a; cd -;kubectl --namespace $(KUBE_NAMESPACE) delete pod $(TEST_RUNNER); \
 		rm tests/post-deployment/tango_values.yaml; \
 		echo "Status set at \"$$status\" in ./Makefile test target"; \
 		exit $$status
