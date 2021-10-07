@@ -33,13 +33,13 @@ LABEL \
       int.skao.application="Tango DB"
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
-RUN addgroup --system mysql && adduser --system -s /bin/bash -G mysql mysql
+RUN addgroup --system mysql && adduser --system -G mysql mysql
 
 
-RUN apk add --update --no-cache mariadb mariadb-client mariadb-server-utils pwgen\
+RUN apk add --update --no-cache mariadb mariadb-client pwgen \
     tzdata xz zstd bash
 
-ADD run.sh /scripts/run.sh
+COPY run.sh /scripts/run.sh
 RUN mkdir /docker-entrypoint-initdb.d && \
     mkdir /scripts/pre-exec.d && \
     mkdir /scripts/pre-init.d && \
