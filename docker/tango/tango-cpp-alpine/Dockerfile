@@ -1,6 +1,6 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BASE_IMAGE="python:3.9.6-alpine3.14"
-ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine:0.3.0"
+ARG BASE_IMAGE="python:3.9.6-alpine3.13"
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine:0.3.1"
 FROM $BUILD_IMAGE AS buildenv
 
 # Install build time dependencies

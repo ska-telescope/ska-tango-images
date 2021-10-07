@@ -3,7 +3,7 @@
 # intermediate image, then creates a release image containing the compiled
 # binaries.
 #
-ARG BASE_IMAGE="python:3.9.6-alpine3.14"
+ARG BASE_IMAGE="python:3.9.6-alpine3.13"
 FROM $BASE_IMAGE as buildenv
 
 

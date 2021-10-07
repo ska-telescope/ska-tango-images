@@ -1,5 +1,5 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.3.4"
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.3.5"
 FROM $BASE_IMAGE
 
 LABEL \
