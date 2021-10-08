@@ -487,37 +487,37 @@ build_tango-panic-gui:
       - images/ska-tango-images-pytango-runtime/*
       - images/ska-tango-images-tango-pytango/*
 
-# test-chart:
-#   stage: test
-#   variables:
-#     MINIKUBE: "false"
-#   tags:
-#   - k8srunner
-#   image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
-#   script:
-#   - kubectl version
-#   - helm version
-#   - make install-chart
-#   - make wait
-#   - make test
-#   # - make chart_lint
-#   - mkdir -p ../build/reports
-#   - mv build/report.xml ../build/reports/unit-tests.xml
-#   - mv build/linting.xml ../build/reports/linting.xml
-#   after_script:
-#   - cd charts/
-#   - make uninstall-chart
-#   - make delete_namespace
-#   environment:
-#     name: test
-#     kubernetes:
-#       namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
-#   artifacts:
-#     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-#     paths:
-#       - "build/"
-#     reports:
-#       junit: build/reports/unit-tests.xml
+test-chart:
+  stage: test
+  variables:
+    MINIKUBE: "false"
+  tags:
+  - k8srunner
+  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
+  script:
+  - kubectl version
+  - helm version
+  - make install-chart
+  - make wait
+  - make test
+  # - make chart_lint
+  - mkdir -p ../build/reports
+  - mv build/report.xml ../build/reports/unit-tests.xml
+  - mv build/linting.xml ../build/reports/linting.xml
+  after_script:
+  - cd charts/
+  - make uninstall-chart
+  - make delete_namespace
+  environment:
+    name: test
+    kubernetes:
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - "build/"
+    reports:
+      junit: build/reports/unit-tests.xml
 
 
 
@@ -546,30 +546,30 @@ build_tango-panic-gui:
 include:
 # OCI Images
   # do a custom set of build stages
-#   - project: 'ska-telescope/templates-repository'
-#     file: 'gitlab-ci/includes/oci-image-lint.gitlab-ci.yml'
-#   # - project: 'ska-telescope/templates-repository'
-#   #   file: 'gitlab-ci/includes/oci-image-publish.gitlab-ci.yml'
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/oci-image-lint.gitlab-ci.yml'
+  # - project: 'ska-telescope/templates-repository'
+  #   file: 'gitlab-ci/includes/oci-image-publish.gitlab-ci.yml'
 
-# # Helm Charts
-#   - project: 'ska-telescope/templates-repository'
-#     file: 'gitlab-ci/includes/helm-chart.gitlab-ci.yml'  
+# Helm Charts
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/helm-chart.gitlab-ci.yml'  
     
   # Raw
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/raw.gitlab-ci.yml'
     ref: master
 
-# # Docs pages
-#   - project: 'ska-telescope/templates-repository'
-#     file: 'gitlab-ci/includes/docs-pages.gitlab-ci.yml'
-#     # ref: master
+# Docs pages
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/docs-pages.gitlab-ci.yml'
+    # ref: master
 
-# # .post step finalisers eg: badges
-#   - project: 'ska-telescope/templates-repository'
-#     file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'
+# .post step finalisers eg: badges
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'
 
-# # override variables
+# override variables
 # helm-chart-publish:
 #   variables:
 #       HELM_CHARTS_TO_PUBLISH: ska-tango-util ska-tango-base
