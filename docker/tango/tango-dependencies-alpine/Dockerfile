@@ -3,14 +3,13 @@
 # intermediate image, then creates a release image containing the compiled
 # binaries.
 #
-ARG BASE_IMAGE="python:3.9.6-alpine3.14"
+ARG BASE_IMAGE="alpine:3.14"
 FROM $BASE_IMAGE as buildenv
-
 
 # Install build time dependencies
 RUN apk --update add --no-cache bash curl \
     openssl ca-certificates libstdc++ \
-    g++ make libsodium-dev git cmake
+    g++ make libsodium-dev git cmake python3-dev
     
 # build and install libzmq at v4.3.4
 RUN git clone -b v4.3.4 --depth 1 https://github.com/zeromq/libzmq /libzmq && \
@@ -31,22 +30,22 @@ RUN curl -L https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.4
     make && \
     make install
 
+# Copy across files that are used to help orchestrate container compositions
+# and test execution sequences
+COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
+COPY retry.sh /usr/local/bin/retry
+
+
 FROM $BASE_IMAGE
 
 LABEL \
       author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
       description="This image includes all the depenencies needed for installing the TANGO-controls framework" \
       license="BSD-3-Clause" \
-      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies" \
+      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine" \
       org.skatelescope.team="Systems Team" \
       org.skatelescope.version="1.0.0" \
       int.skao.application="Tango dependencies"
       
-RUN apk --update add  --no-cache bash libstdc++ libsodium-dev
-
 COPY --from=buildenv /usr/local /usr/local
-# Copy across files that are used to help orchestrate container compositions
-# and test execution sequences
-COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
-COPY retry.sh /usr/local/bin/retry
 
