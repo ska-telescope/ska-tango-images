@@ -1,12 +1,12 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BASE_IMAGE="python:3.9.6-alpine3.14"
-ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine:0.3.2"
+ARG BASE_IMAGE="alpine:3.14"
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine:0.3.3"
 FROM $BUILD_IMAGE AS buildenv
 
 # Install build time dependencies
 RUN apk --update add --no-cache make bash\
     libsodium-dev libstdc++ g++ mariadb-connector-c-dev \
-    git cmake
+    git cmake python3-dev
 
 # build and install tangoidl
 RUN git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl && \
