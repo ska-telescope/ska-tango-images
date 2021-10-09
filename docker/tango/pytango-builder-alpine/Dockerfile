@@ -1,5 +1,5 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.3.6"
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.3.7"
 FROM $BASE_IMAGE
 
 LABEL \
@@ -18,7 +18,7 @@ ENV LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/usr/lib
 # Install build time dependencies
 # boost-dev and libstdc++ are fundamental dependencies
 RUN apk --update add --no-cache libstdc++ g++ \
-    libsodium-dev zlib-dev boost-dev \
+    libsodium-dev zlib-dev boost-dev python3-dev py3-pip\
     bash make ca-certificates curl git
     
 # setup pip ready for package installs
@@ -34,13 +34,14 @@ RUN python3.9 -m pip --no-cache-dir install setuptools wheel \
     numpy==1.21.0 \
 # now install build requirements
     && python3.9 -m pip --no-cache-dir install -r requirements.txt \
-    && rm requirements.txt \
+    && rm requirements.txt 
 # do ldconfig stuff
-    && mkdir -p /etc/ld.so.conf.d \
+RUN mkdir -p /etc/ld.so.conf.d \
     && echo "include /etc/ld.so.conf.d/*.conf" > /etc/ld.so.conf \
     && echo "/usr/local/lib" > /etc/ld.so.conf.d/tango.conf \
     && echo "/usr/local/lib64" > /etc/ld.so.conf.d/tango.conf \
     && ldconfig /etc/ld.so.conf.d \
+# this was on the debian version
     && mkdir /venv \
-    && ln -s /usr/* /venv/  \
-    && ln -s /usr/local/bin/itango3 /venv/bin/itango3
+    && ln -s /usr/* /venv/  
+##    && ln -s /usr/local/bin/itango3 /venv/bin/itango3
