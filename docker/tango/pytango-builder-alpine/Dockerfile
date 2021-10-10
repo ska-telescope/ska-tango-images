@@ -42,6 +42,6 @@ RUN mkdir -p /etc/ld.so.conf.d \
     && echo "/usr/local/lib64" > /etc/ld.so.conf.d/tango.conf \
     && ldconfig /etc/ld.so.conf.d \
 # this was on the debian version
-    && mkdir /venv \
-    && ln -s /usr/* /venv/  
+#    && mkdir /venv \
+#    && ln -s /usr/* /venv/  
 ##    && ln -s /usr/local/bin/itango3 /venv/bin/itango3
