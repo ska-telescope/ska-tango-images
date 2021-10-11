@@ -35,16 +35,20 @@ LABEL \
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN addgroup --system mysql && adduser --system -G mysql mysql
 
-RUN apk add --update --no-cache socat mariadb mariadb-client pwgen\
+RUN apk add --update --no-cache socat mysql mysql-client pwgen\
     tzdata xz zstd bash coreutils
 
-RUN mkdir /docker-entrypoint-initdb.d
+ADD run.sh /scripts/run.sh
+RUN mkdir /docker-entrypoint-initdb.d && \
+    mkdir /scripts/pre-exec.d && \
+    mkdir /scripts/pre-init.d && \
+    chmod -R 755 /scripts
+
+EXPOSE 3306
+
+VOLUME ["/var/lib/mysql"]
 COPY --from=buildenv /docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
 COPY sql_mode.cnf /etc/mysql/conf.d
-EXPOSE 3306
-VOLUME ["/var/lib/mysql"]
 
-RUN mkdir -p /run/mysqld && chown -R mysql:mysql /run/mysqld 
-RUN chown -R mysql:mysql /var/lib/mysql
-ENTRYPOINT mysql_install_db --user=mysql --ldata=/var/lib/mysql > /dev/null && mysqld --user=mysql --bootstrap --verbose=0  < /docker-entrypoint-initdb.d/create_db.sql
+ENTRYPOINT ["/scripts/run.sh"]
 
