@@ -68,7 +68,7 @@ EOF
 	    fi
 	fi
 
-	/usr/bin/mysqld --user=mysql --bootstrap --verbose=0 < $tfile
+	/usr/bin/mysqld --user=mysql --verbose=0 < $tfile
 	rm -f $tfile
 
 	for f in /docker-entrypoint-initdb.d/*; do
