@@ -29,13 +29,11 @@ LABEL \
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN addgroup --system mysql && adduser --system -G mysql mysql
 
-RUN apk add --update --no-cache socat mysql mysql-client pwgen\
-    tzdata xz zstd bash coreutils openrc
+RUN apk add --update --no-cache socat mariadb mariadb-client pwgen\
+    tzdata xz zstd bash
 
 ADD run.sh /scripts/run.sh
 RUN mkdir /docker-entrypoint-initdb.d && \
-    mkdir /scripts/pre-exec.d && \
-    mkdir /scripts/pre-init.d && \
     chmod -R 755 /scripts
 
 EXPOSE 3306
