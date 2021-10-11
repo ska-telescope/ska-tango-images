@@ -1,5 +1,13 @@
 #!/bin/sh
 
+# execute any pre-init scripts
+for i in /scripts/pre-init.d/*sh
+do
+	if [ -e "${i}" ]; then
+		echo "[i] pre-init.d - processing $i"
+		. "${i}"
+	fi
+done
 
 if [ -d "/run/mysqld" ]; then
 	echo "[i] mysqld already present, skipping creation"
@@ -60,13 +68,13 @@ EOF
 	    fi
 	fi
 
-	/usr/bin/mysqld --user=mysql --verbose=0 < $tfile
+	/usr/bin/mysqld --user=mysql --bootstrap --verbose=0 < $tfile
 	rm -f $tfile
 
 	for f in /docker-entrypoint-initdb.d/*; do
 		case "$f" in
-			*.sql)    echo "$0: running $f"; /usr/bin/mysqld --user=mysql --verbose=0  < "$f"; echo ;;
-			*.sql.gz) echo "$0: running $f"; gunzip -c "$f" | /usr/bin/mysqld --user=mysql --verbose=0  < "$f"; echo ;;
+			*.sql)    echo "$0: running $f"; /usr/bin/mysqld --user=mysql --bootstrap --verbose=0  < "$f"; echo ;;
+			*.sql.gz) echo "$0: running $f"; gunzip -c "$f" | /usr/bin/mysqld --user=mysql --bootstrap --verbose=0  < "$f"; echo ;;
 			*)        echo "$0: ignoring or entrypoint initdb empty $f" ;;
 		esac
 		echo
@@ -78,6 +86,15 @@ EOF
 
 	echo "exec /usr/bin/mysqld --user=mysql --console " "$@"
 fi
+
+# execute any pre-exec scripts
+for i in /scripts/pre-exec.d/*sh
+do
+	if [ -e "${i}" ]; then
+		echo "[i] pre-exec.d - processing $i"
+		. ${i}
+	fi
+done
 
 exec /usr/bin/mysqld --user=mysql --console  $@
 

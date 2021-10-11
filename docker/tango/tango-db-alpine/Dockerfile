@@ -32,7 +32,7 @@ RUN addgroup --system mysql && adduser --system -G mysql mysql
 RUN apk add --update --no-cache socat mariadb mariadb-client pwgen\
     tzdata xz zstd bash
 
-ADD run.sh /scripts/run.sh
+COPY run.sh /scripts/run.sh
 RUN mkdir /docker-entrypoint-initdb.d && \
     chmod -R 755 /scripts
 
