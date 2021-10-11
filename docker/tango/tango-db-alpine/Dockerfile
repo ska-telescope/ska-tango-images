@@ -10,6 +10,7 @@ RUN mkdir /docker-entrypoint-initdb.d && cd  /usr/local/share/tango/db \
     && sed -i '/create_db_tables.sql/ r create_db_tables.sql' create_db.sql \
     && sed -i '/stored_proc.sql/ r stored_proc.sql' create_db.sql \
     && sed -i "s/^source/#source/g" create_db.sql \
+    && sed -i 's/|/\/\//g' create_db.sql \
     && sed -i "/CREATE DATABASE tango;/d" create_db.sql \
     && cp create_db.sql /docker-entrypoint-initdb.d
 
