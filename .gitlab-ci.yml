@@ -579,7 +579,12 @@ include:
   # Raw
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/raw.gitlab-ci.yml'
-    ref: master
+    ref: master  
+    
+  # Generate Changelog
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/changelog.gitlab-ci.yml'
+    ref: st-66-changelog-template-job
 
 # Docs pages
   - project: 'ska-telescope/templates-repository'
