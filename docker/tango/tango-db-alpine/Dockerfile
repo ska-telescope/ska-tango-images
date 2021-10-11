@@ -30,7 +30,7 @@ LABEL \
 RUN addgroup --system mysql && adduser --system -G mysql mysql
 
 RUN apk add --update --no-cache socat mysql mysql-client pwgen\
-    tzdata xz zstd bash coreutils
+    tzdata xz zstd bash coreutils openrc
 
 ADD run.sh /scripts/run.sh
 RUN mkdir /docker-entrypoint-initdb.d && \
