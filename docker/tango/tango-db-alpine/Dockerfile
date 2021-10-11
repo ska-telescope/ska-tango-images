@@ -28,7 +28,7 @@ LABEL \
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN addgroup --system mysql && adduser --system -G mysql mysql
 
-RUN apk add --update --no-cache socat mariadb mariadb-client pwgen\
+RUN apk add --update --no-cache socat mysql mysql-client pwgen\
     tzdata xz zstd bash
 
 COPY run.sh /scripts/run.sh
