@@ -5,9 +5,9 @@ RUN apk add --update --no-cache curl ca-certificates
 
 ENV TANGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/tango-9.3.4.tar.gz
 
-RUN mkdir -p /usr/src/tango
+RUN mkdir -p /usr/src/tango && mkdir /docker-entrypoint-initdb.d
 
-WORKDIR /usr/src/tango
+WORKDIR /usr/src/tango 
 
 RUN curl -fsSL "$TANGO_DOWNLOAD_URL" -o tango.tar.gz && \
     tar xf tango.tar.gz -C /usr/src/tango --strip-components=1

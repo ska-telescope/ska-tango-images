@@ -6,7 +6,7 @@ ENV TANGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tan
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
      apt-get -y install --no-install-recommends curl ca-certificates
 
-RUN mkdir -p /usr/src/tango && mkdir /docker-entrypoint-initdb.d
+RUN mkdir -p /usr/src/tango
 
 WORKDIR /usr/src/tango
 
