@@ -58,7 +58,7 @@ EOF
 			echo "[i] with character set [$MYSQL_CHARSET] and collation [$MYSQL_COLLATION]"
 			echo "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\` CHARACTER SET $MYSQL_CHARSET COLLATE $MYSQL_COLLATION;" >> $tfile
 		else
-			echo "[i] with character set: 'utf8' and collation: 'utf8_general_ci'"
+			echo "[i] with character set: 'utf8mb4' and collation: 'utf8mb4_unicode_ci'"
 			echo "CREATE DATABASE IF NOT EXISTS \`$MYSQL_DATABASE\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;" >> $tfile
 		fi
 
@@ -68,12 +68,12 @@ EOF
 	    fi
 	fi
 
-	/usr/bin/mysqld --user=mysql --verbose=0 < $tfile
+	/usr/bin/mysqld --user=mysql --bootstrap --verbose=0 < $tfile
 	rm -f $tfile
 
 	for f in /docker-entrypoint-initdb.d/*; do
 		case "$f" in
-			*.sql)    echo "$0: running $f"; /usr/bin/mysqld --user=mysql --verbose=0  < "$f"; echo ;;
+			*.sql)    echo "$0: running $f"; /usr/bin/mysqld --user=mysql --bootstrap --verbose=0  < "$f"; echo ;;
 			*.sql.gz) echo "$0: running $f"; gunzip -c "$f" | /usr/bin/mysqld --user=mysql --bootstrap --verbose=0  < "$f"; echo ;;
 			*)        echo "$0: ignoring or entrypoint initdb empty $f" ;;
 		esac

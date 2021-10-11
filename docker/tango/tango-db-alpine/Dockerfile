@@ -5,15 +5,14 @@ FROM $BUILD_IMAGE AS buildenv
 
 USER root
 
-# move sql files into docker-entrypoint-initdb.d 
-RUN mkdir /docker-entrypoint-initdb.d && cd  /usr/local/share/tango/db && mkdir -p dbinit/include  \
-    && cp create_db.sql dbinit/create_db.sql \
-    && cp create_db_tables.sql dbinit/include/create_db_tables.sql \
-    && cp stored_proc.sql dbinit/include/stored_proc.sql \
-    && sed -i "s|^source create_db_tables.sql$|source /docker-entrypoint-initdb.d/include/create_db_tables.sql|g" dbinit/create_db.sql \
-    && sed -i "s|^source stored_proc.sql$|source /docker-entrypoint-initdb.d/include/stored_proc.sql|g" dbinit/create_db.sql \
-    && sed -i "/CREATE DATABASE tango;/d" dbinit/create_db.sql \
-    && cp -r dbinit/* /docker-entrypoint-initdb.d
+# source is giving syntax error, so we just paste everything 
+RUN mkdir /docker-entrypoint-initdb.d && cd  /usr/local/share/tango/db \
+    && sed -i '/create_db_tables.sql/ r create_db_tables.sql' create_db.sql \
+    && sed -i '/stored_proc.sql/ r stored_proc.sql' create_db.sql \
+    && sed -i "s/^source/#source/g" create_db.sql \
+    && sed -i "/CREATE DATABASE tango;/d" create_db.sql \
+    && cp create_db.sql /docker-entrypoint-initdb.d
+
 
 FROM $BASE_IMAGE
 
