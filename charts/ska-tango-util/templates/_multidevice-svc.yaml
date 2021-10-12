@@ -18,6 +18,31 @@ Parameters:
 {{ $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
 {{ $kubectl_wait_timeout := coalesce $dsconfig.timeout "120s" }}
 
+{{ $lprobe_initial_delay_seconds := 0}}
+{{ $lprobe_period_seconds := 10 }}
+{{ $lprobe_timeout_seconds := 1 }}
+{{ $lprobe_success_threshold := 1 }}
+{{ $lprobe_failure_threshold := 3 }}
+{{ if $deviceserver.livenessProbe }}
+{{ $lprobe_initial_delay_seconds = $deviceserver.livenessProbe.initialDelaySeconds }}
+{{ $lprobe_period_seconds = $deviceserver.livenessProbe.periodSeconds }}
+{{ $lprobe_timeout_seconds = $deviceserver.livenessProbe.timeoutSeconds}}
+{{ $lprobe_success_threshold = $deviceserver.livenessProbe.successThreshold }}
+{{ $lprobe_failure_threshold = $deviceserver.livenessProbe.failureThreshold }}
+{{ end }}
+
+{{ $rprobe_initial_delay_seconds := 0 }}
+{{ $rprobe_period_seconds := 10 }}
+{{ $rprobe_timeout_seconds := 1 }}
+{{ $rprobe_success_threshold := 10 }}
+{{ $rprobe_failure_threshold := 3 }}
+{{ if $deviceserver.readinessProbe }}
+{{ $rprobe_initial_delay_seconds = $deviceserver.readinessProbe.initialDelaySeconds }}
+{{ $rprobe_period_seconds = $deviceserver.readinessProbe.periodSeconds }}
+{{ $rprobe_timeout_seconds = $deviceserver.readinessProbe.timeoutSeconds }}
+{{ $rprobe_success_threshold = $deviceserver.readinessProbe.successThreshold }}
+{{ $rprobe_failure_threshold = $deviceserver.readinessProbe.failureThreshold }}
+{{ end }}
 ---
 {{ range $instance := $deviceserver.server.instances }}
 {{ $safe_instance := $instance.name | toString | replace "_" "-" }}
@@ -178,6 +203,36 @@ spec:
         env:
         - name: TANGO_HOST
           value: {{ $tango_host }}
+        livenessProbe:
+          exec:
+            command:
+            - "sh"
+            - "-c"
+          {{- range $index_class, $class := $instance.classes }}
+          {{- range $index_device, $device := $class.devices }}
+            - "tango_admin --ping-device {{ $device.name }};"
+          {{ end }}
+          {{ end }}
+          initialDelaySeconds: {{ $lprobe_initial_delay_seconds }}
+          periodSeconds: {{ $lprobe_period_seconds }}
+          timeoutSeconds: {{ $lprobe_timeout_seconds }}
+          successThreshold: {{ $lprobe_success_threshold }}
+          failureThreshold: {{ $lprobe_failure_threshold }}
+        readinessProbe:
+          exec:
+            command:
+            - "sh"
+            - "-c"
+          {{- range $index_class, $class := $instance.classes }}
+          {{- range $index_device, $device := $class.devices }}
+            - "tango_admin --ping-device {{ $device.name }};"
+          {{ end }}
+          {{ end }}
+          initialDelaySeconds: {{ $rprobe_initial_delay_seconds }}
+          periodSeconds: {{ $rprobe_period_seconds }}
+          timeoutSeconds: {{ $rprobe_timeout_seconds }}
+          successThreshold: {{ $rprobe_success_threshold }}
+          failureThreshold: {{ $rprobe_failure_threshold }}
 {{- if $chart.Values.global.environment_variables }}
 {{- range $index, $envvar := $chart.Values.global.environment_variables }}
         - name: {{$envvar.name}}
