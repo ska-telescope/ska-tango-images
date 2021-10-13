@@ -584,7 +584,7 @@ include:
   # Generate Changelog
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/changelog.gitlab-ci.yml'
-    #ref: st-966-changelog-template-job
+    ref: st-966-changelog-template-job
 
 # Docs pages
   - project: 'ska-telescope/templates-repository'
