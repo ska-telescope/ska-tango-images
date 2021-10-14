@@ -122,7 +122,8 @@ databaseds:
     failureThreshold: 3
 
 deviceServers:
-  - name: tangotest
+  tangotest:
+    name: tangotest
     function: tango-test
     domain: tango-base
     command: "/usr/local/bin/TangoTest"
@@ -152,6 +153,20 @@ deviceServers:
         cpu: 500m     # 500m = 0.5 CPU
         memory: 512Mi # 512Mi = 0.5 GB mem
         ephemeral-storage: 1Gi
+    livenessProbe:
+      enabled: true
+      initialDelaySeconds: 0
+      periodSeconds: 10
+      timeoutSeconds: 1
+      successThreshold: 1
+      failureThreshold: 3
+    readinessProbe:
+      enabled: true
+      initialDelaySeconds: 0
+      periodSeconds: 10
+      timeoutSeconds: 1
+      successThreshold: 1
+      failureThreshold: 3
 
 tangodb:
   enabled: true

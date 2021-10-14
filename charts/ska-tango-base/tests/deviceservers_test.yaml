@@ -1,0 +1,114 @@
+---
+suite: deviceservers
+templates:
+  - deviceservers.yaml
+tests:
+  - it: should have the readiness probes setup.
+    documentIndex: 6
+    asserts:
+      - isNotEmpty:
+          path: spec.template.spec.containers[0].readinessProbe
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe
+          value:
+            exec:
+              command:
+              - sh
+              - -c
+              - tango_admin --ping-device sys/tg_test/1 &&
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+  - it: should have the liveness probes setup
+    documentIndex: 6
+    asserts:
+      - isNotEmpty:
+          path: spec.template.spec.containers[0].livenessProbe
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe
+          value:
+            exec:
+              command:
+              - sh
+              - -c
+              - tango_admin --ping-device sys/tg_test/1 &&
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+  - it: should use the default values when the readiness probes is not specified in the values.yaml file
+    documentIndex: 6
+    set: 
+      deviceServers.tangotest.readinessProbe.enabled: false
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe
+          value:
+            exec:
+              command:
+              - "sh"
+              - "-c"
+              - "tango_admin --ping-device sys/tg_test/1 &&"
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            successThreshold: 10
+            timeoutSeconds: 1
+  - it: should use the default values when the liveness probes is not specified in the values.yaml file
+    documentIndex: 6
+    set: 
+      deviceServers.tangotest.livenessProbe:
+        enabled: false
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe
+          value:
+            exec:
+              command:
+              - sh
+              - -c
+              - tango_admin --ping-device sys/tg_test/1 &&
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+  - it: should generate readiness and liveness probes for multi TANGO devices in one TANGO server.
+    documentIndex: 6
+    set:
+      deviceServers:
+        tangotest:
+          server:
+            name: "TangoTest"
+            instances:
+            - name: "test"
+              classes:
+              - name: "TangoTest"
+                devices:
+                - name: "sys/tg_test/1"
+                - name: "sys/tg_test/2"
+                - name: "sys/tg_test/3"
+    asserts:
+      - isNotEmpty:
+          path: spec.template.spec.containers[0].livenessProbe
+      - isNotEmpty:
+          path: spec.template.spec.containers[0].readinessProbe
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.exec.command
+          value:
+            - "sh"
+            - "-c"
+            - "tango_admin --ping-device sys/tg_test/1 &&"
+            - "tango_admin --ping-device sys/tg_test/2 &&"
+            - "tango_admin --ping-device sys/tg_test/3 &&"
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.exec.command
+          value:
+            - "sh"
+            - "-c"
+            - "tango_admin --ping-device sys/tg_test/1 &&"
+            - "tango_admin --ping-device sys/tg_test/2 &&"
+            - "tango_admin --ping-device sys/tg_test/3 &&"

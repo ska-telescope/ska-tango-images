@@ -23,7 +23,7 @@ Parameters:
 {{ $lprobe_timeout_seconds := 1 }}
 {{ $lprobe_success_threshold := 1 }}
 {{ $lprobe_failure_threshold := 3 }}
-{{ if $deviceserver.livenessProbe }}
+{{ if $deviceserver.livenessProbe.enabled }}
 {{ $lprobe_initial_delay_seconds = $deviceserver.livenessProbe.initialDelaySeconds }}
 {{ $lprobe_period_seconds = $deviceserver.livenessProbe.periodSeconds }}
 {{ $lprobe_timeout_seconds = $deviceserver.livenessProbe.timeoutSeconds}}
@@ -36,7 +36,7 @@ Parameters:
 {{ $rprobe_timeout_seconds := 1 }}
 {{ $rprobe_success_threshold := 10 }}
 {{ $rprobe_failure_threshold := 3 }}
-{{ if $deviceserver.readinessProbe }}
+{{ if $deviceserver.readinessProbe.enabled }}
 {{ $rprobe_initial_delay_seconds = $deviceserver.readinessProbe.initialDelaySeconds }}
 {{ $rprobe_period_seconds = $deviceserver.readinessProbe.periodSeconds }}
 {{ $rprobe_timeout_seconds = $deviceserver.readinessProbe.timeoutSeconds }}
@@ -210,7 +210,7 @@ spec:
             - "-c"
           {{- range $index_class, $class := $instance.classes }}
           {{- range $index_device, $device := $class.devices }}
-            - "tango_admin --ping-device {{ $device.name }};"
+            - "tango_admin --ping-device {{ $device.name }} &&"
           {{ end }}
           {{ end }}
           initialDelaySeconds: {{ $lprobe_initial_delay_seconds }}
@@ -225,7 +225,7 @@ spec:
             - "-c"
           {{- range $index_class, $class := $instance.classes }}
           {{- range $index_device, $device := $class.devices }}
-            - "tango_admin --ping-device {{ $device.name }};"
+            - "tango_admin --ping-device {{ $device.name }} &&"
           {{ end }}
           {{ end }}
           initialDelaySeconds: {{ $rprobe_initial_delay_seconds }}
