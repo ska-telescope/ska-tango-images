@@ -155,14 +155,14 @@ deviceServers:
         ephemeral-storage: 1Gi
     livenessProbe:
       enabled: true
-      initialDelaySeconds: 0
+      initialDelaySeconds: 5
       periodSeconds: 10
       timeoutSeconds: 1
       successThreshold: 1
       failureThreshold: 3
     readinessProbe:
       enabled: true
-      initialDelaySeconds: 0
+      initialDelaySeconds: 5
       periodSeconds: 10
       timeoutSeconds: 1
       successThreshold: 1

@@ -17,7 +17,7 @@ tests:
               - -c
               - tango_admin --ping-device sys/tg_test/1 &&
             failureThreshold: 3
-            initialDelaySeconds: 0
+            initialDelaySeconds: 5
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 1
@@ -35,7 +35,7 @@ tests:
               - -c
               - tango_admin --ping-device sys/tg_test/1 &&
             failureThreshold: 3
-            initialDelaySeconds: 0
+            initialDelaySeconds: 5
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 1
@@ -54,8 +54,8 @@ tests:
               - "tango_admin --ping-device sys/tg_test/1 &&"
             failureThreshold: 3
             initialDelaySeconds: 0
-            periodSeconds: 10
-            successThreshold: 10
+            periodSeconds: 5
+            successThreshold: 1
             timeoutSeconds: 1
   - it: should use the default values when the liveness probes is not specified in the values.yaml file
     documentIndex: 6
@@ -72,8 +72,8 @@ tests:
               - -c
               - tango_admin --ping-device sys/tg_test/1 &&
             failureThreshold: 3
-            initialDelaySeconds: 0
-            periodSeconds: 10
+            initialDelaySeconds: 5
+            periodSeconds: 5
             successThreshold: 1
             timeoutSeconds: 1
   - it: should generate readiness and liveness probes for multi TANGO devices in one TANGO server.
@@ -112,3 +112,77 @@ tests:
             - "tango_admin --ping-device sys/tg_test/1 &&"
             - "tango_admin --ping-device sys/tg_test/2 &&"
             - "tango_admin --ping-device sys/tg_test/3 &&"
+  - it: should use generate appropriate values from both the values.yaml and the _multidevice-svc.yaml files, respectively
+    documentIndex: 6
+    set:
+      deviceServers:
+        tangotest:
+          livenessProbe:
+            failureThreshold: null
+            periodSeconds: null
+          readinessProbe:
+            timeoutSeconds: null
+            successThreshold: null
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe
+          value:
+            exec:
+              command:
+              - sh
+              - -c
+              - tango_admin --ping-device sys/tg_test/1 &&
+            failureThreshold: 3
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe
+          value:
+            exec:
+              command:
+              - sh
+              - -c
+              - tango_admin --ping-device sys/tg_test/1 &&
+            failureThreshold: 3
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+  - it: should use default values (from the _multidevice-svc.yaml) if the readinessProbe/livenessProbe tags are not present
+    documentIndex: 6
+    set:
+      deviceServers:
+        tangotest:
+          livenessProbe: null
+          readinessProbe: null
+    asserts:
+      - isNotEmpty:
+          path: spec.template.spec.containers[0].livenessProbe
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe
+          value:
+            exec:
+              command:
+              - sh
+              - -c
+              - tango_admin --ping-device sys/tg_test/1 &&
+            failureThreshold: 3
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe
+          value:
+            exec:
+              command:
+              - sh
+              - -c
+              - tango_admin --ping-device sys/tg_test/1 &&
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1

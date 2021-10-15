@@ -18,30 +18,34 @@ Parameters:
 {{ $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
 {{ $kubectl_wait_timeout := coalesce $dsconfig.timeout "120s" }}
 
-{{ $lprobe_initial_delay_seconds := 0}}
-{{ $lprobe_period_seconds := 10 }}
+{{ $lprobe_initial_delay_seconds := 5}}
+{{ $lprobe_period_seconds := 5 }}
 {{ $lprobe_timeout_seconds := 1 }}
 {{ $lprobe_success_threshold := 1 }}
 {{ $lprobe_failure_threshold := 3 }}
+{{ if $deviceserver.livenessProbe }}
 {{ if $deviceserver.livenessProbe.enabled }}
-{{ $lprobe_initial_delay_seconds = $deviceserver.livenessProbe.initialDelaySeconds }}
-{{ $lprobe_period_seconds = $deviceserver.livenessProbe.periodSeconds }}
-{{ $lprobe_timeout_seconds = $deviceserver.livenessProbe.timeoutSeconds}}
-{{ $lprobe_success_threshold = $deviceserver.livenessProbe.successThreshold }}
-{{ $lprobe_failure_threshold = $deviceserver.livenessProbe.failureThreshold }}
+{{ $lprobe_initial_delay_seconds = coalesce $deviceserver.livenessProbe.initialDelaySeconds $lprobe_initial_delay_seconds }}
+{{ $lprobe_period_seconds = coalesce $deviceserver.livenessProbe.periodSeconds $lprobe_period_seconds }}
+{{ $lprobe_timeout_seconds = coalesce $deviceserver.livenessProbe.timeoutSeconds $lprobe_timeout_seconds }}
+{{ $lprobe_success_threshold = coalesce $deviceserver.livenessProbe.successThreshold $lprobe_success_threshold }}
+{{ $lprobe_failure_threshold = coalesce $deviceserver.livenessProbe.failureThreshold $lprobe_failure_threshold }}
+{{ end }}
 {{ end }}
 
 {{ $rprobe_initial_delay_seconds := 0 }}
-{{ $rprobe_period_seconds := 10 }}
+{{ $rprobe_period_seconds := 5 }}
 {{ $rprobe_timeout_seconds := 1 }}
-{{ $rprobe_success_threshold := 10 }}
+{{ $rprobe_success_threshold := 1 }}
 {{ $rprobe_failure_threshold := 3 }}
+{{ if $deviceserver.readinessProbe }}
 {{ if $deviceserver.readinessProbe.enabled }}
-{{ $rprobe_initial_delay_seconds = $deviceserver.readinessProbe.initialDelaySeconds }}
-{{ $rprobe_period_seconds = $deviceserver.readinessProbe.periodSeconds }}
-{{ $rprobe_timeout_seconds = $deviceserver.readinessProbe.timeoutSeconds }}
-{{ $rprobe_success_threshold = $deviceserver.readinessProbe.successThreshold }}
-{{ $rprobe_failure_threshold = $deviceserver.readinessProbe.failureThreshold }}
+{{ $rprobe_initial_delay_seconds = coalesce $deviceserver.readinessProbe.initialDelaySeconds $rprobe_initial_delay_seconds }}
+{{ $rprobe_period_seconds = coalesce $deviceserver.readinessProbe.periodSeconds $rprobe_period_seconds }}
+{{ $rprobe_timeout_seconds = coalesce $deviceserver.readinessProbe.timeoutSeconds $rprobe_timeout_seconds }}
+{{ $rprobe_success_threshold = coalesce $deviceserver.readinessProbe.successThreshold $rprobe_success_threshold }}
+{{ $rprobe_failure_threshold = coalesce $deviceserver.readinessProbe.failureThreshold $rprobe_failure_threshold }}
+{{ end }}
 {{ end }}
 ---
 {{ range $instance := $deviceserver.server.instances }}
