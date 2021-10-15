@@ -94,7 +94,7 @@ tests:
               command:
               - sh
               - -c
-              - tango_admin --ping-device sys/tg_test/1 &&
+              - tango_admin --ping-device sys/tg_test/1
             failureThreshold: 3
             initialDelaySeconds: 0
             periodSeconds: 5
