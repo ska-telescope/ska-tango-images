@@ -230,10 +230,8 @@ spec:
             - "sh"
             - "-c"
           {{- range $index_class, $class := $instance.classes }}
-          # {{ len $class.devices }}
           {{ $num_of_devices := len $class.devices }}
           {{ $num_of_devices = sub $num_of_devices 1 }}
-          # {{ $num_of_devices }}
           {{- range $index_device, $device := $class.devices }}
           {{ if lt $index_device  $num_of_devices }}
             - "tango_admin --ping-device {{ $device.name }} &&"
