@@ -154,15 +154,13 @@ deviceServers:
         memory: 512Mi # 512Mi = 0.5 GB mem
         ephemeral-storage: 1Gi
     livenessProbe:
-      enabled: true
-      initialDelaySeconds: 5
+      initialDelaySeconds: 0
       periodSeconds: 10
       timeoutSeconds: 1
       successThreshold: 1
       failureThreshold: 3
     readinessProbe:
-      enabled: true
-      initialDelaySeconds: 5
+      initialDelaySeconds: 0
       periodSeconds: 10
       timeoutSeconds: 1
       successThreshold: 1
