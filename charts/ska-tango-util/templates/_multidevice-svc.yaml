@@ -191,6 +191,10 @@ spec:
           {{- end }}
           {{- if $deviceserver.command }}
           - {{ $deviceserver.command }}
+          {{ else if $deviceserver.entrypoints }}
+          {{- range $index_ep, $entrypoint := $deviceserver.entrypoints }}
+          - /usr/bin/python {{ $entrypoint.path }}
+          {{- end }}
           {{- else }}
           - /usr/bin/python 
           - /data/{{ $deviceserver.server.name }}.py
@@ -200,19 +204,18 @@ spec:
           - name: configuration
             mountPath: data
             readOnly: true
-        env:
-        - name: TANGO_HOST
-          value: {{ $tango_host }}
         livenessProbe:
           exec:
             command:
             - "sh"
             - "-c"
           {{- range $index_class, $class := $instance.classes }}
+          {{ $num_of_classes := len $instance.classes }}
+          {{ $num_of_classes = sub $num_of_classes 1 }}
           {{ $num_of_devices := len $class.devices }}
           {{ $num_of_devices = sub $num_of_devices 1 }}
           {{- range $index_device, $device := $class.devices }}
-          {{ if lt $index_device  $num_of_devices }}
+          {{ if or (lt $index_class $num_of_classes) (lt $index_device  $num_of_devices)  }}
             - "tango_admin --ping-device {{ $device.name }} &&"
           {{ else }}
             - "tango_admin --ping-device {{ $device.name }}"
@@ -230,10 +233,12 @@ spec:
             - "sh"
             - "-c"
           {{- range $index_class, $class := $instance.classes }}
+          {{ $num_of_classes := len $instance.classes }}
+          {{ $num_of_classes = sub $num_of_classes 1 }}
           {{ $num_of_devices := len $class.devices }}
           {{ $num_of_devices = sub $num_of_devices 1 }}
           {{- range $index_device, $device := $class.devices }}
-          {{ if lt $index_device  $num_of_devices }}
+          {{ if or (lt $index_class $num_of_classes) (lt $index_device  $num_of_devices)  }}
             - "tango_admin --ping-device {{ $device.name }} &&"
           {{ else }}
             - "tango_admin --ping-device {{ $device.name }}"
@@ -245,6 +250,9 @@ spec:
           timeoutSeconds: {{ $rprobe_timeout_seconds }}
           successThreshold: {{ $rprobe_success_threshold }}
           failureThreshold: {{ $rprobe_failure_threshold }}
+        env:
+        - name: TANGO_HOST
+          value: {{ $tango_host }}
 {{- if $chart.Values.global.environment_variables }}
 {{- range $index, $envvar := $chart.Values.global.environment_variables }}
         - name: {{$envvar.name}}
