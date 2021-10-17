@@ -15,7 +15,9 @@ tests:
               command:
               - sh
               - -c
-              - tango_admin --ping-device sys/tg_test/1
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/1
             failureThreshold: 3
             initialDelaySeconds: 0
             periodSeconds: 10
@@ -33,7 +35,9 @@ tests:
               command:
               - sh
               - -c
-              - tango_admin --ping-device sys/tg_test/1
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/1
             failureThreshold: 3
             initialDelaySeconds: 0
             periodSeconds: 10
@@ -62,19 +66,35 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].livenessProbe.exec.command
           value:
-            - "sh"
-            - "-c"
-            - "tango_admin --ping-device sys/tg_test/1 &&"
-            - "tango_admin --ping-device sys/tg_test/2 &&"
-            - "tango_admin --ping-device sys/tg_test/3"
+            - sh
+            - -c
+            - tango_admin 
+            - --ping-device
+            - sys/tg_test/1
+            - "&&"
+            - tango_admin
+            - --ping-device
+            - sys/tg_test/2
+            - "&&"
+            - tango_admin
+            - --ping-device
+            - sys/tg_test/3
       - equal:
           path: spec.template.spec.containers[0].readinessProbe.exec.command
           value:
-            - "sh"
-            - "-c"
-            - "tango_admin --ping-device sys/tg_test/1 &&"
-            - "tango_admin --ping-device sys/tg_test/2 &&"
-            - "tango_admin --ping-device sys/tg_test/3"
+            - sh
+            - -c
+            - tango_admin 
+            - --ping-device
+            - sys/tg_test/1
+            - "&&"
+            - tango_admin
+            - --ping-device
+            - sys/tg_test/2
+            - "&&"
+            - tango_admin
+            - --ping-device
+            - sys/tg_test/3
   - it: should use the appropriate values to generate the liveness and readiness probes from both the values.yaml and the _multidevice-svc.yaml files, respectively.
     documentIndex: 6
     set:
@@ -94,7 +114,9 @@ tests:
               command:
               - sh
               - -c
-              - tango_admin --ping-device sys/tg_test/1
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/1
             failureThreshold: 3
             initialDelaySeconds: 0
             periodSeconds: 5
@@ -107,7 +129,9 @@ tests:
               command:
               - sh
               - -c
-              - tango_admin --ping-device sys/tg_test/1
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/1
             failureThreshold: 3
             initialDelaySeconds: 0
             periodSeconds: 10
@@ -130,7 +154,9 @@ tests:
               command:
               - sh
               - -c
-              - tango_admin --ping-device sys/tg_test/1
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/1
             failureThreshold: 3
             initialDelaySeconds: 0
             periodSeconds: 5
@@ -143,7 +169,9 @@ tests:
               command:
               - sh
               - -c
-              - tango_admin --ping-device sys/tg_test/1
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/1
             failureThreshold: 3
             initialDelaySeconds: 0
             periodSeconds: 5
@@ -208,9 +236,17 @@ tests:
               command:
               - sh
               - -c
-              - tango_admin --ping-device sys/tg_test/11 &&
-              - tango_admin --ping-device sys/tg_test/12 &&
-              - tango_admin --ping-device sys/tg_test/13
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/11
+              - "&&"
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/12
+              - "&&"
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/13
             failureThreshold: 3
             initialDelaySeconds: 0
             periodSeconds: 10
@@ -223,9 +259,17 @@ tests:
               command:
               - sh
               - -c
-              - tango_admin --ping-device sys/tg_test/11 &&
-              - tango_admin --ping-device sys/tg_test/12 &&
-              - tango_admin --ping-device sys/tg_test/13
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/11
+              - "&&"
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/12
+              - "&&"
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/13
             failureThreshold: 3
             initialDelaySeconds: 0
             periodSeconds: 10

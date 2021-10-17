@@ -215,10 +215,13 @@ spec:
           {{ $num_of_devices := len $class.devices }}
           {{ $num_of_devices = sub $num_of_devices 1 }}
           {{- range $index_device, $device := $class.devices }}
+            - tango_admin
+            - --ping-device
           {{ if or (lt $index_class $num_of_classes) (lt $index_device  $num_of_devices)  }}
-            - "tango_admin --ping-device {{ $device.name }} &&"
+            - {{ $device.name }}
+            - "&&"
           {{ else }}
-            - "tango_admin --ping-device {{ $device.name }}"
+            - {{ $device.name }}
           {{ end }}
           {{ end }}
           {{ end }}
@@ -238,10 +241,13 @@ spec:
           {{ $num_of_devices := len $class.devices }}
           {{ $num_of_devices = sub $num_of_devices 1 }}
           {{- range $index_device, $device := $class.devices }}
+            - tango_admin
+            - --ping-device
           {{ if or (lt $index_class $num_of_classes) (lt $index_device  $num_of_devices)  }}
-            - "tango_admin --ping-device {{ $device.name }} &&"
+            - {{ $device.name }}
+            - "&&"
           {{ else }}
-            - "tango_admin --ping-device {{ $device.name }}"
+            - {{ $device.name }}
           {{ end }}
           {{ end }}
           {{ end }}
