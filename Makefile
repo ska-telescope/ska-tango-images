@@ -41,6 +41,9 @@ include .make/release.mk
 # include raw support
 include .make/raw.mk
 
+# include docs support
+include .make/docs.mk
+
 # include your own private variables for custom deployment configuration
 -include PrivateRules.mak
 
