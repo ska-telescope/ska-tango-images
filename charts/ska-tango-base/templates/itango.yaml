@@ -16,8 +16,10 @@ metadata:
     function: {{ .Values.itango.function }}
     domain: {{ .Values.itango.domain }}
     intent: {{ .Values.itango.intent }}
+{{ if or (.Values.global.annotations) (.Values.annotations) }}
   annotations:
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 4 }}
+{{ end }}
 spec:
   initContainers:
   - name: check-dependencies-0

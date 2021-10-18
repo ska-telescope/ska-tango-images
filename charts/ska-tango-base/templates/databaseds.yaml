@@ -14,8 +14,10 @@ metadata:
     domain: {{ .Values.databaseds.domain }}
     intent: {{ .Values.databaseds.intent }}
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+{{ if or (.Values.global.annotations) (.Values.annotations) }}
   annotations:
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 4 }}
+{{ end }}
 spec:
   ports:
   - name: ds
@@ -41,8 +43,10 @@ metadata:
     domain: {{ .Values.databaseds.domain }}
     intent: {{ .Values.databaseds.intent }}
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+{{ if or (.Values.global.annotations) (.Values.annotations) }}
   annotations:
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 4 }}
+{{ end }}
 spec:
   selector:
     matchLabels:
