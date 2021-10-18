@@ -2,7 +2,6 @@ ARG CAR_OCI_REGISTRY_HOST
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.0.0"
 FROM $BASE_IMAGE
 
-
 LABEL \
       author="Piers Harding <Piers.Harding@skao.int>" \
       description="This image illustrates build dependencies" \
@@ -10,31 +9,47 @@ LABEL \
       int.skao.team="Systems Team" \
       int.skao.website="https://gitlab.com/ska-telescope/sdi/ska-ser-containerisation-and-orchestration" \
       int.skao.application="Tango Builder"
-      
+
 USER root
 
 # Install build time dependencies
-RUN apk add --update --no-cache curl libstdc++ g++\
-    openssl ca-certificates libsodium-dev \
-    boost py3-distutils-extra zlib-dev py3-pip boost-python3 boost-dev libzmq bash
-    
+RUN apk add --update --no-cache \
+    bash \
+    boost \
+    boost-dev \
+    boost-python3 \
+    ca-certificates \
+    curl \
+    g++ \
+    libffi-dev \
+    libsodium-dev \
+    libstdc++ \
+    libzmq \
+    openssl \
+    py3-distutils-extra \
+    py3-pip \
+    zlib-dev
+
 RUN apk add --no-cache --virtual build-dependencies \
-    build-base alpine-sdk \
+    alpine-sdk \
+    build-base \
+    git \
     linux-headers \
-    git make
-    
+    make
+
 # setup pip ready for package installs
 COPY pip.conf /etc/pip.conf
-RUN pip3 install setuptools \
-    wheel
-    
+RUN pip3 install \
+        setuptools \
+        wheel
+
 WORKDIR /app
 
 # pkgconfig needs to find these
 ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig
 
 # Install numpy manually before PyTango and other requirements to ensure we
-# build PyTango with numpy support. 
+# build PyTango with numpy support.
 RUN python3.9 -m pip install numpy==1.21.0
 
 # now install build requirements
