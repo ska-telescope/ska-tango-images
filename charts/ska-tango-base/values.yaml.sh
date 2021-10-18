@@ -17,10 +17,10 @@ cat <<EOF > ${VALUES_YAML}
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-global:
-  annotations:
-    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
-    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+# global:
+#   annotations:
+#     app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+#     app.gitlab.com/env: CI_ENVIRONMENT_SLUG
   # by setting this parameter we can disable the lower level sub-system tango-base, archiver and webjive
   # sub-system:
   #   tango-base:
