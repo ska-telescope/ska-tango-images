@@ -23,6 +23,7 @@ CI_PROJECT_PATH_SLUG ?= ska-tango-images
 CI_ENVIRONMENT_SLUG ?= ska-tango-images
 
 K8S_TEST_MAKE_PARAMS = KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(RELEASE_NAME) TANGO_HOST=$(TANGO_HOST) MARK=$(MARK)
+K8S_CHART_PARAMS = --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --values $(BASE)/charts/values.yaml
 
 
 RELEASE_SUPPORT := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))/.make-release-support
@@ -183,6 +184,10 @@ helm-pre-lint: helm-pre-publish ## make sure auto-generate values.yaml happens
 # use pre update hook to update chart values
 k8s-pre-install-chart:
 	make helm-pre-publish
+	@echo "k8s-pre-install-chart: setting up charts/values.yaml"
+	@cd charts; \
+	sed -e 's/CI_PROJECT_PATH_SLUG/$(CI_PROJECT_PATH_SLUG)/' ci-values.yaml > generated_values.yaml; \
+	sed -e 's/CI_ENVIRONMENT_SLUG/$(CI_ENVIRONMENT_SLUG)/' generated_values.yaml > values.yaml
 
 k8s-pre-template-chart:
 	make helm-pre-publish
