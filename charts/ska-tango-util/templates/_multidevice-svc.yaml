@@ -191,10 +191,6 @@ spec:
           {{- end }}
           {{- if $deviceserver.command }}
           - {{ $deviceserver.command }}
-          {{ else if $deviceserver.entrypoints }}
-          {{- range $index_ep, $entrypoint := $deviceserver.entrypoints }}
-          - /usr/bin/python {{ $entrypoint.path }}
-          {{- end }}
           {{- else }}
           - /usr/bin/python 
           - /data/{{ $deviceserver.server.name }}.py

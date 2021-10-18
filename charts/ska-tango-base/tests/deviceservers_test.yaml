@@ -177,29 +177,6 @@ tests:
             periodSeconds: 5
             successThreshold: 1
             timeoutSeconds: 1
-  - it: should generate a command using the entrypoints tag provided.
-    documentIndex: 6
-    set:
-      deviceServers:
-        tangotest:
-          command: null
-          instances: ["01"]
-          entrypoints:
-            - name: "Test.Test"
-              path: "/app/src/ska_tango_examples/TestServer.py"
-          server:
-            instances:
-              - name: "01"
-    asserts:
-      - equal:
-          path: spec.template.spec.containers[0].command
-          value:
-            - retry
-            - --sleep=1
-            - --tries=100
-            - --
-            - /usr/bin/python /app/src/ska_tango_examples/TestServer.py
-            - "01"
   - it: should generate liveness and readiness probes for a TANGO server instance with multiple TANGO classes.
     documentIndex: 6
     set:
