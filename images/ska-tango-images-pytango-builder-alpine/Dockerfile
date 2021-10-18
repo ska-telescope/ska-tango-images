@@ -10,31 +10,31 @@ LABEL \
       int.skao.team="Systems Team" \
       int.skao.website="https://gitlab.com/ska-telescope/sdi/ska-ser-containerisation-and-orchestration" \
       int.skao.application="Tango Builder"
-      
+
 USER root
 
 # Install build time dependencies
 RUN apk add --update --no-cache curl libstdc++ g++\
-    openssl ca-certificates libsodium-dev \
+    openssl ca-certificates libsodium-dev  libffi-dev \
     boost py3-distutils-extra zlib-dev py3-pip boost-python3 boost-dev libzmq bash
-    
+
 RUN apk add --no-cache --virtual build-dependencies \
     build-base alpine-sdk \
     linux-headers \
     git make
-    
+
 # setup pip ready for package installs
 COPY pip.conf /etc/pip.conf
 RUN pip3 install setuptools \
     wheel
-    
+
 WORKDIR /app
 
 # pkgconfig needs to find these
 ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig
 
 # Install numpy manually before PyTango and other requirements to ensure we
-# build PyTango with numpy support. 
+# build PyTango with numpy support.
 RUN python3.9 -m pip install numpy==1.21.0
 
 # now install build requirements
