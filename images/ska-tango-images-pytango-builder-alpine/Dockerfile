@@ -2,6 +2,15 @@ ARG CAR_OCI_REGISTRY_HOST
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.0.0"
 FROM $BASE_IMAGE
 
+
+LABEL \
+      author="Piers Harding <Piers.Harding@skao.int>" \
+      description="This image illustrates build dependencies" \
+      license="Apache2.0" \
+      int.skao.team="Systems Team" \
+      int.skao.website="https://gitlab.com/ska-telescope/sdi/ska-ser-containerisation-and-orchestration" \
+      int.skao.application="Tango Builder"
+
 USER root
 # pkgconfig needs to find these
 ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig
@@ -12,7 +21,9 @@ ENV LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/usr/lib
 RUN apk --update add --no-cache libstdc++ \
     g++ \
     libsodium-dev \
+    libffi-dev \
     zlib-dev \
+    boost \
     boost-dev \
     python3-dev \
     py3-pip \
@@ -20,7 +31,7 @@ RUN apk --update add --no-cache libstdc++ \
     py3-cryptography \
     bash \
     make \
-    ca-certificates \ 
+    ca-certificates \
     curl \
     git
 
@@ -31,14 +42,14 @@ WORKDIR /app
 COPY requirements.txt requirements.txt
 
 # Install numpy manually before PyTango and other requirements to ensure we
-# build PyTango with numpy support. 
+# build PyTango with numpy support.
 RUN python3.9 -m pip install --prefix=/usr/local numpy==1.21.0 \
 # now install build requirements
     && python3.9 -m pip install --prefix=/usr/local -r requirements.txt \
 # this should be commented if we wish for the builder
 # to keep the python cache
-    && python3.9 -m pip cache purge 
-    
+    && python3.9 -m pip cache purge
+
 # do ldconfig stuff
 RUN mkdir -p /etc/ld.so.conf.d \
     && echo "include /etc/ld.so.conf.d/*.conf" > /etc/ld.so.conf \
