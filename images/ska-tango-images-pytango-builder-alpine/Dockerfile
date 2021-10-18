@@ -30,10 +30,9 @@ RUN apk add --update --no-cache \
     py3-pip \
     zlib-dev
 
-RUN apk add --no-cache --virtual \
+RUN apk add --no-cache --virtual build-dependencies \
     alpine-sdk \
     build-base \
-    build-dependencies \
     git \
     linux-headers \
     make
