@@ -41,6 +41,9 @@ include .make/release.mk
 # include raw support
 include .make/raw.mk
 
+# include docs support
+include .make/docs.mk
+
 # include your own private variables for custom deployment configuration
 -include PrivateRules.mak
 
@@ -280,6 +283,10 @@ test: helm-pre-publish ## test the application on K8s
 		rm tests/post-deployment/tango_values.yaml; \
 		echo "Status set at \"$$status\" in ./Makefile test target"; \
 		exit $$status
+
+chart_test: helm-pre-publish #clean dep-up
+	helm package charts/ska-tango-util/ -d charts/ska-tango-base/charts/; \
+	mkdir -p charts/build; helm unittest charts/ska-tango-base/ --helm3 --with-subchart --output-type JUnit --output-file charts/build/chart_template_tests.xml; \
 
 show:
 	echo $$TANGO_HOST

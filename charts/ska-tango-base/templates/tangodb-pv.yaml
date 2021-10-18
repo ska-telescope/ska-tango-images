@@ -10,8 +10,10 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+{{ if or (.Values.global.annotations) (.Values.annotations) }}
   annotations:
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 4 }}
+{{ end }}
 spec:
   storageClassName: standard
   persistentVolumeReclaimPolicy: Recycle
@@ -31,8 +33,10 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+{{ if or (.Values.global.annotations) (.Values.annotations) }}
   annotations:
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 4 }}
+{{ end }}
 spec:
 {{ if (coalesce .Values.global.minikube .Values.minikube false)  }}
   storageClassName: standard

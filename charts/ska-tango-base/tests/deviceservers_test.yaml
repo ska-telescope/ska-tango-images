@@ -1,0 +1,299 @@
+---
+suite: deviceservers
+templates:
+  - deviceservers.yaml
+tests:
+  - it: should have the readiness probes setup using the parameters in the values.yaml file.
+    documentIndex: 6
+    asserts:
+      - isNotEmpty:
+          path: spec.template.spec.containers[0].readinessProbe
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe
+          value:
+            exec:
+              command:
+              - sh
+              - -c
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/1
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+  - it: should have the liveness probes setup using the parameters in the values.yaml file.
+    documentIndex: 6
+    asserts:
+      - isNotEmpty:
+          path: spec.template.spec.containers[0].livenessProbe
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe
+          value:
+            exec:
+              command:
+              - sh
+              - -c
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/1
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+  - it: should generate readiness and liveness probes for a TANGO server instance with one Tango class and multiple devices.
+    documentIndex: 6
+    set:
+      deviceServers:
+        tangotest:
+          server:
+            name: "TangoTest"
+            instances:
+            - name: "test"
+              classes:
+              - name: "TangoTest"
+                devices:
+                - name: "sys/tg_test/1"
+                - name: "sys/tg_test/2"
+                - name: "sys/tg_test/3"
+    asserts:
+      - isNotEmpty:
+          path: spec.template.spec.containers[0].livenessProbe
+      - isNotEmpty:
+          path: spec.template.spec.containers[0].readinessProbe
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe.exec.command
+          value:
+            - sh
+            - -c
+            - tango_admin 
+            - --ping-device
+            - sys/tg_test/1
+            - "&&"
+            - tango_admin
+            - --ping-device
+            - sys/tg_test/2
+            - "&&"
+            - tango_admin
+            - --ping-device
+            - sys/tg_test/3
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe.exec.command
+          value:
+            - sh
+            - -c
+            - tango_admin 
+            - --ping-device
+            - sys/tg_test/1
+            - "&&"
+            - tango_admin
+            - --ping-device
+            - sys/tg_test/2
+            - "&&"
+            - tango_admin
+            - --ping-device
+            - sys/tg_test/3
+  - it: should use the appropriate values to generate the liveness and readiness probes from both the values.yaml and the _multidevice-svc.yaml files, respectively.
+    documentIndex: 6
+    set:
+      deviceServers:
+        tangotest:
+          livenessProbe:
+            failureThreshold: null
+            periodSeconds: null
+          readinessProbe:
+            timeoutSeconds: null
+            successThreshold: null
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe
+          value:
+            exec:
+              command:
+              - sh
+              - -c
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/1
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe
+          value:
+            exec:
+              command:
+              - sh
+              - -c
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/1
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+  - it: should use default values (from the _multidevice-svc.yaml) to generate the liveness and readiness probes if the readinessProbe/livenessProbe tags are not present in the values.yaml file.
+    documentIndex: 6
+    set:
+      deviceServers:
+        tangotest:
+          livenessProbe: null
+          readinessProbe: null
+    asserts:
+      - isNotEmpty:
+          path: spec.template.spec.containers[0].livenessProbe
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe
+          value:
+            exec:
+              command:
+              - sh
+              - -c
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/1
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe
+          value:
+            exec:
+              command:
+              - sh
+              - -c
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/1
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 5
+            successThreshold: 1
+            timeoutSeconds: 1
+  - it: should generate liveness and readiness probes for a TANGO server instance with multiple TANGO classes.
+    documentIndex: 6
+    set:
+      deviceServers:
+        tangotest:
+          server:
+            name: "TangoTest"
+            instances:
+            - name: "test"
+              classes:
+              - name: "TangoTest1"
+                devices:
+                - name: "sys/tg_test/11"
+              - name: "TangoTest2"
+                devices:
+                - name: "sys/tg_test/12"
+              - name: "TangoTest3"
+                devices:
+                - name: "sys/tg_test/13"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].command
+          value:
+            - retry
+            - --sleep=1
+            - --tries=100
+            - --
+            - /usr/local/bin/TangoTest
+            - "test"
+      - equal:
+          path: spec.template.spec.containers[0].readinessProbe
+          value:
+            exec:
+              command:
+              - sh
+              - -c
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/11
+              - "&&"
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/12
+              - "&&"
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/13
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+      - equal:
+          path: spec.template.spec.containers[0].livenessProbe
+          value:
+            exec:
+              command:
+              - sh
+              - -c
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/11
+              - "&&"
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/12
+              - "&&"
+              - tango_admin
+              - --ping-device
+              - sys/tg_test/13
+            failureThreshold: 3
+            initialDelaySeconds: 0
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+  - it: should generate multiple StatefulSet resources for a TANGO server with multiple server instances.
+    set:
+      deviceServers:
+        tangotest:
+          instances: ["test", "test2"]
+          server:
+            instances:
+            - name: "test"
+              classes:
+              - name: "TangoTest1"
+                devices:
+                - name: "sys/tg_test/1"
+            - name: "test2"
+              classes:
+              - name: "TangoTest2"
+                devices:
+                - name: "sys/tg_test/2"
+    asserts:
+      - isKind:
+          of: StatefulSet
+        documentIndex: 6
+      - equal:
+          path: spec.template.spec.containers[0].command
+          value:
+            - retry
+            - --sleep=1
+            - --tries=100
+            - --
+            - /usr/local/bin/TangoTest
+            - "test"
+        documentIndex: 6
+      - isKind:
+          of: StatefulSet
+        documentIndex: 8
+      - equal:
+          path: spec.template.spec.containers[0].command
+          value:
+            - retry
+            - --sleep=1
+            - --tries=100
+            - --
+            - /usr/local/bin/TangoTest
+            - "test2"
+        documentIndex: 8
+

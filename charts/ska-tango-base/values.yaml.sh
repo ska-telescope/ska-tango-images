@@ -17,10 +17,10 @@ cat <<EOF > ${VALUES_YAML}
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-global:
-  annotations:
-    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
-    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+# global:
+#   annotations:
+#     app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+#     app.gitlab.com/env: CI_ENVIRONMENT_SLUG
   # by setting this parameter we can disable the lower level sub-system tango-base, archiver and webjive
   # sub-system:
   #   tango-base:
@@ -122,7 +122,8 @@ databaseds:
     failureThreshold: 3
 
 deviceServers:
-  - name: tangotest
+  tangotest:
+    name: tangotest
     function: tango-test
     domain: tango-base
     command: "/usr/local/bin/TangoTest"
@@ -152,6 +153,18 @@ deviceServers:
         cpu: 500m     # 500m = 0.5 CPU
         memory: 512Mi # 512Mi = 0.5 GB mem
         ephemeral-storage: 1Gi
+    livenessProbe:
+      initialDelaySeconds: 0
+      periodSeconds: 10
+      timeoutSeconds: 1
+      successThreshold: 1
+      failureThreshold: 3
+    readinessProbe:
+      initialDelaySeconds: 0
+      periodSeconds: 10
+      timeoutSeconds: 1
+      successThreshold: 1
+      failureThreshold: 3
 
 tangodb:
   enabled: true
