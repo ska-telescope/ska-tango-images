@@ -1,6 +1,6 @@
 ARG CAR_OCI_REGISTRY_HOST
 ARG BASE_IMAGE="alpine:3.14"
-ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.3.7"
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.0.0"
 FROM $BUILD_IMAGE AS buildenv
 
 USER root
