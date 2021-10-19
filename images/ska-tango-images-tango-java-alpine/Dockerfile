@@ -60,7 +60,7 @@ RUN apk --update  add --no-cache --virtual mybuilddeps make \
    && make -C /usr/src/tango  -j$(nproc) \
    && make -C /usr/src/tango install \
 ## remove buildpackages & docs
-   && rm -rf /usr/src/tango && apk del mybuilddeps && rm -rf /usr/local/share/docs
+   && rm -rf /usr/src/tango && apk del mybuilddeps && rm -rf /usr/local/share/doc
     
 ##RUN ln -s /usr/local/lib/libtango.so.9.4.0 /usr/local/lib/libtango.so.9
 WORKDIR /usr/java

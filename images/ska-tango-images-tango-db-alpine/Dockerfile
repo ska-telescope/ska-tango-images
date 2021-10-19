@@ -31,9 +31,9 @@ RUN addgroup --system mysql && adduser --system -s /bin/bash -G mysql mysql
 RUN apk --update add --no-cache mariadb mariadb-client pwgen
 
 COPY run.sh /scripts/run.sh
-RUN mkdir /docker-entrypoint-initdb.d && /etc/mysql/conf.d && \
+RUN mkdir /docker-entrypoint-initdb.d /etc/mysql/conf.d && \
     chmod -R 755 /scripts /etc/mysql/conf.d
-    
+
 EXPOSE 3306
 
 VOLUME ["/var/lib/mysql"]
