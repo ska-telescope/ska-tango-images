@@ -31,6 +31,7 @@ RUN apk --update add --no-cache libstdc++ \
     bash \
     make \
     ca-certificates \
+    cargo \
     curl \
     git
 
