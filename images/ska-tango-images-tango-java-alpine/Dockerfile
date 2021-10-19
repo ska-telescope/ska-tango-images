@@ -12,15 +12,11 @@ ENV LOG4J=https://artefact.skao.int/repository/raw-internal/ska-tango-images/lib
 ENV TANGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/tango-9.3.4.tar.gz
 
 # Install build time dependencies
-RUN apk add --update --no-cache make bash sudo \
-    libsodium-dev mariadb-connector-c-dev \
-    && apk add  --no-cache --virtual mydeps git cmake \
-    curl openssl ca-certificates \
-    java-cacerts wget autoconf automake libtool g++ 
-
-RUN apk --no-cache add \
-    openjdk8-jre-base \
-    libstdc++
+RUN apk --update  add --no-cache make bash sudo \
+    libsodium-dev libstdc++ mariadb-connector-c-dev \
+    curl openssl ca-certificates file \
+    java-cacerts wget autoconf automake libtool g++ \
+    openjdk8-jre-base python3-dev
 
 # copy the built library dependencies from the builder stage
 COPY --from=buildenv /usr/local /usr/local
@@ -70,8 +66,7 @@ RUN wget --no-check-certificate "$LOG4J" -O log4j.tar.gz \
     && rm /usr/java/log4j.tar.gz && rm -rf apache-log4j-1.2.17 \
 #  create the user tango and add it to sudoers
     && adduser -h /home/tango -s /bin/bash -D tango \
-    && echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango && apk del mydeps
-
+    && echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango
 
 USER tango
 
