@@ -1,7 +1,7 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-alpine:0.0.0"
+ARG BUILDER_BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-alpine:0.0.0"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.0.0"
-FROM $BUILD_IMAGE AS buildenv
+FROM $BUILDER_BASE_IMAGE AS buildenv
 
 FROM $BASE_IMAGE
 LABEL \
@@ -15,9 +15,10 @@ LABEL \
 USER root
 
 # Install build time dependencies
-RUN apk add --update --no-cache curl bash \
-    openssl ca-certificates libstdc++ g++  libsodium-dev \
-    boost py3-distutils-extra py3-pip boost-python3 make libzmq
+# cpp already has libstdc++ libsodium-dev
+RUN apk add --update --no-cache curl bash ca-certificates \
+    boost py3-distutils-extra py3-pip boost-python3 make g++
+
 
 # Copy across files that are used to help orchestrate container compositions
 # and test execution sequences    
