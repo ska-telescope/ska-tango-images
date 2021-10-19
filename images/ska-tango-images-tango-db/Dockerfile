@@ -41,3 +41,4 @@ LABEL \
 
 COPY --from=builder /docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
 COPY sql_mode.cnf /etc/mysql/conf.d
+RUN chmod 644 /etc/mysql/conf.d/sql_mode.cnf
