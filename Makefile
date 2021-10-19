@@ -28,9 +28,6 @@ PYTHON_VARS_AFTER_PYTEST = -m '$(MARK)' \
 						--disable-pytest-warnings --timeout=300 \
 						--count=1 --true-context
 
-# blank out the test file so that pytest.ini is used in k8s-test
-PYTHON_TEST_FILE =
-
 RELEASE_SUPPORT := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))/.make-release-support
 
 # include OCI Images support
