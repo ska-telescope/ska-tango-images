@@ -23,7 +23,8 @@ RUN apk --update add --no-cache libstdc++ \
     ca-certificates \ 
     curl \
     git
-    
+
+ENV PYTHONPATH=/usr/local/lib/python3.9/site-packages
 # setup pip ready for package installs
 COPY pip.conf /etc/pip.conf
 WORKDIR /app
@@ -33,10 +34,10 @@ COPY requirements.txt requirements.txt
 # build PyTango with numpy support. 
 RUN python3.9 -m pip install --prefix=/usr/local numpy==1.21.0 \
 # now install build requirements
-    && python3.9 -m pip install --prefix=/usr/local -r requirements.txt
-# this should commented if we wish for the builder
+    && python3.9 -m pip install --prefix=/usr/local -r requirements.txt \
+# this should be commented if we wish for the builder
 # to keep the python cache
-# && python3.9 -m pip cache purge 
+    && python3.9 -m pip cache purge 
     
 # do ldconfig stuff
 RUN mkdir -p /etc/ld.so.conf.d \
