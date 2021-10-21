@@ -15,9 +15,10 @@ LABEL \
 USER root
 
 # Install build time dependencies
-RUN apk add --update --no-cache curl bash \
-    openssl ca-certificates libstdc++ g++  libsodium-dev \
-    boost py3-distutils-extra py3-pip boost-python3 make libzmq
+# cpp already has libstdc++ libsodium-dev
+RUN apk add --update --no-cache curl bash ca-certificates \
+    boost py3-distutils-extra py3-pip make g++ python3-dev
+
 
 # Copy across files that are used to help orchestrate container compositions
 # and test execution sequences    
@@ -37,7 +38,7 @@ RUN mkdir /venv && ln -s /usr/* /venv/ && ln -s /usr/bin/python3 /venv/bin/pytho
 
 USER tango
 ENV PATH="/home/tango/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PATH}"
-
+ENV PYTHONPATH=/usr/local/lib/python3.9/site-packages
 
 ONBUILD COPY --chown=tango:tango . /app
 ONBUILD COPY --from=buildenv /usr/local/bin/ /usr/local/bin/
