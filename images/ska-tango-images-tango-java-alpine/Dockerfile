@@ -72,6 +72,7 @@ RUN apk --update  add --no-cache --virtual mybuilddeps wget \
     && rm /usr/java/log4j.tar.gz && rm -rf apache-log4j-1.2.17 \
 #  create the user tango and add it to sudoers
     && adduser -h /home/tango -s /bin/bash -D tango \
-    && echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango && apk del mybuilddeps
+    && echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango && apk del mybuilddeps \
+    && apk --update  add --no-cache python3 python3-pip
 
 USER tango
