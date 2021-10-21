@@ -15,7 +15,9 @@ LABEL \
       int.skao.application="ITango"
 
 USER root
-RUN apk add --update --no-cache procps
+RUN apk add --update --no-cache procps \
+# if used for tests it will require gnu tar not the busybox one
+    tar
 
 USER tango
 ENV PYTHONPATH=/usr/local/lib/python3.9/site-packages
