@@ -73,6 +73,6 @@ RUN apk --update  add --no-cache --virtual mybuilddeps wget \
 #  create the user tango and add it to sudoers
     && adduser -h /home/tango -s /bin/bash -D tango \
     && echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango && apk del mybuilddeps \
-    && apk --update  add --no-cache python3 python3-pip
+    && apk --update  add --no-cache python3 py3-pip
 
 USER tango
