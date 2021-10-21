@@ -18,6 +18,8 @@ USER root
 RUN apk add --update --no-cache procps
 
 USER tango
+ENV PYTHONPATH=/usr/local/lib/python3.9/site-packages
+
 # create ipython profile to so that itango doesn't fail if ipython hasn't run yet
 RUN ipython profile create
 
