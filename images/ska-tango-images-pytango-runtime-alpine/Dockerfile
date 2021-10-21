@@ -17,7 +17,7 @@ USER root
 # Install build time dependencies
 # cpp already has libstdc++ libsodium-dev
 RUN apk add --update --no-cache curl bash ca-certificates \
-    boost py3-distutils-extra py3-pip make g++
+    boost py3-distutils-extra py3-pip make g++ python3-dev
 
 
 # Copy across files that are used to help orchestrate container compositions
