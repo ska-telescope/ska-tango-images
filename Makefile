@@ -8,11 +8,10 @@ KUBE_NAMESPACE ?= ska-tango-images#namespace to be used
 RELEASE_NAME ?= test## release name of the chart
 K8S_CHART = ska-tango-umbrella
 MINIKUBE ?= true ## Minikube or not
-MARK ?= all
 K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-tango-images-tango-itango:9.3.7 ## TODO: UGUR docker image that will be run for testing purpose
 CI_JOB_ID ?= local##pipeline job id
 TEST_RUNNER ?= test-mk-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
-TANGO_HOST ?= tango-databaseds:10000## TANGO_HOST connection to the Tango DS
+TANGO_HOST ?= my-personal-databaseds-also-node-port:10000## TANGO_HOST connection to the Tango DS
 TANGO_SERVER_PORT ?= 45450## TANGO_SERVER_PORT - fixed listening port for local server
 K8S_CHARTS ?= ska-tango-util ska-tango-base ska-tango-umbrella## list of charts to be published on gitlab -- umbrella charts for testing purpose
 
@@ -24,8 +23,7 @@ CI_ENVIRONMENT_SLUG ?= ska-tango-images
 
 PYTHON_VARS_BEFORE_PYTEST = PYTHONPATH=/app:/app/tests KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(RELEASE_NAME) TANGO_HOST=$(TANGO_HOST)
 
-PYTHON_VARS_AFTER_PYTEST = -m '$(MARK)' \
-						--disable-pytest-warnings --timeout=300
+PYTHON_VARS_AFTER_PYTEST = --disable-pytest-warnings --timeout=300
 
 RELEASE_SUPPORT := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))/.make-release-support
 
