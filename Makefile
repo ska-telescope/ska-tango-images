@@ -25,8 +25,7 @@ CI_ENVIRONMENT_SLUG ?= ska-tango-images
 PYTHON_VARS_BEFORE_PYTEST = PYTHONPATH=/app:/app/tests KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(RELEASE_NAME) TANGO_HOST=$(TANGO_HOST)
 
 PYTHON_VARS_AFTER_PYTEST = -m '$(MARK)' \
-						--disable-pytest-warnings --timeout=300 \
-						--count=1 --true-context
+						--disable-pytest-warnings --timeout=300
 
 RELEASE_SUPPORT := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))/.make-release-support
 
@@ -93,13 +92,17 @@ make-a-release: ## Step through the process of bumping .release and creating a t
 	@printf "\nStep 2: Select and bump OCI Image .release's \n Tell me which of the following OCI_IMAGES_TO_PUBLISH list to bump patch release for: $(OCI_IMAGES_TO_PUBLISH)\n"; \
 	read -p "$(POWDER_BLUE)Enter list here$(NORMAL): " OCI_IMAGES_TO_RELEASE; \
 	printf "\n You provided: $${OCI_IMAGES_TO_RELEASE}\n"; \
-	read -p "$(POWDER_BLUE)Do you wish to continue (you will be prompted at each step)$(NORMAL) $(YELLOW)[N/y]$(NORMAL): " SHALL_WE; \
+	read -p "$(POWDER_BLUE)Do you wish to continue (you will be prompted at each step)$(NORMAL) $(YELLOW)[N=No/s=skip/y=yes]$(NORMAL): " SHALL_WE; \
 	if [[ "y" == "$${SHALL_WE}" ]] || [[ "Y" == "$${SHALL_WE}" ]]; then \
-		echo "$(GREEN) OK - ✨ bumping patch .release files ...$(NORMAL)"; \
+		echo "$(GREEN) OK - ✨ bumping patch for .release files ...$(NORMAL)"; \
 		make oci-bump-patch-release OCI_IMAGES_TO_PUBLISH="$${OCI_IMAGES_TO_RELEASE}"; \
 	else \
-		printf "$(RED) 😱 OK - aborting$(NORMAL).\n 💀"; \
-		exit 1; \
+		if [[ "s" == "$${SHALL_WE}" ]] || [[ "S" == "$${SHALL_WE}" ]]; then \
+			echo "$(YELLOW) OK - 👍 Skipping bumping patch for .release files ...$(NORMAL)"; \
+		else \
+			printf "$(RED) 😱 OK - aborting$(NORMAL).\n 💀"; \
+			exit 1; \
+		fi; \
 	fi;
 
 	@printf "\nStep 3: Bump project .release AND update Helm Chart release\n"; \
