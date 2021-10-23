@@ -23,7 +23,7 @@ metadata:
   annotations:
 {{ toYaml $annotations | indent 4 }}
 spec:
-  ttlSecondsAfterFinished: 100
+  ttlSecondsAfterFinished: 3600
   template:
     spec:
       initContainers:
