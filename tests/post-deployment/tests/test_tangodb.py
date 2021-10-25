@@ -1,10 +1,7 @@
 def test_tango_database_is_present(mysql_cursor):
     mysql_cursor.execute("SHOW DATABASES")
 
-    database_names = []
-    for database_name in mysql_cursor:
-        database_names.append(database_name[0])
-
+    database_names = [database_name[0] for database_name in mysql_cursor]
     assert "tango" in database_names
 
 
@@ -41,18 +38,12 @@ def test_tango_database_tables(mysql_cursor):
         "property_pipe_device_hist",
         "server",
     )
-    actual_tables = []
-    for table_name in mysql_cursor:
-        actual_tables.append(table_name[0])
-
+    actual_tables = [table_name[0] for table_name in mysql_cursor]
     assert actual_tables == list(expected_tables)
 
 
 def test_databaseds_server_is_registered_in_the_database(mysql_cursor):
     mysql_cursor.execute("SELECT name FROM device")
 
-    actual_devices = []
-    for device_name in mysql_cursor:
-        actual_devices.append(device_name[0])
-
+    actual_devices = [device_name[0] for device_name in mysql_cursor]
     assert "sys/database/2" in actual_devices
