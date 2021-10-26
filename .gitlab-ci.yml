@@ -571,6 +571,42 @@ oci-image-publish: #Executed on a tag for CAR
   rules:
     - if: '$CI_COMMIT_TAG'
 
+
+##### Test k8s with alpine images 
+k8s-test-alpine:
+  # allow_failure: true
+  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
+  stage: test
+  tags:
+    - k8srunner
+  before_script:
+    - '[ -f .make/k8s.mk ] || (echo "File k8s.mk not included in Makefile; exit 1")'
+    - 'make help | grep k8s-test'
+    - make k8s-install-chart IS_ALPINE="-alpine"
+    - make k8s-wait
+  script:
+    - make k8s-test K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-tango-images-tango-itango-alpine:9.3.7
+  after_script:
+    - echo $CI_JOB_NAME - $CI_JOB_STAGE
+    - make k8s-uninstall-chart
+    - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
+    - make k8s-delete-namespace
+  artifacts:
+    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
+    paths:
+      - "build/"
+    reports:
+      junit: build/report.xml
+    when: always
+  environment:
+    name: test
+    kubernetes:
+      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
+  rules:
+    - exists:
+        - tests/**/*
+
+
 # Include CI templates
 include:
 # OCI Images
