@@ -27,7 +27,7 @@ before_script:
     - k8srunner
   before_script:
     - '[ -f .make/oci.mk ] || exit 1'
-    - 'make help | grep oci.mk:oci-build'
+    - 'make help | grep oci-build'
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - echo $CAR_OCI_REGISTRY_PASSWORD | docker login -u $CAR_OCI_REGISTRY_USERNAME --password-stdin $CAR_OCI_REGISTRY_HOST
   script:
@@ -94,14 +94,15 @@ build_tango-db:
 
 build_tango-db-alpine:
   retry: 2
-  stage: build_1
+  stage: build_3
   extends:
   - .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-db-alpine
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp-alpine
   rules:
     - if: '$CI_COMMIT_TAG'
-    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_1"'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_3"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
       changes:
       - images/ska-tango-images-tango-db-alpine/*
@@ -185,8 +186,27 @@ build_tango-rest:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
       changes:
       - images/ska-tango-images-tango-dependencies/*
-      - images/ska-tango-images-tango-cpp/*
+      - images/ska-tango-images-tango-java/*
       - images/ska-tango-images-tango-rest/*
+
+build_tango-rest-alpine:
+  retry: 2
+  stage: build_3
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-rest-alpine
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-java-alpine
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-dependencies-alpine
+  rules:
+    - if: '$CI_COMMIT_TAG'
+    - if: '$FORCE_REBUILD == "yes" || $FORCE_REBUILD == "build_3"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
+      changes:
+      - images/ska-tango-images-tango-dependencies-alpine/*
+      - images/ska-tango-images-tango-java-alpine/*
+      - images/ska-tango-images-tango-rest-alpine/*
+
 
 build_pytango-builder:
   retry: 2
@@ -535,39 +555,6 @@ test-chart-templates:
     reports:
       junit: build/reports/chart_template_tests.xml
 
-test-chart:
-  stage: test
-  variables:
-    MINIKUBE: "false"
-  tags:
-  - k8srunner
-  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
-  script:
-  - kubectl version
-  - helm version
-  - make install-chart CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
-  - make wait
-  - make test
-  - mkdir -p ./build/reports ./build/htmlcov
-  - mv build/report.xml ./build/reports/unit-tests.xml
-  after_script:
-  - make uninstall-chart
-  - make delete_namespace
-  environment:
-    name: test
-    kubernetes:
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - "build/"
-    reports:
-      junit: build/reports/unit-tests.xml
-  rules:
-    - if: '$CI_COMMIT_TAG'
-    # don't run on master as the new images are not available yet (on Merge)
-    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
-
 # Custom OCI Image publish stage
 oci-image-publish: #Executed on a tag for CAR
   stage: publish
@@ -576,7 +563,7 @@ oci-image-publish: #Executed on a tag for CAR
     - k8srunner
   before_script:
     - '[ -f .make/oci.mk ] || (echo "File oci.mk not included in Makefile; exit 1")'
-    - 'make help | grep oci.mk:oci-publish'
+    - 'make help | grep oci-publish'
     - echo $CI_REGISTRY_PASSWORD | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
     - echo $CAR_OCI_REGISTRY_PASSWORD | docker login -u $CAR_OCI_REGISTRY_USERNAME --password-stdin $CAR_OCI_REGISTRY_HOST
   script:
@@ -593,18 +580,20 @@ include:
 
 # Helm Charts
   - project: 'ska-telescope/templates-repository'
-    file: 'gitlab-ci/includes/helm-chart.gitlab-ci.yml'  
-    
+    file: 'gitlab-ci/includes/helm-chart.gitlab-ci.yml'
+
   # Raw
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/raw.gitlab-ci.yml'
-    ref: master
 
 # Docs pages
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/docs-pages.gitlab-ci.yml'
-    # ref: master
 
 # .post step finalisers eg: badges
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'
+
+# k8s steps
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/k8s.gitlab-ci.yml'

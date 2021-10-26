@@ -1,14 +1,12 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BASE_IMAGE="python:3.9.6-alpine3.14"
+ARG BASE_IMAGE="alpine:3.14"
 ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine:0.0.0"
 FROM $BUILD_IMAGE AS buildenv
 
 # Install build time dependencies
-RUN apk add --update --no-cache make bash\
-    libsodium-dev libstdc++ g++ mariadb-connector-c-dev
-
-RUN apk add --virtual build-dependencies \
-    git cmake
+RUN apk --update add --no-cache make bash\
+    libsodium-dev libstdc++ g++ mariadb-connector-c-dev \
+    git cmake python3-dev
 
 # build and install tangoidl
 RUN git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl && \
@@ -53,14 +51,12 @@ LABEL \
 # copy the built library dependencies from the builder stage
 COPY --from=buildenv /usr/local /usr/local
 
-RUN apk add --update --no-cache sudo libstdc++ bash libsodium-dev mariadb-connector-c  
-
-RUN ln -s /usr/local/lib/libtango.so.9.4.0 /usr/local/lib/libtango.so.9
-
-# for some reason we are getting the wrong DataBaseds name so link it to the expected one
+RUN apk --update add --no-cache sudo libstdc++ bash libsodium-dev mariadb-connector-c \
+    && ln -s /usr/local/lib/libtango.so.9.4.0 /usr/local/lib/libtango.so.9 \
+# for some reason we are getting the wrong DataBaseds name
+    && ln -s /usr/local/bin/Databaseds /usr/local/bin/DataBaseds \
 # also create the user tango and add it to sudoers
-RUN ln -s /usr/local/bin/Databaseds /usr/local/bin/DataBaseds && \
-    adduser -h /home/tango -s /bin/bash -D tango && \
-    echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango 
+    && adduser -h /home/tango -s /bin/bash -D tango \
+    && echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango 
 
 USER tango
