@@ -555,39 +555,6 @@ test-chart-templates:
     reports:
       junit: build/reports/chart_template_tests.xml
 
-test-chart:
-  stage: test
-  variables:
-    MINIKUBE: "false"
-  tags:
-  - k8srunner
-  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
-  script:
-  - kubectl version
-  - helm version
-  - make install-chart CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
-  - make wait
-  - make test
-  - mkdir -p ./build/reports ./build/htmlcov
-  - mv build/report.xml ./build/reports/unit-tests.xml
-  after_script:
-  - make uninstall-chart
-  - make delete_namespace
-  environment:
-    name: test
-    kubernetes:
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - "build/"
-    reports:
-      junit: build/reports/unit-tests.xml
-  rules:
-    - if: '$CI_COMMIT_TAG'
-    # don't run on master as the new images are not available yet (on Merge)
-    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH'
-
 # Custom OCI Image publish stage
 oci-image-publish: #Executed on a tag for CAR
   stage: publish
