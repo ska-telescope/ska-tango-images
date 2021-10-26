@@ -1,3 +1,5 @@
+import os
+import mock
 import pytest
 import tango
 
@@ -14,6 +16,13 @@ def test_device_info():
 def test_databaseds_connection():
     db = tango.Database()
     assert db is not None
+
+
+@mock.patch.dict(os.environ, {"TANGO_HOST": "local:10123"}, clear=True)
+def test_databaseds_connection_failure_when_tango_host_incorrect():
+    with pytest.raises(tango.DevFailed) as error:
+        db = tango.Database()
+        assert error.args[1].desc == "Failed to connect to database on host local with port 10123"
 
 
 def test_device_registration(test_device_info, mysql_cursor):
