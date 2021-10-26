@@ -42,7 +42,7 @@ def test_tango_database_tables(mysql_cursor):
     assert actual_tables == list(expected_tables)
 
 
-def test_databaseds_server_is_registered_in_the_database(mysql_cursor):
+def test_databaseds_device_is_registered_in_the_database(mysql_cursor):
     mysql_cursor.execute("SELECT name FROM device")
 
     actual_devices = [device_name[0] for device_name in mysql_cursor]
