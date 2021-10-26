@@ -601,7 +601,7 @@ k8s-test-alpine:
   environment:
     name: test
     kubernetes:
-      namespace: ci-$CI_PROJECT_NAME-$CI_COMMIT_SHORT_SHA
+      namespace: ci-$CI_PROJECT_NAME-alpine-$CI_COMMIT_SHORT_SHA
   rules:
     - exists:
         - tests/**/*
