@@ -107,15 +107,15 @@ databaseds:
       memory: 256Mi # 256Mi = 0.25 GB mem
       ephemeral-storage: 1Gi
   livenessProbe:
-    enabled: false
-    initialDelaySeconds: 0
+    enabled: true
+    initialDelaySeconds: 10
     periodSeconds: 10
     timeoutSeconds: 1
     successThreshold: 1
     failureThreshold: 3
   readinessProbe:
-    enabled: false
-    initialDelaySeconds: 0
+    enabled: true
+    initialDelaySeconds: 10
     periodSeconds: 10
     timeoutSeconds: 1
     successThreshold: 1
