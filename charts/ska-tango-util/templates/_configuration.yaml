@@ -87,7 +87,7 @@ metadata:
   annotations:
 {{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 spec:
-  ttlSecondsAfterFinished: 100
+  ttlSecondsAfterFinished: 3600
   template:
     spec:
       initContainers:
