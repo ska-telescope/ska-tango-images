@@ -605,7 +605,7 @@ k8s-test-alpine:
   rules:
     - exists:
         - tests/**/*
-    allow_failure: true
+  allow_failure: true
 
 
 # Include CI templates
