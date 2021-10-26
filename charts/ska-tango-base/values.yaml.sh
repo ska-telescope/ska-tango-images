@@ -108,14 +108,14 @@ databaseds:
       ephemeral-storage: 1Gi
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 10
+    initialDelaySeconds: 0
     periodSeconds: 10
     timeoutSeconds: 1
     successThreshold: 1
     failureThreshold: 3
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 10
+    initialDelaySeconds: 0
     periodSeconds: 10
     timeoutSeconds: 1
     successThreshold: 1
@@ -194,14 +194,14 @@ tangodb:
       ephemeral-storage: 2Gi
   livenessProbe:
     enabled: false
-    initialDelaySeconds: 0
+    initialDelaySeconds: 10
     periodSeconds: 10
     timeoutSeconds: 1
     successThreshold: 1
     failureThreshold: 3
   readinessProbe:
     enabled: false
-    initialDelaySeconds: 0
+    initialDelaySeconds: 10
     periodSeconds: 10
     timeoutSeconds: 1
     successThreshold: 1
