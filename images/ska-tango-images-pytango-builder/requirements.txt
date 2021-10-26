@@ -2,6 +2,9 @@ numpy==1.19.2
 pytango==9.3.3
 flake8
 flake8_formatter_junit_xml
+isort
+black
+poetry
 ipython==7.21.0
 itango==0.1.8
 coverage
@@ -9,6 +12,7 @@ docutils
 MarkupSafe
 Pygments
 pylint
+pylint-junit
 pytest
 pytest-bdd
 pytest-cov
