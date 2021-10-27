@@ -19,6 +19,7 @@ pytest-pycodestyle
 pytest-pydocstyle
 pytest-pylint
 pytest-runner
+pytest-timeout
 python-dotenv>=0.5.1
 ptvsd
 Sphinx
