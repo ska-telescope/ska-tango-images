@@ -13,6 +13,19 @@ def test_device_info():
     return device_info
 
 
+def clean_up_database(mysql_cursor):
+    unrgister_device_query = "DELETE FROM device WHERE name='test/device/1';"
+    unrgister_property_device_query = "DELETE  FROM  property_device where device = 'test/device/1';"
+    unrgister_property_class_query = "DELETE  FROM  property_class where class='TestDevice';"
+    unrgister_property_attribute_device_query = "DELETE  FROM  property_attribute_device where device='test/device/1';"
+
+    device_info = [unrgister_device_query, unrgister_property_device_query, unrgister_property_class_query,
+                   unrgister_property_attribute_device_query]
+
+    for query in device_info:
+        mysql_cursor.execute(query)
+
+
 def test_databaseds_connection():
     db = tango.Database()
     assert db is not None
@@ -32,6 +45,7 @@ def test_device_registration(test_device_info, mysql_cursor):
     mysql_cursor.execute("SELECT name,class,server FROM device WHERE name='test/device/1';")
     database_info = [info for info in mysql_cursor]
     assert ("test/device/1", "TestDevice", "TestDevice/test") in database_info
+    clean_up_database(mysql_cursor)
 
 
 def test_device_property_registration(test_device_info, mysql_cursor):
@@ -44,6 +58,7 @@ def test_device_property_registration(test_device_info, mysql_cursor):
     mysql_cursor.execute("SELECT name,device FROM property_device where device='test/device/1'")
     database_info = [info for info in mysql_cursor]
     assert ("device_test_property", "test/device/1") in database_info
+    clean_up_database(mysql_cursor)
 
 
 def test_class_property_registration(test_device_info, mysql_cursor):
@@ -56,6 +71,7 @@ def test_class_property_registration(test_device_info, mysql_cursor):
     mysql_cursor.execute("SELECT name,value FROM property_class where class='TestDevice'")
     database_info = [info for info in mysql_cursor]
     assert ("class_test_property", "class_test_property_value") in database_info
+    clean_up_database(mysql_cursor)
 
 
 def test_device_attribute_property_registration(test_device_info, mysql_cursor):
@@ -71,10 +87,10 @@ def test_device_attribute_property_registration(test_device_info, mysql_cursor):
     )
     database_info = [info for info in mysql_cursor]
     assert (
-        "test_attribute",
-        "attribute_test_property",
-        "attribute_test_property_value",
-    ) in database_info
-
+               "test_attribute",
+               "attribute_test_property",
+               "attribute_test_property_value",
+           ) in database_info
+    clean_up_database(mysql_cursor)
 
 # Unhappy paths
