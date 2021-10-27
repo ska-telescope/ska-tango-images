@@ -1,5 +1,4 @@
 import os
-import pytest
 import logging
 import pytest
 import yaml
