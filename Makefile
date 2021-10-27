@@ -1,6 +1,7 @@
 BASE = $(shell pwd)
 
-HELM_CHARTS_TO_PUBLISH ?= ska-tango-util ska-tango-base
+HELM_CHARTS ?= ska-tango-util ska-tango-base
+HELM_CHARTS_TO_PUBLISH ?= $(HELM_CHARTS)
 OCI_IMAGES ?= ska-tango-images-tango-dependencies ska-tango-images-tango-dependencies-alpine ska-tango-images-tango-db ska-tango-images-tango-db-alpine ska-tango-images-tango-cpp ska-tango-images-tango-cpp-alpine ska-tango-images-tango-java ska-tango-images-tango-java-alpine ska-tango-images-tango-rest ska-tango-images-tango-rest-alpine ska-tango-images-pytango-builder ska-tango-images-pytango-builder-alpine ska-tango-images-tango-pogo ska-tango-images-tango-libtango ska-tango-images-tango-jive ska-tango-images-pytango-runtime ska-tango-images-pytango-runtime-alpine ska-tango-images-tango-admin ska-tango-images-tango-databaseds ska-tango-images-tango-test ska-tango-images-tango-dsconfig ska-tango-images-tango-dsconfig-alpine ska-tango-images-tango-itango ska-tango-images-tango-itango-alpine ska-tango-images-tango-vnc ska-tango-images-tango-pytango ska-tango-images-tango-panic ska-tango-images-tango-panic-gui
 OCI_IMAGES_TO_PUBLISH ?= $(OCI_IMAGES)
 
@@ -21,7 +22,7 @@ CI_ENVIRONMENT_SLUG ?= ska-tango-images
 # K8S_TEST_MAKE_PARAMS = KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(RELEASE_NAME) TANGO_HOST=$(TANGO_HOST) MARK=$(MARK)
 # K8S_CHART_PARAMS = --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --values $(BASE)/charts/values.yaml
 
-PYTHON_VARS_BEFORE_PYTEST = PYTHONPATH=/app:/app/tests KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(RELEASE_NAME) TANGO_HOST=$(TANGO_HOST)
+PYTHON_VARS_BEFORE_PYTEST = PYTHONPATH=${PYTHONPATH}:/app:/app/tests KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(RELEASE_NAME) TANGO_HOST=$(TANGO_HOST)
 
 PYTHON_VARS_AFTER_PYTEST = --disable-pytest-warnings --timeout=300
 
