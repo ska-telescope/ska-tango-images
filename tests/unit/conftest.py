@@ -27,7 +27,7 @@ def test_something(run_context):
 
 """
 
-FILE_PATH = os.path.abspath("tango_values.yaml")
+FILE_PATH = os.path.abspath("ska-tango-images/tests/tango_values.yaml")
 
 
 def get_values_file():
