@@ -183,6 +183,6 @@ k8s-pre-test:
 	@echo "k8s-pre-test: setting up tests/values.yaml"
 	cp charts/ska-tango-base/values.yaml tests/tango_values.yaml
 
-chart_test: helm-pre-publish
+k8s-chart-test: helm-pre-publish
 	helm package charts/ska-tango-util/ -d charts/ska-tango-base/charts/; \
 	mkdir -p charts/build; helm unittest charts/ska-tango-base/ --helm3 --with-subchart --output-type JUnit --output-file charts/build/chart_template_tests.xml; \
