@@ -27,7 +27,7 @@ spec:
     imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
     command:
       - retry
-      - --tries={{$tries}} 
+      - --tries={{$tries}}
       - --sleep={{$sleep}}
       - --
       - tango_admin
@@ -67,5 +67,6 @@ spec:
   tolerations:
 {{ toYaml . | indent 4 }}
 {{- end }}
+  terminationGracePeriodSeconds: 0
 
 {{ end }}
