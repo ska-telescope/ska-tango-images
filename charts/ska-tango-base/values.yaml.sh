@@ -193,15 +193,15 @@ tangodb:
       memory: 256Mi # 256Mi = 0.25 GB mem
       ephemeral-storage: 2Gi
   livenessProbe:
-    enabled: false
-    initialDelaySeconds: 10
+    enabled: true
+    initialDelaySeconds: 60
     periodSeconds: 10
     timeoutSeconds: 1
     successThreshold: 1
     failureThreshold: 3
   readinessProbe:
     enabled: false
-    initialDelaySeconds: 10
+    initialDelaySeconds: 60
     periodSeconds: 10
     timeoutSeconds: 1
     successThreshold: 1
