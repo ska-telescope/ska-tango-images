@@ -10,6 +10,7 @@ from pytest_bdd import given, scenario, then, when, parsers, scenarios
 
 scenarios('../features/tango-commands.feature')
 
+@pytest.fixture
 @given(parsers.parse('a device called {device_name}'))
 def device_proxy(run_context, device_name):
     """a device called sys/tg_test/1."""

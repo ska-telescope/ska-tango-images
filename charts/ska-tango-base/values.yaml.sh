@@ -62,8 +62,8 @@ annotations:
 dsconfig:
   image:
     registry: ${CAR_OCI_REGISTRY_HOST}
-    image: ska-tango-images-tango-dsconfig
-    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-dsconfig setContextHelper; getVersion)${SUFFIX}
+    image: ska-tango-images-tango-dsconfig${IS_ALPINE}
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-dsconfig${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
 
 itango:
@@ -74,7 +74,7 @@ itango:
   intent: enabling
   image:
     registry: ${CAR_OCI_REGISTRY_HOST}
-    image: ska-tango-images-tango-itango
+    image: ska-tango-images-tango-itango${IS_ALPINE}
     tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-itango setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   resources:
@@ -94,8 +94,8 @@ databaseds:
   intent: production
   image:
     registry: ${CAR_OCI_REGISTRY_HOST}
-    image: ska-tango-images-tango-cpp
-    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-cpp setContextHelper; getVersion)${SUFFIX}
+    image: ska-tango-images-tango-cpp${IS_ALPINE}
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-cpp${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -141,8 +141,8 @@ deviceServers:
           - name: "sys/tg_test/1"
     image:
       registry: ${CAR_OCI_REGISTRY_HOST}
-      image: ska-tango-images-tango-java
-      tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-java setContextHelper; getVersion)${SUFFIX}
+      image: ska-tango-images-tango-java${IS_ALPINE}
+      tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-java${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
       pullPolicy: IfNotPresent
     resources:
       requests:
@@ -215,8 +215,8 @@ jive:
   intent: enabling
   image:
     registry: ${CAR_OCI_REGISTRY_HOST}
-    image: ska-tango-images-tango-java
-    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-java setContextHelper; getVersion)${SUFFIX}
+    image: ska-tango-images-tango-java${IS_ALPINE}
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-java${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -262,8 +262,8 @@ tangorest:
   intent: enabling
   image:
     registry: ${CAR_OCI_REGISTRY_HOST}
-    image: ska-tango-images-tango-rest
-    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-rest setContextHelper; getVersion)${SUFFIX}
+    image: ska-tango-images-tango-rest${IS_ALPINE}
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-rest${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -283,8 +283,8 @@ logviewer:
   intent: enabling
   image:
     registry: ${CAR_OCI_REGISTRY_HOST}
-    image: ska-tango-images-tango-java
-    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-java setContextHelper; getVersion)${SUFFIX}
+    image: ska-tango-images-tango-java${IS_ALPINE}
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-java${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -308,3 +308,4 @@ affinity: {}
 tolerations: []
 
 EOF
+
