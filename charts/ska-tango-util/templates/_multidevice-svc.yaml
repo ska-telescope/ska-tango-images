@@ -66,10 +66,14 @@ metadata:
 {{ toYaml $annotations | indent 4 }}
 {{ end }}
 spec:
+  type: NodePort
+  ports:
+  - name: tango-server
+    port: 45450
+    targetPort: 45450
   selector:
     subsystem: {{ $chart.Values.subsystem }}
     component: {{tpl ($deviceserver_name | toString) $chart }}-{{ $safe_instance }}
-  clusterIP: None
 ---
 apiVersion: apps/v1
 kind: StatefulSet
