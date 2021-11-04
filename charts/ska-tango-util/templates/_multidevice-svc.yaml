@@ -208,6 +208,8 @@ spec:
           - "{{ $safe_instance | toString }}"
           - -ORBendPoint
           - giop:tcp::$(TANGO_SERVER_PORT)
+          - -ORBendPointPublish
+          - giop:tcp:$(TANGO_SERVER_PUBLISH)
         ports:
         - containerPort: 45450
           name: tango-server
