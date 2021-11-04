@@ -272,6 +272,8 @@ spec:
           value: {{ $tango_host }}
         - name: TANGO_SERVER_PORT
           value: "45450"
+        - name: TANGO_SERVER_PUBLISH
+          value: {{$deviceserver_name | toString }}-{{ $safe_instance }}:$(TANGO_SERVER_PORT)
 {{- if $chart.Values.global.environment_variables }}
 {{- range $index, $envvar := $chart.Values.global.environment_variables }}
         - name: {{$envvar.name}}
