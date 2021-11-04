@@ -202,7 +202,8 @@ spec:
           - /data/{{ $deviceserver.server.name }}.py
           {{- end }} 
           - "{{ $safe_instance | toString }}"
-          - -ORBendPoint giop:tcp::$(TANGO_SERVER_PORT)
+          - -ORBendPoint
+          - giop:tcp::$(TANGO_SERVER_PORT)
         ports:
         - containerPort: 45450
           name: tango-server
