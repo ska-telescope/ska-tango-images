@@ -322,5 +322,5 @@ tests:
           path: spec.template.spec.containers[0].env
           content:
             name: TANGO_SERVER_PUBLISH
-            value: tangotest-test:$(TANGO_SERVER_PORT)
+            value: tangotest-test:45450
         documentIndex: 6
