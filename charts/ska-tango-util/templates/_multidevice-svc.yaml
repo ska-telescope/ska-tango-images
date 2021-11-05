@@ -48,6 +48,8 @@ Parameters:
 {{ $safe_instance := $instance.name | toString | replace "_" "-" }}
 
 {{ if has $safe_instance $deviceserver.instances }}
+
+{{ $tango_server_port := 45450 }}
 ---
 # one k8s service per instance
 apiVersion: v1
@@ -69,8 +71,8 @@ spec:
   type: NodePort
   ports:
   - name: tango-server
-    port: 45450
-    targetPort: 45450
+    port: {{ $tango_server_port }}
+    targetPort: {{ $tango_server_port }}
   selector:
     subsystem: {{ $chart.Values.subsystem }}
     component: {{tpl ($deviceserver_name | toString) $chart }}-{{ $safe_instance }}
@@ -211,7 +213,7 @@ spec:
           - -ORBendPointPublish
           - giop:tcp:$(TANGO_SERVER_PUBLISH)
         ports:
-        - containerPort: 45450
+        - containerPort: {{ $tango_server_port }}
           name: tango-server
         volumeMounts:
           - name: configuration
@@ -273,9 +275,9 @@ spec:
         - name: TANGO_HOST
           value: {{ $tango_host }}
         - name: TANGO_SERVER_PORT
-          value: "45450"
+          value: "{{ $tango_server_port }}"
         - name: TANGO_SERVER_PUBLISH
-          value: {{$deviceserver_name | toString }}-{{ $safe_instance }}:$(TANGO_SERVER_PORT)
+          value: {{$deviceserver_name | toString }}-{{ $safe_instance }}:{{ $tango_server_port }}
 {{- if $chart.Values.global.environment_variables }}
 {{- range $index, $envvar := $chart.Values.global.environment_variables }}
         - name: {{$envvar.name}}
