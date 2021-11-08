@@ -302,9 +302,7 @@ tests:
             - /usr/local/bin/TangoTest
             - "test2"
             - -ORBendPoint
-            - giop:tcp::$(TANGO_SERVER_PORT)
-            - -ORBendPointPublish
-            - giop:tcp:$(TANGO_SERVER_PUBLISH)
+            - giop:tcp:$(TANGO_SERVER_PUBLISH):$(TANGO_SERVER_PORT)
         documentIndex: 8
   - it: should have a TANGO_SERVER_PORT environment variable set to 45450
     asserts:
