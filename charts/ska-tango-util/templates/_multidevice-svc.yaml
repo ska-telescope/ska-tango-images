@@ -190,6 +190,9 @@ spec:
         image: "{{ tpl ($deviceserver.image.registry | toString) $chart }}/{{ tpl ($deviceserver.image.image | toString) $chart }}:{{ tpl ($deviceserver.image.tag | toString) $chart }}"
         imagePullPolicy: {{ tpl ($deviceserver.image.pullPolicy | toString) $chart }}
         command:
+          - sh
+          - -c
+        args:
           {{- if not $deviceserver.noretry }}
           - retry 
           {{- if $chart.Values.global.retry }}
@@ -209,7 +212,7 @@ spec:
           {{- end }} 
           - "{{ $safe_instance | toString }}"
           - -ORBendPoint
-          - giop:tcp:{{$deviceserver_name | toString }}-{{ $safe_instance }}-0:{{ $tango_server_port }}
+          - giop:tcp:$TANGO_SERVER_PUBLISH:$TANGO_SERVER_PORT
         ports:
         - containerPort: {{ $tango_server_port }}
           name: tango-server
@@ -275,7 +278,7 @@ spec:
         - name: TANGO_SERVER_PORT
           value: "{{ $tango_server_port }}"
         - name: TANGO_SERVER_PUBLISH
-          value: {{$deviceserver_name | toString }}-{{ $safe_instance }}
+          value: {{$deviceserver_name | toString }}-{{ $safe_instance }}-0
 {{- if $chart.Values.global.environment_variables }}
 {{- range $index, $envvar := $chart.Values.global.environment_variables }}
         - name: {{$envvar.name}}
