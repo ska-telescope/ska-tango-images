@@ -207,9 +207,7 @@ tests:
             - /usr/local/bin/TangoTest
             - "test"
             - -ORBendPoint
-            - giop:tcp::$(TANGO_SERVER_PORT)
-            - -ORBendPointPublish
-            - giop:tcp:$(TANGO_SERVER_PUBLISH)
+            - giop:tcp:$TANGO_SERVER_PUBLISH:$TANGO_SERVER_PORT
       - equal:
           path: spec.template.spec.containers[0].readinessProbe
           value:
