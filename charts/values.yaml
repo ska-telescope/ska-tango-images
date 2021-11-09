@@ -1,0 +1,17 @@
+global:
+  annotations:
+    app.gitlab.com/app: ska-tango-images
+    app.gitlab.com/env: ska-tango-images
+  # by setting this parameter we can disable the lower level sub-system tango-base, archiver and webjive
+  # sub-system:
+  #   tango-base:
+  #     enabled: false
+  #   archiver:
+  #     enabled: false
+  #   webjive:
+  #     enabled: false
+
+# tango-base:
+#   enabled: true
+
+
