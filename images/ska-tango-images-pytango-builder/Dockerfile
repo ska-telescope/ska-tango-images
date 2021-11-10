@@ -38,6 +38,7 @@ RUN apt-get update \
                pkg-config \
                python3-distutils \
                zlib1g-dev \
+               ca-certificates \
                curl \
                git
 
