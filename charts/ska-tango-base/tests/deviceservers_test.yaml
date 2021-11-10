@@ -207,7 +207,9 @@ tests:
             - /usr/local/bin/TangoTest
             - "test"
             - -ORBendPoint
-            - giop:tcp:$(TANGO_SERVER_PUBLISH):$(TANGO_SERVER_PORT)
+            - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME)-0:$(TANGO_SERVER_PORT)
+            - -ORBendPointPublish
+            - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
       - equal:
           path: spec.template.spec.containers[0].readinessProbe
           value:
@@ -285,7 +287,9 @@ tests:
             - /usr/local/bin/TangoTest
             - "test"
             - -ORBendPoint
-            - giop:tcp:$(TANGO_SERVER_PUBLISH):$(TANGO_SERVER_PORT)
+            - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME)-0:$(TANGO_SERVER_PORT)
+            - -ORBendPointPublish
+            - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
         documentIndex: 6
       - isKind:
           of: StatefulSet
@@ -300,7 +304,9 @@ tests:
             - /usr/local/bin/TangoTest
             - "test2"
             - -ORBendPoint
-            - giop:tcp:$(TANGO_SERVER_PUBLISH):$(TANGO_SERVER_PORT)
+            - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME)-0:$(TANGO_SERVER_PORT)
+            - -ORBendPointPublish
+            - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
         documentIndex: 8
   - it: should have a TANGO_SERVER_PORT environment variable set to 45450
     asserts:
@@ -315,6 +321,6 @@ tests:
       - contains:
           path: spec.template.spec.containers[0].env
           content:
-            name: TANGO_SERVER_PUBLISH
-            value: tangotest-test-0
+            name: TANGO_SERVER_PUBLISH_HOSTNAME
+            value: tangotest-test
         documentIndex: 6
