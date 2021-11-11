@@ -12,12 +12,14 @@ MINIKUBE ?= true ## Minikube or not
 K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-tango-images-tango-itango:9.3.7 ## TODO: UGUR docker image that will be run for testing purpose
 CI_JOB_ID ?= local##pipeline job id
 TEST_RUNNER ?= test-mk-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
-TANGO_HOST ?= my-personal-databaseds-also-node-port:10000## TANGO_HOST connection to the Tango DS
+TANGO_HOST ?= makefile-databaseds-also-node-port:10000## TANGO_HOST connection to the Tango DS
 TANGO_SERVER_PORT ?= 45450## TANGO_SERVER_PORT - fixed listening port for local server
 K8S_CHARTS ?= ska-tango-util ska-tango-base ska-tango-umbrella## list of charts to be published on gitlab -- umbrella charts for testing purpose
 
 CI_PROJECT_PATH_SLUG ?= ska-tango-images
 CI_ENVIRONMENT_SLUG ?= ska-tango-images
+
+K8S_CHART_PARAMS ?=  --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --set global.device_server_port=$(TANGO_SERVER_PORT)
 
 # K8S_TEST_MAKE_PARAMS = KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(RELEASE_NAME) TANGO_HOST=$(TANGO_HOST) MARK=$(MARK)
 # K8S_CHART_PARAMS = --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --values $(BASE)/charts/values.yaml
@@ -184,6 +186,9 @@ k8s-pre-test:
 	@echo "k8s-pre-test: setting up tests/values.yaml"
 	cp charts/ska-tango-base/values.yaml tests/tango_values.yaml
 
+# install helm plugin from https://github.com/quintush/helm-unittest
 k8s-chart-test: helm-pre-publish
 	helm package charts/ska-tango-util/ -d charts/ska-tango-base/charts/; \
-	mkdir -p charts/build; helm unittest charts/ska-tango-base/ --helm3 --with-subchart --output-type JUnit --output-file charts/build/chart_template_tests.xml; \
+	mkdir -p charts/build; \
+	helm unittest charts/ska-tango-base/ --helm3 --with-subchart \
+		--output-type JUnit --output-file charts/build/chart_template_tests.xml
