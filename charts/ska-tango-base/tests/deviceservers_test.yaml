@@ -154,7 +154,7 @@ tests:
           path: spec.template.spec.containers[0].env
           content:
             name: TANGO_HOST
-            value: databaseds-tango-base-RELEASE-NAME:10000
+            value: databaseds-tango-base:10000
 
   - it: should have the correct apiVersion, v1, for the Service resource.
     documentIndex: 5

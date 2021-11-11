@@ -153,7 +153,7 @@ tests:
           path: spec.template.spec.containers[0].env
           content:
             name: TANGO_HOST
-            value: databaseds-tango-base-{{.Release.Name}}:10000
+            value: databaseds-tango-base:10000
       - contains:
           path: spec.template.spec.containers[0].env
           content:
