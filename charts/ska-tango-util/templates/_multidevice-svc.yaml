@@ -1,5 +1,5 @@
 {{- /*
-tango-util.multidevicesds.tpl 
+tango-util.multidevicesds.tpl
 Parameters:
 - deviceserver (the deviceserver entire yaml tag)
 - image (to be used for the deviceserver)
@@ -9,7 +9,7 @@ Parameters:
 {{ define "ska-tango-util.multidevice-svc.tpl" }}
 ---
 {{ $labels := coalesce .local.Values.global.labels .local.Values.labels "label:none" }}
-{{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations "annotations:none" }}
+{{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations }}
 {{ $default_tango_host := printf "%s-%s:10000" "databaseds-tango-base-" .local.Release.Name }}
 {{ $tango_host := tpl (coalesce .local.Values.global.tango_host .local.Values.tango_host $default_tango_host | toString) .local }}
 {{ $dsconfig := coalesce .local.Values.global.dsconfig .local.Values.dsconfig}}
@@ -18,11 +18,38 @@ Parameters:
 {{ $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
 {{ $kubectl_wait_timeout := coalesce $dsconfig.timeout "120s" }}
 
+{{ $lprobe_initial_delay_seconds := 0 }}
+{{ $lprobe_period_seconds := 5 }}
+{{ $lprobe_timeout_seconds := 1 }}
+{{ $lprobe_success_threshold := 1 }}
+{{ $lprobe_failure_threshold := 3 }}
+{{ if $deviceserver.livenessProbe }}
+{{ $lprobe_initial_delay_seconds = coalesce $deviceserver.livenessProbe.initialDelaySeconds $lprobe_initial_delay_seconds }}
+{{ $lprobe_period_seconds = coalesce $deviceserver.livenessProbe.periodSeconds $lprobe_period_seconds }}
+{{ $lprobe_timeout_seconds = coalesce $deviceserver.livenessProbe.timeoutSeconds $lprobe_timeout_seconds }}
+{{ $lprobe_success_threshold = coalesce $deviceserver.livenessProbe.successThreshold $lprobe_success_threshold }}
+{{ $lprobe_failure_threshold = coalesce $deviceserver.livenessProbe.failureThreshold $lprobe_failure_threshold }}
+{{ end }}
+
+{{ $rprobe_initial_delay_seconds := 0 }}
+{{ $rprobe_period_seconds := 5 }}
+{{ $rprobe_timeout_seconds := 1 }}
+{{ $rprobe_success_threshold := 1 }}
+{{ $rprobe_failure_threshold := 3 }}
+{{ if $deviceserver.readinessProbe }}
+{{ $rprobe_initial_delay_seconds = coalesce $deviceserver.readinessProbe.initialDelaySeconds $rprobe_initial_delay_seconds }}
+{{ $rprobe_period_seconds = coalesce $deviceserver.readinessProbe.periodSeconds $rprobe_period_seconds }}
+{{ $rprobe_timeout_seconds = coalesce $deviceserver.readinessProbe.timeoutSeconds $rprobe_timeout_seconds }}
+{{ $rprobe_success_threshold = coalesce $deviceserver.readinessProbe.successThreshold $rprobe_success_threshold }}
+{{ $rprobe_failure_threshold = coalesce $deviceserver.readinessProbe.failureThreshold $rprobe_failure_threshold }}
+{{ end }}
 ---
 {{ range $instance := $deviceserver.server.instances }}
 {{ $safe_instance := $instance.name | toString | replace "_" "-" }}
 
 {{ if has $safe_instance $deviceserver.instances }}
+
+{{ $tango_server_port := $chart.Values.global.device_server_port }}
 ---
 # one k8s service per instance
 apiVersion: v1
@@ -36,13 +63,19 @@ metadata:
     function: {{ $deviceserver.function }}
     domain: {{ $deviceserver.domain }}
     subsystem: {{ $chart.Values.subsystem }}
+{{ if $annotations }}
   annotations:
 {{ toYaml $annotations | indent 4 }}
+{{ end }}
 spec:
+  type: NodePort
+  ports:
+  - name: tango-server
+    port: {{ $tango_server_port }}
+    targetPort: {{ $tango_server_port }}
   selector:
     subsystem: {{ $chart.Values.subsystem }}
     component: {{tpl ($deviceserver_name | toString) $chart }}-{{ $safe_instance }}
-  clusterIP: None
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -55,8 +88,10 @@ metadata:
     function: {{ $deviceserver.function }}
     domain: {{ $deviceserver.domain }}
     subsystem: {{ $chart.Values.subsystem }}
+{{ if $annotations }}
   annotations:
 {{ toYaml $annotations | indent 4 }}
+{{ end }}
 spec:
   selector:
     matchLabels:
@@ -72,8 +107,10 @@ spec:
         domain: {{ $deviceserver.domain }}
         subsystem: {{ $chart.Values.subsystem }}
 {{ toYaml $labels | indent 8 }}
+    {{ if $annotations }}
       annotations:
 {{ toYaml $annotations | indent 8 }}
+    {{ end }}
     spec:
       volumes:
         - name: configuration
@@ -146,15 +183,15 @@ spec:
 {{- end }}
 {{- end }}
 {{- end }}
-{{- end }} 
-{{- end }} 
+{{- end }}
+{{- end }}
       containers:
       - name: device-server
         image: "{{ tpl ($deviceserver.image.registry | toString) $chart }}/{{ tpl ($deviceserver.image.image | toString) $chart }}:{{ tpl ($deviceserver.image.tag | toString) $chart }}"
         imagePullPolicy: {{ tpl ($deviceserver.image.pullPolicy | toString) $chart }}
         command:
           {{- if not $deviceserver.noretry }}
-          - retry 
+          - retry
           {{- if $chart.Values.global.retry }}
           {{- range $retry_option := $chart.Values.global.retry }}
           - {{ $retry_option }}
@@ -162,22 +199,85 @@ spec:
           {{- else }}
           - --max=60
           {{- end }}
-          - -- 
+          - --
           {{- end }}
           {{- if $deviceserver.command }}
           - {{ $deviceserver.command }}
           {{- else }}
-          - /usr/bin/python 
+          - /usr/bin/python
           - /data/{{ $deviceserver.server.name }}.py
-          {{- end }} 
+          {{- end }}
           - "{{ $safe_instance | toString }}"
+          - -ORBendPoint
+          - giop:tcp::$(TANGO_SERVER_PORT)
+          - -ORBendPointPublish
+          - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
+        ports:
+        - containerPort: {{ $tango_server_port }}
+          name: tango-server
         volumeMounts:
           - name: configuration
             mountPath: data
             readOnly: true
+        livenessProbe:
+          exec:
+            command:
+            - "sh"
+            - "-c"
+          {{- range $index_class, $class := $instance.classes }}
+          {{ $num_of_classes := len $instance.classes }}
+          {{ $num_of_classes = sub $num_of_classes 1 }}
+          {{ $num_of_devices := len $class.devices }}
+          {{ $num_of_devices = sub $num_of_devices 1 }}
+          {{- range $index_device, $device := $class.devices }}
+            - tango_admin
+            - --ping-device
+          {{ if or (lt $index_class $num_of_classes) (lt $index_device  $num_of_devices)  }}
+            - {{ $device.name }}
+            - "&&"
+          {{ else }}
+            - {{ $device.name }}
+          {{ end }}
+          {{ end }}
+          {{ end }}
+          initialDelaySeconds: {{ default 0 $lprobe_initial_delay_seconds }}
+          periodSeconds: {{ $lprobe_period_seconds }}
+          timeoutSeconds: {{ $lprobe_timeout_seconds }}
+          successThreshold: {{ $lprobe_success_threshold }}
+          failureThreshold: {{ $lprobe_failure_threshold }}
+        readinessProbe:
+          exec:
+            command:
+            - "sh"
+            - "-c"
+          {{- range $index_class, $class := $instance.classes }}
+          {{ $num_of_classes := len $instance.classes }}
+          {{ $num_of_classes = sub $num_of_classes 1 }}
+          {{ $num_of_devices := len $class.devices }}
+          {{ $num_of_devices = sub $num_of_devices 1 }}
+          {{- range $index_device, $device := $class.devices }}
+            - tango_admin
+            - --ping-device
+          {{ if or (lt $index_class $num_of_classes) (lt $index_device  $num_of_devices)  }}
+            - {{ $device.name }}
+            - "&&"
+          {{ else }}
+            - {{ $device.name }}
+          {{ end }}
+          {{ end }}
+          {{ end }}
+          initialDelaySeconds: {{ default 0 $rprobe_initial_delay_seconds }}
+          periodSeconds: {{ $rprobe_period_seconds }}
+          timeoutSeconds: {{ $rprobe_timeout_seconds }}
+          successThreshold: {{ $rprobe_success_threshold }}
+          failureThreshold: {{ $rprobe_failure_threshold }}
         env:
         - name: TANGO_HOST
           value: {{ $tango_host }}
+        - name: TANGO_SERVER_PORT
+          value: "{{ $tango_server_port }}"
+        - name: TANGO_SERVER_PUBLISH_HOSTNAME
+          value: {{$deviceserver_name | toString }}-{{ $safe_instance }}.{{ $chart.Release.Namespace }}.svc.{{ $chart.Values.global.cluster_domain }}
 {{- if $chart.Values.global.environment_variables }}
 {{- range $index, $envvar := $chart.Values.global.environment_variables }}
         - name: {{$envvar.name}}
@@ -212,4 +312,3 @@ spec:
 {{ end }} # range instances
 
 {{ end }} # multidevice-svc.tpl
-

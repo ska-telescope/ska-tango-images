@@ -40,8 +40,10 @@ metadata:
     function: {{ .Values.tangorest.function }}
     domain: {{ .Values.tangorest.domain }}
     intent: {{ .Values.tangorest.intent }}
+{{ if or (.Values.global.annotations) (.Values.annotations) }}
   annotations:
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 4 }}
+{{ end }}
 spec:
   selector:
     matchLabels:
@@ -59,8 +61,10 @@ spec:
         function: {{ .Values.tangorest.function }}
         domain: {{ .Values.tangorest.domain }}
         intent: {{ .Values.tangorest.intent }}
+{{ if or (.Values.global.annotations) (.Values.annotations) }}
       annotations:
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 8 }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 8 }}
+{{ end }}
     spec:
       {{- if .Values.pullSecrets }}
       imagePullSecrets:

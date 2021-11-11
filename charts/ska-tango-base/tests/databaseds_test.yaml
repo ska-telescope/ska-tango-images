@@ -125,3 +125,42 @@ tests:
             name: MYSQL_PASSWORD
             value: tango
         
+  - it: should have LoadBalancer type service if enabled in global minikube.
+    documentIndex: 1
+    set:
+      global:
+        minikube: true
+    asserts:
+      - isKind:
+          of: Service
+      - equal:
+          path: spec.type
+          value: LoadBalancer
+  - it: should generate a command for the DatabaseDS parameterized by its tango_host, databaseds-test:40000
+    documentIndex: 1
+    set:
+      global:
+        tango_host: databaseds-test:40000
+        tries: 2
+        sleep: 5
+      tangodb:
+        component: tangodb-test
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].command
+          value:
+            - retry
+            - --tries=2
+            - --sleep=5
+            - --
+            - /usr/local/bin/wait-for-it.sh
+            - ska-tango-base-tangodb-test:3306
+            - --timeout=60
+            - --strict
+            - --
+            - /usr/local/bin/DataBaseds
+            - "2"
+            - -ORBendPoint
+            - giop:tcp::40000
+            - -ORBendPointPublish
+            - giop:tcp:databaseds-test:40000

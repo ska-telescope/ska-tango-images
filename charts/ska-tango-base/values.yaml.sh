@@ -17,10 +17,10 @@ cat <<EOF > ${VALUES_YAML}
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-global:
-  annotations:
-    app.gitlab.com/app: CI_PROJECT_PATH_SLUG
-    app.gitlab.com/env: CI_ENVIRONMENT_SLUG
+# global:
+#   annotations:
+#     app.gitlab.com/app: CI_PROJECT_PATH_SLUG
+#     app.gitlab.com/env: CI_ENVIRONMENT_SLUG
   # by setting this parameter we can disable the lower level sub-system tango-base, archiver and webjive
   # sub-system:
   #   tango-base:
@@ -43,7 +43,10 @@ xauthority: "~/.Xauthority"
 
 global:
   minikube: false
-  tango_host: databaseds-tango-base-{{.Release.Name}}:10000
+  cluster_domain: cluster.local
+  tango_host: databaseds-tango-base:10000
+  databaseds_port: 10000
+  device_server_port: 45450
   retry:
   - "--sleep=1"
   - "--tries=100"
@@ -62,8 +65,8 @@ annotations:
 dsconfig:
   image:
     registry: ${CAR_OCI_REGISTRY_HOST}
-    image: ska-tango-images-tango-dsconfig
-    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-dsconfig setContextHelper; getVersion)${SUFFIX}
+    image: ska-tango-images-tango-dsconfig${IS_ALPINE}
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-dsconfig${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
 
 itango:
@@ -74,7 +77,7 @@ itango:
   intent: enabling
   image:
     registry: ${CAR_OCI_REGISTRY_HOST}
-    image: ska-tango-images-tango-itango
+    image: ska-tango-images-tango-itango${IS_ALPINE}
     tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-itango setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   resources:
@@ -94,8 +97,8 @@ databaseds:
   intent: production
   image:
     registry: ${CAR_OCI_REGISTRY_HOST}
-    image: ska-tango-images-tango-cpp
-    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-cpp setContextHelper; getVersion)${SUFFIX}
+    image: ska-tango-images-tango-cpp${IS_ALPINE}
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-cpp${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -107,14 +110,14 @@ databaseds:
       memory: 256Mi # 256Mi = 0.25 GB mem
       ephemeral-storage: 1Gi
   livenessProbe:
-    enabled: false
+    enabled: true
     initialDelaySeconds: 0
     periodSeconds: 10
     timeoutSeconds: 1
     successThreshold: 1
     failureThreshold: 3
   readinessProbe:
-    enabled: false
+    enabled: true
     initialDelaySeconds: 0
     periodSeconds: 10
     timeoutSeconds: 1
@@ -122,7 +125,8 @@ databaseds:
     failureThreshold: 3
 
 deviceServers:
-  - name: tangotest
+  tangotest:
+    name: tangotest
     function: tango-test
     domain: tango-base
     command: "/usr/local/bin/TangoTest"
@@ -140,8 +144,8 @@ deviceServers:
           - name: "sys/tg_test/1"
     image:
       registry: ${CAR_OCI_REGISTRY_HOST}
-      image: ska-tango-images-tango-java
-      tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-java setContextHelper; getVersion)${SUFFIX}
+      image: ska-tango-images-tango-java${IS_ALPINE}
+      tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-java${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
       pullPolicy: IfNotPresent
     resources:
       requests:
@@ -152,6 +156,18 @@ deviceServers:
         cpu: 500m     # 500m = 0.5 CPU
         memory: 512Mi # 512Mi = 0.5 GB mem
         ephemeral-storage: 1Gi
+    livenessProbe:
+      initialDelaySeconds: 0
+      periodSeconds: 10
+      timeoutSeconds: 1
+      successThreshold: 1
+      failureThreshold: 3
+    readinessProbe:
+      initialDelaySeconds: 0
+      periodSeconds: 10
+      timeoutSeconds: 1
+      successThreshold: 1
+      failureThreshold: 3
 
 tangodb:
   enabled: true
@@ -181,14 +197,14 @@ tangodb:
       ephemeral-storage: 2Gi
   livenessProbe:
     enabled: false
-    initialDelaySeconds: 0
+    initialDelaySeconds: 10
     periodSeconds: 10
     timeoutSeconds: 1
     successThreshold: 1
     failureThreshold: 3
   readinessProbe:
     enabled: false
-    initialDelaySeconds: 0
+    initialDelaySeconds: 10
     periodSeconds: 10
     timeoutSeconds: 1
     successThreshold: 1
@@ -202,8 +218,8 @@ jive:
   intent: enabling
   image:
     registry: ${CAR_OCI_REGISTRY_HOST}
-    image: ska-tango-images-tango-java
-    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-java setContextHelper; getVersion)${SUFFIX}
+    image: ska-tango-images-tango-java${IS_ALPINE}
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-java${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -249,8 +265,8 @@ tangorest:
   intent: enabling
   image:
     registry: ${CAR_OCI_REGISTRY_HOST}
-    image: ska-tango-images-tango-rest
-    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-rest setContextHelper; getVersion)${SUFFIX}
+    image: ska-tango-images-tango-rest${IS_ALPINE}
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-rest${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -270,8 +286,8 @@ logviewer:
   intent: enabling
   image:
     registry: ${CAR_OCI_REGISTRY_HOST}
-    image: ska-tango-images-tango-java
-    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-java setContextHelper; getVersion)${SUFFIX}
+    image: ska-tango-images-tango-java${IS_ALPINE}
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-java${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   resources:
     requests:

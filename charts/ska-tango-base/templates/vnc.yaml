@@ -12,8 +12,10 @@ metadata:
     domain: {{ .Values.vnc.domain }}
     intent: {{ .Values.vnc.intent }}
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+{{ if or (.Values.global.annotations) (.Values.annotations) }}
   annotations:
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 4 }}
+{{ end }}
 spec:
   type: NodePort
   ports:
@@ -48,8 +50,10 @@ metadata:
     domain: {{ .Values.vnc.domain }}
     intent: {{ .Values.vnc.intent }}
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+{{ if or (.Values.global.annotations) (.Values.annotations) }}
   annotations:
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 4 }}
+{{ end }}
 spec:
   selector:
     matchLabels:
@@ -68,8 +72,10 @@ spec:
         domain: {{ .Values.vnc.domain }}
         intent: {{ .Values.vnc.intent }}
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 8 }}
+{{ if or (.Values.global.annotations) (.Values.annotations) }}
       annotations:
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 8 }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 8 }}
+{{ end }}
     spec:
       containers:
       - name: vnc

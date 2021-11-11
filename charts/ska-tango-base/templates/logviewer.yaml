@@ -12,8 +12,10 @@ metadata:
     function: {{ .Values.logviewer.function }}
     domain: {{ .Values.logviewer.domain }}
     intent: {{ .Values.logviewer.intent }}
+{{ if or (.Values.global.annotations) (.Values.annotations) }}
   annotations:
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 4 }}
+{{ end }}
 spec:
   containers:
   - name: logviewer

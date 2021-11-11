@@ -1,5 +1,6 @@
 {{- define "ska-tango-util.configuration.tpl" -}}
 {{ $default_tango_host := printf "%s-%s:10000" "databaseds-tango-base" .Release.Name }}
+
 {{ $tango_host := tpl (coalesce .Values.global.tango_host .Values.tango_host $default_tango_host | toString) . }}
 {{ $dsconfig := coalesce .Values.global.dsconfig .Values.dsconfig}}
 {{ $itango := coalesce .Values.global.itango .Values.itango}}
@@ -87,7 +88,7 @@ metadata:
   annotations:
 {{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
 spec:
-  ttlSecondsAfterFinished: 100
+  ttlSecondsAfterFinished: 3600
   template:
     spec:
       initContainers:

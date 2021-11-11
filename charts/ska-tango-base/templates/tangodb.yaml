@@ -12,8 +12,10 @@ metadata:
     domain: {{ .Values.tangodb.domain }}
     intent: {{ .Values.tangodb.intent }}
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+{{ if or (.Values.global.annotations) (.Values.annotations) }}
   annotations:
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 4 }}
+{{ end }}
 spec:
   ports:
   - name: mysql
@@ -39,8 +41,10 @@ metadata:
     domain: {{ .Values.tangodb.domain }}
     intent: {{ .Values.tangodb.intent }}
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+{{ if or (.Values.global.annotations) (.Values.annotations) }}
   annotations:
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 4 }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 4 }}
+{{ end }}
 spec:
   selector:
     matchLabels:
@@ -59,8 +63,10 @@ spec:
         domain: {{ .Values.tangodb.domain }}
         intent: {{ .Values.tangodb.intent }}
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 8 }}
+{{ if or (.Values.global.annotations) (.Values.annotations) }}
       annotations:
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations "annotations:none") | indent 8 }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 8 }}
+{{ end }}
     spec:
       containers:
       - name: tangodb
