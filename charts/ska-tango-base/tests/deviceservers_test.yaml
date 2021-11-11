@@ -3,6 +3,252 @@ suite: deviceservers
 templates:
   - deviceservers.yaml
 tests:
+  - it: should have seven documents rendered.
+    asserts:
+      - hasDocuments:
+          count: 7
+
+  - it: should have the correct apiVersion, v1, for the ConfigMap resource.
+    documentIndex: 0
+    asserts:
+      - isKind:
+          of: ConfigMap
+      - isAPIVersion:
+          of: v1
+
+  - it: should have a ConfigMap with data having configuration.json.
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: data
+          value:
+            TangoTest.py: "import importlib\nimport importlib.util\nfrom tango.server import run\n\nclasses
+              = []\n\ndef main(args=None, **kwargs):\n  \n  return run(classes=(classes), args=args,
+              **kwargs)\n\nif __name__ == '__main__':\n    main()\n"
+            bootstrap.sh: |
+              #/bin/sh
+              json2tango -w -a -u data/configuration.json
+              rc=$?
+              if [ $rc -eq 0 ]; then
+                echo "finished normally."
+                exit 0
+              else
+                if [ $rc -eq 2 ]; then
+                  echo "finished with an update."
+                  exit 0
+                else
+                  echo "finished with an ERROR."
+                  exit $rc
+                fi
+              fi
+            configuration.json: "{\n  \"servers\": {\n    \"TangoTest\" : {\n      \"test\": {\n
+              \       \"TangoTest\": {\n          \"sys/tg_test/1\": {\n          }    \n        }\n
+              \     } \n    }\n  }\n}\n"
+
+  - it: should have the correct apiVersion, v1, for the ServiceAccount resource.
+    documentIndex: 1
+    asserts:
+      - isKind:
+          of: ServiceAccount
+      - isAPIVersion:
+          of: v1
+
+  - it: should have a ServiceAccount that uses metadata.
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: metadata
+          value:
+            name: tangotest-sa-RELEASE-NAME
+            namespace: NAMESPACE
+
+  - it: should have the correct apiVersion, rbac.authorization.k8s.io/v1, for the RoleBinding resource.
+    documentIndex: 2
+    asserts:
+      - isKind:
+          of: RoleBinding
+      - isAPIVersion:
+          of: rbac.authorization.k8s.io/v1
+
+  - it: should have a RoleBinding with Subjects.
+    documentIndex: 2
+    asserts:
+      - equal:
+          path: subjects
+          value:
+          - kind: ServiceAccount
+            name: tangotest-sa-RELEASE-NAME
+            namespace: NAMESPACE
+
+  - it: should have a RoleBinding with roleRef.
+    documentIndex: 2
+    asserts:
+      - equal:
+          path: roleRef
+          value:
+            kind: Role
+            name: tangotest-role-RELEASE-NAME
+            apiGroup: rbac.authorization.k8s.io
+
+  - it: should have the correct apiVersion, rbac.authorization.k8s.io/v1, for the Role resource.
+    documentIndex: 3
+    asserts:
+      - isKind:
+          of: Role
+      - isAPIVersion:
+          of: rbac.authorization.k8s.io/v1
+
+  - it: should have a Role with rules.
+    documentIndex: 3
+    asserts:
+      - equal:
+          path: rules
+          value:
+          - apiGroups: [ "", "batch", "apps" ]
+            resources: [ "jobs" ]
+            verbs: [ "list", "get", "watch" ]
+
+  - it: should have the correct apiVersion, batch/v1, for the Job resource.
+    documentIndex: 4
+    asserts:
+      - isKind:
+          of: Job
+      - isAPIVersion:
+          of: batch/v1
+
+  - it: should have a Job with template having container uses docker image ska-tango-images-tango-dsconfig.
+    documentIndex: 4
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: artefact.skao.int/ska-tango-images-tango-dsconfig
+
+  - it: should have a Job with template having container uses imagePullPolicy.
+    documentIndex: 4
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: IfNotPresent
+
+  - it: should have a Job with template having Volume.
+    documentIndex: 4
+    asserts:
+      - equal:
+          path: spec.template.spec.volumes[0]
+          value:
+            name: configuration
+            configMap:
+              name: tangotest-dsconfig-json
+
+  - it: should have a Job with template having restartPolicy.
+    documentIndex: 4
+    asserts:
+      - equal:
+          path: spec.template.spec.restartPolicy
+          value: Never
+
+  - it: should have a Job with template having container set the correct environment variables for the Tango Host.
+    documentIndex: 4
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: TANGO_HOST
+            value: databaseds-tango-base:10000
+
+  - it: should have the correct apiVersion, v1, for the Service resource.
+    documentIndex: 5
+    asserts:
+      - isKind:
+          of: Service
+      - isAPIVersion:
+          of: v1
+
+  - it: should have a Service that routes traffic to the pods with labels.
+    documentIndex: 5
+    asserts:
+      - equal:
+          path: spec.selector
+          value:
+            subsystem: ska-tango-base
+            component: tangotest-test
+
+  - it: should have the correct apiVersion, apps/v1, for the StatefulSet resource.
+    documentIndex: 6
+    asserts:
+      - isKind:
+          of: StatefulSet
+      - isAPIVersion:
+          of: apps/v1
+
+  - it: should have a Statfulset with pods having labels.
+    documentIndex: 6
+    asserts:
+      - equal:
+          path: spec.selector.matchLabels
+          value:
+            subsystem: ska-tango-base
+            component: tangotest-test
+
+  - it: should have a Statfulset with template having labels.
+    documentIndex: 6
+    asserts:
+      - equal:
+          path: spec.template.metadata.labels
+          value:
+            component: tangotest-test
+            function: tango-test
+            domain: tango-base
+            subsystem: ska-tango-base
+            app: ska-tango-images
+
+  - it: should have a Statfulset with template having initcontainer uses docker image bitnami/kubectl.
+    documentIndex: 6
+    asserts:
+      - matchRegex:
+            path: spec.template.spec.initContainers[0].image
+            pattern: bitnami/kubectl
+
+  - it: should set the service name to its own cluster hostname.
+    documentIndex: 6
+    asserts:
+      - equal:
+          path: spec.serviceName
+          value: tangotest-test
+
+  - it: should have one replica of the statefulset
+    documentIndex: 6
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 1
+
+  - it: should use the docker image artefact.skao.int/ska-tango-images-tango-java.
+    documentIndex: 6
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: artefact.skao.int/ska-tango-images-tango-java
+
+  - it: should pull the image if it is not present.
+    documentIndex: 6
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: IfNotPresent
+
+  - it: should have the VolumeMounts.
+    documentIndex: 6
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].volumeMounts
+          content:
+            name: configuration
+            mountPath: data
+            readOnly: true
+
+  - it: should set the correct environment variables for the Tango Host.
+    documentIndex: 6
   - it: should have the readiness probes setup using the parameters in the values.yaml file.
     documentIndex: 6
     asserts:

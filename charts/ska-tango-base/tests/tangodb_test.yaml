@@ -1,0 +1,134 @@
+---
+suite: tangodb
+templates:
+  - tangodb.yaml
+tests:
+  - it: should have two documents rendered.
+    asserts:
+      - hasDocuments:
+          count: 2
+
+  - it: should have the correct apiVersion, apps/v1, for the StatefulSet resource.
+    documentIndex: 1
+    asserts:
+      - isKind:
+          of: StatefulSet
+      - isAPIVersion:
+          of: apps/v1
+
+  - it: should have the correct apiVersion, apps/v1, for the Service resource.
+    documentIndex: 0
+    asserts:
+      - isKind:
+          of: Service
+      - isAPIVersion:
+          of: v1
+
+  - it: should have a service of type NodePort.
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.type
+          value: NodePort
+
+  - it: should have the Service that have mysql listening on port 3306.
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.ports[0].name
+          value: mysql
+      - equal:
+          path: spec.ports[0].port
+          value: 3306
+
+  - it: should have the Statfulset that have mysql listening on port 3306.
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].name
+          value: mysql
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].containerPort
+          value: 3306
+
+  - it: should have a Service that routes traffic to the pods with labels.
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.selector
+          value:
+            app: ska-tango-images
+            component: tangodb
+            domain: tango-configuration
+            function: tango-device-configuration
+            intent: production
+
+  - it: should have a Statfulset with pods having labels.
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.selector.matchLabels
+          value:
+            app: ska-tango-images
+            component: tangodb
+            domain: tango-configuration
+            function: tango-device-configuration
+            intent: production
+
+  - it: should set the service name to its own cluster hostname.
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.serviceName
+          value: ska-tango-base-tangodb
+
+  - it: should have one replica of the statefulset
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 1
+
+  - it: should use the docker image artefact.skao.int/ska-tango-images-tango-db.
+    documentIndex: 1
+    asserts:
+      - matchRegex:
+          path: spec.template.spec.containers[0].image
+          pattern: artefact.skao.int/ska-tango-images-tango-db
+
+  - it: should pull the image if it is not present.
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: IfNotPresent
+
+  - it: should set the correct environment variables for the MYSQL database.
+    documentIndex: 1
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: MYSQL_ALLOW_EMPTY_PASSWORD
+            value: "1"
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: MYSQL_DATABASE
+            value: tango
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: MYSQL_USER
+            value: tango
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: MYSQL_ROOT_PASSWORD
+            value: secret
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: MYSQL_PASSWORD
+            value: tango
+        
