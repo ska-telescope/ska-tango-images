@@ -1,5 +1,5 @@
 {{- /*
-tango-util.multidevicesds.tpl 
+tango-util.multidevicesds.tpl
 Parameters:
 - deviceserver (the deviceserver entire yaml tag)
 - image (to be used for the deviceserver)
@@ -49,7 +49,7 @@ Parameters:
 
 {{ if has $safe_instance $deviceserver.instances }}
 
-{{ $tango_server_port := 45450 }}
+{{ $tango_server_port := $chart.Values.global.device_server_port }}
 ---
 # one k8s service per instance
 apiVersion: v1
@@ -183,15 +183,15 @@ spec:
 {{- end }}
 {{- end }}
 {{- end }}
-{{- end }} 
-{{- end }} 
+{{- end }}
+{{- end }}
       containers:
       - name: device-server
         image: "{{ tpl ($deviceserver.image.registry | toString) $chart }}/{{ tpl ($deviceserver.image.image | toString) $chart }}:{{ tpl ($deviceserver.image.tag | toString) $chart }}"
         imagePullPolicy: {{ tpl ($deviceserver.image.pullPolicy | toString) $chart }}
         command:
           {{- if not $deviceserver.noretry }}
-          - retry 
+          - retry
           {{- if $chart.Values.global.retry }}
           {{- range $retry_option := $chart.Values.global.retry }}
           - {{ $retry_option }}
@@ -199,17 +199,17 @@ spec:
           {{- else }}
           - --max=60
           {{- end }}
-          - -- 
+          - --
           {{- end }}
           {{- if $deviceserver.command }}
           - {{ $deviceserver.command }}
           {{- else }}
-          - /usr/bin/python 
+          - /usr/bin/python
           - /data/{{ $deviceserver.server.name }}.py
-          {{- end }} 
+          {{- end }}
           - "{{ $safe_instance | toString }}"
           - -ORBendPoint
-          - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME)-0:$(TANGO_SERVER_PORT)
+          - giop:tcp::$(TANGO_SERVER_PORT)
           - -ORBendPointPublish
           - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
         ports:
@@ -277,7 +277,7 @@ spec:
         - name: TANGO_SERVER_PORT
           value: "{{ $tango_server_port }}"
         - name: TANGO_SERVER_PUBLISH_HOSTNAME
-          value: {{$deviceserver_name | toString }}-{{ $safe_instance }}
+          value: {{$deviceserver_name | toString }}-{{ $safe_instance }}.{{ $chart.Release.Namespace }}.svc.{{ $chart.Values.global.cluster_domain }}
 {{- if $chart.Values.global.environment_variables }}
 {{- range $index, $envvar := $chart.Values.global.environment_variables }}
         - name: {{$envvar.name}}
@@ -312,4 +312,3 @@ spec:
 {{ end }} # range instances
 
 {{ end }} # multidevice-svc.tpl
-

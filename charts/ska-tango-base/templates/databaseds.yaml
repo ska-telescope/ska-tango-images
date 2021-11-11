@@ -1,4 +1,5 @@
 {{ $databaseds_name := (split ":" .Values.global.tango_host)._0 }}
+{{ $databaseds_port := (split ":" .Values.global.tango_host)._1 }}
 {{ $tries := coalesce  .Values.global.tries 10}}
 {{ $sleep := coalesce  .Values.global.sleep 5}}
 ---
@@ -21,7 +22,7 @@ metadata:
 spec:
   ports:
   - name: ds
-    port: 10000
+    port: {{ $databaseds_port }}
   type: NodePort
   selector:
     component: {{ .Values.databaseds.component }}
@@ -30,6 +31,37 @@ spec:
     intent: {{ .Values.databaseds.intent }}
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
 
+---
+## The LoadBalancer for external access
+{{ if .Values.global.minikube }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ tpl ($databaseds_name | toString) . }}-external
+  namespace: {{ .Release.Namespace }}
+  labels:
+    component: {{ .Values.databaseds.component }}
+    function: {{ .Values.databaseds.function }}
+    domain: {{ .Values.databaseds.domain }}
+    intent: {{ .Values.databaseds.intent }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+{{ if or (.Values.global.annotations) (.Values.annotations) }}
+  annotations:
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 4 }}
+{{ end }}
+spec:
+  ports:
+  - name: ds
+    port: {{ $databaseds_port }}
+  type: LoadBalancer
+  selector:
+    component: {{ .Values.databaseds.component }}
+    function: {{ .Values.databaseds.function }}
+    domain: {{ .Values.databaseds.domain }}
+    intent: {{ .Values.databaseds.intent }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+
+{{ end }}
 ---
 
 apiVersion: apps/v1
@@ -72,7 +104,7 @@ spec:
         imagePullPolicy: {{ .Values.databaseds.image.pullPolicy }}
         command:
           - retry
-          - --tries={{$tries}} 
+          - --tries={{$tries}}
           - --sleep={{$sleep}}
           - --
           - /usr/local/bin/wait-for-it.sh
@@ -83,7 +115,9 @@ spec:
           - /usr/local/bin/DataBaseds
           - "2"
           - -ORBendPoint
-          - giop:tcp::10000
+          - giop:tcp::{{ $databaseds_port }}
+          - -ORBendPointPublish
+          - giop:tcp:{{ tpl ($databaseds_name | toString) . }}:{{ $databaseds_port }}
         env:
           - name: MYSQL_HOST
             value: "{{ template "ska-tango-base.name" . }}-{{ .Values.tangodb.component }}:3306"
@@ -95,11 +129,11 @@ spec:
             value: "{{ .Values.tangodb.db.password }}"
         ports:
         - name: ds
-          containerPort: 10000
+          containerPort: {{ $databaseds_port }}
         {{- if .Values.databaseds.livenessProbe.enabled }}
         readinessProbe:
           tcpSocket:
-            port: 10000
+            port: {{ $databaseds_port }}
           initialDelaySeconds: {{ .Values.databaseds.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.databaseds.readinessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.databaseds.readinessProbe.timeoutSeconds }}
@@ -109,7 +143,7 @@ spec:
         {{- if .Values.databaseds.readinessProbe.enabled }}
         livenessProbe:
           tcpSocket:
-            port: 10000
+            port: {{ $databaseds_port }}
           initialDelaySeconds: {{ .Values.databaseds.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.databaseds.livenessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.databaseds.livenessProbe.timeoutSeconds }}

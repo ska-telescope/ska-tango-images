@@ -43,7 +43,10 @@ xauthority: "~/.Xauthority"
 
 global:
   minikube: false
-  tango_host: databaseds-tango-base-{{.Release.Name}}:10000
+  cluster_domain: cluster.local
+  tango_host: databaseds-tango-base:10000
+  databaseds_port: 10000
+  device_server_port: 45450
   retry:
   - "--sleep=1"
   - "--tries=100"
@@ -308,4 +311,3 @@ affinity: {}
 tolerations: []
 
 EOF
-

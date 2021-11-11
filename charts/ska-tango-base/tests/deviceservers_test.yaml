@@ -68,7 +68,7 @@ tests:
           value:
             - sh
             - -c
-            - tango_admin 
+            - tango_admin
             - --ping-device
             - sys/tg_test/1
             - "&&"
@@ -84,7 +84,7 @@ tests:
           value:
             - sh
             - -c
-            - tango_admin 
+            - tango_admin
             - --ping-device
             - sys/tg_test/1
             - "&&"
@@ -207,7 +207,7 @@ tests:
             - /usr/local/bin/TangoTest
             - "test"
             - -ORBendPoint
-            - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME)-0:$(TANGO_SERVER_PORT)
+            - giop:tcp::$(TANGO_SERVER_PORT)
             - -ORBendPointPublish
             - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
       - equal:
@@ -287,7 +287,7 @@ tests:
             - /usr/local/bin/TangoTest
             - "test"
             - -ORBendPoint
-            - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME)-0:$(TANGO_SERVER_PORT)
+            - giop:tcp::$(TANGO_SERVER_PORT)
             - -ORBendPointPublish
             - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
         documentIndex: 6
@@ -304,7 +304,7 @@ tests:
             - /usr/local/bin/TangoTest
             - "test2"
             - -ORBendPoint
-            - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME)-0:$(TANGO_SERVER_PORT)
+            - giop:tcp::$(TANGO_SERVER_PORT)
             - -ORBendPointPublish
             - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
         documentIndex: 8
@@ -322,5 +322,5 @@ tests:
           path: spec.template.spec.containers[0].env
           content:
             name: TANGO_SERVER_PUBLISH_HOSTNAME
-            value: tangotest-test
+            value: tangotest-test.NAMESPACE.svc.cluster.local
         documentIndex: 6
