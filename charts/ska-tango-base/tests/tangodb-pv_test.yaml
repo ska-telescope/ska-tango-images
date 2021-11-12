@@ -1,0 +1,40 @@
+---
+suite: tangodb-pv
+templates:
+  - tangodb-pv.yaml
+tests:
+  - it: should have one document rendered.
+    set:
+      tangodb.use_pv: true
+    asserts:
+      - hasDocuments:
+          count: 1
+
+  - it: should have the correct apiVersion, v1, for the PersistentVolumeClaim resource.
+    set:
+      tangodb.use_pv: true
+    documentIndex: 0
+    asserts:
+      - isKind:
+          of: PersistentVolumeClaim
+      - isAPIVersion:
+          of: v1
+
+  - it: should have a storageClassName.
+    set:
+      tangodb.use_pv: true
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.storageClassName
+          value: nfss1
+
+  - it: should have a accessModes.
+    set:
+      tangodb.use_pv: true
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.accessModes
+          value:
+            - ReadWriteMany

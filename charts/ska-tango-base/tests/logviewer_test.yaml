@@ -1,0 +1,107 @@
+---
+suite: logviewer
+templates:
+  - logviewer.yaml
+tests:
+  - it: should have one document rendered.
+    set:
+      logviewer:
+        enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+
+  - it: should have the correct apiVersion, v1, for the Pod resource.
+    set:
+      logviewer:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - isKind:
+          of: Pod
+      - isAPIVersion:
+          of: v1
+
+  - it: should use the docker image artefact.skao.int/ska-tango-images-tango-java.
+    set:
+      logviewer:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - matchRegex:
+          path: spec.containers[0].image
+          pattern: artefact.skao.int/ska-tango-images-tango-java
+
+  - it: should pull the image if it is not present.
+    set:
+      logviewer:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.containers[0].imagePullPolicy
+          value: IfNotPresent
+
+  - it: should set the correct environment variables for the Tango host.
+    set:
+      logviewer:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - contains:
+          path: spec.containers[0].env
+          content:
+            name: XAUTHORITY
+            value: "/tmp/.Xauthority"
+      - contains:
+          path: spec.containers[0].env
+          content:
+            name: DISPLAY
+            value: ":0"
+      - contains:
+          path: spec.containers[0].env
+          content:
+            name: TANGO_HOST
+            value: databaseds-tango-base:10000
+
+  - it: should have the volumeMounts.
+    set:
+      logviewer:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.containers[0].volumeMounts
+          value:
+          - mountPath: /tmp/.Xauthority
+            name: xauthority
+            readOnly: true
+
+  - it: should have the command.
+    set:
+      logviewer:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.containers[0].command
+          value:
+            - /usr/local/bin/wait-for-it.sh
+            - "databaseds-tango-base:10000"
+            - --timeout=30
+            - --strict
+            - --
+            - /usr/local/bin/logviewer
+
+  - it: should have the volumes.
+    set:
+      logviewer:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.volumes
+          value:
+          - name: xauthority
+            hostPath:
+              path: /home/ubuntu/.Xauthority
