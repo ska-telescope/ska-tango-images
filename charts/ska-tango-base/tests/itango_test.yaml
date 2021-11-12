@@ -1,0 +1,83 @@
+---
+suite: itango
+templates:
+  - itango.yaml
+tests:
+  - it: should have one document rendered.
+    set:
+      itango:
+        enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+
+  - it: should have the correct apiVersion, v1, for the Pod resource.
+    set:
+      itango:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - isKind:
+          of: Pod
+      - isAPIVersion:
+          of: v1
+
+  - it: should use the docker image artefact.skao.int/ska-tango-images-tango-itango.
+    set:
+      itango:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - matchRegex:
+          path: spec.containers[0].image
+          pattern: artefact.skao.int/ska-tango-images-tango-itango
+
+  - it: should pull the image if it is not present.
+    set:
+      itango:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.containers[0].imagePullPolicy
+          value: IfNotPresent
+
+  - it: should set the correct environment variables for the Tango host.
+    set:
+      itango:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - contains:
+          path: spec.containers[0].env
+          content:
+            name: TANGO_HOST
+            value: databaseds-tango-base:10000
+
+  - it: should have the restartPolicy.
+    set:
+      itango:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.restartPolicy
+          value: Always
+
+  - it: should have the command.
+    set:
+      itango:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.containers[0].command
+          value:
+            - /usr/local/bin/wait-for-it.sh
+            - databaseds-tango-base:10000
+            - --timeout=30
+            - --strict
+            - --
+            - sleep
+            - infinity
+            # - /venv/bin/itango3
