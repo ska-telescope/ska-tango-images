@@ -16,7 +16,7 @@ tests:
       - isAPIVersion:
           of: v1
 
-  - it: should have a ConfigMap with data having configuration.json.
+  - it: should have a ConfigMap for the TangoTest device server with data having configuration.json.
     documentIndex: 0
     asserts:
       - equal:
@@ -98,7 +98,7 @@ tests:
       - isAPIVersion:
           of: rbac.authorization.k8s.io/v1
 
-  - it: should have a Role with rules.
+  - it: should have a Role with rules set.
     documentIndex: 3
     asserts:
       - equal:
@@ -116,45 +116,56 @@ tests:
       - isAPIVersion:
           of: batch/v1
 
-  - it: should have a Job with template having container uses docker image ska-tango-images-tango-dsconfig.
+  - it: should have a Job with template having container uses docker image my-own-registry/my-own-image.
     documentIndex: 4
+    set:
+      dsconfig:
+        image:
+          registry: my-own-registry
+          image: my-own-image
     asserts:
       - matchRegex:
           path: spec.template.spec.containers[0].image
-          pattern: artefact.skao.int/ska-tango-images-tango-dsconfig
+          pattern: my-own-registry/my-own-image
 
-  - it: should have a Job with template having container uses imagePullPolicy.
+  - it: should have a Job resource that has a volume that uses a configMap named tangotest-test-dsconfig-json.
     documentIndex: 4
-    asserts:
-      - equal:
-          path: spec.template.spec.containers[0].imagePullPolicy
-          value: IfNotPresent
-
-  - it: should have a Job with template having Volume.
-    documentIndex: 4
+    set:
+      deviceServers:
+        tangotest:
+          name: tangotest-test
     asserts:
       - equal:
           path: spec.template.spec.volumes[0]
           value:
             name: configuration
             configMap:
-              name: tangotest-dsconfig-json
+              name: tangotest-test-dsconfig-json
 
-  - it: should have a Job with template having restartPolicy.
+  - it: should have a Job resource with a restartPolicy set to 'Never'.
     documentIndex: 4
     asserts:
       - equal:
           path: spec.template.spec.restartPolicy
           value: Never
 
-  - it: should have a Job with template having container set the correct environment variables for the Tango Host.
+  - it: should have a Job with the containers having the TANGO_HOST, databaseds-test:12345, environment variable set.
     documentIndex: 4
+    set:
+      global:
+        tango_host: databaseds-test:12345
     asserts:
+      - contains:
+          path: spec.template.spec.initContainers[0].env
+          content:
+            name: TANGO_HOST
+            value: databaseds-test:12345
       - contains:
           path: spec.template.spec.containers[0].env
           content:
             name: TANGO_HOST
-            value: databaseds-tango-base:10000
+            value: databaseds-test:12345
+      
 
   - it: should have the correct apiVersion, v1, for the Service resource.
     documentIndex: 5
@@ -164,14 +175,23 @@ tests:
       - isAPIVersion:
           of: v1
 
-  - it: should have a Service that routes traffic to the pods with labels.
+  - it: should have a Service that routes traffic to the pods with set labels.
     documentIndex: 5
+    set:
+      deviceServers:
+        tangotest:
+          name: tangotest-test
+          instances: ["helm-test"]
+          server:
+            instances:
+              - name: "helm-test"
+      subsystem: ska-tango-base-test
     asserts:
       - equal:
           path: spec.selector
           value:
-            subsystem: ska-tango-base
-            component: tangotest-test
+            subsystem: ska-tango-base-test
+            component: tangotest-test-helm-test
 
   - it: should have the correct apiVersion, apps/v1, for the StatefulSet resource.
     documentIndex: 6
@@ -183,12 +203,21 @@ tests:
 
   - it: should have a Statfulset with pods having labels.
     documentIndex: 6
+    set:
+      deviceServers:
+        tangotest:
+          name: tangotest-test
+          instances: ["helm-test"]
+          server:
+            instances:
+              - name: "helm-test"
+      subsystem: ska-tango-base-test
     asserts:
       - equal:
           path: spec.selector.matchLabels
           value:
-            subsystem: ska-tango-base
-            component: tangotest-test
+            subsystem: ska-tango-base-test
+            component: tangotest-test-helm-test
 
   - it: should have a Statfulset with template having labels.
     documentIndex: 6
@@ -223,12 +252,18 @@ tests:
           path: spec.replicas
           value: 1
 
-  - it: should use the docker image artefact.skao.int/ska-tango-images-tango-java.
+  - it: should use the docker image specified in the values.yaml, my-own-registry/my-own-image.
     documentIndex: 6
+    set:
+      deviceServers:
+        tangotest:
+          image:
+            registry: my-own-registry
+            image: my-own-image
     asserts:
       - matchRegex:
           path: spec.template.spec.containers[0].image
-          pattern: artefact.skao.int/ska-tango-images-tango-java
+          pattern: my-own-registry/my-own-image
 
   - it: should pull the image if it is not present.
     documentIndex: 6
@@ -247,8 +282,6 @@ tests:
             mountPath: data
             readOnly: true
 
-  - it: should set the correct environment variables for the Tango Host.
-    documentIndex: 6
   - it: should have the readiness probes setup using the parameters in the values.yaml file.
     documentIndex: 6
     asserts:
@@ -269,6 +302,7 @@ tests:
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 1
+
   - it: should have the liveness probes setup using the parameters in the values.yaml file.
     documentIndex: 6
     asserts:
@@ -289,6 +323,7 @@ tests:
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 1
+
   - it: should generate readiness and liveness probes for a TANGO server instance with one Tango class and multiple devices.
     documentIndex: 6
     set:
@@ -341,6 +376,7 @@ tests:
             - tango_admin
             - --ping-device
             - sys/tg_test/3
+
   - it: should use the appropriate values to generate the liveness and readiness probes from both the values.yaml and the _multidevice-svc.yaml files, respectively.
     documentIndex: 6
     set:
@@ -383,6 +419,7 @@ tests:
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 1
+
   - it: should use default values (from the _multidevice-svc.yaml) to generate the liveness and readiness probes if the readinessProbe/livenessProbe tags are not present in the values.yaml file.
     documentIndex: 6
     set:
@@ -423,6 +460,7 @@ tests:
             periodSeconds: 5
             successThreshold: 1
             timeoutSeconds: 1
+
   - it: should generate liveness and readiness probes for a TANGO server instance with multiple TANGO classes.
     documentIndex: 6
     set:
@@ -502,6 +540,7 @@ tests:
             periodSeconds: 10
             successThreshold: 1
             timeoutSeconds: 1
+
   - it: should generate multiple StatefulSet resources for a TANGO server with multiple server instances.
     set:
       deviceServers:
@@ -554,6 +593,7 @@ tests:
             - -ORBendPointPublish
             - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
         documentIndex: 8
+
   - it: should have a TANGO_SERVER_PORT environment variable set to 45450
     asserts:
       - contains:
@@ -562,6 +602,7 @@ tests:
             name: TANGO_SERVER_PORT
             value: "45450"
         documentIndex: 6
+
   - it: should have a TANGO_SERVER_PUBLISH environment variable set to the "<server-name><server-instance>-0"
     asserts:
       - contains:
