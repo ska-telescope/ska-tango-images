@@ -4,12 +4,16 @@ templates:
   - ingress.yaml
 tests:
   - it: should have one document rendered.
+    set:
+      ingress.enabled: true
     asserts:
       - hasDocuments:
           count: 1
 
   - it: should have the correct apiVersion, networking.k8s.io/v1, for the Ingress resource.
     documentIndex: 0
+    set:
+      ingress.enabled: true
     asserts:
       - isKind:
           of: Ingress
@@ -19,6 +23,8 @@ tests:
   - it: should have a service of tango rest listening on port 8080 for nginx.
     documentIndex: 0
     set:
+      ingress.enabled: true
+      ingress.nginx: true
       annotations: null
       tangorest:
         component: tango-rest-test
@@ -38,6 +44,7 @@ tests:
   - it: should have a Service resource of tango rest listening on port 8080 for traefik if nginx is set to false.
     set:
        annotations: null
+       ingress.enabled: true
        ingress.nginx: false
        tangorest:
         component: tango-rest-test
@@ -58,6 +65,7 @@ tests:
   - it: should have a Ingress resource with pods having labels specified in the values.yaml file.
     documentIndex: 0
     set:
+      ingress.enabled: true
       tangorest:
         component: tango-rest-test
         function: tango-http-interface-test
