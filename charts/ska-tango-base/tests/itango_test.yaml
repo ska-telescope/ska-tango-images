@@ -22,15 +22,18 @@ tests:
       - isAPIVersion:
           of: v1
 
-  - it: should use the docker image artefact.skao.int/ska-tango-images-tango-itango.
+  - it: should use the docker image provided, my-own-registry/my-own-image.
     set:
       itango:
         enabled: true
+        image:
+          registry: my-own-registry
+          image: my-own-image
     documentIndex: 0
     asserts:
       - matchRegex:
           path: spec.containers[0].image
-          pattern: artefact.skao.int/ska-tango-images-tango-itango
+          pattern: my-own-registry/my-own-image
 
   - it: should pull the image if it is not present.
     set:
@@ -42,23 +45,25 @@ tests:
           path: spec.containers[0].imagePullPolicy
           value: IfNotPresent
 
-  - it: should set the correct environment variables for the Tango host.
+  - it: should set the correct environment variables for the TANGO_HOST, databaseds-test:12345.
+    documentIndex: 0
     set:
+      global:
+        tango_host: databaseds-test:12345
       itango:
         enabled: true
-    documentIndex: 0
     asserts:
       - contains:
           path: spec.containers[0].env
           content:
             name: TANGO_HOST
-            value: databaseds-tango-base:10000
+            value: databaseds-test:12345
 
-  - it: should have the restartPolicy.
+  - it: should have the restartPolicy set to 'Always'.
+    documentIndex: 0
     set:
       itango:
         enabled: true
-    documentIndex: 0
     asserts:
       - equal:
           path: spec.restartPolicy
