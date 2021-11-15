@@ -12,6 +12,8 @@ Parameters:
 {{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations }}
 {{ $default_tango_host := printf "%s-%s:10000" "databaseds-tango-base-" .local.Release.Name }}
 {{ $tango_host := tpl (coalesce .local.Values.global.tango_host .local.Values.tango_host $default_tango_host | toString) .local }}
+{{ $tango_server_port := coalesce .local.Values.global.device_server_port "45450" }}
+{{ $cluster_domain := coalesce .local.Values.global.cluster_domain "cluster.local" }}
 {{ $dsconfig := coalesce .local.Values.global.dsconfig .local.Values.dsconfig}}
 {{ $chart := .local }}
 {{ $deviceserver := .deviceserver }}
@@ -48,8 +50,6 @@ Parameters:
 {{ $safe_instance := $instance.name | toString | replace "_" "-" }}
 
 {{ if has $safe_instance $deviceserver.instances }}
-
-{{ $tango_server_port := $chart.Values.global.device_server_port }}
 ---
 # one k8s service per instance
 apiVersion: v1
@@ -115,7 +115,7 @@ spec:
       volumes:
         - name: configuration
           configMap:
-            name: {{$deviceserver_name | toString }}-dsconfig-json
+            name: {{$deviceserver_name | toString }}-{{ $chart.Release.Name }}-dsconfig-json
       serviceAccountName: {{ $deviceserver_name | toString }}-sa-{{ $chart.Release.Name }}
       initContainers:
       - name: wait-for-configuration
@@ -125,7 +125,7 @@ spec:
           - sh
           - -c
         args:
-          - kubectl wait job --for=condition=complete {{ $deviceserver_name | toString }}-config --timeout={{ $kubectl_wait_timeout }}
+          - kubectl wait job --for=condition=complete {{ $deviceserver_name | toString }}-{{ $chart.Release.Name }}-config --timeout={{ $kubectl_wait_timeout }}
 {{ if ($deviceserver.depends_on) }}
 {{ range $index, $device := $deviceserver.depends_on }}
 {{ if ($device.host) }}
@@ -277,7 +277,7 @@ spec:
         - name: TANGO_SERVER_PORT
           value: "{{ $tango_server_port }}"
         - name: TANGO_SERVER_PUBLISH_HOSTNAME
-          value: {{$deviceserver_name | toString }}-{{ $safe_instance }}.{{ $chart.Release.Namespace }}.svc.{{ $chart.Values.global.cluster_domain }}
+          value: {{$deviceserver_name | toString }}-{{ $safe_instance }}.{{ $chart.Release.Namespace }}.svc.{{ $cluster_domain }}
 {{- if $chart.Values.global.environment_variables }}
 {{- range $index, $envvar := $chart.Values.global.environment_variables }}
         - name: {{$envvar.name}}

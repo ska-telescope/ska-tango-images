@@ -2,7 +2,7 @@
 
 ---
 {{ $labels := coalesce .local.Values.global.labels .local.Values.labels "label:none" }}
-{{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations "annotations:none" }}
+{{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations }}
 {{ $default_tango_host := printf "%s-%s" "databaseds-tango-base-" .local.Release.Name }}
 {{ $tango_host := tpl (coalesce .local.Values.global.tango_host .local.Values.tango_host $default_tango_host | toString) .local }}
 {{ $dsconfig := coalesce .local.Values.global.dsconfig .local.Values.dsconfig}}
@@ -12,7 +12,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{$deviceserver_name | toString }}-config
+  name: {{$deviceserver_name | toString }}-{{ .local.Release.Name }}-config
   namespace: {{ .local.Release.Namespace }}
   labels:
 {{ toYaml $labels | indent 4 }}
@@ -87,7 +87,7 @@ spec:
       volumes:
         - name: configuration
           configMap:
-            name: {{$deviceserver_name | toString }}-dsconfig-json
+            name: {{$deviceserver_name | toString }}-{{ .local.Release.Name }}-dsconfig-json
       restartPolicy: Never
 
 
