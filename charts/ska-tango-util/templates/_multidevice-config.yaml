@@ -2,7 +2,7 @@
 
 ---
 {{ $labels := coalesce .local.Values.global.labels .local.Values.labels "label: none" }}
-{{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations "annotation: none" }}
+{{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations }}
 {{ $deviceserver := .deviceserver }}
 {{ $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
 {{ $chart := .local }}
