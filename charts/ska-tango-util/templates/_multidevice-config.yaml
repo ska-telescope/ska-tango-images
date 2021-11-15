@@ -12,7 +12,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ $deviceserver_name | toString }}-dsconfig-json
+  name: {{ $deviceserver_name | toString }}-{{ .local.Release.Name }}-dsconfig-json
   namespace: {{ .local.Release.Namespace }}
   labels:
 {{ toYaml $labels | indent 4 }}
@@ -23,7 +23,7 @@ metadata:
   annotations:
 {{ toYaml $annotations | indent 4 }}
 data:
-  configuration.json: | 
+  configuration.json: |
     {
       "servers": {
         "{{ $deviceserver.server.name }}" : {
@@ -70,17 +70,17 @@ data:
                 }
                 {{- end }}
               }
-              {{- end }}    
+              {{- end }}
             }
             {{- end }}
           }
-          {{- end }} 
-          {{- end }} 
+          {{- end }}
+          {{- end }}
         }
       }{{ if $deviceserver.class_properties }},
       "classes": {
         {{- range $index_class_prop_group, $class_prop_group := $deviceserver.class_properties }}
-        {{- if $index_class_prop_group}},{{end}}  
+        {{- if $index_class_prop_group}},{{end}}
           "{{ $class_prop_group.name }}": {
               "properties": {
                 {{- range $index_class_prop, $class_prop := $class_prop_group.properties }}
@@ -119,26 +119,26 @@ data:
     import importlib
     import importlib.util
     from tango.server import run
-    
+
     classes = []
 
     {{- range $entrypoint := $deviceserver.entrypoints }}
     splitted_name = str(" {{ $entrypoint.name }} ").split(sep='.')
     module_name = ".".join(splitted_name[:-1])
-    {{- if $entrypoint.path }}  
+    {{- if $entrypoint.path }}
     spec = importlib.util.spec_from_file_location(module_name.strip(), "{{  $entrypoint.path }}")
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
-    
+
     myclass = getattr(mod, splitted_name[-1].strip())
-    if not myclass in classes: 
+    if not myclass in classes:
       classes.append(myclass)
 
     {{- else }}
-    
+
     mod = importlib.import_module(module_name.strip())
     myclass = getattr(mod,  splitted_name[-1].strip())
-    if not myclass in classes: 
+    if not myclass in classes:
       classes.append(myclass)
 
     {{- end }}
@@ -151,9 +151,9 @@ data:
     if __name__ == '__main__':
         main()
 
-    
 
-   
+
+
 
 
 {{ end }} # multidevice-config.tpl

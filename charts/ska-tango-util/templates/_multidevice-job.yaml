@@ -12,7 +12,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{$deviceserver_name | toString }}-config
+  name: {{$deviceserver_name | toString }}-{{ .local.Release.Name }}-config
   namespace: {{ .local.Release.Namespace }}
   labels:
 {{ toYaml $labels | indent 4 }}
@@ -87,7 +87,7 @@ spec:
       volumes:
         - name: configuration
           configMap:
-            name: {{$deviceserver_name | toString }}-dsconfig-json
+            name: {{$deviceserver_name | toString }}-{{ .local.Release.Name }}-dsconfig-json
       restartPolicy: Never
 
 
