@@ -4,107 +4,133 @@ templates:
   - tangodb.yaml
 tests:
   - it: should have two documents rendered.
+    set:
+      tangodb.enabled: true
     asserts:
       - hasDocuments:
           count: 2
 
-  - it: should have the correct apiVersion, apps/v1, for the StatefulSet resource.
-    documentIndex: 1
+  - it: should have 2 k8s resources, a Service and a StatefulSet resource, respectively.
+    set:
+      tangodb.enabled: true
     asserts:
       - isKind:
           of: StatefulSet
+        documentIndex: 1
       - isAPIVersion:
           of: apps/v1
-
-  - it: should have the correct apiVersion, apps/v1, for the Service resource.
-    documentIndex: 0
-    asserts:
+        documentIndex: 1
       - isKind:
           of: Service
+        documentIndex: 0
       - isAPIVersion:
           of: v1
+        documentIndex: 0
 
-  - it: should have a service of type NodePort.
-    documentIndex: 0
+  - it: should have a Service of type NodePort, and a container listening on port 3306.
+    set:
+      tangodb.enabled: true
     asserts:
       - equal:
           path: spec.type
           value: NodePort
-
-  - it: should have the Service that have mysql listening on port 3306.
-    documentIndex: 0
-    asserts:
+        documentIndex: 0
       - equal:
           path: spec.ports[0].name
           value: mysql
+        documentIndex: 0
       - equal:
           path: spec.ports[0].port
           value: 3306
-
-  - it: should have the Statfulset that have mysql listening on port 3306.
-    documentIndex: 1
-    asserts:
+        documentIndex: 0
       - equal:
           path: spec.template.spec.containers[0].ports[0].name
           value: mysql
+        documentIndex: 1
       - equal:
           path: spec.template.spec.containers[0].ports[0].containerPort
           value: 3306
+        documentIndex: 1
 
-  - it: should have a Service that routes traffic to the pods with labels.
-    documentIndex: 0
+  - it: should have a Service that routes traffic to the pods, and a StatefulSet pods, with set labels.
+    set:
+      labels:
+        app: ska-tango-images-test
+        dummy-label: dumm
+      tangodb:
+        enabled: true
+        component: tangodb-test
+        domain: tango-configuration-test
+        function: tango-device-configuration-test
+        intent: testing
     asserts:
       - equal:
           path: spec.selector
           value:
-            app: ska-tango-images
-            component: tangodb
-            domain: tango-configuration
-            function: tango-device-configuration
-            intent: production
-
-  - it: should have a Statfulset with pods having labels.
-    documentIndex: 1
-    asserts:
+            app: ska-tango-images-test
+            dummy-label: dumm
+            component: tangodb-test
+            domain: tango-configuration-test
+            function: tango-device-configuration-test
+            intent: testing
+        documentIndex: 0
       - equal:
           path: spec.selector.matchLabels
           value:
-            app: ska-tango-images
-            component: tangodb
-            domain: tango-configuration
-            function: tango-device-configuration
-            intent: production
+            app: ska-tango-images-test
+            dummy-label: dumm
+            component: tangodb-test
+            domain: tango-configuration-test
+            function: tango-device-configuration-test
+            intent: testing
+        documentIndex: 1
 
   - it: should set the service name to its own cluster hostname.
     documentIndex: 1
+    set:
+      tangodb.component: tangodb-test
     asserts:
       - equal:
           path: spec.serviceName
-          value: ska-tango-base-tangodb
+          value: ska-tango-base-tangodb-test
 
-  - it: should have one replica of the statefulset
+  - it: should have one replica of the Statefulset.
     documentIndex: 1
     asserts:
       - equal:
           path: spec.replicas
           value: 1
 
-  - it: should use the docker image artefact.skao.int/ska-tango-images-tango-db.
+  - it: should use the docker image my-own-registry/my-own-image.
     documentIndex: 1
+    set:
+      tangodb:
+        image:
+          registry: my-own-registry
+          image: my-own-image
     asserts:
       - matchRegex:
           path: spec.template.spec.containers[0].image
-          pattern: artefact.skao.int/ska-tango-images-tango-db
+          pattern: my-own-registry/my-own-image
 
-  - it: should pull the image if it is not present.
+  - it: should use the pullPolicy set in the values.yaml.
     documentIndex: 1
+    set:
+      tangodb.image.pullPolicy: AnyPullPolicy
     asserts:
       - equal:
           path: spec.template.spec.containers[0].imagePullPolicy
-          value: IfNotPresent
+          value: AnyPullPolicy
 
   - it: should set the correct environment variables for the MYSQL database.
     documentIndex: 1
+    set:
+      tangodb:
+        db:
+          rootpw: pw-test
+          db: tango-test
+          user: test-user
+          password: password-test
     asserts:
       - contains:
           path: spec.template.spec.containers[0].env
@@ -115,20 +141,20 @@ tests:
           path: spec.template.spec.containers[0].env
           content:
             name: MYSQL_DATABASE
-            value: tango
+            value: tango-test
       - contains:
           path: spec.template.spec.containers[0].env
           content:
             name: MYSQL_USER
-            value: tango
+            value: test-user
       - contains:
           path: spec.template.spec.containers[0].env
           content:
             name: MYSQL_ROOT_PASSWORD
-            value: secret
+            value: pw-test
       - contains:
           path: spec.template.spec.containers[0].env
           content:
             name: MYSQL_PASSWORD
-            value: tango
+            value: password-test
         
