@@ -69,8 +69,9 @@ tests:
           path: spec.restartPolicy
           value: Always
 
-  - it: should have the command.
+  - it: should have the command for the Pod.
     set:
+      global.tango_host: databaseds-test:12345
       itango:
         enabled: true
     documentIndex: 0
@@ -79,10 +80,9 @@ tests:
           path: spec.containers[0].command
           value:
             - /usr/local/bin/wait-for-it.sh
-            - databaseds-tango-base:10000
+            - databaseds-test:12345
             - --timeout=30
             - --strict
             - --
             - sleep
             - infinity
-            # - /venv/bin/itango3
