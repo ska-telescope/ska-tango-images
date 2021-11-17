@@ -1,0 +1,202 @@
+---
+suite: tango-rest
+templates:
+  - tango-rest.yaml
+tests:
+  - it: should have two documents rendered.
+    set:
+      tangorest:
+        enabled: true
+    asserts:
+      - hasDocuments:
+          count: 2
+
+  - it: should have 2 k8s resources, a Service and a Deployment resource, respectively..
+    set:
+      tangorest:
+        enabled: true
+    asserts:
+      - isKind:
+          of: Service
+        documentIndex: 0
+      - isAPIVersion:
+          of: v1
+        documentIndex: 0
+      - isKind:
+          of: Deployment
+        documentIndex: 1
+      - isAPIVersion:
+          of: apps/v1
+        documentIndex: 1
+
+  - it: should have a Service of type NodePort, and a container listening on port 8080.
+    set:
+      tangorest:
+        enabled: true
+    asserts:
+      - equal:
+          path: spec.type
+          value: NodePort
+        documentIndex: 0
+      - equal:
+          path: spec.ports[0].port
+          value: 8080
+        documentIndex: 0
+      - equal:
+          path: spec.ports[0].name
+          value: rest
+        documentIndex: 0
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].containerPort
+          value: 8080
+        documentIndex: 1
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].protocol
+          value: TCP
+        documentIndex: 1
+      - equal:
+          path: spec.template.spec.containers[0].ports[0].name
+          value: rest
+        documentIndex: 1
+
+  - it: should have a Service that routes traffic to the pods, and a Deployment pods, with set labels.
+    set:
+      labels:
+        app: ska-tango-images-test
+        dummy-label: dumm
+      tangorest:
+        enabled: true
+        component: tango-rest-test
+        domain: tango-configuration-test
+        function: tango-http-interface-test
+        intent: testing
+    asserts:
+      - equal:
+          path: spec.selector
+          value:
+            app: ska-tango-images-test
+            dummy-label: dumm
+            component: tango-rest-test
+            domain: tango-configuration-test
+            function: tango-http-interface-test
+            intent: testing
+        documentIndex: 0
+      - equal:
+          path: spec.selector.matchLabels
+          value:
+            app: ska-tango-images-test
+            dummy-label: dumm
+            component: tango-rest-test
+            domain: tango-configuration-test
+            function: tango-http-interface-test
+            intent: testing
+        documentIndex: 1
+
+  - it: should have the set replicas of pods for the Deployment.
+    set:
+      tangorest:
+        enabled: true
+        replicas: 6
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.replicas
+          value: 6
+
+  - it: should use the docker image my-own-registry/my-own-image:1.2.3.
+    set:
+      tangorest:
+        enabled: true
+        image:
+          registry: my-own-registry
+          image: my-own-image
+          tag: 1.2.3
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].image
+          value: my-own-registry/my-own-image:1.2.3
+
+  - it: should use the provided pull policy for the Deployment pod.
+    set:
+      tangorest:
+        enabled: true
+        image:
+          pullPolicy: AnyPullPolicy
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].imagePullPolicy
+          value: AnyPullPolicy
+
+  - it: should have the init containers add the appropriate properties using tango_admin.
+    set:
+      global.tango_host: databaseds-test:12345
+      tangorest.enabled: true
+    documentIndex: 1
+    asserts:
+      - equal:
+          path: spec.template.spec.initContainers[1].args
+          value:
+            - "-c"
+            - /usr/local/bin/tango_register_device.sh TangoRestServer/$(hostname) TangoRestServer $(hostname)/rest/0
+      - equal:
+          path: spec.template.spec.initContainers[2].args
+          value:
+            - "-c"
+            - /usr/local/bin/tango_admin --add-property $(hostname)/rest/0 TANGO_DB tango://databaseds-test:12345/sys/database/2
+      - equal:
+          path: spec.template.spec.initContainers[3].args
+          value:
+            - "-c"
+            - /usr/local/bin/tango_admin --add-property $(hostname)/rest/0 TOMCAT_PORT 8080
+      - equal:
+          path: spec.template.spec.initContainers[4].args
+          value:
+            - "-c"
+            - /usr/local/bin/tango_admin --add-property $(hostname)/rest/0 TOMCAT_AUTH_METHOD plain
+
+  - it: should set the correct environment variables for the tango rest.
+    set:
+      global.tango_host: databaseds-test:12345
+      tangorest:
+        enabled: true
+    documentIndex: 1
+    asserts:
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: TANGO_HOST
+            value: databaseds-test:12345
+      - contains:
+          path: spec.template.spec.initContainers[0].env
+          content:
+            name: TANGO_HOST
+            value: databaseds-test:12345
+      - contains:
+          path: spec.template.spec.initContainers[1].env
+          content:
+            name: TANGO_HOST
+            value: databaseds-test:12345
+      - contains:
+          path: spec.template.spec.initContainers[2].env
+          content:
+            name: TANGO_HOST
+            value: databaseds-test:12345
+      - contains:
+          path: spec.template.spec.initContainers[3].env
+          content:
+            name: TANGO_HOST
+            value: databaseds-test:12345
+      - contains:
+          path: spec.template.spec.initContainers[4].env
+          content:
+            name: TANGO_HOST
+            value: databaseds-test:12345
+      - contains:
+          path: spec.template.spec.containers[0].env
+          content:
+            name: JAVA_OPTS
+            value: -Xmx4G -Xshare:off -XX:+UseG1GC -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5009
+
+        
