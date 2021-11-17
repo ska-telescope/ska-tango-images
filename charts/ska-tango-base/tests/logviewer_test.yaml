@@ -22,28 +22,59 @@ tests:
       - isAPIVersion:
           of: v1
 
-  - it: should use the docker image artefact.skao.int/ska-tango-images-tango-java.
+  - it: should have a Pod with set labels.
+    set:
+      labels:
+        app: ska-tango-images-test
+        dummy-label: dumm
+      logviewer:
+        enabled: true
+        component: logviewer-test
+        domain: interactive-testing-test
+        function: tango-log-inspection-test
+        intent: testing
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: metadata.labels
+          value:
+            app: ska-tango-images-test
+            dummy-label: dumm
+            component: logviewer-test
+            domain: interactive-testing-test
+            function: tango-log-inspection-test
+            intent: testing
+
+  - it: should use the provided docker image my-own-registry/my-own-image:1.2.3.
     set:
       logviewer:
         enabled: true
+        image:
+          registry: my-own-registry
+          image: my-own-image
+          tag: 1.2.3
     documentIndex: 0
     asserts:
       - matchRegex:
           path: spec.containers[0].image
-          pattern: artefact.skao.int/ska-tango-images-tango-java
+          pattern: my-own-registry/my-own-image:1.2.3
 
-  - it: should pull the image if it is not present.
+  - it: should use the pullPolicy set in the values.yaml.
     set:
       logviewer:
         enabled: true
+        image:
+          pullPolicy: AnyPullPolicy
     documentIndex: 0
     asserts:
       - equal:
           path: spec.containers[0].imagePullPolicy
-          value: IfNotPresent
+          value: AnyPullPolicy
 
   - it: should set the correct environment variables for the Tango host.
     set:
+      display: ":X"
+      global.tango_host: databaseds-test:12345
       logviewer:
         enabled: true
     documentIndex: 0
@@ -57,12 +88,12 @@ tests:
           path: spec.containers[0].env
           content:
             name: DISPLAY
-            value: ":0"
+            value: ":X"
       - contains:
           path: spec.containers[0].env
           content:
             name: TANGO_HOST
-            value: databaseds-tango-base:10000
+            value: databaseds-test:12345
 
   - it: should have the volumeMounts.
     set:
@@ -95,6 +126,7 @@ tests:
 
   - it: should have the volumes.
     set:
+      homeDir: /my_folder
       logviewer:
         enabled: true
     documentIndex: 0
@@ -104,4 +136,4 @@ tests:
           value:
           - name: xauthority
             hostPath:
-              path: /home/ubuntu/.Xauthority
+              path: /my_folder/.Xauthority
