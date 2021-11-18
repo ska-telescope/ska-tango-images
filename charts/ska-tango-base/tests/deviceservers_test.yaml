@@ -196,7 +196,6 @@ tests:
           content:
             name: TANGO_HOST
             value: databaseds-test:12345
-      
 
   - it: should have the correct apiVersion, v1, for the Service resource.
     documentIndex: 5
@@ -206,12 +205,22 @@ tests:
       - isAPIVersion:
           of: v1
 
-  - it: should have a Service that routes traffic to the pods with set labels.
-    documentIndex: 5
+  - it: should have the correct apiVersion, apps/v1, for the StatefulSet resource.
+    documentIndex: 6
+    asserts:
+      - isKind:
+          of: StatefulSet
+      - isAPIVersion:
+          of: apps/v1
+
+  - it: should have a Service, and Statfulset with pods having labels.
     set:
+      labels.app: ska-tango-images-x
       deviceServers:
         tangotest:
           name: tangotest-test
+          function: tango-test-x
+          domain: tango-base-x 
           instances: ["helm-test"]
           server:
             instances:
@@ -223,44 +232,22 @@ tests:
           value:
             subsystem: ska-tango-base-test
             component: tangotest-test-helm-test
-
-  - it: should have the correct apiVersion, apps/v1, for the StatefulSet resource.
-    documentIndex: 6
-    asserts:
-      - isKind:
-          of: StatefulSet
-      - isAPIVersion:
-          of: apps/v1
-
-  - it: should have a Statfulset with pods having labels.
-    documentIndex: 6
-    set:
-      deviceServers:
-        tangotest:
-          name: tangotest-test
-          instances: ["helm-test"]
-          server:
-            instances:
-              - name: "helm-test"
-      subsystem: ska-tango-base-test
-    asserts:
+        documentIndex: 5
       - equal:
           path: spec.selector.matchLabels
           value:
             subsystem: ska-tango-base-test
             component: tangotest-test-helm-test
-
-  - it: should have a Statfulset with template having labels.
-    documentIndex: 6
-    asserts:
+        documentIndex: 6
       - equal:
           path: spec.template.metadata.labels
           value:
-            component: tangotest-test
-            function: tango-test
-            domain: tango-base
-            subsystem: ska-tango-base
-            app: ska-tango-images
+            component: tangotest-test-helm-test
+            function: tango-test-x
+            domain: tango-base-x
+            subsystem: ska-tango-base-test
+            app: ska-tango-images-x
+        documentIndex: 6
 
   - it: should have a Statfulset with template having initcontainer uses docker image bitnami/kubectl.
     documentIndex: 6
@@ -271,10 +258,23 @@ tests:
 
   - it: should set the service name to its own cluster hostname.
     documentIndex: 6
+    set:
+      deviceServers:
+        tangotest:
+          name: tangotest-x
+          instances: ["testx"]
+          server:
+            name: "TangoTest"
+            instances:
+            - name: "testx"
+              classes:
+              - name: "TangoTest"
+                devices:
+                - name: "xxx/xx/x"
     asserts:
       - equal:
           path: spec.serviceName
-          value: tangotest-test
+          value: tangotest-x-testx
 
   - it: should have one replica of the statefulset
     documentIndex: 6
@@ -296,12 +296,17 @@ tests:
           path: spec.template.spec.containers[0].image
           pattern: my-own-registry/my-own-image
 
-  - it: should pull the image if it is not present.
+  - it: should use the provided image pull policy.
     documentIndex: 6
+    set:
+      deviceServers:
+        tangotest:
+          image:
+            pullPolicy: AnyPullPolicy
     asserts:
       - equal:
           path: spec.template.spec.containers[0].imagePullPolicy
-          value: IfNotPresent
+          value: AnyPullPolicy
 
   - it: should have the VolumeMounts.
     documentIndex: 6
@@ -315,6 +320,15 @@ tests:
 
   - it: should have the readiness probes setup using the parameters in the values.yaml file.
     documentIndex: 6
+    set:
+      deviceServers:
+        tangotest:
+          readinessProbe:
+            failureThreshold: x
+            initialDelaySeconds: x
+            periodSeconds: x
+            successThreshold: x
+            timeoutSeconds: x
     asserts:
       - isNotEmpty:
           path: spec.template.spec.containers[0].readinessProbe
@@ -328,14 +342,23 @@ tests:
               - tango_admin
               - --ping-device
               - sys/tg_test/1
-            failureThreshold: 3
-            initialDelaySeconds: 0
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
+            failureThreshold: x
+            initialDelaySeconds: x
+            periodSeconds: x
+            successThreshold: x
+            timeoutSeconds: x
 
   - it: should have the liveness probes setup using the parameters in the values.yaml file.
     documentIndex: 6
+    set:
+      deviceServers:
+        tangotest:
+          livenessProbe:
+            failureThreshold: x
+            initialDelaySeconds: x
+            periodSeconds: x
+            successThreshold: x
+            timeoutSeconds: x
     asserts:
       - isNotEmpty:
           path: spec.template.spec.containers[0].livenessProbe
@@ -349,11 +372,11 @@ tests:
               - tango_admin
               - --ping-device
               - sys/tg_test/1
-            failureThreshold: 3
-            initialDelaySeconds: 0
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
+            failureThreshold: x
+            initialDelaySeconds: x
+            periodSeconds: x
+            successThreshold: x
+            timeoutSeconds: x
 
   - it: should generate readiness and liveness probes for a TANGO server instance with one Tango class and multiple devices.
     documentIndex: 6
@@ -511,6 +534,18 @@ tests:
               - name: "TangoTest3"
                 devices:
                 - name: "sys/tg_test/13"
+          livenessProbe:
+            failureThreshold: x
+            initialDelaySeconds: x
+            periodSeconds: x
+            successThreshold: x
+            timeoutSeconds: x
+          readinessProbe:
+            failureThreshold: x
+            initialDelaySeconds: x
+            periodSeconds: x
+            successThreshold: x
+            timeoutSeconds: x
     asserts:
       - equal:
           path: spec.template.spec.containers[0].command
@@ -543,11 +578,11 @@ tests:
               - tango_admin
               - --ping-device
               - sys/tg_test/13
-            failureThreshold: 3
-            initialDelaySeconds: 0
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
+            failureThreshold: x
+            initialDelaySeconds: x
+            periodSeconds: x
+            successThreshold: x
+            timeoutSeconds: x
       - equal:
           path: spec.template.spec.containers[0].livenessProbe
           value:
@@ -566,11 +601,11 @@ tests:
               - tango_admin
               - --ping-device
               - sys/tg_test/13
-            failureThreshold: 3
-            initialDelaySeconds: 0
-            periodSeconds: 10
-            successThreshold: 1
-            timeoutSeconds: 1
+            failureThreshold: x
+            initialDelaySeconds: x
+            periodSeconds: x
+            successThreshold: x
+            timeoutSeconds: x
 
   - it: should generate multiple StatefulSet resources for a TANGO server with multiple server instances.
     set:
