@@ -18,11 +18,24 @@ tests:
 
   - it: should have a ConfigMap for the TangoTest device server with data having configuration.json.
     documentIndex: 0
+    set:
+      deviceServers:
+        tangotest:
+          name: testserver
+          instances: ["testx"]
+          server:
+            name: TestServer
+            instances:
+              - name: "testx"
+                classes:
+                - name: "TestServerClass"
+                  devices:
+                    - name: "xxx/xx/x"
     asserts:
       - equal:
           path: data
           value:
-            TangoTest.py: "import importlib\nimport importlib.util\nfrom tango.server import run\n\nclasses
+            TestServer.py: "import importlib\nimport importlib.util\nfrom tango.server import run\n\nclasses
               = []\n\ndef main(args=None, **kwargs):\n  \n  return run(classes=(classes), args=args,
               **kwargs)\n\nif __name__ == '__main__':\n    main()\n"
             bootstrap.sh: |
@@ -44,10 +57,10 @@ tests:
             configuration.json: |
               {
                 "servers": {
-                  "TangoTest" : {
-                    "test": {
-                      "TangoTest": {
-                        "sys/tg_test/1": {
+                  "TestServer" : {
+                    "testx": {
+                      "TestServerClass": {
+                        "xxx/xx/x": {
                         }
                       }
                     }
@@ -82,22 +95,30 @@ tests:
 
   - it: should have a RoleBinding with Subjects.
     documentIndex: 2
+    set:
+      deviceServers:
+        tangotest:
+          name: tangotest-x
     asserts:
       - equal:
           path: subjects
           value:
           - kind: ServiceAccount
-            name: tangotest-sa-RELEASE-NAME
+            name: tangotest-x-sa-RELEASE-NAME
             namespace: NAMESPACE
 
   - it: should have a RoleBinding with roleRef.
     documentIndex: 2
+    set:
+      deviceServers:
+        tangotest:
+          name: tangotest-x
     asserts:
       - equal:
           path: roleRef
           value:
             kind: Role
-            name: tangotest-role-RELEASE-NAME
+            name: tangotest-x-role-RELEASE-NAME
             apiGroup: rbac.authorization.k8s.io
 
   - it: should have the correct apiVersion, rbac.authorization.k8s.io/v1, for the Role resource.
@@ -604,7 +625,9 @@ tests:
             - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
         documentIndex: 8
 
-  - it: should have a TANGO_SERVER_PORT environment variable set to 45450
+  - it: should have a TANGO_SERVER_PORT environment variable set to 45450 by default
+    set:
+      global.device_server_port: null
     asserts:
       - contains:
           path: spec.template.spec.containers[0].env
@@ -613,11 +636,26 @@ tests:
             value: "45450"
         documentIndex: 6
 
-  - it: should have a TANGO_SERVER_PUBLISH environment variable set to the "<server-name><server-instance>-0"
+  - it: should have a TANGO_SERVER_PUBLISH environment variable set to the "<server-name>-<server-instance>.<namespace>.svc.cluster.local" by default.
+    set:
+      global:
+        cluster_domain: null
+      deviceServers:
+        tangotest:
+          name: tangotest-test
+          instances: ["test2"]
+          server:
+            name: "TangoTest"
+            instances:
+            - name: "test2"
+              classes:
+              - name: "TangoTest"
+                devices:
+                - name: "xx/xxxx/x"
     asserts:
       - contains:
           path: spec.template.spec.containers[0].env
           content:
             name: TANGO_SERVER_PUBLISH_HOSTNAME
-            value: tangotest-test.NAMESPACE.svc.cluster.local
+            value: tangotest-test-test2.NAMESPACE.svc.cluster.local
         documentIndex: 6
