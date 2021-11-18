@@ -41,9 +41,19 @@ tests:
                   exit $rc
                 fi
               fi
-            configuration.json: "{\n  \"servers\": {\n    \"TangoTest\" : {\n      \"test\": {\n
-              \       \"TangoTest\": {\n          \"sys/tg_test/1\": {\n          }    \n        }\n
-              \     } \n    }\n  }\n}\n"
+            configuration.json: |
+              {
+                "servers": {
+                  "TangoTest" : {
+                    "test": {
+                      "TangoTest": {
+                        "sys/tg_test/1": {
+                        }
+                      }
+                    }
+                  }
+                }
+              }
 
   - it: should have the correct apiVersion, v1, for the ServiceAccount resource.
     documentIndex: 1
@@ -140,7 +150,7 @@ tests:
           value:
             name: configuration
             configMap:
-              name: tangotest-test-dsconfig-json
+              name: tangotest-test-RELEASE-NAME-dsconfig-json
 
   - it: should have a Job resource with a restartPolicy set to 'Never'.
     documentIndex: 4
