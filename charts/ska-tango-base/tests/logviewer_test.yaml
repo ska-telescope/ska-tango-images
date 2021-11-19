@@ -95,7 +95,7 @@ tests:
             name: TANGO_HOST
             value: databaseds-test:12345
 
-  - it: should have the volumeMounts.
+  - it: should have the volumeMounts configured.
     set:
       logviewer:
         enabled: true
@@ -108,7 +108,7 @@ tests:
             name: xauthority
             readOnly: true
 
-  - it: should have the command.
+  - it: should have the command to start up the logviewer process.
     set:
       global.tango_host: databaseds-test:12345
       logviewer:
@@ -125,7 +125,7 @@ tests:
             - --
             - /usr/local/bin/logviewer
 
-  - it: should have the volumes.
+  - it: should have volumes configured.
     set:
       homeDir: /my_folder
       logviewer:

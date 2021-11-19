@@ -108,10 +108,11 @@ tests:
         image:
           registry: my-own-registry
           image: my-own-image
+          tag: 1.2.3
     asserts:
       - matchRegex:
           path: spec.template.spec.containers[0].image
-          pattern: my-own-registry/my-own-image
+          pattern: my-own-registry/my-own-image:1.2.3
 
   - it: should use the pullPolicy set in the values.yaml.
     documentIndex: 1

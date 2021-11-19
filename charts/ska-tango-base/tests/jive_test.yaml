@@ -48,7 +48,7 @@ tests:
           path: spec.containers[0].imagePullPolicy
           value: AnyPullPolicy
 
-  - it: should have the command for the Pod.
+  - it: should have the command to start up the jive process for the Pod.
     set:
       global.tango_host: databaseds-test:12345
       jive:
@@ -89,7 +89,7 @@ tests:
             name: TANGO_HOST
             value: "databaseds-test:12345"
 
-  - it: should have a Pod having Volume.
+  - it: should have a Pod having Volume configured.
     set:
       homeDir: /my_folder
       jive:

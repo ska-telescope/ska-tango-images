@@ -68,6 +68,27 @@ tests:
                 }
               }
 
+  - it: it should have a Job resource that runs the bootstrap.sh script in the dsconfig container.
+    documentIndex: 4
+    set:
+      global:
+        retry:
+          - "--sleep=x"
+          - "--tries=y"
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].name
+          value: dsconfig
+      - equal:
+          path: spec.template.spec.containers[0].command
+          value:
+            - retry
+            - --sleep=x
+            - --tries=y
+            - --
+            - sh
+            - data/bootstrap.sh
+
   - it: should have the correct apiVersion, v1, for the ServiceAccount resource.
     documentIndex: 1
     asserts:
@@ -291,10 +312,11 @@ tests:
           image:
             registry: my-own-registry
             image: my-own-image
+            tag: 1.2.3
     asserts:
       - matchRegex:
           path: spec.template.spec.containers[0].image
-          pattern: my-own-registry/my-own-image
+          pattern: my-own-registry/my-own-image:1.2.3
 
   - it: should use the provided image pull policy.
     documentIndex: 6
@@ -439,9 +461,15 @@ tests:
           livenessProbe:
             failureThreshold: null
             periodSeconds: null
+            initialDelaySeconds: x
+            successThreshold: x
+            timeoutSeconds: x
           readinessProbe:
             timeoutSeconds: null
             successThreshold: null
+            failureThreshold: x
+            initialDelaySeconds: x
+            periodSeconds: x
     asserts:
       - equal:
           path: spec.template.spec.containers[0].livenessProbe
@@ -454,10 +482,10 @@ tests:
               - --ping-device
               - sys/tg_test/1
             failureThreshold: 3
-            initialDelaySeconds: 0
+            initialDelaySeconds: x
             periodSeconds: 5
-            successThreshold: 1
-            timeoutSeconds: 1
+            successThreshold: x
+            timeoutSeconds: x
       - equal:
           path: spec.template.spec.containers[0].readinessProbe
           value:
@@ -468,9 +496,9 @@ tests:
               - tango_admin
               - --ping-device
               - sys/tg_test/1
-            failureThreshold: 3
-            initialDelaySeconds: 0
-            periodSeconds: 10
+            failureThreshold: x
+            initialDelaySeconds: x
+            periodSeconds: x
             successThreshold: 1
             timeoutSeconds: 1
 
@@ -518,8 +546,13 @@ tests:
   - it: should generate liveness and readiness probes for a TANGO server instance with multiple TANGO classes.
     documentIndex: 6
     set:
+      global:
+        retry:
+          - "--sleep=x"
+          - "--tries=y"
       deviceServers:
         tangotest:
+          command: "/usr/local/bin/TangoServer"
           server:
             name: "TangoTest"
             instances:
@@ -551,10 +584,10 @@ tests:
           path: spec.template.spec.containers[0].command
           value:
             - retry
-            - --sleep=1
-            - --tries=100
+            - --sleep=x
+            - --tries=y
             - --
-            - /usr/local/bin/TangoTest
+            - /usr/local/bin/TangoServer
             - "test"
             - -ORBendPoint
             - giop:tcp::$(TANGO_SERVER_PORT)
@@ -609,8 +642,13 @@ tests:
 
   - it: should generate multiple StatefulSet resources for a TANGO server with multiple server instances.
     set:
+      global:
+        retry:
+          - "--sleep=x"
+          - "--tries=y"
       deviceServers:
         tangotest:
+          command: "/usr/local/bin/TangoServer"
           instances: ["test", "test2"]
           server:
             instances:
@@ -632,10 +670,10 @@ tests:
           path: spec.template.spec.containers[0].command
           value:
             - retry
-            - --sleep=1
-            - --tries=100
+            - --sleep=x
+            - --tries=y
             - --
-            - /usr/local/bin/TangoTest
+            - /usr/local/bin/TangoServer
             - "test"
             - -ORBendPoint
             - giop:tcp::$(TANGO_SERVER_PORT)
@@ -649,10 +687,10 @@ tests:
           path: spec.template.spec.containers[0].command
           value:
             - retry
-            - --sleep=1
-            - --tries=100
+            - --sleep=x
+            - --tries=y
             - --
-            - /usr/local/bin/TangoTest
+            - /usr/local/bin/TangoServer
             - "test2"
             - -ORBendPoint
             - giop:tcp::$(TANGO_SERVER_PORT)
@@ -694,3 +732,30 @@ tests:
             name: TANGO_SERVER_PUBLISH_HOSTNAME
             value: tangotest-test-test2.NAMESPACE.svc.cluster.local
         documentIndex: 6
+
+  - it: should have resource limits configured.
+    documentIndex: 6
+    set:
+      deviceServers:
+        tangotest:
+          resources:
+            requests:
+              cpu: xxxm
+              memory: xxxMi
+              ephemeral-storage: xGi
+            limits:
+              cpu: xxxm
+              memory: xxxMi
+              ephemeral-storage: xGi
+    asserts:
+      - equal:
+          path: spec.template.spec.containers[0].resources
+          value:
+            requests:
+              cpu: xxxm
+              memory: xxxMi
+              ephemeral-storage: xGi
+            limits:
+              cpu: xxxm
+              memory: xxxMi
+              ephemeral-storage: xGi

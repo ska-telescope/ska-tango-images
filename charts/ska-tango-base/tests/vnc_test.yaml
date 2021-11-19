@@ -133,21 +133,24 @@ tests:
         image:
           registry: my-own-registry
           image: my-own-image
+          tag: 1.2.3
     documentIndex: 1
     asserts:
       - matchRegex:
           path: spec.template.spec.containers[0].image
-          pattern: my-own-registry/my-own-image
+          pattern: my-own-registry/my-own-image:1.2.3
 
   - it: should pull the image if it is not present.
     set:
       vnc:
         enabled: true
+        image:
+          pullPolicy: AnyPullPolicy
     documentIndex: 1
     asserts:
       - equal:
           path: spec.template.spec.containers[0].imagePullPolicy
-          value: IfNotPresent
+          value: AnyPullPolicy
 
   - it: should set the correct environment variables for the StatefulSet.
     set:

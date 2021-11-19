@@ -29,21 +29,24 @@ tests:
         image:
           registry: my-own-registry
           image: my-own-image
+          tag: 1.2.3
     documentIndex: 0
     asserts:
       - matchRegex:
           path: spec.containers[0].image
-          pattern: my-own-registry/my-own-image
+          pattern: my-own-registry/my-own-image:1.2.3
 
   - it: should pull the image if it is not present.
     set:
       itango:
         enabled: true
+        image:
+          pullPolicy: AnyPullPolicy
     documentIndex: 0
     asserts:
       - equal:
           path: spec.containers[0].imagePullPolicy
-          value: IfNotPresent
+          value: AnyPullPolicy
 
   - it: should set the correct environment variables for the TANGO_HOST, databaseds-test:12345.
     documentIndex: 0

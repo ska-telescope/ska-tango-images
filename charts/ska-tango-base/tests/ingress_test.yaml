@@ -65,6 +65,7 @@ tests:
   - it: should have a Ingress resource with pods having labels specified in the values.yaml file.
     documentIndex: 0
     set:
+      labels.app: ska-tango-images-x
       ingress.enabled: true
       tangorest:
         component: tango-rest-test
@@ -75,7 +76,7 @@ tests:
       - equal:
           path: metadata.labels
           value:
-            app: ska-tango-images
+            app: ska-tango-images-x
             component: tango-rest-test
             function: tango-http-interface-test
             domain: tango-configuration-test
