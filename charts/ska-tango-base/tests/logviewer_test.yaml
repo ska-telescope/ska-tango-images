@@ -1,0 +1,140 @@
+---
+suite: logviewer
+templates:
+  - logviewer.yaml
+tests:
+  - it: should have one document rendered.
+    set:
+      logviewer:
+        enabled: true
+    asserts:
+      - hasDocuments:
+          count: 1
+
+  - it: should have the correct apiVersion, v1, for the Pod resource.
+    set:
+      logviewer:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - isKind:
+          of: Pod
+      - isAPIVersion:
+          of: v1
+
+  - it: should have a Pod with set labels.
+    set:
+      labels:
+        app: ska-tango-images-test
+        dummy-label: dumm
+      logviewer:
+        enabled: true
+        component: logviewer-test
+        domain: interactive-testing-test
+        function: tango-log-inspection-test
+        intent: testing
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: metadata.labels
+          value:
+            app: ska-tango-images-test
+            dummy-label: dumm
+            component: logviewer-test
+            domain: interactive-testing-test
+            function: tango-log-inspection-test
+            intent: testing
+
+  - it: should use the provided docker image my-own-registry/my-own-image:1.2.3.
+    set:
+      logviewer:
+        enabled: true
+        image:
+          registry: my-own-registry
+          image: my-own-image
+          tag: 1.2.3
+    documentIndex: 0
+    asserts:
+      - matchRegex:
+          path: spec.containers[0].image
+          pattern: my-own-registry/my-own-image:1.2.3
+
+  - it: should use the pullPolicy set in the values.yaml.
+    set:
+      logviewer:
+        enabled: true
+        image:
+          pullPolicy: AnyPullPolicy
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.containers[0].imagePullPolicy
+          value: AnyPullPolicy
+
+  - it: should set the correct environment variables for the Tango host.
+    set:
+      display: ":X"
+      global.tango_host: databaseds-test:12345
+      logviewer:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - contains:
+          path: spec.containers[0].env
+          content:
+            name: XAUTHORITY
+            value: "/tmp/.Xauthority"
+      - contains:
+          path: spec.containers[0].env
+          content:
+            name: DISPLAY
+            value: ":X"
+      - contains:
+          path: spec.containers[0].env
+          content:
+            name: TANGO_HOST
+            value: databaseds-test:12345
+
+  - it: should have the volumeMounts configured.
+    set:
+      logviewer:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.containers[0].volumeMounts
+          value:
+          - mountPath: /tmp/.Xauthority
+            name: xauthority
+            readOnly: true
+
+  - it: should have the command to start up the logviewer process.
+    set:
+      global.tango_host: databaseds-test:12345
+      logviewer:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.containers[0].command
+          value:
+            - /usr/local/bin/wait-for-it.sh
+            - "databaseds-test:12345"
+            - --timeout=30
+            - --strict
+            - --
+            - /usr/local/bin/logviewer
+
+  - it: should have volumes configured.
+    set:
+      homeDir: /my_folder
+      logviewer:
+        enabled: true
+    documentIndex: 0
+    asserts:
+      - equal:
+          path: spec.volumes
+          value:
+          - name: xauthority
+            hostPath:
+              path: /my_folder/.Xauthority
