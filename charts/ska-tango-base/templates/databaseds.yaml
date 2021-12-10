@@ -33,7 +33,7 @@ spec:
 
 ---
 ## The LoadBalancer for external access
-{{ if .Values.global.minikube }}
+{{ if or (.Values.global.minikube) (.Values.global.exposeAllDS) }}
 apiVersion: v1
 kind: Service
 metadata:
