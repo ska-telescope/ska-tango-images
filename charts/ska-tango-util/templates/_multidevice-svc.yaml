@@ -13,6 +13,8 @@ Parameters:
 {{ $default_tango_host := printf "%s-%s:10000" "databaseds-tango-base-" .local.Release.Name }}
 {{ $tango_host := tpl (coalesce .local.Values.global.tango_host .local.Values.tango_host $default_tango_host | toString) .local }}
 {{ $tango_server_port := coalesce .local.Values.global.device_server_port "45450" }}
+{{ $tango_heartbeat_port := coalesce .local.Values.global.device_heartbeat_port "45451" }}
+{{ $tango_event_port := coalesce .local.Values.global.device_event_port "45452" }}
 {{ $cluster_domain := coalesce .local.Values.global.cluster_domain "cluster.local" }}
 {{ $dsconfig := coalesce .local.Values.global.dsconfig .local.Values.dsconfig}}
 {{ $chart := .local }}
@@ -73,9 +75,52 @@ spec:
   - name: tango-server
     port: {{ $tango_server_port }}
     targetPort: {{ $tango_server_port }}
+  - name: tango-heartbeat
+    port: {{ $tango_heartbeat_port }}
+    targetPort: {{ $tango_heartbeat_port }}
+  - name: tango-event
+    port: {{ $tango_event_port }}
+    targetPort: {{ $tango_event_port }}
   selector:
     subsystem: {{ $chart.Values.subsystem }}
     component: {{tpl ($deviceserver_name | toString) $chart }}-{{ $safe_instance }}
+
+## The LoadBalancer for external access
+{{ if  $chart.Values.global.minikube }}
+---
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: {{$deviceserver_name | toString }}-{{ $safe_instance }}-external
+  namespace: {{ $chart.Release.Namespace }}
+  labels:
+{{ toYaml $labels | indent 4 }}
+    component: {{tpl ($deviceserver_name | toString) $chart }}-{{ $safe_instance }}
+    function: {{ $deviceserver.function }}
+    domain: {{ $deviceserver.domain }}
+    subsystem: {{ $chart.Values.subsystem }}
+{{ if $annotations }}
+  annotations:
+{{ toYaml $annotations | indent 4 }}
+{{ end }}
+spec:
+  ports:
+  - name: tango-server
+    port: {{ $tango_server_port }}
+    targetPort: {{ $tango_server_port }}
+  - name: tango-heartbeat
+    port: {{ $tango_heartbeat_port }}
+    targetPort: {{ $tango_heartbeat_port }}
+  - name: tango-event
+    port: {{ $tango_event_port }}
+    targetPort: {{ $tango_event_port }}
+  selector:
+    subsystem: {{ $chart.Values.subsystem }}
+    component: {{tpl ($deviceserver_name | toString) $chart }}-{{ $safe_instance }}
+  type: LoadBalancer
+{{ end }}
+
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -215,6 +260,10 @@ spec:
         ports:
         - containerPort: {{ $tango_server_port }}
           name: tango-server
+        - containerPort: {{ $tango_heartbeat_port }}
+          name: tango-heartbeat
+        - containerPort: {{ $tango_event_port }}
+          name: tango-event
         volumeMounts:
           - name: configuration
             mountPath: data
@@ -276,6 +325,10 @@ spec:
           value: {{ $tango_host }}
         - name: TANGO_SERVER_PORT
           value: "{{ $tango_server_port }}"
+        - name: TANGO_ZMQ_HEARTBEAT_PORT
+          value: "{{ $tango_heartbeat_port }}"
+        - name: TANGO_ZMQ_EVENT_PORT
+          value: "{{ $tango_event_port }}"
         - name: TANGO_SERVER_PUBLISH_HOSTNAME
           value: {{$deviceserver_name | toString }}-{{ $safe_instance }}.{{ $chart.Release.Namespace }}.svc.{{ $cluster_domain }}
 {{- if $chart.Values.global.environment_variables }}
