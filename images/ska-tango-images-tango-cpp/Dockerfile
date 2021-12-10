@@ -50,9 +50,6 @@ RUN git clone https://gitlab.com/piersharding/cppTango.git /usr/src/tango && \
     ldconfig && \
     rm -r /usr/src/tango
 
-# RUN ln -s /usr/local/lib/libtango.so.9.4.0 /usr/local/lib/libtango.so.9 && \
-#     ldconfig
-
 # build and install tango_admin
 RUN git clone https://gitlab.com/tango-controls/tango_admin.git /usr/src/tango_admin && \
     cmake -B /usr/src/tango_admin/build -DCMAKE_INSTALL_PREFIX=/usr/local/ /usr/src/tango_admin && \

@@ -8,7 +8,6 @@ FROM $BASE_IMAGE as buildenv
 
 ENV ZEROMQ_DOWNLOAD_URL=https://github.com/zeromq/libzmq/archive/v4.3.4.tar.gz
 ENV CPPZMQ_DOWNLOAD_URL=https://github.com/zeromq/cppzmq/archive/v4.8.1.tar.gz
-# ENV OMNIORB_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/omniORB-4.2.3.tar.bz2
 ENV OMNIORB_DOWNLOAD_URL=https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.4/omniORB-4.2.4.tar.bz2/download
 ENV DEBIAN_FRONTEND=noninteractive
 

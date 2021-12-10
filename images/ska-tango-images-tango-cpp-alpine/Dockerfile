@@ -61,7 +61,4 @@ RUN apk --update add --no-cache sudo libstdc++ bash libsodium-dev mariadb-connec
     && adduser -h /home/tango -s /bin/bash -D tango \
     && echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango
 
-# RUN ln -s /usr/local/lib/libtango.so.9.4.0 /usr/local/lib/libtango.so.9
-
-
 USER tango
