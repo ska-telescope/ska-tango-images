@@ -2,19 +2,18 @@ Helm Charts available on ska-tango-images repository
 ====================================================
 
 There are two helm charts available on this repository: one is called ``ska-tango-base`` and the other is the ``ska-tango-util``.
-There is another helm chart, called ``ska-tango-images``, which is used only for testing purposes. 
+There is another helm chart, called ``ska-tango-images``, which is used only for testing purposes.
 
 The ska-tango-base helm chart
 -------------------------
 
-The ``ska-tango-base`` helm chart is an application chart which defines the basic TANGO ecosystem in kubernetes. 
+The ``ska-tango-base`` helm chart is an application chart which defines the basic TANGO ecosystem in kubernetes.
 
-In specific it defines the following k8s services: 
+In specific it defines the following k8s services:
  - tangodb: it is a mysql database used to store configuration data used at startup of a device server (more information can be found `here <https://tango-controls.readthedocs.io/en/latest/reference/glossary.html#term-tango-database>`__.
  - databaseds: it is a device server providing configuration information to all other components of the system as well as a runtime catalog of the components/devices (more information can be found `here <https://tango-controls.readthedocs.io/en/latest/reference/glossary.html#term-tango-host>`__.
  - itango: it is an interactive Tango client (more information can be found `here <https://gitlab.com/tango-controls/itango>`__.
  - vnc: it is a debian environment with x11 server and vnc/novnc installed on it.
- - tangorest: it defines the rest api for the TANGO eco-system  (more information can be found `here <https://tango-controls.readthedocs.io/en/latest/installation/vm/tangobox.html?highlight=rest#rest-api>`__.
  - tangotest: it is the tango test device server (more information can be found `here <https://gitlab.com/tango-controls/TangoTest>`__.
 
 
@@ -23,7 +22,7 @@ The ska-tango-util helm chart
 
 The ``ska-tango-util`` helm chart is a library chart which helps other application chart defines TANGO device servers.
 
-In specific it defines the following helm named template: 
+In specific it defines the following helm named template:
  - configuration (deprecated): it creates a k8s service account, a role and role binding for waiting the configuration job to be done and a job for the `dsconfig <https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig>`_ application to apply a configuration json file set into the values file;
  - deviceserver (deprecated): it creates a k8s service and a k8s statefulset for a instance of a device server;
  - multidevice-config: it creates a ConfigMap which contains the generated `dsconfig <https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig>`_ json configuration file, the boostrap script for the `dsconfig <https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig>`_ application and a python script for multi class device server startup;
@@ -37,12 +36,12 @@ Dsconfig generation
 
 `Dsconfig <https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig>`_ is an application which configure the tango database with the help of a json file.
 With ska-tango-util a device derver is configurable using specifications in a values.yaml file of the chart instead of the dsconfig.json file, where all device servers have a configuration yaml block.
-Below there is an example of a values file that can be used with the ska-tango-util multi device definition: 
+Below there is an example of a values file that can be used with the ska-tango-util multi device definition:
 
 .. code-block:: console
 
-    deviceServers: 
-        theexample: 
+    deviceServers:
+        theexample:
             name: "theexample-{{.Release.Name}}"
             function: ska-tango-example-powersupply
             domain: ska-tango-example
@@ -59,39 +58,39 @@ Below there is an example of a values file that can be used with the ska-tango-u
                 name: "theexample"
                 instances:
                 - name: "test2"
-                    classes: 
+                    classes:
                     - name: "PowerSupply"
-                    devices: 
+                    devices:
                     - name: "test/power_supply/2"
                         properties:
                         - name: "test"
-                        values: 
+                        values:
                         - "test2"
                 - name: "test"
-                    classes: 
+                    classes:
                     - name: "PowerSupply"
-                    devices: 
+                    devices:
                     - name: "test/power_supply/1"
                         properties:
                         - name: "test"
-                        values: 
+                        values:
                         - "test2"
                     - name: "EventReceiver"
-                    devices: 
+                    devices:
                     - name: "test/eventreceiver/1"
                     - name: "Motor"
-                    devices: 
+                    devices:
                     - name: "test/motor/1"
                         properties:
                         - name: "polled_attr"
-                        values: 
+                        values:
                         - "PerformanceValue"
                         - "{{ .Values.deviceServers.theexample.polling }}"
                         attribute_properties:
                         - attribute: "PerformanceValue"
-                        properties: 
+                        properties:
                         - name: "rel_change"
-                            values: 
+                            values:
                             - "-1"
                             - "1"
             class_properties:
@@ -108,16 +107,16 @@ Below there is an example of a values file that can be used with the ska-tango-u
                 image: "{{.Values.tango_example.image.image}}"
                 tag: "{{.Values.tango_example.image.tag}}"
                 pullPolicy: "{{.Values.tango_example.image.pullPolicy}}"
-    
+
 
 Fields explained:
  - **deviceServers** : contains a list of all device server defined
- - **instances** : On this field the user can define which of the instances defined in the server tag are going to be created on the deviceServer. 
- - **entrypoints** : The number of entrypoints should correspond to the defined in the server tag field. 
-  
+ - **instances** : On this field the user can define which of the instances defined in the server tag are going to be created on the deviceServer.
+ - **entrypoints** : The number of entrypoints should correspond to the defined in the server tag field.
+
     - **name** : This is a **mandatory** field at entrypoints. The name field has to have a format like NameOfTheModule.NameOfTheClass.
     - **path** : This is a **optional** field at entrypoints. The path field is the path of the module that has the class of the device. This field may not be present **only** if the module is included in the list of directories that the interpreter will search, one example is if the modules are installed with pip.
- 
+
  - **server** : It's the equivalent of the dsconfig json file and define everything needed for a device server.
 
     - **intances** : A list of all instances for a device server. For each instance a number of devices can be defined together with the relative properties.
@@ -138,8 +137,8 @@ Fields explained:
     - **polling** : This field is referenced in the above device server configuration block. In fact the ska-tango-util device server definition template some of the field composing it (like the properties). In the above example the *polled_attr* property of the *test/motor/1* device takes its value from this field. As a consequence, this field allows us to change the value of the *polled_attr* property in the parent chart.
     - **instances** : If **instances** has values ​​in the value file, this takes precedence over the data file **instances** field.
 
-The use of the yaml file allows users to have a cleaner and more understandable view of the DeviceServer configurations compared to a json file configuration. 
-The helm template multidevice-config creates a ConfigMap which contains the generated dsconfig that was loaded and converted to a json type file from the values.yaml file described above.  
+The use of the yaml file allows users to have a cleaner and more understandable view of the DeviceServer configurations compared to a json file configuration.
+The helm template multidevice-config creates a ConfigMap which contains the generated dsconfig that was loaded and converted to a json type file from the values.yaml file described above.
 
 
 How to use the defined helm named template
