@@ -1,5 +1,6 @@
 numpy==1.21.0
 pytango==9.3.3
+# git+https://gitlab.com/tango-controls/pytango.git@main#egg=pytango
 flake8
 flake8_formatter_junit_xml
 isort

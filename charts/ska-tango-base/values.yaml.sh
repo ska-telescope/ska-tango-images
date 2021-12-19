@@ -43,6 +43,8 @@ xauthority: "~/.Xauthority"
 
 global:
   minikube: false
+  exposeDatabaseDS: false
+  exposeAllDS: false
   cluster_domain: cluster.local
   tango_host: databaseds-tango-base:10000
   databaseds_port: 10000
