@@ -210,27 +210,6 @@ tangodb:
     successThreshold: 1
     failureThreshold: 3
 
-jive:
-  enabled: false
-  component: jive-gui
-  function: generic-tango-jive-gui
-  domain: interactive-testing
-  intent: enabling
-  image:
-    registry: ${CAR_OCI_REGISTRY_HOST}
-    image: ska-tango-images-tango-java${IS_ALPINE}
-    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-java${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
-    pullPolicy: IfNotPresent
-  resources:
-    requests:
-      cpu: 200m     # 200m = 0.2 CPU
-      memory: 256Mi # 256Mi = 0.25 GB mem
-      ephemeral-storage: 256Mi
-    limits:
-      cpu: 500m     # 500m = 0.5 CPU
-      memory: 512Mi # 512Mi = 0.5 GB mem
-      ephemeral-storage: 256Mi
-
 vnc:
   enabled: false
   component: vnc-gui
@@ -250,49 +229,6 @@ vnc:
     requests:
       cpu: 100m     # 100m = 0.1 CPU
       memory: 256Mi # 256Mi = 0.25 GB mem
-      ephemeral-storage: 256Mi
-    limits:
-      cpu: 100m     # 100m = 0.1 CPU
-      memory: 256Mi # 256Mi = 0.25 GB mem
-      ephemeral-storage: 256Mi
-
-tangorest:
-  enabled: false
-  replicas: 3
-  component: tango-rest
-  function: tango-http-interface
-  domain: tango-configuration
-  intent: enabling
-  image:
-    registry: ${CAR_OCI_REGISTRY_HOST}
-    image: ska-tango-images-tango-rest${IS_ALPINE}
-    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-rest${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
-    pullPolicy: IfNotPresent
-  resources:
-    requests:
-      cpu: 100m     # 100m = 0.1 CPU
-      memory: 256Mi # 256Mi = 0.25 GB mem
-      ephemeral-storage: 256Mi
-    limits:
-      cpu: 200m     # 100m = 0.1 CPU
-      memory: 512Mi # 256Mi = 0.25 GB mem
-      ephemeral-storage: 512Mi
-
-logviewer:
-  enabled: false
-  component: logviewer
-  function: tango-log-inspection
-  domain: interactive-testing
-  intent: enabling
-  image:
-    registry: ${CAR_OCI_REGISTRY_HOST}
-    image: ska-tango-images-tango-java${IS_ALPINE}
-    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-java${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
-    pullPolicy: IfNotPresent
-  resources:
-    requests:
-      cpu: 100m     # 100m = 0.1 CPU
-      memory: 128Mi # 128Mi = 0.125 GB mem
       ephemeral-storage: 256Mi
     limits:
       cpu: 100m     # 100m = 0.1 CPU

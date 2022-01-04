@@ -14,18 +14,14 @@ global:
   #     enabled: false
   #   archiver:
   #     enabled: false
-  #   webjive: 
+  #   webjive:
   #     enabled: false
 
 ska-tango-base:
   itango:
     enabled: true
-  jive:
-    enabled: false
   vnc:
     enabled: false
-  tangorest:
-    enabled: true
   ingress:
     enabled: true
     hostname: tango-base.minikube.local
