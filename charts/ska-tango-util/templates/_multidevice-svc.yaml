@@ -116,6 +116,12 @@ spec:
         - name: configuration
           configMap:
             name: {{$deviceserver_name | toString }}-{{ $chart.Release.Name }}-dsconfig-json
+{{- range $index, $mount := $deviceserver.mount_paths }}
+        - name: {{ $mount.name }}
+          hostPath:
+            path: {{ $mount.hostPath }}
+            type: {{ $mount.type }}
+{{- end }}
       serviceAccountName: {{ $deviceserver_name | toString }}-sa-{{ $chart.Release.Name }}
       initContainers:
       - name: wait-for-configuration
@@ -219,6 +225,11 @@ spec:
           - name: configuration
             mountPath: data
             readOnly: true
+{{- range $index, $mount := $deviceserver.mount_paths }}
+          - name: {{ $mount.name }}
+            mountPath: {{ $mount.mountPath }}
+            readOnly: {{ $mount.readOnly }}
+{{- end }}
         livenessProbe:
           exec:
             command:
