@@ -40,8 +40,7 @@ RUN apt-get update \
                zlib1g-dev \
                ca-certificates \
                curl \
-               git \
-               python-is-python3
+               git 
 
 RUN curl -k https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 COPY pip.conf /etc/pip.conf
@@ -57,4 +56,4 @@ RUN python3 -m pip install numpy==1.19.2
 COPY requirements.txt /requirements.txt
 RUN python3 -m pip install -r /requirements.txt
 
-RUN mkdir /venv && ln -s /usr/* /venv/  && ln -s /usr/local/bin/itango3 /venv/bin/itango3
+RUN mkdir /venv && ln -s /usr/* /venv/  && ln -s /usr/local/bin/itango3 /venv/bin/itango3 && ln -sfn /usr/bin/python3 /usr/bin/python
