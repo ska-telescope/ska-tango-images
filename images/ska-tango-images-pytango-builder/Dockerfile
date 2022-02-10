@@ -40,7 +40,8 @@ RUN apt-get update \
                zlib1g-dev \
                ca-certificates \
                curl \
-               git
+               git \
+               python-is-python3
 
 RUN curl -k https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 COPY pip.conf /etc/pip.conf
