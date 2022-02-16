@@ -193,4 +193,4 @@ tests:
             - -ORBendPoint
             - giop:tcp::40000
             - -ORBendPointPublish
-            - giop:tcp:databaseds-test:40000
+            - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):40000
