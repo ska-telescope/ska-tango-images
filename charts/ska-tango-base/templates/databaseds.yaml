@@ -1,4 +1,4 @@
-{{ $cluster_domain := coalesce .local.Values.global.cluster_domain "cluster.local" }}
+{{ $cluster_domain := coalesce .Values.global.cluster_domain "cluster.local" }}
 {{ $databaseds_name := (split ":" .Values.global.tango_host)._0 }} 
 {{ $databaseds_port := (split ":" .Values.global.tango_host)._1 }}
 {{ $tries := coalesce  .Values.global.tries 10}}
