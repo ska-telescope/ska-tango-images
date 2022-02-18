@@ -92,12 +92,12 @@ spec:
           - --tries={{$tries}}
           - --sleep={{$sleep}}
           - --
-          - /usr/local/bin/wait-for-it.sh
+          - source /vault/secrets/config || true && /usr/local/bin/wait-for-it.sh #  ST-1064: allow the file to not exist if running on minikube
           - {{ template "ska-tango-base.name" . }}-{{ .Values.tangodb.component }}:3306
           - --timeout=60
           - --strict
           - --
-          - source /vault/secrets/config || true && /usr/local/bin/DataBaseds #  ST-1064: allow the file to not exist if running on minikube
+          - /usr/local/bin/DataBaseds
           - "2"
           - -ORBendPoint
           - giop:tcp::{{ $databaseds_port }}
