@@ -179,11 +179,11 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].command
           value:
-            - source /vault/secrets/config || true && retry
+            - retry
             - --tries=2
             - --sleep=5
             - --
-            - /usr/local/bin/wait-for-it.sh
+            - source /vault/secrets/config || true && /usr/local/bin/wait-for-it.sh
             - ska-tango-base-tangodb-test:3306
             - --timeout=60
             - --strict
