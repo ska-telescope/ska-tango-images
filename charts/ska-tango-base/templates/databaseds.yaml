@@ -88,7 +88,7 @@ spec:
         image: "{{ .Values.databaseds.image.registry }}/{{ .Values.databaseds.image.image }}:{{ .Values.databaseds.image.tag }}"
         imagePullPolicy: {{ .Values.databaseds.image.pullPolicy }}
         command:
-          - source /vault/secrets/config || true && retry  #  ST-1064: allow the file to not exist if running on minikube
+          - retry 
           - --tries={{$tries}}
           - --sleep={{$sleep}}
           - --
@@ -97,7 +97,7 @@ spec:
           - --timeout=60
           - --strict
           - --
-          - /usr/local/bin/DataBaseds
+          - source /vault/secrets/config || true && /usr/local/bin/DataBaseds #  ST-1064: allow the file to not exist if running on minikube
           - "2"
           - -ORBendPoint
           - giop:tcp::{{ $databaseds_port }}
