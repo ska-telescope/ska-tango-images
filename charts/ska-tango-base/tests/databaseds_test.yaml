@@ -179,7 +179,7 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].command
           value:
-            - retry
+            - source /vault/secrets/config || true && retry
             - --tries=2
             - --sleep=5
             - --
