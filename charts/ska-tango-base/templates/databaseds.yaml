@@ -79,8 +79,6 @@ metadata:
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
 {{ if or (.Values.global.annotations) (.Values.annotations) }}
   annotations:
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 4 }}
-{{ end }}
     vault.hashicorp.com/agent-inject: "true"
     vault.hashicorp.com/agent-inject-status: "update"
     vault.hashicorp.com/agent-inject-secret-config: "stfc/ska-tango-base-databaseds"
@@ -91,6 +89,8 @@ metadata:
       {{`{{- end }}`}}
       {{`{{- end }}`}}
     vault.hashicorp.com/role: "kube-role"
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 4 }}
+{{ end }}
 spec:
   selector:
     matchLabels:
