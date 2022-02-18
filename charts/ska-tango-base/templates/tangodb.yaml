@@ -43,6 +43,16 @@ metadata:
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
 {{ if or (.Values.global.annotations) (.Values.annotations) }}
   annotations:
+    vault.hashicorp.com/agent-inject: "true"
+    vault.hashicorp.com/agent-inject-status: "update"
+    vault.hashicorp.com/agent-inject-secret-config: "stfc/ska-tango-base-tangodb"
+    vault.hashicorp.com/agent-inject-template-config: |
+      {{`{{- with secret `}}"stfc/ska-tango-base-tangodb"{{` -}}`}}
+      {{`{{- range $k, $v := .Data.data }}`}}
+      {{`export {{ $k }}={{ $v }}`}}
+      {{`{{- end }}`}}
+      {{`{{- end }}`}}
+    vault.hashicorp.com/role: "kube-role"
 {{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 4 }}
 {{ end }}
 spec:
@@ -89,7 +99,7 @@ spec:
         {{- if .Values.tangodb.livenessProbe.enabled }}
         livenessProbe:
           exec:
-            command: ["sh", "-c", "exec mysqladmin status -uroot -p{{ .Values.tangodb.db.rootpw }}"]
+            command: ["sh", "-c", "source /vault/secrets/config || true && exec mysqladmin status -uroot -p${MYSQL_ROOT_PASSWORD}"]
           initialDelaySeconds: {{ .Values.tangodb.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.tangodb.livenessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.tangodb.livenessProbe.timeoutSeconds }}
