@@ -6,9 +6,9 @@
 ARG BASE_IMAGE="debian:buster-slim"
 FROM $BASE_IMAGE as buildenv
 
-ENV ZEROMQ_DOWNLOAD_URL=https://github.com/zeromq/libzmq/archive/v4.3.2.tar.gz
-ENV CPPZMQ_DOWNLOAD_URL=https://github.com/zeromq/cppzmq/archive/v4.4.1.tar.gz
-ENV OMNIORB_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/omniORB-4.2.3.tar.bz2
+ENV ZEROMQ_DOWNLOAD_URL=https://github.com/zeromq/libzmq/archive/v4.3.4.tar.gz
+ENV CPPZMQ_DOWNLOAD_URL=https://github.com/zeromq/cppzmq/archive/v4.8.1.tar.gz
+ENV OMNIORB_DOWNLOAD_URL=https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.4/omniORB-4.2.4.tar.bz2/download
 ENV DEBIAN_FRONTEND=noninteractive
 
 # Copy across files that are used to help orchestrate container compositions
@@ -22,8 +22,8 @@ RUN apt-get update && \
         curl libkrb5-dev libtool pkg-config unzip \
         cmake python-dev python-pkgconfig
 
-RUN mkdir /usr/src/zeromq 
-WORKDIR /usr/src/zeromq    
+RUN mkdir /usr/src/zeromq
+WORKDIR /usr/src/zeromq
 RUN curl -kfsSL "$ZEROMQ_DOWNLOAD_URL" -o zeromq.tar.gz \
     && tar xf zeromq.tar.gz -C /usr/src/zeromq --strip-components=1 \
     && ./autogen.sh \
@@ -32,7 +32,7 @@ RUN curl -kfsSL "$ZEROMQ_DOWNLOAD_URL" -o zeromq.tar.gz \
     && make -C /usr/src/zeromq install \
     && rm -r /usr/src/zeromq
 
-RUN mkdir /usr/src/cppzmq 
+RUN mkdir /usr/src/cppzmq
 WORKDIR /usr/src/cppzmq
 RUN curl -kfsSL "$CPPZMQ_DOWNLOAD_URL" -o cppzmq.tar.gz \
     && tar xf cppzmq.tar.gz -C /usr/src/cppzmq --strip-components=1 \
@@ -43,7 +43,7 @@ RUN curl -kfsSL "$CPPZMQ_DOWNLOAD_URL" -o cppzmq.tar.gz \
     && apt-get purge -y --auto-remove $buildDeps \
     && rm -r /usr/src/cppzmq
 
-RUN mkdir /usr/src/omniorb 
+RUN mkdir /usr/src/omniorb
 WORKDIR /usr/src/omniorb
 RUN curl -kfsSL "$OMNIORB_DOWNLOAD_URL" -o omniorb.tar.bz2 \
     && tar xf omniorb.tar.bz2 -C /usr/src/omniorb --strip-components=1 \
@@ -65,4 +65,3 @@ LABEL \
       int.skao.application="Tango dependencies"
 
 COPY --from=buildenv /usr/local /usr/local
-
