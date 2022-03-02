@@ -16,10 +16,8 @@ RUN git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl && 
 ## build and install cppTango
 ## latest main version is not working using previous commit
 
-# RUN git clone https://gitlab.com/tango-controls/cppTango /cppTango && \
-#     cd /cppTango && git checkout 1575524ada0a3f8fe97b4040c07da7c83fced325 && \
-RUN git clone https://gitlab.com/piersharding/cppTango.git /cppTango && \
-    cd /cppTango && git checkout enable-configured-zmq-ports && \
+RUN git clone https://gitlab.com/tango-controls/cppTango.git /cppTango && \
+    cd /cppTango && git checkout 9.3.5-rc1 && \
     sed -i '1s/^/#include <sys\/types.h>\n#include <bits\/alltypes.h>\n/' /cppTango/log4tango/include/log4tango/FileAppender.hh && \
     mkdir build && \
     cmake . -B build \

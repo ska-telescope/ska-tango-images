@@ -36,8 +36,8 @@ RUN git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /usr/src
 RUN mkdir -p /usr/src/tango
 WORKDIR /usr/src/tango
 
-RUN git clone https://gitlab.com/piersharding/cppTango.git /usr/src/tango && \
-    cd /usr/src/tango && git checkout enable-configured-zmq-ports && \
+RUN git clone https://gitlab.com/tango-controls/cppTango.git /usr/src/tango && \
+    cd /usr/src/tango && git checkout 9.3.5-rc1 && \
     mkdir build && \
     cmake . -B build \
       -DBUILD_TESTING=OFF \
