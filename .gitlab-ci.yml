@@ -642,3 +642,11 @@ include:
     file: 'gitlab-ci/includes/changelog.gitlab-ci.yml'
 
 
+
+##### Test k8s
+k8s-test:
+  before_script:
+    - '[ -f .make/k8s.mk ] || (echo "File k8s.mk not included in Makefile; exit 1")'
+    - 'make help | grep k8s-test'
+    - make k8s-install-chart CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
+    - make k8s-wait
