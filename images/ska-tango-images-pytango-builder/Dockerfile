@@ -37,6 +37,8 @@ RUN apt-get update \
                libboost-python-dev \
                pkg-config \
                python3-distutils \
+               python3-setuptools \
+               python3-wheel \
                zlib1g-dev \
                ca-certificates \
                curl \
@@ -44,8 +46,6 @@ RUN apt-get update \
 
 RUN curl -k https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 COPY pip.conf /etc/pip.conf
-
-RUN python3 -m pip install setuptools wheel
 
 WORKDIR /app
 
