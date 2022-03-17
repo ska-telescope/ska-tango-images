@@ -287,7 +287,7 @@ build_pytango-builder-alpine:
     OCI_IMAGE: ska-tango-images-pytango-builder-alpine
     BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp-alpine
   rules:
-    - !reference [.tango-pytango-builder-alpine-rules, rules]
+    - !reference [.pytango-builder-alpine-rules, rules]
 
 .tango-pogo-rules:
   rules:
