@@ -721,31 +721,6 @@ k8s-test-alpine:
         - tests/**/*
   allow_failure: true
 
-# OCI Scanning job
-
-.container-scanning:
-  stage: scan
-  tags:
-    - k8srunner
-  image:
-    name: $SKA_TRIVY_IMAGE
-    entrypoint: [""]
-  variables:
-  allow_failure: true
-  before_script:
-  - |
-    apk add bash make curl
-  script:
-  - make oci-scan OCI_IMAGE=${OCI_IMAGE} CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME} RELEASE_CONTEXT_DIR=images/${OCI_IMAGE}
-
-  cache:
-    paths:
-      - .trivycache/
-  artifacts:
-    when: always
-    reports:
-      container_scanning: gl-container-scanning-report.json
-
 scan_dependencies:
   extends: 
   - .container-scanning
@@ -1001,7 +976,8 @@ include:
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/changelog.gitlab-ci.yml'
 
-
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/oci-image-scan.gitlab-ci.yml'
 
 ##### Test k8s
 k8s-test:
@@ -1010,3 +986,33 @@ k8s-test:
     - 'make help | grep k8s-test'
     - make k8s-install-chart CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
     - make k8s-wait
+
+##### Overide scanning jobs
+
+oci-image-scan:
+  before_script:
+  after_script:
+  script:
+    - echo "The default scan job is overwritten in this CI/CD. Please see other jobs in the scan stage"
+
+.container-scanning:
+  stage: scan
+  tags:
+    - k8srunner
+  image:
+    name: $SKA_TRIVY_IMAGE
+    entrypoint: [""]
+  variables:
+  allow_failure: true
+  before_script:
+  - |
+    apk add bash make curl
+  script:
+  - make oci-scan OCI_IMAGE=${OCI_IMAGE} CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME} RELEASE_CONTEXT_DIR=images/${OCI_IMAGE}
+  cache:
+    paths:
+      - .trivycache/
+  artifacts:
+    when: always
+    reports:
+      container_scanning: gl-container-scanning-report.json
