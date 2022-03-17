@@ -1,3 +1,9 @@
+## [0.3.8]
+
+### Jira Tickets
+
+- ST-1174 - 
+
 ## [0.3.2]
 
 ### Jira Tickets
