@@ -79,7 +79,7 @@ build_dependencies-alpine:
       changes:
       - images/ska-tango-images-tango-dependencies-alpine/*
 
-build_tango-db:
+build_tango-db: 
   retry: 2
   stage: build_1
   extends:
@@ -93,7 +93,7 @@ build_tango-db:
       changes:
       - images/ska-tango-images-tango-db/*
 
-build_tango-db-alpine:
+build_tango-db-alpine: 
   retry: 2
   stage: build_3
   extends:
@@ -108,7 +108,7 @@ build_tango-db-alpine:
       changes:
       - images/ska-tango-images-tango-db-alpine/*
 
-build_tango-cpp:
+build_tango-cpp: 
   retry: 2
   stage: build_2
   extends:
@@ -140,7 +140,7 @@ build_tango-cpp-alpine:
       - images/ska-tango-images-tango-dependencies-alpine/*
       - images/ska-tango-images-tango-cpp-alpine/*
 
-build_tango-java:
+build_tango-java: 
   retry: 2
   stage: build_2
   extends:
@@ -610,6 +610,254 @@ k8s-test-alpine:
         - tests/**/*
   allow_failure: true
 
+# OCI Scanning job
+
+.container-scanning:
+  stage: scan
+  tags:
+    - k8srunner
+  image:
+    name: $SKA_TRIVY_IMAGE
+    entrypoint: [""]
+  variables:
+  allow_failure: true
+  before_script:
+  - |
+    apk add bash make curl
+  script:
+  - make oci-scan OCI_IMAGE=${OCI_IMAGE} CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
+
+  cache:
+    paths:
+      - .trivycache/
+  artifacts:
+    when: always
+    reports:
+      container_scanning: gl-container-scanning-report.json
+
+scan_dependencies:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-dependencies 
+  needs:
+  - build_dependencies
+
+scan_dependencies-alpine:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-dependencies-alpine
+  needs:
+  - build_dependencies-alpine
+  
+scan_tango-db:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-db
+  needs:
+  - build_tango-db
+
+scan_tango-db-alpine:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-db-alpine
+  needs:
+  - build_tango-db-alpine
+  
+scan_tango-cpp:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-cpp
+  needs:
+  - build_tango-cpp
+
+scan_tango-cpp-alpine:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-cpp-alpine
+  needs:
+  - build_tango-cpp-alpine
+
+scan_tango-java:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-java
+  needs:
+  - build_tango-java
+
+scan_tango-java-alpine:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-java-alpine
+  needs:
+  - build_tango-java-alpine
+
+scan_tango-rest:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-rest
+  needs:
+  - build_tango-rest
+
+scan_tango-rest-alpine:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-rest-alpine
+  needs:
+  - build_tango-rest-alpine
+
+scan_pytango-builder:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-pytango-builder
+  needs:
+  - build_pytango-builder
+
+scan_pytango-builder-alpine:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-pytango-builder-alpine
+  needs:
+  - build_pytango-builder-alpine
+
+scan_tango-pogo:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-pogo
+  needs:
+  - build_tango-pogo
+
+scan_tango-libtango:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-libtango
+  needs:
+  - build_tango-libtango
+
+scan_tango-jive:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-jive
+  needs:
+  - build_tango-jive
+
+scan_pytango-runtime:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-pytango-runtime
+  needs:
+  - build_pytango-runtime
+
+scan_pytango-runtime-alpine:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-pytango-runtime-alpine
+  needs:
+  - build_pytango-runtime-alpine
+
+scan_tango-admin:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-admin
+  needs:
+  - build_tango-admin
+
+scan_tango-databaseds:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-databaseds
+  needs:
+  - build_tango-databaseds
+
+scan_tango-test:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-test
+  needs:
+  - build_tango-test
+
+scan_tango-dsconfig:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-dsconfig
+  needs:
+  - build_tango-dsconfig
+
+scan_tango-dsconfig-alpine:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-dsconfig-alpine
+  needs:
+  - build_tango-dsconfig-alpine
+
+scan_tango-itango:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-itango
+  needs:
+  - build_tango-itango
+
+scan_tango-itango-alpine:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-itango-alpine
+  needs:
+  - build_tango-itango-alpine
+
+scan_tango-vnc:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-vnc
+  needs:
+  - build_tango-vnc
+
+scan_tango-pytango:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-pytango
+  needs:
+  - build_tango-pytango
+
+scan_tango-panic:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-panic
+  needs:
+  - build_tango-panic
+
+scan_tango-panic-gui:
+  extends: 
+  - .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-panic-gui
+  needs:
+  - build_tango-panic-gui
 
 # Include CI templates
 include:
@@ -637,10 +885,6 @@ include:
 # k8s steps
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/k8s.gitlab-ci.yml'
-
-# oci-image scanning
-  - project: 'ska-telescope/templates-repository'
-    file: 'gitlab-ci/includes/oci-image-scan.gitlab-ci.yml'
 
 # changelog release page
   - project: 'ska-telescope/templates-repository'
