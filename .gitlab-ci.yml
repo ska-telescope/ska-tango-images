@@ -13,6 +13,7 @@ stages:
 - build_5
 - test
 - publish
+- scan
 - pages
 - cleanup_build
 
@@ -636,6 +637,10 @@ include:
 # k8s steps
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/k8s.gitlab-ci.yml'
+
+# oci-image scanning
+  - project: 'ska-telescope/templates-repository'
+    file: 'gitlab-ci/includes/oci-image-scan.gitlab-ci.yml'
 
 # changelog release page
   - project: 'ska-telescope/templates-repository'
