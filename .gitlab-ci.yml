@@ -991,6 +991,7 @@ k8s-test:
 
 oci-image-scan:
   before_script:
+    - echo "" 
   after_script:
   script:
     - echo "The default scan job is overwritten in this CI/CD. Please see other jobs in the scan stage"
