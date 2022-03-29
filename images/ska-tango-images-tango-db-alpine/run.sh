@@ -71,14 +71,20 @@ EOF
 	/usr/bin/mysqld --user=mysql --bootstrap --verbose=0 < $tfile
 	rm -f $tfile
 
+	# start server and listen on a non-standard port
+	/usr/bin/mysqld --user=mysql --console --skip-name-resolve --skip-networking=0 --port=13306&
+	wait-for-it.sh localhost:13306 -t 60 -s -- echo "[i] Starting DB setup"
+
 	for f in /docker-entrypoint-initdb.d/*; do
 		case "$f" in
-			*.sql)    echo "$0: running $f"; /usr/bin/mysqld --user=mysql --bootstrap --verbose=0  < "$f"; echo ;;
-			*.sql.gz) echo "$0: running $f"; gunzip -c "$f" | /usr/bin/mysqld --user=mysql --bootstrap --verbose=0  < "$f"; echo ;;
+			*.sql)    echo "$0: running $f"; su -c /usr/bin/mysql mysql < "$f"; echo ;;
+			*.sql.gz) echo "$0: running $f"; gunzip -c "$f" | su -c /usr/bin/mysql mysql; echo ;;
 			*)        echo "$0: ignoring or entrypoint initdb empty $f" ;;
 		esac
 		echo
 	done
+
+	killall mysqld
 
 	echo
 	echo 'MySQL init process done. Ready for start up.'
