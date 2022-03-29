@@ -1,6 +1,7 @@
 ARG CAR_OCI_REGISTRY_HOST
 ARG BASE_IMAGE="alpine:3.14"
 ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies-alpine:0.0.0"
+
 FROM $BUILD_IMAGE AS buildenv
 
 # Install build time dependencies
@@ -17,7 +18,7 @@ RUN git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /idl && 
 ## latest main version is not working using previous commit
 
 RUN git clone https://gitlab.com/tango-controls/cppTango.git /cppTango && \
-    cd /cppTango && git checkout 9.3.5-rc1 && \
+    cd /cppTango && git checkout 9.3.5 && \
     sed -i '1s/^/#include <sys\/types.h>\n#include <bits\/alltypes.h>\n/' /cppTango/log4tango/include/log4tango/FileAppender.hh && \
     mkdir build && \
     cmake . -B build \
