@@ -21,8 +21,8 @@ RUN git clone -b v4.8.1 --depth 1 https://github.com/zeromq/cppzmq.git /cppzmq &
     cmake -B /cppzmq/build -DCPPZMQ_BUILD_TESTS=OFF -DCMAKE_INSTALL_PREFIX=/usr/local /cppzmq && \
     make  -j$(nproc) -C /cppzmq/build install
     
-# build and install omniORB at 4.2.4
-RUN curl -L https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.4/omniORB-4.2.4.tar.bz2/download -o /omniORB.tar.bz2 && \
+# build and install omniORB at 4.3.0
+RUN curl -L https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.3.0/omniORB-4.3.0.tar.bz2/download -o /omniORB.tar.bz2 && \
     mkdir /omniORB && \
     tar xaf /omniORB.tar.bz2 --strip-components=1 -C /omniORB && \
     cd /omniORB && \
