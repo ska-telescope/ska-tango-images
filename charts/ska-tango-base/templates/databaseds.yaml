@@ -25,37 +25,11 @@ spec:
   ports:
   - name: ds
     port: {{ $databaseds_port }}
-  type: NodePort
-  selector:
-    component: {{ .Values.databaseds.component }}
-    function: {{ .Values.databaseds.function }}
-    domain: {{ .Values.databaseds.domain }}
-    intent: {{ .Values.databaseds.intent }}
-{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
-
----
-## The LoadBalancer for external access
-{{ if or (.Values.global.minikube) (.Values.global.exposeAllDS) }}
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ tpl ($databaseds_name | toString) . }}-external
-  namespace: {{ .Release.Namespace }}
-  labels:
-    component: {{ .Values.databaseds.component }}
-    function: {{ .Values.databaseds.function }}
-    domain: {{ .Values.databaseds.domain }}
-    intent: {{ .Values.databaseds.intent }}
-{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
-{{ if or (.Values.global.annotations) (.Values.annotations) }}
-  annotations:
-{{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 4 }}
-{{ end }}
-spec:
-  ports:
-  - name: ds
-    port: {{ $databaseds_port }}
+{{- if or (.Values.global.minikube) (.Values.global.exposeAllDS) }}
   type: LoadBalancer
+{{- else }}
+  type: NodePort
+{{- end }}
   selector:
     component: {{ .Values.databaseds.component }}
     function: {{ .Values.databaseds.function }}
@@ -63,7 +37,6 @@ spec:
     intent: {{ .Values.databaseds.intent }}
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
 
-{{ end }}
 ---
 
 apiVersion: apps/v1
