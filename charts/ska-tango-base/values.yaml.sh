@@ -180,7 +180,7 @@ tangodb:
   intent: production
   image:
     registry: ${CAR_OCI_REGISTRY_HOST}
-    image: ska-tango-images-tango-db${IS_ALPINE}
+    image: ska-tango-images-tango-db
     tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-db setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   db:
