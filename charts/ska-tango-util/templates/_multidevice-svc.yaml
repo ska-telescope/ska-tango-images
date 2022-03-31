@@ -70,56 +70,24 @@ metadata:
 {{ toYaml $annotations | indent 4 }}
 {{ end }}
 spec:
-  type: NodePort
-  ports:
-  - name: tango-server
-    port: {{ $tango_server_port }}
-    targetPort: {{ $tango_server_port }}
-  - name: tango-heartbeat
-    port: {{ $tango_heartbeat_port }}
-    targetPort: {{ $tango_heartbeat_port }}
-  - name: tango-event
-    port: {{ $tango_event_port }}
-    targetPort: {{ $tango_event_port }}
-  selector:
-    subsystem: {{ $chart.Values.subsystem }}
-    component: {{tpl ($deviceserver_name | toString) $chart }}-{{ $safe_instance }}
-
-## The LoadBalancer for external access
-{{ if or ($chart.Values.global.minikube) ($chart.Values.global.exposeAllDS) ($deviceserver.exposeDS) }}
----
-apiVersion: v1
-kind: Service
-
-metadata:
-  name: {{$deviceserver_name | toString }}-{{ $safe_instance }}-external
-  namespace: {{ $chart.Release.Namespace }}
-  labels:
-{{ toYaml $labels | indent 4 }}
-    component: {{tpl ($deviceserver_name | toString) $chart }}-{{ $safe_instance }}
-    function: {{ $deviceserver.function }}
-    domain: {{ $deviceserver.domain }}
-    subsystem: {{ $chart.Values.subsystem }}
-{{ if $annotations }}
-  annotations:
-{{ toYaml $annotations | indent 4 }}
-{{ end }}
-spec:
-  ports:
-  - name: tango-server
-    port: {{ $tango_server_port }}
-    targetPort: {{ $tango_server_port }}
-  - name: tango-heartbeat
-    port: {{ $tango_heartbeat_port }}
-    targetPort: {{ $tango_heartbeat_port }}
-  - name: tango-event
-    port: {{ $tango_event_port }}
-    targetPort: {{ $tango_event_port }}
-  selector:
-    subsystem: {{ $chart.Values.subsystem }}
-    component: {{tpl ($deviceserver_name | toString) $chart }}-{{ $safe_instance }}
+{{- if or ($chart.Values.global.minikube) ($chart.Values.global.exposeAllDS) ($deviceserver.exposeDS) }}
   type: LoadBalancer
-{{ end }}
+{{- else }}
+  type: NodePort
+{{- end }}
+  ports:
+  - name: tango-server
+    port: {{ $tango_server_port }}
+    targetPort: {{ $tango_server_port }}
+  - name: tango-heartbeat
+    port: {{ $tango_heartbeat_port }}
+    targetPort: {{ $tango_heartbeat_port }}
+  - name: tango-event
+    port: {{ $tango_event_port }}
+    targetPort: {{ $tango_event_port }}
+  selector:
+    subsystem: {{ $chart.Values.subsystem }}
+    component: {{tpl ($deviceserver_name | toString) $chart }}-{{ $safe_instance }}
 
 ---
 apiVersion: apps/v1

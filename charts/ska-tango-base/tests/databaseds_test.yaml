@@ -155,7 +155,7 @@ tests:
             value: password-test
         
   - it: should have LoadBalancer type service if enabled in global minikube.
-    documentIndex: 1
+    documentIndex: 0
     set:
       global:
         minikube: true
