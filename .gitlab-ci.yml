@@ -1063,6 +1063,7 @@ test-integration-environment-no-agent:
   needs:
     - deploy-integration-environment-no-agent
   script:
+    - make helm-pre-publish
     - make k8s-test
   environment:
     name: integration
