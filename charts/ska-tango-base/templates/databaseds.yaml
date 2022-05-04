@@ -52,16 +52,6 @@ metadata:
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
 {{ if or (.Values.global.annotations) (.Values.annotations) }}
   annotations:
-    vault.hashicorp.com/agent-inject: "true"
-    vault.hashicorp.com/agent-inject-status: "update"
-    vault.hashicorp.com/agent-inject-secret-config: "stfc/ska-tango-base/databaseds"
-    vault.hashicorp.com/agent-inject-template-config: |
-      {{`{{- with secret `}}"stfc/ska-tango-base/databaseds"{{` -}}`}}
-      {{`{{- range $k, $v := .Data.data }}`}}
-      {{`export {{ $k }}={{ $v }}`}}
-      {{`{{- end }}`}}
-      {{`{{- end }}`}}
-    vault.hashicorp.com/role: "kube-role"
 {{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 4 }}
 {{ end }}
 spec:
@@ -82,6 +72,22 @@ spec:
         domain: {{ .Values.databaseds.domain }}
         intent: {{ .Values.databaseds.intent }}
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 8 }}
+      annotations:
+{{ if ((.Values.databaseds.vault).useVault) }}         
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-status: "update"
+        vault.hashicorp.com/agent-inject-secret-config: "{{ .Values.databaseds.vault.secretPath }}/ska-tango-base/databaseds"
+        vault.hashicorp.com/agent-inject-template-config: |
+          {{`{{- with secret `}}"{{ .Values.databaseds.vault.secretPath }}/ska-tango-base/databaseds"{{` -}}`}}
+          {{`{{- range $k, $v := .Data.data }}`}}
+          {{`export {{ $k }}={{ $v }}`}}
+          {{`{{- end }}`}}
+          {{`{{- end }}`}}
+        vault.hashicorp.com/role: "{{ .Values.databaseds.vault.role }}"
+{{ end }}        
+{{ if or (.Values.global.annotations) (.Values.annotations) }}
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 8 }}
+{{ end }}
     spec:
       containers:
       - name: databaseds
@@ -92,7 +98,11 @@ spec:
           - --tries={{$tries}}
           - --sleep={{$sleep}}
           - --
-          - source /vault/secrets/config || true && /usr/local/bin/wait-for-it.sh #  ST-1064: allow the file to not exist if running on minikube
+{{ if ((.Values.databaseds.vault).useVault) }}               
+          - . /vault/secrets/config || true && /usr/local/bin/wait-for-it.sh #  ST-1064: allow the file to not exist if running on minikube
+{{ else }}
+          - /usr/local/bin/wait-for-it.sh #  ST-1064: allow the file to not exist if running on min
+{{ end }}
           - {{ template "ska-tango-base.name" . }}-{{ .Values.tangodb.component }}:3306
           - --timeout=60
           - --strict
@@ -111,9 +121,9 @@ spec:
           - name: MYSQL_USER
             value: "{{ .Values.tangodb.db.user }}"
           - name: MYSQL_PASSWORD
-            value: "{{ .Values.tangodb.db.password }}"  # ST-1064: Check if this overwrites the injected value
+            value: "{{ .Values.tangodb.db.password }}"  # ST-1064: Check if this overwrites the injected value            
           - name: TANGO_SERVER_PUBLISH_HOSTNAME
-            value: {{ tpl ($databaseds_name | toString) . }}.{{ .Release.Namespace }}.svc.{{ $cluster_domain }}
+            value: {{ tpl ($databaseds_name | toString) . }}.{{ .Release.Namespace }}.svc.{{ $cluster_domain }}            
         ports:
         - name: ds
           containerPort: {{ $databaseds_port }}

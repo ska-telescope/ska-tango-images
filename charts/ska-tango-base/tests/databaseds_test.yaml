@@ -183,7 +183,7 @@ tests:
             - --tries=2
             - --sleep=5
             - --
-            - source /vault/secrets/config || true && /usr/local/bin/wait-for-it.sh
+            - /usr/local/bin/wait-for-it.sh
             - ska-tango-base-tangodb-test:3306
             - --timeout=60
             - --strict

@@ -56,10 +56,38 @@ The basic configuration for each component of the SKA TANGO-controls docker imag
 
 We launch the SKA TANGO-controls docker images with:
 ```
-$ make install-chart
+$ make k8s-install-chart
 ```
 
 To clean up the Helm Chart release:
 ```
-$make uninstall-chart
+$make k8s-uninstall-chart
 ```
+
+Use vault secrets in the tango charts
+-------------------------------------
+
+When deploying to a remote cluster we may want to use the vault to fetch secrets.
+
+The tango-base charts are configured to allow the use of vault in the **tangodb** and **databaseds** database containers.
+
+To use vault configure in the values.yml (tabgodb example):
+
+```yaml
+tangodb:
+
+...
+
+  vault:
+    useVault: true
+    secretPath: stfc
+    role: kube-role    
+```
+
+**parameter**|**description**
+:-----:|:-----:
+useVault| turn it on/off
+secretPath| starting path for the secret in the server
+role| vault role to use
+
+If you are using minikube set the **useVault** parameter to false, remove it or remove the vault section.
