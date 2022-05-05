@@ -102,6 +102,10 @@ databaseds:
     image: ska-tango-images-tango-cpp${IS_ALPINE}
     tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-cpp${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
+  vault:
+    useVault: false
+    secretPath: stfc
+    role: kube-role    
   resources:
     requests:
       cpu: 100m     # 100m = 0.1 CPU
@@ -188,6 +192,10 @@ tangodb:
     db: tango
     user: tango
     password: tango
+  vault:
+    useVault: false
+    secretPath: stfc
+    role: kube-role
   resources:
     requests:
       cpu: 100m     # 100m = 0.1 CPU
