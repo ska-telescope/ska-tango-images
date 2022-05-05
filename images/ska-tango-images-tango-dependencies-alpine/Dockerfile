@@ -3,7 +3,7 @@
 # intermediate image, then creates a release image containing the compiled
 # binaries.
 #
-ARG BASE_IMAGE="alpine:3.14"
+ARG BASE_IMAGE="alpine:3.15"
 FROM $BASE_IMAGE as buildenv
 
 # Install build time dependencies
