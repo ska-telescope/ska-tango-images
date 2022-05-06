@@ -85,10 +85,10 @@ spec:
         image: "{{ .Values.tangodb.image.registry }}/{{ .Values.tangodb.image.image }}:{{ .Values.tangodb.image.tag }}"
         imagePullPolicy: {{ .Values.tangodb.image.pullPolicy }}
 {{ if ((.Values.tangodb.vault).useVault) }}
-        # Because we need to source the vault secret file, this disrups the normal container startup.
+        # Because we need to source the vault secret file, this disrupts the normal container startup.
         # Because of this, after the source command, we need to run the normal container startup scripts / commands.
-        # This startup scripts/commmands depend on the container application. In this example we are using a MariaDB application.
-        # Pease read the vault section in the charts/README.md for more information.         
+        # This startup scripts/commands depend on the container application. In this example we are using a MariaDB application.
+        # Please read the vault section in the charts/README.md for more information.         
         command: ["sh", "-c", ". /vault/secrets/config || true && docker-entrypoint.sh mariadbd"]
 {{ end }}        
         env:
