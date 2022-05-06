@@ -64,14 +64,26 @@ To clean up the Helm Chart release:
 $make k8s-uninstall-chart
 ```
 
-Use vault secrets in the tango charts
--------------------------------------
+Vault Secrets
+-------------
 
 When deploying to a remote cluster we may want to use the vault to fetch secrets.
 
 The tango-base charts are configured to allow the use of vault in the **tangodb** and **databaseds** database containers.
 
-To use vault configure in the values.yml (tabgodb example):
+When the vault is enable in your chart, vault annotations are added to the chart templates  allowing the secrets to be injected in the container
+
+This secret file, in the examples, are formatted as a key/value pairs allowing us the ability to source the file and consequently add the variables as environment variables. This is useful for database containers.
+
+But be aware that sourcing the secret file, depending on your container specification, may disrupt its normal startup flow.
+
+After sourcing the file you need to run the necessary scrips / commands so that your application starts correctly. This changes from application to application.
+
+
+Enable vault secrets in the tango charts
+-------------------------------------
+
+To use vault configure in the values.yml (this is the tangodb example):
 
 ```yaml
 tangodb:
@@ -90,4 +102,4 @@ useVault| turn it on/off
 secretPath| starting path for the secret in the server
 role| vault role to use
 
-If you are using minikube set the **useVault** parameter to false, remove it or remove the vault section.
+If you are using **minikube** set the **useVault** parameter to false, remove it or remove the vault section entirely.
