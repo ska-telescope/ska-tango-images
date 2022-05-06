@@ -76,7 +76,7 @@ spec:
           {{`{{- end }}`}}
         vault.hashicorp.com/role: "{{ .Values.tangodb.vault.role }}"
 {{ end }}        
-{{ if ((.Values.tangodb.vault).useVault) }}
+{{ if or (.Values.global.annotations) (.Values.annotations) }}
 {{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 8 }}
 {{ end }}
     spec:
