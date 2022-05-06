@@ -63,8 +63,20 @@ spec:
         domain: {{ .Values.tangodb.domain }}
         intent: {{ .Values.tangodb.intent }}
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 8 }}
-{{ if or (.Values.global.annotations) (.Values.annotations) }}
       annotations:
+{{ if ((.Values.tangodb.vault).useVault) }}
+        vault.hashicorp.com/agent-inject: "true"
+        vault.hashicorp.com/agent-inject-status: "update"
+        vault.hashicorp.com/agent-inject-secret-config: "{{ .Values.tangodb.vault.secretPath }}/ska-tango-base/tangodb"
+        vault.hashicorp.com/agent-inject-template-config: |
+          {{`{{- with secret `}}"{{ .Values.tangodb.vault.secretPath }}/ska-tango-base/tangodb"{{` -}}`}}
+          {{`{{- range $k, $v := .Data.data }}`}}
+          {{`export {{ $k }}={{ $v }}`}}
+          {{`{{- end }}`}}
+          {{`{{- end }}`}}
+        vault.hashicorp.com/role: "{{ .Values.tangodb.vault.role }}"
+{{ end }}        
+{{ if ((.Values.tangodb.vault).useVault) }}
 {{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 8 }}
 {{ end }}
     spec:
@@ -72,6 +84,13 @@ spec:
       - name: tangodb
         image: "{{ .Values.tangodb.image.registry }}/{{ .Values.tangodb.image.image }}:{{ .Values.tangodb.image.tag }}"
         imagePullPolicy: {{ .Values.tangodb.image.pullPolicy }}
+{{ if ((.Values.tangodb.vault).useVault) }}
+        # Because we need to source the vault secret file, this disrupts the normal container startup.
+        # Because of this, after the source command, we need to run the normal container startup scripts / commands.
+        # This startup scripts/commands depend on the container application. In this example we are using a MariaDB application.
+        # Please read the vault section in the charts/README.md for more information.         
+        command: ["sh", "-c", ". /vault/secrets/config || true && docker-entrypoint.sh mariadbd"]
+{{ end }}        
         env:
           - name: MYSQL_ROOT_PASSWORD
             value: "{{ .Values.tangodb.db.rootpw }}"
@@ -89,7 +108,11 @@ spec:
         {{- if .Values.tangodb.livenessProbe.enabled }}
         livenessProbe:
           exec:
-            command: ["sh", "-c", "exec mysqladmin status -uroot -p{{ .Values.tangodb.db.rootpw }}"]
+{{ if ((.Values.tangodb.vault).useVault) }}      
+            command: ["sh", "-c", ". /vault/secrets/config || true && exec mysqladmin status -uroot -p${MYSQL_ROOT_PASSWORD}"]
+{{ else }}           
+            command: ["exec mysqladmin status -uroot -p${MYSQL_ROOT_PASSWORD}"]
+{{ end }}              
           initialDelaySeconds: {{ .Values.tangodb.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.tangodb.livenessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.tangodb.livenessProbe.timeoutSeconds }}
@@ -99,7 +122,11 @@ spec:
         {{- if .Values.tangodb.readinessProbe.enabled }}
         readinessProbe:
           exec:
-            command: ["sh", "-c", "exec mysqladmin status -uroot -p{{ .Values.tangodb.db.rootpw }}"]
+{{ if ((.Values.tangodb.vault).useVault) }}      
+            command: ["sh", "-c", ". /vault/secrets/config || true && exec mysqladmin status -uroot -p${MYSQL_ROOT_PASSWORD}"]
+{{ else }}           
+            command: ["exec mysqladmin status -uroot -p${MYSQL_ROOT_PASSWORD}"]
+{{ end }}  
           initialDelaySeconds: {{ .Values.tangodb.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.tangodb.readinessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.tangodb.readinessProbe.timeoutSeconds }}
