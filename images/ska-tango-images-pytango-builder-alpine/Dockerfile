@@ -42,7 +42,7 @@ COPY requirements.txt requirements.txt
 
 # Install numpy manually before PyTango and other requirements to ensure we
 # build PyTango with numpy support.
-RUN python3.9 -m pip install --prefix=/usr/local wheel numpy==1.21.0 \
+RUN python3.9 -m pip install --prefix=/usr/local wheel numpy==1.22.4 \
 # now install build requirements
     && python3.9 -m pip install --prefix=/usr/local -r requirements.txt \
 # this should be commented if we wish for the builder

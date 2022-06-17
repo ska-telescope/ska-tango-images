@@ -51,7 +51,7 @@ WORKDIR /app
 
 # Install numpy manually before PyTango and other requirements to ensure we
 # build PyTango with numpy support.
-RUN python3 -m pip install numpy==1.19.2
+RUN python3 -m pip install numpy==1.22.4
 
 COPY requirements.txt /requirements.txt
 RUN python3 -m pip install -r /requirements.txt
