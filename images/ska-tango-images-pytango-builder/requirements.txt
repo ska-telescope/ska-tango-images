@@ -1,5 +1,5 @@
-numpy==1.19.2
-pytango==9.3.3
+numpy==1.21.1
+pytango==9.3.4
 flake8
 flake8_formatter_junit_xml
 isort
