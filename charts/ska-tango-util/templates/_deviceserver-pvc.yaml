@@ -37,7 +37,7 @@ metadata:
 {{ toYaml $annotations | indent 4 }}
 {{ end }}
 spec:
-{{ if (coalesce .Values.global.minikube .Values.minikube false)  }}
+{{ if (coalesce .local.Values.global.minikube .local.Values.minikube false)  }}
   storageClassName: standard
 {{ else }}
   storageClassName: nfss1
