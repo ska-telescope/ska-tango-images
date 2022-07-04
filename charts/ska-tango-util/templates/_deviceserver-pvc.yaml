@@ -11,7 +11,7 @@ deviceserver.volume.mountPath  mount path inside the container, e.g. "/firmware"
 deviceserver.volume.size       (optional and set to 250Mi by default)
 
 */}}
-{{ define "ska-tango-util.deviceserver_pvc.tpl" }}
+{{ define "ska-tango-util.deviceserver-pvc.tpl" }}
 
 ---
 {{- if hasKey .deviceserver "volume"}}
@@ -27,7 +27,6 @@ metadata:
   name: {{ $deviceserver_name | toString }}-pvc-{{ .local.Release.Name }}
   namespace: {{ .local.Release.Namespace }}
 spec:
-  volumeName: {{ $volume_name }}-{{ $deviceserver_name }}
   accessModes: 
    - ReadWriteMany
   resources:
@@ -44,7 +43,7 @@ spec:
   containers:
     - name: volume-admin
       image: alpine:3.12
-      command: [ "/bin/bash", "-c", "--" ]
+      command: [ "/bin/sh", "-c", "--" ]
       args: [ "while true; do sleep 30; done;" ]
       volumeMounts:
         - name: {{ $volume_name }}
@@ -53,8 +52,8 @@ spec:
   volumes:
     - name: {{ $volume_name }}
       persistentVolumeClaim: 
-        claimName: {{ $volume_name }}-{{ $deviceserver_name }}
+        claimName: {{ $deviceserver_name | toString }}-pvc-{{ .local.Release.Name }}
 
 {{- end }}
 
-{{ end }} # deviceserver_pvc.tpl
+{{ end }} # deviceserver-pvc.tpl

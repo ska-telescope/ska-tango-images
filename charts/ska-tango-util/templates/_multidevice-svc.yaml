@@ -241,9 +241,11 @@ spec:
           - name: configuration
             mountPath: data
             readOnly: true
+          {{ if hasKey $deviceserver "volume" }}
           - name: {{ $deviceserver.volume.name }}
             mountPath: {{ $deviceserver.volume.mountPath }}
             readOnly: true
+          {{ end }}
         livenessProbe:
           exec:
             command:
