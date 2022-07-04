@@ -37,8 +37,13 @@ metadata:
 {{ toYaml $annotations | indent 4 }}
 {{ end }}
 spec:
-  accessModes: 
-   - ReadWriteMany
+{{ if (coalesce .Values.global.minikube .Values.minikube false)  }}
+  storageClassName: standard
+{{ else }}
+  storageClassName: nfss1
+{{ end }}
+  accessModes:
+    - ReadWriteMany
   resources:
     requests:
       storage: {{ $volume_size }}
