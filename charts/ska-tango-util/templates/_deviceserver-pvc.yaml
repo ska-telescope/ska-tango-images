@@ -1,7 +1,7 @@
 {{- /*
 Creates persistent volume claim and a management pod for the data it contains.
 It is ONE claim per deviceserver definition not per instance!
-These will only be created if the key "deviceserver.volume"
+These will only be created if the key "deviceserver.volume" is defined.
 It assumes dynamic persistent volumes.
 
 Parameters are:
