@@ -29,6 +29,7 @@ In specific it defines the following helm named template:
  - multidevice-job: it creates a job for the `dsconfig <https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig>`_ application to apply a configuration json file set into the values file;
  - multidevice-sacc-role: it creates a k8s service account, a role and role binding for waiting the configuration job to be done;
  - multidevice-svc: it creates a k8s service and a k8s statefulset for a device server tag specified in the values file.
+ - deviceserver-pvc: it optionally creates a volume for the deviceserver when it contains the dictionary `volume`. The subkeys are `name`, `mountPath` and `storage`. See example below.
 
 
 Dsconfig generation
@@ -107,6 +108,9 @@ Below there is an example of a values file that can be used with the ska-tango-u
                 image: "{{.Values.tango_example.image.image}}"
                 tag: "{{.Values.tango_example.image.tag}}"
                 pullPolicy: "{{.Values.tango_example.image.pullPolicy}}"
+            volume:
+                name: firmware
+                mountPath: /firmware
 
 
 Fields explained:
@@ -163,6 +167,8 @@ This templates are called by the below `template <https://gitlab.com/ska-telesco
     {{ template "ska-tango-util.multidevice-sacc-role.tpl" $context }}
     {{ template "ska-tango-util.multidevice-job.tpl" $context }}
     {{ template "ska-tango-util.multidevice-svc.tpl" $context }}
+    {{ template "ska-tango-util.deviceserver-pvc.tpl" $context }}
+
 
     {{- else }}
 
@@ -172,6 +178,7 @@ This templates are called by the below `template <https://gitlab.com/ska-telesco
     {{ template "ska-tango-util.multidevice-sacc-role.tpl" $context }}
     {{ template "ska-tango-util.multidevice-job.tpl" $context }}
     {{ template "ska-tango-util.multidevice-svc.tpl" $context }}
+    {{ template "ska-tango-util.deviceserver-pvc.tpl" $context }}
 
     {{- end }}
 
@@ -184,4 +191,4 @@ Tango-example template description:
     - **Line 8**  : As discussed before it is possible to have a instances field in the values.yaml file and in the data file, it is also possible to have instances defined as a global field. It is being used a coalesced function that takes the first not null value of the list. The priority is, first it takes the instance value from the global variable if there is none it takes it from the values file and then from the data file.
     - **Line 27** : Same as line 8 but without the possibility of having the instance field on the data file.
     - **Line 9** and **Line 18** : Context is a list of variables that will passed as arguments to the templates.
-    - **Templates** : There are four templates already described before. Each template will be called for each deviceServer as they are inside the range loop (line 3).
+    - **Templates** : There are five templates already described before. Each template will be called for each deviceServer as they are inside the range loop (line 3).
