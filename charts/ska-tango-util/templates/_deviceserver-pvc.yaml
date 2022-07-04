@@ -40,8 +40,9 @@ metadata:
   name: {{$deviceserver_name | toString }}-pvc-admin-{{ .local.Release.Name }}
   namespace: {{ .local.Release.Namespace }}
 spec:
+  restartPolicy: Always
   containers:
-    - name: volume-admin
+    - name: {{ $volume_name }}-volume-admin
       image: alpine:3.12
       command: [ "/bin/sh", "-c", "--" ]
       args: [ "while true; do sleep 30; done;" ]
