@@ -129,6 +129,11 @@ spec:
         - name: configuration
           configMap:
             name: {{$deviceserver_name | toString }}-{{ $chart.Release.Name }}-dsconfig-json
+        {{ if hasKey $deviceserver "volume" }}
+        - name: {{ $deviceserver.volume.name }}
+          persistentVolumeClaim: 
+            claimName: {{ $deviceserver_name | toString }}-pvc-{{ $chart.Release.Name }}
+        {{ end }}
       serviceAccountName: {{ $deviceserver_name | toString }}-sa-{{ $chart.Release.Name }}
       initContainers:
       - name: wait-for-configuration
@@ -235,6 +240,9 @@ spec:
         volumeMounts:
           - name: configuration
             mountPath: data
+            readOnly: true
+          - name: {{ $deviceserver.volume.name }}
+            mountPath: {{ $deviceserver.volume.mountPath }}
             readOnly: true
         livenessProbe:
           exec:
