@@ -130,9 +130,9 @@ spec:
           configMap:
             name: {{$deviceserver_name | toString }}-{{ $chart.Release.Name }}-dsconfig-json
         {{ if hasKey $deviceserver "volume" }}
-        - name: {{ $deviceserver.volume.name }}
+        - name: volume-data
           persistentVolumeClaim: 
-            claimName: {{ $deviceserver_name | toString }}-pvc-{{ $chart.Release.Name }}
+            claimName: {{ $deviceserver.volume.name | toString }}-pvc-{{ $chart.Release.Name }}
         {{ end }}
       serviceAccountName: {{ $deviceserver_name | toString }}-sa-{{ $chart.Release.Name }}
       initContainers:
@@ -242,7 +242,7 @@ spec:
             mountPath: data
             readOnly: true
           {{ if hasKey $deviceserver "volume" }}
-          - name: {{ $deviceserver.volume.name }}
+          - name: volume-data
             mountPath: {{ $deviceserver.volume.mountPath }}
             readOnly: true
           {{ end }}
