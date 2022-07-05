@@ -165,9 +165,12 @@ package: helm-pre-publish ## package charts
 	cd ./repository && helm repo index .; \
 	rm -rf ./tmp
 
+
 helm-pre-publish: ## hook before helm chart publish
 	@echo "helm-pre-publish: generating charts/ska-tango-base/values.yaml"
 	@cd charts/ska-tango-base && bash ./values.yaml.sh
+
+helm-pre-build: helm-pre-publish
 
 helm-pre-lint: helm-pre-publish ## make sure auto-generate values.yaml happens
 
