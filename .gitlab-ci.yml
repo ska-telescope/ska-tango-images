@@ -720,7 +720,6 @@ k8s-test-alpine:
   rules:
     - exists:
         - tests/**/*
-  allow_failure: true
 
 scan_dependencies:
   extends: 
