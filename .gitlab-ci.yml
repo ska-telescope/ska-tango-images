@@ -704,7 +704,6 @@ k8s-test-alpine:
   after_script:
     - echo $CI_JOB_NAME - $CI_JOB_STAGE
     - make k8s-uninstall-chart
-    - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
     - make k8s-delete-namespace
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
