@@ -57,6 +57,7 @@ metadata:
     vol: {{ $volume_name | toString }}-admin
 {{ toYaml $labels | indent 4 }}
   name: {{ $volume_name | toString }}-admin-{{ .local.Release.Name }}
+  namespace: {{ .local.Release.Namespace }}
 {{ if $annotations }}
   annotations:
 {{ toYaml $annotations | indent 4 }}
