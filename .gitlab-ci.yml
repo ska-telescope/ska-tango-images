@@ -691,6 +691,7 @@ k8s-test-alpine:
   stage: test
   variables:
     PYTHONPATH: /usr/local/lib/python3.9/site-packages
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-alpine-$CI_COMMIT_SHORT_SHA"
   tags:
     - k8srunner
   before_script:
