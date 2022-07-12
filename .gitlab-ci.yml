@@ -691,6 +691,7 @@ k8s-test-alpine:
   stage: test
   variables:
     PYTHONPATH: /usr/local/lib/python3.9/site-packages
+    KUBE_NAMESPACE: "ci-$CI_PROJECT_NAME-alpine-$CI_COMMIT_SHORT_SHA"
   tags:
     - k8srunner
   before_script:
@@ -699,11 +700,10 @@ k8s-test-alpine:
     - make k8s-install-chart IS_ALPINE="-alpine" CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
     - make k8s-wait
   script:
-    - make k8s-test K8S_TEST_IMAGE_TO_TEST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-itango-alpine:9.3.9
+    - make k8s-test K8S_TEST_IMAGE_TO_TEST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-itango-alpine:$(. .make/.make-release-support; RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-itango-alpine setContextHelper; getVersion)
   after_script:
     - echo $CI_JOB_NAME - $CI_JOB_STAGE
     - make k8s-uninstall-chart
-    - kubectl -n $KUBE_NAMESPACE delete pods,svc,daemonsets,deployments,replicasets,statefulsets,cronjobs,jobs,ingresses,configmaps --all
     - make k8s-delete-namespace
   artifacts:
     name: "$CI_PROJECT_NAME-$CI_JOB_ID"
@@ -719,7 +719,6 @@ k8s-test-alpine:
   rules:
     - exists:
         - tests/**/*
-  allow_failure: true
 
 scan_dependencies:
   extends: 
