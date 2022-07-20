@@ -58,4 +58,5 @@ RUN mkdir -p /etc/ld.so.conf.d \
 # this was on the debian version
     && mkdir /venv \
     && ln -s /usr/* /venv/  \
-    && ln -s /usr/local/bin/itango3 /venv/bin/itango3
+    && ln -s /usr/local/bin/itango3 /venv/bin/itango3 \
+    && ln -s /usr/bin/python3 /venv/bin/python 
