@@ -323,17 +323,7 @@ spec:
 {{- end }}
 {{- if not $chart.Values.do_not_constraint_resources }}
         resources:
-{{- if $deviceserver.server }}
-{{- range $index, $serverinstance := $deviceserver.server.instances }}
-{{- if eq ( $serverinstance.name | toString ) $safe_instance }}
-{{- with index $deviceserver.server.instances $index }}
-{{ toYaml (coalesce .resources $deviceserver.resources $chart.Values.resources) | indent 10 }}
-{{- end }}
-{{- end }}
-{{- end }}
-{{- else }}
-{{ toYaml (coalesce $deviceserver.resources $chart.Values.resources) | indent 10 }}
-{{- end }}
+{{ toYaml (coalesce $instance.resources $deviceserver.resources $chart.Values.resources) | indent 10 }}
 {{ end }}
 {{- with $deviceserver.nodeSelector }}
       nodeSelector:
