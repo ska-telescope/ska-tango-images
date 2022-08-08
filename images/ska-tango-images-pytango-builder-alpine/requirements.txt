@@ -33,3 +33,4 @@ sphinxcontrib-websupport
 requests
 tox
 transitions
+virtualenv==20.16.2
