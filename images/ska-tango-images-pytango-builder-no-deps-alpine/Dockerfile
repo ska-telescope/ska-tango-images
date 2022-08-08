@@ -15,23 +15,6 @@ USER root
 ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig
 ENV LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/usr/lib
 
-# Install build time dependencies
-# boost-dev and libstdc++ are fundamental dependencies
-RUN apk --update add --no-cache libstdc++ \
-    g++ \
-    libsodium-dev \
-    libffi-dev \
-    zlib-dev \
-    boost \
-    boost-dev \
-    bash \
-    make \
-    ca-certificates \
-    tzdata \
-    cargo \
-    curl \
-    git
-
 # Python is installed from https://github.com/docker-library/python/blob/master/3.9/alpine3.15/Dockerfile
 # as using apk packages cause dependency issues
 
@@ -69,6 +52,20 @@ RUN set -eux; \
     util-linux-dev \
     xz-dev \
     zlib-dev \
+    libstdc++ \
+    g++ \
+    libsodium-dev \
+    zlib-dev \
+    boost \
+    boost-dev \
+    bash \
+    make \
+    ca-certificates \
+    tzdata \
+    cargo \
+    curl \
+    git \
+    musl-dev \
     ; \
     \
     wget -O python.tar.xz "https://www.python.org/ftp/python/${PYTHON_VERSION%%[a-z]*}/Python-$PYTHON_VERSION.tar.xz"; \
