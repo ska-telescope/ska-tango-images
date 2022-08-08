@@ -3,12 +3,12 @@ ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.0.0
 FROM $BASE_IMAGE
 
 LABEL \
-      author="Piers Harding <Piers.Harding@skao.int>" \
-      description="This image illustrates build dependencies" \
-      license="Apache2.0" \
-      int.skao.team="Systems Team" \
-      int.skao.website="https://gitlab.com/ska-telescope/sdi/ska-ser-containerisation-and-orchestration" \
-      int.skao.application="Tango Builder"
+    author="Piers Harding <Piers.Harding@skao.int>" \
+    description="This image illustrates build dependencies" \
+    license="Apache2.0" \
+    int.skao.team="Systems Team" \
+    int.skao.website="https://gitlab.com/ska-telescope/sdi/ska-ser-containerisation-and-orchestration" \
+    int.skao.application="Tango Builder"
 
 USER root
 # pkgconfig needs to find these
@@ -40,13 +40,17 @@ COPY pip.conf /etc/pip.conf
 WORKDIR /app
 COPY requirements.txt requirements.txt
 
+# Install poetry
+RUN curl -sSL https://install.python-poetry.org | python3 -
+ENV PATH="/root/.local/bin:$PATH"
+
 # Install numpy manually before PyTango and other requirements to ensure we
 # build PyTango with numpy support.
 RUN python3.9 -m pip install --prefix=/usr/local wheel numpy==1.21.0 \
-# now install build requirements
+    # now install build requirements
     && python3.9 -m pip install --prefix=/usr/local -r requirements.txt \
-# this should be commented if we wish for the builder
-# to keep the python cache
+    # this should be commented if we wish for the builder
+    # to keep the python cache
     && python3.9 -m pip cache purge
 
 # do ldconfig stuff
@@ -55,7 +59,7 @@ RUN mkdir -p /etc/ld.so.conf.d \
     && echo "/usr/local/lib" > /etc/ld.so.conf.d/tango.conf \
     && echo "/usr/local/lib64" > /etc/ld.so.conf.d/tango.conf \
     && ldconfig /etc/ld.so.conf.d \
-# this was on the debian version
+    # this was on the debian version
     && mkdir /venv \
     && ln -s /usr/* /venv/  \
     && ln -s /usr/local/bin/itango3 /venv/bin/itango3 \
