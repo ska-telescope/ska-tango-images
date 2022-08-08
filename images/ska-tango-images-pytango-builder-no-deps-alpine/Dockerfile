@@ -172,6 +172,10 @@ RUN python3.9 -m pip install --prefix=/usr/local wheel numpy==1.21.0 \
 # to keep the python cache
     && python3.9 -m pip cache purge
 
+# Install poetry binary 
+RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python3 - --yes
+ENV PATH="/opt/poetry/bin:$PATH"
+
 # do ldconfig stuff
 RUN mkdir -p /etc/ld.so.conf.d \
     && echo "include /etc/ld.so.conf.d/*.conf" > /etc/ld.so.conf \
