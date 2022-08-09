@@ -37,7 +37,6 @@ RUN apk --update add --no-cache libstdc++ \
     python3-dev \
     py3-cryptography
 
-
 # Install pip as binary as it causes dependency conflicts if installed from apk
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
 ENV PYTHON_PIP_VERSION 22.0.4

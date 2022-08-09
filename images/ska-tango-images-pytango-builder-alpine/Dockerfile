@@ -25,7 +25,6 @@ RUN apk --update add --no-cache libstdc++ \
     boost \
     boost-dev \
     python3-dev \
-    py3-pip \
     py3-cryptography \
     bash \
     make \
@@ -40,9 +39,36 @@ COPY pip.conf /etc/pip.conf
 WORKDIR /app
 COPY requirements.txt requirements.txt
 
-# Install poetry
-RUN curl -sSL https://install.python-poetry.org | python3 -
-ENV PATH="/root/.local/bin:$PATH"
+# Install pip as binary as it causes dependency conflicts if installed from apk
+# if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
+ENV PYTHON_PIP_VERSION 22.0.4
+# https://github.com/docker-library/python/issues/365
+ENV PYTHON_SETUPTOOLS_VERSION 58.1.0
+# https://github.com/pypa/get-pip
+ENV PYTHON_GET_PIP_URL https://github.com/pypa/get-pip/raw/5eaac1050023df1f5c98b173b248c260023f2278/public/get-pip.py
+ENV PYTHON_GET_PIP_SHA256 5aefe6ade911d997af080b315ebcb7f882212d070465df544e1175ac2be519b4
+
+RUN set -eux; \
+    \
+    wget -O get-pip.py "$PYTHON_GET_PIP_URL"; \
+    echo "$PYTHON_GET_PIP_SHA256 *get-pip.py" | sha256sum -c -; \
+    \
+    export PYTHONDONTWRITEBYTECODE=1; \
+    \
+    python3 get-pip.py \
+    --disable-pip-version-check \
+    --no-cache-dir \
+    --no-compile \
+    "pip==$PYTHON_PIP_VERSION" \
+    "setuptools==$PYTHON_SETUPTOOLS_VERSION" \
+    ; \
+    rm -f get-pip.py; \
+    \
+    pip --version
+    
+# Install poetry binary 
+RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python3 - --yes
+ENV PATH="/opt/poetry/bin:$PATH"
 
 # Install numpy manually before PyTango and other requirements to ensure we
 # build PyTango with numpy support.
