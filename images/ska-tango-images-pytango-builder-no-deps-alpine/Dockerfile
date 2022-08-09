@@ -70,6 +70,15 @@ COPY pip.conf /etc/pip.conf
 WORKDIR /app
 COPY requirements.txt requirements.txt
 
+# Install numpy manually before PyTango and other requirements to ensure we
+# build PyTango with numpy support.
+RUN python3.9 -m pip install --prefix=/usr/local wheel numpy==1.21.0 \
+    # now install build requirements
+    && python3.9 -m pip install --prefix=/usr/local -r requirements.txt \
+    # this should be commented if we wish for the builder
+    # to keep the python cache
+    && python3.9 -m pip cache purge
+
 # Install poetry binary 
 RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python3 - --yes
 ENV PATH="/opt/poetry/bin:$PATH"
