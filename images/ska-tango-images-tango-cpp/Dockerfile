@@ -4,7 +4,7 @@
 # binaries.
 #
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:9.3.5"
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:0.3.16"
 ARG BASE_IMAGE="debian:bullseye-slim"
 FROM $BUILD_IMAGE as buildenv
 
@@ -18,8 +18,8 @@ RUN apt-get update && \
         curl \
         file \
         git \
-        libmariadbclient-dev \
-        libmariadbclient-dev-compat \
+        libmariadb-dev \
+        libmariadb-dev-compat \
         pkg-config python
 
 
