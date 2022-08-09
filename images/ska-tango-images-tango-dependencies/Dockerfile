@@ -3,7 +3,7 @@
 # intermediate image, then creates a release image containing the compiled
 # binaries.
 #
-ARG BASE_IMAGE="debian:buster-slim"
+ARG BASE_IMAGE="debian:bullseye-slim"
 FROM $BASE_IMAGE as buildenv
 
 ENV ZEROMQ_DOWNLOAD_URL=https://github.com/zeromq/libzmq/archive/v4.3.4.tar.gz
