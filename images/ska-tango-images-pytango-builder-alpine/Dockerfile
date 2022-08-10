@@ -41,8 +41,7 @@ WORKDIR /app
 COPY requirements.txt requirements.txt
 
 # Install poetry
-RUN curl -sSL https://install.python-poetry.org | python3 -
-ENV PATH="/root/.local/bin:$PATH"
+RUN curl -sSL https://install.python-poetry.org POETRY_HOME=/usr/local/bin/poetry | python3 -
 
 # Install numpy manually before PyTango and other requirements to ensure we
 # build PyTango with numpy support.
