@@ -44,7 +44,7 @@ RUN apt-get update \
 # and test execution sequences
 COPY --from=buildenv /usr/local/bin/wait-for-it.sh /usr/local/bin/wait-for-it.sh
 COPY --from=buildenv /usr/local/bin/retry /usr/local/bin/retry
-COPY --from=buildenv /usr/local/lib/python3.7 /usr/local/lib/python3.7
+COPY --from=buildenv /usr/local/lib/python3.9 /usr/local/lib/python3.9
 
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 COPY pip.conf /etc/pip.conf
