@@ -26,8 +26,11 @@ RUN mv /etc/pip.conf /tmp/ska_pip_conf
 
 RUN apt-get update && \
     apt-get -y install python2.7 \
-        python-pip \
         python-qt4
+
+RUN wget https://bootstrap.pypa.io/pip/2.7/get-pip.py && \
+    python2.7 get-pip.py && \
+    rm get-pip.py
 
 RUN ln -s /usr/lib/x86_64-linux-gnu/libboost_python27.so /usr/lib/x86_64-linux-gnu/libboost_python-py27.so && \
     pip2 install panic lxml
@@ -48,7 +51,7 @@ RUN apt-get update && apt-mark hold iptables && \
       x11-xserver-utils \
       x11-utils  \
       xfce4  \
-      gtk3-engines-xfce \
+    ggtk3-engines-breeze \
       libgtk-3-bin \
       mousepad \
       xfce4-notifyd \

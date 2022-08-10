@@ -67,8 +67,7 @@ RUN set -eux; \
     pip --version
     
 # Install poetry binary 
-RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python3 - --yes
-ENV PATH="/opt/poetry/bin:$PATH"
+RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr/local/bin python3 - --yes
 
 # Install numpy manually before PyTango and other requirements to ensure we
 # build PyTango with numpy support.
