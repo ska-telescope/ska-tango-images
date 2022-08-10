@@ -33,7 +33,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
     && apt-get -y install --no-install-recommends \
-      libboost-python1.67.0 \
+      libboost-python1.74.0 \
       ca-certificates \
       make \
       curl \
