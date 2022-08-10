@@ -27,11 +27,8 @@ RUN mv /etc/pip.conf /tmp/ska_pip_conf
 
 RUN apt-get update && \
     apt-get -y install python2.7 \
+        python-pip \
         exim4
-
-RUN wget https://bootstrap.pypa.io/pip/2.7/get-pip.py && \
-    python2.7 get-pip.py && \
-    rm get-pip.py
 
 RUN ln -s /usr/lib/x86_64-linux-gnu/libboost_python27.so /usr/lib/x86_64-linux-gnu/libboost_python-py27.so && \
     pip2 install panic

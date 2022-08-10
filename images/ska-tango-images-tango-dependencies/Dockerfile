@@ -3,7 +3,7 @@
 # intermediate image, then creates a release image containing the compiled
 # binaries.
 #
-ARG BASE_IMAGE="debian:bullseye-slim"
+ARG BASE_IMAGE="debian:buster-slim"
 FROM $BASE_IMAGE as buildenv
 
 ENV ZEROMQ_DOWNLOAD_URL=https://github.com/zeromq/libzmq/archive/v4.3.4.tar.gz
@@ -20,7 +20,7 @@ RUN apt-get update && \
     apt-get -y install --no-install-recommends \
         autoconf automake build-essential ca-certificates \
         curl libkrb5-dev libtool pkg-config unzip \
-        cmake python-dev
+        cmake python-dev python-pkgconfig
 
 RUN mkdir /usr/src/zeromq
 WORKDIR /usr/src/zeromq

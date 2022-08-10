@@ -29,7 +29,7 @@ RUN apt-get update && apt-mark hold iptables && \
       x11-xserver-utils \
       x11-utils  \
       xfce4  \
-      gtk3-engines-breeze \
+      gtk3-engines-xfce \
       libgtk-3-bin \
       mousepad \
       xfce4-notifyd \

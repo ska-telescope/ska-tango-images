@@ -33,7 +33,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
     && apt-get -y install --no-install-recommends \
-      libboost-python1.74.0 \
+      libboost-python1.67.0 \
       ca-certificates \
       make \
       curl \
@@ -44,7 +44,7 @@ RUN apt-get update \
 # and test execution sequences
 COPY --from=buildenv /usr/local/bin/wait-for-it.sh /usr/local/bin/wait-for-it.sh
 COPY --from=buildenv /usr/local/bin/retry /usr/local/bin/retry
-COPY --from=buildenv /usr/local/lib/python3.9 /usr/local/lib/python3.9
+COPY --from=buildenv /usr/local/lib/python3.7 /usr/local/lib/python3.7
 
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 COPY pip.conf /etc/pip.conf
