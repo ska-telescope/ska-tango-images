@@ -1,5 +1,5 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-no-deps-alpine:0.0.0"
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-no-deps-alpine:0.3.17ls"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.0.0"
 FROM $BUILD_IMAGE AS buildenv
 
@@ -36,10 +36,11 @@ RUN mkdir -p /etc/ld.so.conf.d && \
 
 RUN mkdir /venv && ln -s /usr/* /venv/ && ln -s /usr/bin/python3 /venv/bin/python && ln -s /usr/local/bin/itango3 /venv/bin/itango3
 
+ONBUILD COPY --chown=tango:tango . /app
+ONBUILD COPY --from=buildenv /usr/local/bin/ /usr/local/bin/
+ONBUILD WORKDIR /app
+
 USER tango
 ENV PATH="/home/tango/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PATH}"
 ENV PYTHONPATH=/usr/local/lib/python3.9/site-packages
 
-ONBUILD COPY --chown=tango:tango . /app
-ONBUILD COPY --from=buildenv /usr/local/bin/ /usr/local/bin/
-ONBUILD WORKDIR /app
