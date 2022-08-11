@@ -408,6 +408,18 @@ build_pytango-runtime-alpine:
   rules:
     - !reference [.pytango-runtime-alpine-rules, rules]
 
+build_pytango-runtime-no-deps-alpine:
+  retry: 2
+  stage: build_4
+  extends:
+  - .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-pytango-runtime-no-deps-alpine
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-cpp-alpine
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder-alpine
+  rules:
+    - !reference [.pytango-runtime-alpine-rules, rules]
+
 .tango-admin-rules:
   rules:
     - if: '$CI_COMMIT_TAG'

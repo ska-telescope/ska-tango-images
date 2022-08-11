@@ -81,7 +81,6 @@ RUN python3.9 -m pip install --prefix=/usr/local wheel numpy==1.21.0 \
 
 # Install poetry binary 
 RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr/local/bin/poetry python3 - --yes
-ENV PATH="/opt/poetry/bin:$PATH"
 
 # do ldconfig stuff
 RUN mkdir -p /etc/ld.so.conf.d \
