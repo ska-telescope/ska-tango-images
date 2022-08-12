@@ -1,5 +1,5 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.0.0"
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:9.3.13"
 FROM $BASE_IMAGE
 
 LABEL \
@@ -24,20 +24,18 @@ RUN apk --update add --no-cache libstdc++ \
     zlib-dev \
     boost \
     boost-dev \
-    python3-dev \
-    py3-cryptography \
     bash \
     make \
     ca-certificates \
+    tzdata \
     cargo \
     curl \
-    git
-
-ENV PYTHONPATH=/usr/local/lib/python3.9/site-packages
-# setup pip ready for package installs
-COPY pip.conf /etc/pip.conf
-WORKDIR /app
-COPY requirements.txt requirements.txt
+    git \
+    gcc \
+    musl-dev \
+    openssl-dev \
+    python3-dev \
+    py3-cryptography
 
 # Install pip as binary as it causes dependency conflicts if installed from apk
 # if this is called "PIP_VERSION", pip explodes with "ValueError: invalid truth value '<VERSION>'"
@@ -65,9 +63,12 @@ RUN set -eux; \
     rm -f get-pip.py; \
     \
     pip --version
-    
-# Install poetry binary 
-RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr/local/bin/poetry python3 - --yes
+
+ENV PYTHONPATH=/usr/local/lib/python3.9/site-packages
+# setup pip ready for package installs
+COPY pip.conf /etc/pip.conf
+WORKDIR /app
+COPY requirements.txt requirements.txt
 
 # Install numpy manually before PyTango and other requirements to ensure we
 # build PyTango with numpy support.
@@ -77,6 +78,9 @@ RUN python3.9 -m pip install --prefix=/usr/local wheel numpy==1.21.0 \
     # this should be commented if we wish for the builder
     # to keep the python cache
     && python3.9 -m pip cache purge
+
+# Install poetry binary 
+RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr/local/bin/poetry python3 - --yes
 
 # do ldconfig stuff
 RUN mkdir -p /etc/ld.so.conf.d \
