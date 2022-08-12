@@ -197,6 +197,8 @@ WORKDIR /app
 RUN python3 -m pip install numpy==1.19.2
 RUN python3 -m pip install pytango==9.3.3
 RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python3 - --yes
-ENV PATH="${PATH}:/opt/poetry/bin"
 
 RUN ln -sfn /usr/bin/python3 /usr/bin/python
+
+USER tango
+ENV PATH="/home/tango/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/poetry/bin:${PATH}"
