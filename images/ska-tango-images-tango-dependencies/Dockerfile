@@ -20,7 +20,7 @@ RUN apt-get update && \
     apt-get -y install --no-install-recommends \
         autoconf automake build-essential ca-certificates \
         curl libkrb5-dev libtool pkg-config unzip \
-        cmake python-dev python-pkgconfig
+        cmake python-dev python-pkgconfig wget
 
 RUN mkdir /usr/src/zeromq
 WORKDIR /usr/src/zeromq
@@ -45,9 +45,13 @@ RUN curl -kfsSL "$CPPZMQ_DOWNLOAD_URL" -o cppzmq.tar.gz \
 
 RUN mkdir /usr/src/omniorb
 WORKDIR /usr/src/omniorb
-RUN curl -kfsSL "$OMNIORB_DOWNLOAD_URL" -o omniorb.tar.bz2 \
-    && tar xf omniorb.tar.bz2 -C /usr/src/omniorb --strip-components=1 \
-    && ./configure --enable-static=no \
+
+
+RUN curl -kfsSL "$OMNIORB_DOWNLOAD_URL" -o omniorb.tar.bz2 
+RUN tar xf omniorb.tar.bz2 -C /usr/src/omniorb --strip-components=1 
+# Update to latest config.guess to correctly guess ARM architectures
+RUN wget -O bin/scripts/config.guess 'https://git.savannah.gnu.org/gitweb/?p=config.git;a=blob_plain;f=config.guess;hb=HEAD'
+RUN ./configure --enable-static=no \
     && make -C /usr/src/omniorb -j$(nproc) \
     && make -C /usr/src/omniorb install \
     && apt-get purge -y --auto-remove $buildDeps \

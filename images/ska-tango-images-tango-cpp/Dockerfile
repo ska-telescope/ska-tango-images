@@ -20,7 +20,7 @@ RUN apt-get update && \
         git \
         libmariadbclient-dev \
         libmariadbclient-dev-compat \
-        pkg-config python
+        pkg-config python libjpeg-dev
 
 
 # build and install tangoidl
@@ -36,8 +36,8 @@ RUN git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /usr/src
 RUN mkdir -p /usr/src/tango
 WORKDIR /usr/src/tango
 
-RUN git clone https://gitlab.com/tango-controls/cppTango.git /usr/src/tango && \
-    cd /usr/src/tango && git checkout 9.3.5 && \
+RUN git clone --depth 1 --branch=header-file-separation-macOS https://gitlab.com/tango-controls/cppTango.git /usr/src/tango && \
+    cd /usr/src/tango && \
     mkdir build && \
     cmake . -B build \
       -DBUILD_TESTING=OFF \
@@ -51,14 +51,20 @@ RUN git clone https://gitlab.com/tango-controls/cppTango.git /usr/src/tango && \
     rm -r /usr/src/tango
 
 # build and install tango_admin
-RUN git clone https://gitlab.com/tango-controls/tango_admin.git /usr/src/tango_admin && \
-    cmake -B /usr/src/tango_admin/build -DCMAKE_INSTALL_PREFIX=/usr/local/ /usr/src/tango_admin && \
-    make  -j$(nproc) -C /usr/src/tango_admin/build install
+RUN git clone https://gitlab.com/tango-controls/tango_admin.git /usr/src/tango_admin 
+
+#   WORKAROUNDS
+RUN cp /usr/local/include/tango/tango.h /usr/local/include/
+RUN sed -i 's/c++0x/c++14/g' /usr/src/tango_admin/CMakeLists.txt
+
+RUN cmake -B /usr/src/tango_admin/build -DCMAKE_INSTALL_PREFIX=/usr/local/ /usr/src/tango_admin
+RUN make  -j$(nproc) -C /usr/src/tango_admin/build install
 
 # build and install TangoDatabase
 RUN git clone --depth 1 https://gitlab.com/tango-controls/TangoDatabase.git /usr/src/TangoDatabase && \
     cmake -B /usr/src/TangoDatabase/build -DCMAKE_INSTALL_PREFIX=/usr/local/ /usr/src/TangoDatabase && \
     make  -j$(nproc) -C /usr/src/TangoDatabase/build install
+RUN rm /usr/local/include/tango.h 
 
 
 FROM $BASE_IMAGE
