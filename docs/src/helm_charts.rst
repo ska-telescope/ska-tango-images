@@ -167,8 +167,8 @@ This templates are called by the below `template <https://gitlab.com/ska-telesco
     {{ template "ska-tango-util.multidevice-sacc-role.tpl" $context }}
     {{ template "ska-tango-util.multidevice-job.tpl" $context }}
     {{ template "ska-tango-util.multidevice-svc.tpl" $context }}
-    {{ template "ska-tango-util.deviceserver-pvc.tpl" $context }}
-
+    {{- $volume_context := dict "volume" $filedeviceserver.volume "local" $localchart }}
+    {{ template "ska-tango-util.deviceserver-pvc.tpl" $volume_context }}
 
     {{- else }}
 
@@ -178,17 +178,21 @@ This templates are called by the below `template <https://gitlab.com/ska-telesco
     {{ template "ska-tango-util.multidevice-sacc-role.tpl" $context }}
     {{ template "ska-tango-util.multidevice-job.tpl" $context }}
     {{ template "ska-tango-util.multidevice-svc.tpl" $context }}
-    {{ template "ska-tango-util.deviceserver-pvc.tpl" $context }}
+    {{- $volume_context := dict "volume" $deviceserver.volume "local" $localchart }}
+    {{ template "ska-tango-util.deviceserver-pvc.tpl" $volume_context }}
+
 
     {{- end }}
 
     {{- end }} # deviceservers
 
 Tango-example template description:
-    - **Line 3**  to **Line 26** : This template will iterate through each field under deviceServers on the values.yaml file.
+    - **Line 3**  to **Line 29** : This template will iterate through each field under deviceServers on the values.yaml file.
     - **Line 5**  to **Line 15** : If the device server has a file field we will get that configuration file and use it. (**Best Practice**: Add the deviceServer configuration in the data folder and then pass the path of it in the file field of the deviceServer).
-    - **Line 15** to **Line 25** : If there is no file field it means that the configuration of this device was done inside the value.yaml. (**Note:** Making the configuration of the device inside the values.yaml makes this file bigger becoming harder to read and understand)
-    - **Line 8**  : As discussed before it is possible to have a instances field in the values.yaml file and in the data file, it is also possible to have instances defined as a global field. It is being used a coalesced function that takes the first not null value of the list. The priority is, first it takes the instance value from the global variable if there is none it takes it from the values file and then from the data file.
-    - **Line 27** : Same as line 8 but without the possibility of having the instance field on the data file.
-    - **Line 9** and **Line 18** : Context is a list of variables that will passed as arguments to the templates.
+    - **Line 17** to **Line 26** : If there is no file field it means that the configuration of this device was done inside the value.yaml. (**Note:** Making the configuration of the device inside the values.yaml makes this file bigger becoming harder to read and understand)
+    - **Line 7**  : As discussed before it is possible to have a instances field in the values.yaml file and in the data file, it is also possible to have instances defined as a global field. It is being used a coalesced function that takes the first not null value of the list. The priority is, first it takes the instance value from the global variable if there is none it takes it from the values file and then from the data file.
+    - **Line 19** : Same as line 8 but without the possibility of having the instance field on the data file.
+    - **Line 9** and **Line 20** : Context is a list of variables that will passed as arguments to the templates.
+    - **Line 14** to **Line 15**: Use and set the context for persistent volume claims attached to teh deviceserver
+    - **Line 25** to **Line 26**: same as 14 to 15
     - **Templates** : There are five templates already described before. Each template will be called for each deviceServer as they are inside the range loop (line 3).
