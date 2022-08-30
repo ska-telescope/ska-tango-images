@@ -42,7 +42,8 @@ RUN apt-get update \
                zlib1g-dev \
                ca-certificates \
                curl \
-               git 
+               git \
+               libjpeg-dev
 
 RUN curl -k https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 COPY pip.conf /etc/pip.conf
@@ -52,6 +53,13 @@ WORKDIR /app
 # Install numpy manually before PyTango and other requirements to ensure we
 # build PyTango with numpy support.
 RUN python3 -m pip install numpy==1.19.2
+
+## Install PyTango from Thomas' repo to get latest MacOS workarounds
+RUN git clone --depth=1 --branch=develop_9.4-after_cppTango_header_file_separation https://gitlab.com/tjuerges/pytango.git
+WORKDIR /app/pytango
+RUN python3 setup.py install
+
+WORKDIR /app
 
 COPY requirements.txt /requirements.txt
 RUN python3 -m pip install -r /requirements.txt
