@@ -1,5 +1,10 @@
 ARG CAR_OCI_REGISTRY_HOST
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.0.0"
+
+ARG POETRY_VERSION=1.2
+ARG PYTANGO_VERSION=9.3.3
+ARG NUMPY_VERSION=1.23.1
+
 FROM $BASE_IMAGE
 
 LABEL \
@@ -11,9 +16,6 @@ LABEL \
     int.skao.application="Tango Builder"
 
 USER root
-# pkgconfig needs to find these
-ENV PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:/usr/local/lib64/pkgconfig
-ENV LD_LIBRARY_PATH=/usr/local/lib64:/usr/local/lib:/usr/lib
 
 # Install build time dependencies
 # boost-dev and libstdc++ are fundamental dependencies
@@ -30,36 +32,19 @@ RUN apk --update add --no-cache libstdc++ \
     bash \
     make \
     ca-certificates \
-    cargo \
     curl \
     git
 
-ENV PYTHONPATH=/usr/local/lib/python3.9/site-packages
 # setup pip ready for package installs
 COPY pip.conf /etc/pip.conf
-WORKDIR /app
-COPY requirements.txt requirements.txt
-
-# Install poetry
-RUN curl -sSL https://install.python-poetry.org POETRY_HOME=/usr/local/bin/poetry | python3 -
+WORKDIR /wheels
 
 # Install numpy manually before PyTango and other requirements to ensure we
 # build PyTango with numpy support.
-RUN python3.9 -m pip install --prefix=/usr/local wheel numpy==1.21.0 \
-    # now install build requirements
-    && python3.9 -m pip install --prefix=/usr/local -r requirements.txt \
-    # this should be commented if we wish for the builder
-    # to keep the python cache
-    && python3.9 -m pip cache purge
+RUN python3.9 -m pip install wheel six numpy==${NUMPY_VERSION}
+# now build python wheels for the requirements (pytango, numpy)
+RUN python3.9 -m pip wheel numpy==${NUMPY_VERSION} pytango==${PYTANGO_VERSION}
 
-# do ldconfig stuff
-RUN mkdir -p /etc/ld.so.conf.d \
-    && echo "include /etc/ld.so.conf.d/*.conf" > /etc/ld.so.conf \
-    && echo "/usr/local/lib" > /etc/ld.so.conf.d/tango.conf \
-    && echo "/usr/local/lib64" > /etc/ld.so.conf.d/tango.conf \
-    && ldconfig /etc/ld.so.conf.d \
-    # this was on the debian version
-    && mkdir /venv \
-    && ln -s /usr/* /venv/  \
-    && ln -s /usr/local/bin/itango3 /venv/bin/itango3 \
-    && ln -s /usr/bin/python3 /venv/bin/python 
+# Install poetry
+RUN curl -sSL https://install.python-poetry.org | \
+    POETRY_VERSION=${POETRY_VERSION} POETRY_HOME=/usr/local python3 -
