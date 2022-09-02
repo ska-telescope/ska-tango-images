@@ -1,7 +1,6 @@
 ARG CAR_OCI_REGISTRY_HOST
 ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder-alpine:0.0.0"
 ARG BASE_IMAGE="alpine:3.15"
-ARG POETRY_VERSION=1.2
 
 FROM $BUILD_IMAGE AS buildenv
 FROM $BASE_IMAGE
@@ -10,7 +9,7 @@ LABEL \
       author="Malte Marquarding <malte.marquarding@csiro.au>" \
       description="This image includes poetry and pre-build tango dependencies" \
       license="BSD-3-Clause" \
-      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-runtime-alpine-slim" \
+      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-poetry-alpine" \
       org.skatelescope.team="Systems Team" \
       org.skatelescope.version="1.0.0" \
       int.skao.application="PyTango run time package"

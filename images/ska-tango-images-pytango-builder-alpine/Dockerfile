@@ -1,11 +1,11 @@
 ARG CAR_OCI_REGISTRY_HOST
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.0.0"
 
+FROM $BASE_IMAGE
+
 ARG POETRY_VERSION=1.2
 ARG PYTANGO_VERSION=9.3.3
 ARG NUMPY_VERSION=1.23.1
-
-FROM $BASE_IMAGE
 
 LABEL \
     author="Piers Harding <Piers.Harding@skao.int>" \
