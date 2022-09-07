@@ -6,7 +6,7 @@ USER root
 COPY pip.conf /etc/pip.conf
 
 # Install regular dependencies and build time dependencies then build pytango and numpy
-# clear the cache and remove build time dependencies
+# clear the cache 
 RUN apk --update add --no-cache \
     make \
     ca-certificates \
@@ -14,12 +14,12 @@ RUN apk --update add --no-cache \
     git \
     boost-python3 \ 
     py3-pip \
-    py3-wheel && \
-    apk --update  add --no-cache --virtual mybuilddeps \    
-    g++ boost-dev python3-dev  && \
+    g++ \
+    py3-wheel \
+    boost-dev \
+    python3-dev \
     python3.9 -m pip install --prefix=/usr/local numpy pytango==9.3.3 && \
-    python3.9 -m pip cache purge && \
-    apk del mybuilddeps 
+    python3.9 -m pip cache purge  
   
 ENV PYTHONPATH=/usr/local/lib/python3.9/site-packages
 
