@@ -2,6 +2,7 @@ ARG CAR_OCI_REGISTRY_HOST
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.0.0"
 FROM $BASE_IMAGE
 
+ARG PYTANGO=9.3.3
 USER root
 COPY pip.conf /etc/pip.conf
 
@@ -18,8 +19,9 @@ RUN apk --update add --no-cache \
     py3-wheel \
     boost-dev \
     python3-dev && \
-    python3.9 -m pip install --prefix=/usr/local numpy pytango==9.3.3 && \
-    python3.9 -m pip cache purge  
+    python3.9 -m pip wheel -w /tmp  numpy pytango==$PYTANGO
+    python3.9 -m pip install --prefix=/usr/local /tmp/*whl && \
+    python3.9 -m pip cache purge  && rm /tmp/*
   
 ENV PYTHONPATH=/usr/local/lib/python3.9/site-packages
 
