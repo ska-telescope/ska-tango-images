@@ -17,7 +17,7 @@ RUN apk --update add --no-cache \
     g++ \
     py3-wheel \
     boost-dev \
-    python3-dev \
+    python3-dev && \
     python3.9 -m pip install --prefix=/usr/local numpy pytango==9.3.3 && \
     python3.9 -m pip cache purge  
   
