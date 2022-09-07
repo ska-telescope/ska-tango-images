@@ -19,7 +19,7 @@ RUN apk --update add --no-cache \
     py3-wheel \
     boost-dev \
     python3-dev && \
-    python3.9 -m pip wheel -w /tmp  numpy pytango==$PYTANGO
+    python3.9 -m pip wheel -w /tmp  numpy pytango==$PYTANGO && \
     python3.9 -m pip install --prefix=/usr/local /tmp/*whl && \
     python3.9 -m pip cache purge  && rm /tmp/*
   
