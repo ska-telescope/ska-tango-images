@@ -13,7 +13,7 @@ LABEL \
       org.skatelescope.version="1.0.0" \
       int.skao.application="MaxIV Tango Dsconfig"
 
-RUN python3 -m pip install python-dsconfig
+RUN python3 -m pip install dsconfig && python3.9 -m pip cache purge 
 
 # Existing Helm charts assume tango-dsconfig starts in the root directory
 WORKDIR /

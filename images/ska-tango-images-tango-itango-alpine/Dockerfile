@@ -22,10 +22,9 @@ RUN apk add --update --no-cache procps \
 USER tango
 ENV PYTHONPATH=/usr/local/lib/python3.9/site-packages
 
-# create ipython profile to so that itango doesn't fail if ipython hasn't run yet
-RUN ipython profile create
+# create ipython profile to so that itango doesn't fail if ipython hasn't run yetRUN python3 -m pip install ipython==7.27.0 && python3.9 -m pip cache purge && ipython profile create
 
 COPY requirements.txt /requirements.txt
-RUN python3 -m pip install -r /requirements.txt
+RUN python3 -m pip install -r /requirements.txt && python3.9 -m pip cache purge
 
 CMD ["itango3"]
