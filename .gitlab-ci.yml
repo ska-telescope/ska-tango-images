@@ -724,8 +724,7 @@ k8s-test-alpine:
     - make k8s-install-chart IS_ALPINE="-alpine" CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
     - make k8s-wait
   script:
-    - make k8s-test K8S_TEST_IMAGE_TO_TEST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-tango-itango-alpine:$(. .make/.make-release-support; RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-itango-alpine/ setContextHelper; getVersion)
-    - echo $K8S_TEST_IMAGE_TO_TEST
+    - make k8s-test K8S_TEST_IMAGE_TO_TEST=${CI_REGISTRY}/ska-tango-images-tango-itango-alpine:$(. .make/.make-release-support; RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-itango-alpine/ setContextHelper; getVersion)
   after_script:
     - echo $CI_JOB_NAME - $CI_JOB_STAGE
     - make k8s-uninstall-chart
