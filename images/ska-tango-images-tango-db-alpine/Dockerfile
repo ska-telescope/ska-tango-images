@@ -42,3 +42,4 @@ COPY --from=buildenv /usr/local/bin/wait-for-it.sh /usr/local/bin/wait-for-it.sh
 COPY sql_mode.cnf /etc/my.cnf.d
 RUN chmod 644 /etc/my.cnf.d/sql_mode.cnf
 ENTRYPOINT ["/scripts/run.sh"]
+
