@@ -80,7 +80,7 @@ itango:
   image:
     registry: ${CAR_OCI_REGISTRY_HOST}
     image: ska-tango-images-tango-itango${IS_ALPINE}
-    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-itango setContextHelper; getVersion)${SUFFIX}
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-itango${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   resources:
     requests:
