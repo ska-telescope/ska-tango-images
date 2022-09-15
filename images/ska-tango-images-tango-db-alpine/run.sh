@@ -1,4 +1,4 @@
-#!/bin/ash
+#!/bin/bash
 
 # execute any pre-init scripts
 for i in /scripts/pre-init.d/*sh
@@ -103,4 +103,6 @@ do
 done
 
 exec /usr/bin/mysqld --user=mysql --console  $@
+
+
 
