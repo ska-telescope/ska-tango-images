@@ -53,7 +53,12 @@ WORKDIR /app
 # build PyTango with numpy support.
 RUN python3 -m pip install numpy==1.19.2
 
+# Install poetry as a binary
+ENV POETRY_HOME=/opt/poetry
+RUN curl -sSL https://install.python-poetry.org | python3 - --yes
+ENV PATH="${POETRY_HOME}/bin:${PATH}"
+
 COPY requirements.txt /requirements.txt
 RUN python3 -m pip install -r /requirements.txt
 
-RUN mkdir /venv && ln -s /usr/* /venv/  && ln -s /usr/local/bin/itango3 /venv/bin/itango3 && ln -sfn /usr/bin/python3 /usr/bin/python
+RUN ln -sfn /usr/bin/python3 /usr/bin/python

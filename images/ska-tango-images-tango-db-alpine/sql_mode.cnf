@@ -1,6 +1,0 @@
-[mysqld]
-sql-mode=""
-innodb=OFF
-default_storage_engine=MyISAM
-skip-networking=0
-skip-name-resolve=0
