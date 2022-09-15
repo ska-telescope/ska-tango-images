@@ -67,8 +67,8 @@ while [[ $# -gt 0 ]]
 do
     case "$1" in
         *:* )
-        HOST=$(echo $aa | awk -F: '{print $1}')
-        PORT=$(echo $aa | awk -F: '{print $2}')
+        HOST=$(echo $1 | awk -F: '{print $1}')
+        PORT=$(echo $1 | awk -F: '{print $2}')
         shift 1
         ;;
         --child)
