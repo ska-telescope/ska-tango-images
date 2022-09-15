@@ -42,7 +42,7 @@ EXPOSE 3306
 
 VOLUME ["/var/lib/mysql"]
 COPY --from=buildenv /docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
-COPY --from=buildenv /usr/local/bin/wait-for-it.sh /usr/local/bin/wait-for-it.sh
+COPY wait.sh /usr/local/bin/wait-for-it.sh
 COPY sql_mode.cnf /etc/my.cnf.d
 RUN chmod 644 /etc/my.cnf.d/sql_mode.cnf
 ENTRYPOINT ["/scripts/run.sh"]
