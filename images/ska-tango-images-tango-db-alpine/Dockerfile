@@ -29,8 +29,8 @@ LABEL \
       int.skao.application="Tango DB"
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
-RUN apk --update add --no-cache pwgen alpine-baselayout
-RUN addgroup --system mysql && adduser --system -s /bin/ash -G mysql mysql
+RUN apk --update add --no-cache pwgen alpine-baselayout bash
+RUN addgroup --system mysql && adduser --system -s /bin/bash -G mysql mysql
 
 RUN apk --update add --no-cache mariadb mariadb-client pwgen
 
@@ -42,7 +42,7 @@ EXPOSE 3306
 
 VOLUME ["/var/lib/mysql"]
 COPY --from=buildenv /docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
-COPY wait.sh /usr/local/bin/wait-for-it.sh
+COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
 COPY sql_mode.cnf /etc/my.cnf.d
 RUN chmod 644 /etc/my.cnf.d/sql_mode.cnf
 ENTRYPOINT ["/scripts/run.sh"]
