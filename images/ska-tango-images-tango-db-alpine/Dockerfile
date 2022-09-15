@@ -8,7 +8,7 @@ RUN git clone --depth 1 https://gitlab.com/tango-controls/TangoDatabase.git /usr
 
 # source is giving syntax error, so we just paste everything 
 RUN mkdir /docker-entrypoint-initdb.d && cd  /usr/local/share/tango/db \
-    && cp create_db.sql.in create_db.sql
+    && cp create_db.sql.in create_db.sql \
     && sed -i '/create_db_tables.sql/ r create_db_tables.sql.in' create_db.sql \
     && sed -i '/stored_proc.sql/ r stored_proc.sql.in' create_db.sql \
     && sed -i "s|@TANGO_DB_NAME@|tango|g" create_db.sql \
