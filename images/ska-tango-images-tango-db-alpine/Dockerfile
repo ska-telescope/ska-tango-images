@@ -25,7 +25,7 @@ LABEL \
       int.skao.application="Tango DB"
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
-RUN apk --update add --no-cache pwgen alpine-baselayout bash
+RUN apk --update add --no-cache pwgen alpine-baselayout bash coreutils
 RUN addgroup --system mysql && adduser --system -s /bin/bash -G mysql mysql
 
 RUN apk --update add --no-cache mariadb mariadb-client pwgen
