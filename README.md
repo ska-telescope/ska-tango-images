@@ -89,14 +89,14 @@ Your branch is up-to-date with 'origin/master'.
 Already up-to-date.
 
 Step 2: Select and bump OCI Image .release's
- Tell me which of the following OCI_IMAGES_TO_PUBLISH list to bump patch release for: ska-tango-images-tango-dependencies ska-tango-images-tango-dependencies-alpine ska-tango-images-tango-db ska-tango-images-tango-cpp ska-tango-images-tango-cpp-alpine ska-tango-images-tango-java ska-tango-images-tango-java-alpine ska-tango-images-tango-rest ska-tango-images-pytango-builder ska-tango-images-pytango-builder-alpine ska-tango-images-tango-pogo ska-tango-images-tango-libtango ska-tango-images-tango-jive ska-tango-images-pytango-runtime ska-tango-images-pytango-runtime-alpine ska-tango-images-tango-admin ska-tango-images-tango-databaseds ska-tango-images-tango-test ska-tango-images-tango-dsconfig ska-tango-images-tango-itango ska-tango-images-tango-vnc ska-tango-images-tango-pytango ska-tango-images-tango-panic ska-tango-images-tango-panic-gui
-Enter list here: ska-tango-images-tango-dependencies ska-tango-images-tango-dependencies-alpine
+ Tell me which of the following OCI_IMAGES_TO_PUBLISH list to bump patch release for: ska-tango-images-tango-dependencies ska-tango-images-tango-dependencies ska-tango-images-tango-db ska-tango-images-tango-cpp ska-tango-images-tango-cpp ska-tango-images-tango-java ska-tango-images-tango-java ska-tango-images-tango-rest ska-tango-images-pytango-builder ska-tango-images-pytango-builder ska-tango-images-tango-pogo ska-tango-images-tango-libtango ska-tango-images-tango-jive ska-tango-images-pytango-runtime ska-tango-images-pytango-runtime ska-tango-images-tango-admin ska-tango-images-tango-databaseds ska-tango-images-tango-test ska-tango-images-tango-dsconfig ska-tango-images-tango-itango ska-tango-images-tango-vnc ska-tango-images-tango-pytango ska-tango-images-tango-panic ska-tango-images-tango-panic-gui
+Enter list here: ska-tango-images-tango-dependencies ska-tango-images-tango-dependencies
 
- You provided: ska-tango-images-tango-dependencies ska-tango-images-tango-dependencies-alpine
+ You provided: ska-tango-images-tango-dependencies ska-tango-images-tango-dependencies
 Do you wish to continue (you will be prompted at each step) [N/y]: y
  OK - ✨ bumping patch .release files ...
 make[1]: Entering directory '/home/piers/git/public/ska-telescope/ska-tango-images'
-make bump-patch-release RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-dependencies;  make bump-patch-release RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-dependencies-alpine;
+make bump-patch-release RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-dependencies;  make bump-patch-release RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-dependencies;
 make[2]: Entering directory '/home/piers/git/public/ska-telescope/ska-tango-images'
 set-release: 9.3.7
 make[2]: Leaving directory '/home/piers/git/public/ska-telescope/ska-tango-images'
@@ -125,7 +125,7 @@ Changes not staged for commit:
  modified:   .release
  modified:   charts/ska-tango-base/Chart.yaml
  modified:   charts/ska-tango-util/Chart.yaml
- modified:   images/ska-tango-images-tango-dependencies-alpine/.release
+ modified:   images/ska-tango-images-tango-dependencies/.release
  modified:   images/ska-tango-images-tango-dependencies/.release
 
 no changes added to commit (use "git add" and/or "git commit -a")
@@ -174,10 +174,10 @@ index e41b291..81892f7 100644
  icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
  maintainers:
  - name: Matteo Di Carlo
-diff --git a/images/ska-tango-images-tango-dependencies-alpine/.release b/images/ska-tango-images-tango-dependencies-alpine/.release
+diff --git a/images/ska-tango-images-tango-dependencies/.release b/images/ska-tango-images-tango-dependencies/.release
 index aad0434..7b0cabe 100644
---- a/images/ska-tango-images-tango-dependencies-alpine/.release
-+++ b/images/ska-tango-images-tango-dependencies-alpine/.release
+--- a/images/ska-tango-images-tango-dependencies/.release
++++ b/images/ska-tango-images-tango-dependencies/.release
 @@ -1,2 +1,2 @@
 -release=0.2.3
 -tag=0.2.3
@@ -202,7 +202,7 @@ git says you have the following outstanding changes:
   M .release
  M charts/ska-tango-base/Chart.yaml
  M charts/ska-tango-util/Chart.yaml
- M images/ska-tango-images-tango-dependencies-alpine/.release
+ M images/ska-tango-images-tango-dependencies/.release
  M images/ska-tango-images-tango-dependencies/.release
 Do you wish to continue (will commit outstanding changes) [N/y]: y
 OK - commiting changes...
