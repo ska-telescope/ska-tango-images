@@ -81,7 +81,7 @@ itango:
     registry: ${CAR_OCI_REGISTRY_HOST}
     image: ska-tango-images-tango-itango${IS_ALPINE}
     tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-itango${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   resources:
     requests:
       cpu: 100m     # 00m = 0.1 CPU
@@ -101,7 +101,7 @@ databaseds:
     registry: ${CAR_OCI_REGISTRY_HOST}
     image: ska-tango-images-tango-cpp${IS_ALPINE}
     tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-cpp${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   vault:
     useVault: false
     secretPath: stfc
@@ -186,7 +186,7 @@ tangodb:
     registry: ${CAR_OCI_REGISTRY_HOST}
     image: ska-tango-images-tango-db${IS_ALPINE}
     tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-db${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
-    pullPolicy: IfNotPresent
+    pullPolicy: Always
   db:
     rootpw: secret
     db: tango
