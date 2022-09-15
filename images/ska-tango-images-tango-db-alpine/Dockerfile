@@ -2,6 +2,7 @@ ARG CAR_OCI_REGISTRY_HOST
 ARG BASE_IMAGE="alpine:3.15"
 FROM $BASE_IMAGE AS buildenv
 
+RUN apk --update add --no-cache git
 # install TangoDatabase so we retrieve the three files we need
 RUN git clone --depth 1 https://gitlab.com/tango-controls/TangoDatabase.git /usr/local/share/tango/db
 
