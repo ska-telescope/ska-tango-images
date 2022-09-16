@@ -4,7 +4,6 @@ flake8
 flake8_formatter_junit_xml
 isort
 black
-poetry
 ipython==7.21.0
 itango==0.1.8
 coverage
