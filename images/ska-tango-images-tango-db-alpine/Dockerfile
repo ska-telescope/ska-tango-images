@@ -1,14 +1,18 @@
 ARG CAR_OCI_REGISTRY_HOST
 ARG BASE_IMAGE="alpine:3.15"
-ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp-alpine:0.0.0"
-FROM $BUILD_IMAGE AS buildenv
+FROM $BASE_IMAGE AS buildenv
 
-USER root
+RUN apk --update add --no-cache git
+# install TangoDatabase so we retrieve the three files we need
+RUN git clone --depth 1 https://gitlab.com/tango-controls/TangoDatabase.git /usr/local/share/tango/db
+
 
 # source is giving syntax error, so we just paste everything 
 RUN mkdir /docker-entrypoint-initdb.d && cd  /usr/local/share/tango/db \
-    && sed -i '/create_db_tables.sql/ r create_db_tables.sql' create_db.sql \
-    && sed -i '/stored_proc.sql/ r stored_proc.sql' create_db.sql \
+    && cp create_db.sql.in create_db.sql \
+    && sed -i '/create_db_tables.sql/ r create_db_tables.sql.in' create_db.sql \
+    && sed -i '/stored_proc.sql/ r stored_proc.sql.in' create_db.sql \
+    && sed -i "s|@TANGO_DB_NAME@|tango|g" create_db.sql \
     && sed -i "s/^source/#source/g" create_db.sql \
     && sed -i "/CREATE DATABASE tango;/d" create_db.sql \
     && cp create_db.sql /docker-entrypoint-initdb.d
@@ -25,20 +29,23 @@ LABEL \
       int.skao.application="Tango DB"
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
-RUN apk --update add --no-cache pwgen bash coreutils alpine-baselayout
-RUN addgroup --system mysql && adduser --system -s /bin/bash -G mysql mysql
+#RUN apk --update add --no-cache pwgen alpine-baselayout bash
+RUN addgroup --system mysql && adduser --system -s /bin/ash -G mysql mysql
 
-RUN apk --update add --no-cache mariadb mariadb-client pwgen
+RUN apk --update add --no-cache mariadb mariadb-client  mariadb-server-utils pwgen
 
 COPY run.sh /scripts/run.sh
 RUN mkdir /docker-entrypoint-initdb.d /etc/mysql/conf.d && \
+    mkdir -p /scripts/pre-exec.d && \
+    mkdir /scripts/pre-init.d && \
     chmod -R 755 /scripts /etc/mysql/conf.d
 
 EXPOSE 3306
 
 VOLUME ["/var/lib/mysql"]
 COPY --from=buildenv /docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
-COPY --from=buildenv /usr/local/bin/wait-for-it.sh /usr/local/bin/wait-for-it.sh
+#COPY wait.sh /usr/local/bin/wait-for-it.sh
 COPY sql_mode.cnf /etc/my.cnf.d
 RUN chmod 644 /etc/my.cnf.d/sql_mode.cnf
 ENTRYPOINT ["/scripts/run.sh"]
+
