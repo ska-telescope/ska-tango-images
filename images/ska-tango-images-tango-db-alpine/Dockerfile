@@ -36,13 +36,15 @@ RUN apk --update add --no-cache mariadb mariadb-client  mariadb-server-utils pwg
 
 COPY run.sh /scripts/run.sh
 RUN mkdir /docker-entrypoint-initdb.d /etc/mysql/conf.d && \
+    mkdir -p /scripts/pre-exec.d && \
+    mkdir /scripts/pre-init.d && \
     chmod -R 755 /scripts /etc/mysql/conf.d
 
 EXPOSE 3306
 
 VOLUME ["/var/lib/mysql"]
 COPY --from=buildenv /docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
-COPY wait.sh /usr/local/bin/wait-for-it.sh
+#COPY wait.sh /usr/local/bin/wait-for-it.sh
 COPY sql_mode.cnf /etc/my.cnf.d
 RUN chmod 644 /etc/my.cnf.d/sql_mode.cnf
 ENTRYPOINT ["/scripts/run.sh"]
