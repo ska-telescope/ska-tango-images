@@ -2,8 +2,6 @@ BASE = $(shell pwd)
 
 HELM_CHARTS ?= ska-tango-util ska-tango-base
 HELM_CHARTS_TO_PUBLISH ?= $(HELM_CHARTS)
-OCI_IMAGES ?= ska-tango-images-tango-dependencies ska-tango-images-tango-dependencies-alpine ska-tango-images-tango-db ska-tango-images-tango-db-alpine ska-tango-images-tango-cpp ska-tango-images-tango-cpp-alpine ska-tango-images-tango-java ska-tango-images-tango-java-alpine ska-tango-images-tango-rest ska-tango-images-tango-rest-alpine ska-tango-images-pytango-builder ska-tango-images-pytango-builder-alpine ska-tango-images-tango-pogo ska-tango-images-tango-libtango ska-tango-images-tango-jive ska-tango-images-pytango-runtime ska-tango-images-pytango-runtime-alpine ska-tango-images-tango-admin ska-tango-images-tango-databaseds ska-tango-images-tango-test ska-tango-images-tango-dsconfig ska-tango-images-tango-dsconfig-alpine ska-tango-images-tango-itango ska-tango-images-tango-itango-alpine ska-tango-images-tango-vnc ska-tango-images-tango-pytango ska-tango-images-tango-pytango-alpine ska-tango-images-tango-panic ska-tango-images-tango-panic-gui
-OCI_IMAGES_TO_PUBLISH ?= $(OCI_IMAGES)
 
 KUBE_NAMESPACE ?= ska-tango-images#namespace to be used
 RELEASE_NAME ?= test## release name of the chart
