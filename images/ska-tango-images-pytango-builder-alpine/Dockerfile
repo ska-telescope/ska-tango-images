@@ -30,7 +30,6 @@ RUN apk --update add --no-cache libstdc++ \
     bash \
     make \
     ca-certificates \
-    cargo \
     curl \
     git
 
@@ -45,11 +44,7 @@ RUN curl -sSL https://install.python-poetry.org POETRY_HOME=/usr/local/bin/poetr
 
 # Install numpy manually before PyTango and other requirements to ensure we
 # build PyTango with numpy support.
-RUN python3.9 -m pip install --prefix=/usr/local wheel numpy==1.21.0 \
-    # now install build requirements
-    && python3.9 -m pip install --prefix=/usr/local -r requirements.txt \
-    # this should be commented if we wish for the builder
-    # to keep the python cache
+RUN python3.9 -m pip install --prefix=/usr/local wheel numpy==1.21.0 pytango==9.3.3\
     && python3.9 -m pip cache purge
 
 # do ldconfig stuff
