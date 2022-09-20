@@ -5,7 +5,6 @@ that are useful for TANGO control system development.
 See the documentation in the 'docs' folder for build and usage
 instructions.
 
-
 ## Docker hierarchy and release tagging
 
 When updating Dockerfiles, and especially the tags in the `.release` files,
@@ -18,11 +17,11 @@ The release tags should match the underlying dependencies used where possible.
   - tango-dependencies/Dockerfile:FROM ubuntu:22.04 as buildenv
   - tango-dependencies/Dockerfile:FROM ubuntu:22.04
     - tango-java/Dockerfile:FROM {nexus}/tango-dependencies
-        - tango-jive/Dockerfile:FROM {nexus}/tango-java
-        - tango-pogo/Dockerfile:FROM {nexus}/tango-java
-        - tango-rest/Dockerfile:FROM {nexus}/tango-dependencies as buildenv
-        - tango-rest/Dockerfile:FROM {nexus}/tango-java
-        - tango-vnc/Dockerfile:FROM {nexus}/tango-java
+      - tango-jive/Dockerfile:FROM {nexus}/tango-java
+      - tango-pogo/Dockerfile:FROM {nexus}/tango-java
+      - tango-rest/Dockerfile:FROM {nexus}/tango-dependencies as buildenv
+      - tango-rest/Dockerfile:FROM {nexus}/tango-java
+      - tango-vnc/Dockerfile:FROM {nexus}/tango-java
     - tango-cpp/Dockerfile:FROM {nexus}/tango-dependencies as buildenv
     - tango-cpp/Dockerfile:FROM ubuntu:22.04
       - tango-libtango/Dockerfile:FROM {nexus}/tango-cpp
@@ -44,6 +43,7 @@ The release tags should match the underlying dependencies used where possible.
   - tango-db/Dockerfile:FROM mariadb:10
 
 If the Docker image tags change, then the related charts should also be updated:
+
 - In the `charts` folder, update all the `values.yaml` files to use the new tags.
 - If any of the `values.yaml` files changed, the corresponding `Chart.yaml` file
   must have the `version` field incremented.  Similarly for any dependent `Chart.yaml`
@@ -55,11 +55,13 @@ If the Docker image tags change, then the related charts should also be updated:
 There is a make target provided that is a guide that steps you through the process of making a release.  This will run the various sub-targets in the right sequence to ensure a complete release is done for OCI images and Helm Charts.
 
 Run:
+
 ```
-$ make make-a-release
+make make-a-release
 ```
 
 The following is a sample flow of the guided release process:
+
 ```
 This is a guild to creating a release of ska-tango-images, including OCI Images and Helm Charts.
  You  🔥MUST🔥 first have merged your Merge Request!!!
@@ -87,14 +89,14 @@ Your branch is up-to-date with 'origin/master'.
 Already up-to-date.
 
 Step 2: Select and bump OCI Image .release's
- Tell me which of the following OCI_IMAGES_TO_PUBLISH list to bump patch release for: ska-tango-images-tango-dependencies ska-tango-images-tango-dependencies-alpine ska-tango-images-tango-db ska-tango-images-tango-cpp ska-tango-images-tango-cpp-alpine ska-tango-images-tango-java ska-tango-images-tango-java-alpine ska-tango-images-tango-rest ska-tango-images-pytango-builder ska-tango-images-pytango-builder-alpine ska-tango-images-tango-pogo ska-tango-images-tango-libtango ska-tango-images-tango-jive ska-tango-images-pytango-runtime ska-tango-images-pytango-runtime-alpine ska-tango-images-tango-admin ska-tango-images-tango-databaseds ska-tango-images-tango-test ska-tango-images-tango-dsconfig ska-tango-images-tango-itango ska-tango-images-tango-vnc ska-tango-images-tango-pytango ska-tango-images-tango-panic ska-tango-images-tango-panic-gui
-Enter list here: ska-tango-images-tango-dependencies ska-tango-images-tango-dependencies-alpine
+ Tell me which of the following OCI_IMAGES_TO_PUBLISH list to bump patch release for: ska-tango-images-tango-dependencies ska-tango-images-tango-dependencies ska-tango-images-tango-db ska-tango-images-tango-cpp ska-tango-images-tango-cpp ska-tango-images-tango-java ska-tango-images-tango-java ska-tango-images-tango-rest ska-tango-images-pytango-builder ska-tango-images-pytango-builder ska-tango-images-tango-pogo ska-tango-images-tango-libtango ska-tango-images-tango-jive ska-tango-images-pytango-runtime ska-tango-images-pytango-runtime ska-tango-images-tango-admin ska-tango-images-tango-databaseds ska-tango-images-tango-test ska-tango-images-tango-dsconfig ska-tango-images-tango-itango ska-tango-images-tango-vnc ska-tango-images-tango-pytango ska-tango-images-tango-panic ska-tango-images-tango-panic-gui
+Enter list here: ska-tango-images-tango-dependencies ska-tango-images-tango-dependencies
 
- You provided: ska-tango-images-tango-dependencies ska-tango-images-tango-dependencies-alpine
+ You provided: ska-tango-images-tango-dependencies ska-tango-images-tango-dependencies
 Do you wish to continue (you will be prompted at each step) [N/y]: y
  OK - ✨ bumping patch .release files ...
 make[1]: Entering directory '/home/piers/git/public/ska-telescope/ska-tango-images'
-make bump-patch-release RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-dependencies;  make bump-patch-release RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-dependencies-alpine;
+make bump-patch-release RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-dependencies;  make bump-patch-release RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-dependencies;
 make[2]: Entering directory '/home/piers/git/public/ska-telescope/ska-tango-images'
 set-release: 9.3.7
 make[2]: Leaving directory '/home/piers/git/public/ska-telescope/ska-tango-images'
@@ -120,11 +122,11 @@ Your branch is up-to-date with 'origin/master'.
 Changes not staged for commit:
   (use "git add <file>..." to update what will be committed)
   (use "git restore <file>..." to discard changes in working directory)
-	modified:   .release
-	modified:   charts/ska-tango-base/Chart.yaml
-	modified:   charts/ska-tango-util/Chart.yaml
-	modified:   images/ska-tango-images-tango-dependencies-alpine/.release
-	modified:   images/ska-tango-images-tango-dependencies/.release
+ modified:   .release
+ modified:   charts/ska-tango-base/Chart.yaml
+ modified:   charts/ska-tango-util/Chart.yaml
+ modified:   images/ska-tango-images-tango-dependencies/.release
+ modified:   images/ska-tango-images-tango-dependencies/.release
 
 no changes added to commit (use "git add" and/or "git commit -a")
 
@@ -172,10 +174,10 @@ index e41b291..81892f7 100644
  icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
  maintainers:
  - name: Matteo Di Carlo
-diff --git a/images/ska-tango-images-tango-dependencies-alpine/.release b/images/ska-tango-images-tango-dependencies-alpine/.release
+diff --git a/images/ska-tango-images-tango-dependencies/.release b/images/ska-tango-images-tango-dependencies/.release
 index aad0434..7b0cabe 100644
---- a/images/ska-tango-images-tango-dependencies-alpine/.release
-+++ b/images/ska-tango-images-tango-dependencies-alpine/.release
+--- a/images/ska-tango-images-tango-dependencies/.release
++++ b/images/ska-tango-images-tango-dependencies/.release
 @@ -1,2 +1,2 @@
 -release=0.2.3
 -tag=0.2.3
@@ -200,7 +202,7 @@ git says you have the following outstanding changes:
   M .release
  M charts/ska-tango-base/Chart.yaml
  M charts/ska-tango-util/Chart.yaml
- M images/ska-tango-images-tango-dependencies-alpine/.release
+ M images/ska-tango-images-tango-dependencies/.release
  M images/ska-tango-images-tango-dependencies/.release
 Do you wish to continue (will commit outstanding changes) [N/y]: y
 OK - commiting changes...
@@ -230,4 +232,37 @@ To gitlab.com:ska-telescope/ska-tango-images.git
  * [new tag]         0.2.28 -> 0.2.28
 make[1]: Leaving directory '/home/piers/git/public/ska-telescope/ska-tango-images'
 🌟 All done! 🌟
+```
+
+### Bumping umbrella charts version to the `make-a-release` version
+The `make make-a-release` utility doesn't update the umbrella charts to the needed versions. As such, the `charts/ska-tango-umbrella/Chart.yaml` file, should be manually bumped to the new version.
+
+In order to do this, update the version for the `ska-tango-base` and `ska-tango-util` under `dependencies` and push to master:
+```
+dependencies:
+- name: ska-tango-base
+  version: {NEW_VERSION}
+  repository: ...
+  condition: ...
+- name: ska-tango-util
+  version: {NEW_VERSION}
+  repository: ...
+```
+
+
+
+## Developer Notes
+
+### Testing image builds locally
+
+Create a file `{.MY_ENV_FILE}` with the needed environment variables in the format of:
+
+```
+TANGO_IMAGE_TAG=0.2.28
+```
+
+Then run the following command to build an image:
+
+```
+cat .MY_ENV_FILE | xargs printf -- '--build-arg %s\n' | xargs docker build -t MY_TAG .
 ```

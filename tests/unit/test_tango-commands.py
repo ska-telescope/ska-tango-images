@@ -11,14 +11,14 @@ from pytest_bdd import given, scenario, then, when, parsers, scenarios
 scenarios('../features/tango-commands.feature')
 
 @pytest.fixture
-@given(parsers.parse('a device called {device_name}'))
+@given(parsers.parse('a device called {device_name}'), target_fixture="device_proxy")
 def device_proxy(run_context, device_name):
     """a device called sys/tg_test/1."""
     return tango.DeviceProxy(device_name)
 
 
 @pytest.fixture
-@when(parsers.cfparse("I call the command {command_name}({parameter:String?})", extra_types=dict(String=str)))
+@when(parsers.cfparse("I call the command {command_name:String}({parameter:String?})", extra_types=dict(String=str)), target_fixture="call_command")
 def call_command(device_proxy,command_name, parameter):
     """I call the command State()."""
     # logging.info("Called command: {} with parameter {} for device {}".format(command_name, parameter, device_proxy.info()))
