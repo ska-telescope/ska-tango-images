@@ -38,8 +38,9 @@ RUN apt-get update \
       make \
       curl \
       python3 \
-      python3-distutils
-
+      python3-distutils \
+      python3-setuptools 
+      
 # Copy across files that are used to help orchestrate container compositions
 # and test execution sequences
 COPY --from=buildenv /usr/local/bin/wait-for-it.sh /usr/local/bin/wait-for-it.sh
