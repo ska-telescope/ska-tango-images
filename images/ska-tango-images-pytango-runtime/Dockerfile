@@ -50,7 +50,7 @@ COPY --from=buildenv /opt/poetry /opt/poetry
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 COPY pip.conf /etc/pip.conf
 
-RUN ln -sfn /usr/bin/python3 /usr/bin/python && ln -sfn /usr/local/bin/poetry /opt/poetry/bin/poetry
+RUN ln -sfn /usr/bin/python3 /usr/bin/python && ln -sfn /opt/poetry/bin/poetry /usr/local/bin/poetry
 
 USER tango
 ENV PATH="home/tango/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PATH}"
