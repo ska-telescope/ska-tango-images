@@ -1,5 +1,5 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:9.3.6"
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:9.3.29"
 FROM $BASE_IMAGE
 
 LABEL \
@@ -26,11 +26,10 @@ RUN mv /etc/pip.conf /tmp/ska_pip_conf
 
 RUN apt-get update && \
     apt-get -y install python2.7 \
-        python-pip \
         python-qt4
 
 RUN ln -s /usr/lib/x86_64-linux-gnu/libboost_python27.so /usr/lib/x86_64-linux-gnu/libboost_python-py27.so && \
-    pip2 install panic lxml
+    pip install panic lxml
 
 RUN mv /tmp/ska_pip_conf /etc/pip.conf
 RUN sed -i.original 's/python/python2/g' `which PyAlarm`
