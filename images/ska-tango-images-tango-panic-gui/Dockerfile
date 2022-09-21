@@ -26,13 +26,8 @@ RUN mv /etc/pip.conf /tmp/ska_pip_conf
 
 
 RUN apt-get update && \
-    apt-get -y install python2.7 software-properties-common wget
-
-RUN add-apt-repository -r ppa:rock-core/qt4 && \ 
-    apt-get update -q && \
-    wget http://archive.ubuntu.com/ubuntu/pool/universe/p/python-qt4/python-qt4_4.12.1+dfsg-2_amd64.deb && \
-    apt-get -y install ./python-qt4_4.12.1+dfsg-2_amd64.deb
-
+    apt-get -y install python2.7
+    
 RUN ln -s /usr/lib/x86_64-linux-gnu/libboost_python27.so /usr/lib/x86_64-linux-gnu/libboost_python-py27.so && \
     pip install panic lxml
 
