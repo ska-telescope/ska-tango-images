@@ -86,8 +86,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     slim \
     xvfb \
-    novnc \
-    python-websockify
+    novnc
 
 #Expose port 5920 to view display using VNC Viewer
 EXPOSE 5920
