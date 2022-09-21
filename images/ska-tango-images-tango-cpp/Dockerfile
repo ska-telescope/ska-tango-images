@@ -4,8 +4,8 @@
 # binaries.
 #
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:9.3.5"
-ARG BASE_IMAGE="debian:buster-slim"
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:9.3.10"
+ARG BASE_IMAGE="ubuntu:20.04"
 FROM $BUILD_IMAGE as buildenv
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -20,7 +20,7 @@ RUN apt-get update && \
         git \
         libmariadbclient-dev \
         libmariadbclient-dev-compat \
-        pkg-config python
+        pkg-config python python3
 
 
 # build and install tangoidl

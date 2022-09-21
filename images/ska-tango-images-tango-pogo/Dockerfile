@@ -1,5 +1,5 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-java:9.3.5"
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-java:9.3.7"
 FROM $BASE_IMAGE
 
 LABEL \
@@ -18,7 +18,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV POGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/Pogo-9.6.31.jar
 
 RUN apt-get update && \
-    apt-get -y install firefox-esr wget
+    apt-get -y install wget
 
 WORKDIR /usr/local/share/java
 

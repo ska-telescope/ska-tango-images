@@ -24,7 +24,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get -y install --no-install-recommends \
         wget sudo libxrender1 libxtst6 libxi6 \
-        build-essential curl file libmariadbclient-dev libmariadbclient-dev-compat pkg-config python libmariadb3
+        build-essential curl file libmariadbclient-dev libmariadbclient-dev-compat pkg-config python libmariadb3 python3
 
 RUN mkdir /usr/java
 WORKDIR /usr/java
