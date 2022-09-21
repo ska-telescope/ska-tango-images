@@ -18,7 +18,6 @@ RUN apt-get update && \
         curl \
         file \
         git \
-        libmariadbclient-dev \
         libmariadbclient-dev-compat \
         pkg-config python3
 
