@@ -30,13 +30,8 @@ RUN apt-get update && \
 
 RUN add-apt-repository -r ppa:rock-core/qt4 && \ 
     apt-get update -q && \
-    wget http://archive.ubuntu.com/ubuntu/pool/universe/q/qt-assistant-compat/libqtassistantclient4_4.6.3-7build1_amd64.deb && \
-    apt-get -y install ./libqtassistantclient4_4.6.3-7build1_amd64.deb && \
     wget http://archive.ubuntu.com/ubuntu/pool/universe/p/python-qt4/python-qt4_4.12.1+dfsg-2_amd64.deb && \
-    apt-get -y install ./python-qt4_4.12.1+dfsg-2_amd64.deb && \
-    wget http://archive.ubuntu.com/ubuntu/pool/universe/p/python-pyaudio/python-pyaudio_0.2.11-1build2_amd64.deb && \
-    apt-get -y install ./python-pyaudio_0.2.11-1build2_amd64.deb
-
+    apt-get -y install ./python-qt4_4.12.1+dfsg-2_amd64.deb
 
 RUN ln -s /usr/lib/x86_64-linux-gnu/libboost_python27.so /usr/lib/x86_64-linux-gnu/libboost_python-py27.so && \
     pip install panic lxml
