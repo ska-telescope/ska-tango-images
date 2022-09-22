@@ -5,7 +5,7 @@
 #
 ARG CAR_PYPI_REPOSITORY_URL
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILD_IMAGE="ska-tango-images-pytango-builder:0.3.17"
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:0.3.17"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp:9.3.11"
 
 FROM ${BUILD_IMAGE} as buildenv
@@ -38,8 +38,9 @@ RUN apt-get update \
       make \
       curl \
       python3 \
-      python3-distutils
-
+      python3-distutils \
+      python3-setuptools 
+      
 # Copy across files that are used to help orchestrate container compositions
 # and test execution sequences
 COPY --from=buildenv /usr/local/bin/wait-for-it.sh /usr/local/bin/wait-for-it.sh
@@ -50,10 +51,10 @@ COPY --from=buildenv /opt/poetry /opt/poetry
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 COPY pip.conf /etc/pip.conf
 
-RUN ln -sfn /usr/bin/python3 /usr/bin/python
+RUN ln -sfn /usr/bin/python3 /usr/bin/python && ln -sfn /opt/poetry/bin/poetry /usr/local/bin/poetry
 
 USER tango
-ENV PATH="/opt/poetry/bin:/home/tango/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PATH}"
+ENV PATH="home/tango/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PATH}"
 
 ONBUILD COPY --chown=tango:tango . /app
 ONBUILD COPY --from=buildenv /usr/local/bin/ /usr/local/bin/
