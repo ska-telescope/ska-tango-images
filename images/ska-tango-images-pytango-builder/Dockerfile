@@ -57,6 +57,6 @@ RUN python3 -m pip install --no-cache-dir numpy==1.19.2
 ENV POETRY_HOME=/opt/poetry
 RUN curl -sSL https://install.python-poetry.org | python3 - --yes
 
-RUN python3 -m pip install --no-cache-dir pytango==9.3.3
+RUN python3 -m pip install --no-cache-dir pytango==9.3.5
 
 RUN ln -sfn /usr/bin/python3 /usr/bin/python && ln -sfn /opt/poetry/bin/poetry /usr/local/bin/poetry

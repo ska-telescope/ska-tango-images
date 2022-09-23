@@ -18,9 +18,8 @@ RUN apt-get update && \
         curl \
         file \
         git \
-        libmariadbclient-dev \
         libmariadbclient-dev-compat \
-        pkg-config python
+        pkg-config python3
 
 
 # build and install tangoidl
