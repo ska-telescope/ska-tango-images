@@ -31,7 +31,7 @@ RUN apt-get update && \
         exim4
 
 RUN ln -s /usr/lib/x86_64-linux-gnu/libboost_python27.so /usr/lib/x86_64-linux-gnu/libboost_python-py27.so && \
-    pip2 install panic
+    pip install panic
 
 RUN mv /tmp/ska_pip_conf /etc/pip.conf
 RUN sed -i.original 's/python/python2/g' `which PyAlarm`

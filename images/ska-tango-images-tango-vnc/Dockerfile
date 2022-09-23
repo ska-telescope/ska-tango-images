@@ -29,7 +29,7 @@ RUN apt-get update && apt-mark hold iptables && \
       x11-xserver-utils \
       x11-utils  \
       xfce4  \
-      gtk3-engines-xfce \
+      gtk3-engines-unico \
       libgtk-3-bin \
       mousepad \
       xfce4-notifyd \
@@ -69,7 +69,7 @@ RUN apt-get update && apt-get install -y \
     slim \
     xvfb \ 
     novnc \
-    python-websockify
+    python3-websockify
 
 #Expose port 5920 to view display using VNC Viewer
 EXPOSE 5920

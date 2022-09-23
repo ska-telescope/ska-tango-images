@@ -19,7 +19,7 @@ RUN apt-get update && \
     apt-get -y install --no-install-recommends \
         autoconf automake build-essential ca-certificates \
         curl libkrb5-dev libtool pkg-config unzip \
-        cmake python-dev python-pkgconfig
+        cmake python3-dev python3-pkgconfig
 
 RUN mkdir /usr/src/zeromq
 WORKDIR /usr/src/zeromq
