@@ -15,7 +15,7 @@ LABEL \
       int.skao.application="ITango"
 
 USER root
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y procps
+RUN apt-get update && apt-get install -y procps
 
 USER tango
 

@@ -20,7 +20,7 @@ LABEL \
 #     so we make a symlink
 # - panic uses python 2, but 'python' maps to python3 in our base image,
 #     so we use sed to edit the PyAlarm launcher
-ENV DEBIAN_FRONTEND=noninteractive
+
 
 RUN mv /etc/pip.conf /tmp/ska_pip_conf
 
@@ -41,7 +41,7 @@ ENV DISPLAY=:20
 USER root
 
 RUN apt-get update && apt-mark hold iptables && \
-    env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    apt-get install -y --no-install-recommends \
       dbus-x11 \
       psmisc \
       xdg-utils \

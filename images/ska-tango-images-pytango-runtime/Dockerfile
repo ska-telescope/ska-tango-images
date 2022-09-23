@@ -22,7 +22,7 @@ LABEL \
 
 USER root
 
-ENV DEBIAN_FRONTEND=noninteractive
+
 # Permanently install Python and PyTango runtime dependencies:
 #
 # * libboost-python is required by PyTango;

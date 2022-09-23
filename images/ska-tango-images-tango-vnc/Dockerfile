@@ -16,13 +16,13 @@ LABEL \
       org.skatelescope.version="1.0.0" \
       int.skao.application="Tango VNC"
 
-ENV DEBIAN_FRONTEND=noninteractive
+
 ENV DISPLAY=:20
 
 USER root
 
 RUN apt-get update && apt-mark hold iptables && \
-    env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    apt-get install -y --no-install-recommends \
       dbus-x11 \
       psmisc \
       xdg-utils \

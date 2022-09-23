@@ -19,7 +19,7 @@ LABEL \
 #     so we make a symlink
 # - panic uses python 2, but 'python' maps to python3 in our base image,
 #     so we use sed to edit the PyAlarm launcher
-ENV DEBIAN_FRONTEND=noninteractive
+
 
 USER root
 

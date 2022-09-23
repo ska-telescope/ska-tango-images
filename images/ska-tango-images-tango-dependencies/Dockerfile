@@ -3,13 +3,12 @@
 # intermediate image, then creates a release image containing the compiled
 # binaries.
 #
-ARG BASE_IMAGE="debian:buster-slim"
+ARG BASE_IMAGE="ubuntu:22.04"
 FROM $BASE_IMAGE as buildenv
 
 ENV ZEROMQ_DOWNLOAD_URL=https://github.com/zeromq/libzmq/archive/v4.3.4.tar.gz
 ENV CPPZMQ_DOWNLOAD_URL=https://github.com/zeromq/cppzmq/archive/v4.8.1.tar.gz
 ENV OMNIORB_DOWNLOAD_URL=https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.4/omniORB-4.2.4.tar.bz2/download 
-ENV DEBIAN_FRONTEND=noninteractive
 
 # Copy across files that are used to help orchestrate container compositions
 # and test execution sequences

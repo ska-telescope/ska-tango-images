@@ -3,7 +3,7 @@ FROM $BASE_IMAGE AS builder
 
 ENV TANGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/tango-9.3.4.tar.gz
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+RUN apt-get update && \
      apt-get -y install --no-install-recommends curl ca-certificates
 
 RUN mkdir -p /usr/src/tango

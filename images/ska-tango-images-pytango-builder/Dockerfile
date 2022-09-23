@@ -23,7 +23,7 @@ LABEL \
 
 USER root
 
-ENV DEBIAN_FRONTEND=noninteractive
+
 
 # Install build dependencies:
 #
