@@ -22,7 +22,7 @@ ENV LOG4J=https://artefact.skao.int/repository/raw-internal/ska-tango-images/lib
 
 
 RUN apt-get update && \
-    apt-get -y install --no-install-recommends \
+    DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends \
         wget sudo libxrender1 libxtst6 libxi6 \
         build-essential curl file libmariadbclient-dev-compat pkg-config libmariadb3 python3
 

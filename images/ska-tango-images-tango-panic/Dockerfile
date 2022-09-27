@@ -26,7 +26,7 @@ USER root
 RUN mv /etc/pip.conf /tmp/ska_pip_conf
 
 RUN apt-get update && \
-    apt-get -y install python2.7 \
+    DEBIAN_FRONTEND=noninteractive apt-get -y install python2.7 \
         python-pip \
         exim4
 
