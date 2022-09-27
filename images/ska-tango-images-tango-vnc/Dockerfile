@@ -60,7 +60,7 @@ RUN apt-get update && apt-mark hold iptables && \
 
 RUN sed -i 's%<property name="ThemeName" type="string" value="Xfce"/>%<property name="ThemeName" type="string" value="Raleigh"/>%' /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
 
-RUN apt-get update && apt-get install -y \ 
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \ 
     git \
     x11vnc \
     software-properties-common \
