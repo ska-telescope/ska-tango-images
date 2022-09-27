@@ -16,20 +16,20 @@ LABEL \
       org.skatelescope.version="1.0.0" \
       int.skao.application="Tango VNC"
 
-ENV DEBIAN_FRONTEND=noninteractive
+
 ENV DISPLAY=:20
 
 USER root
 
 RUN apt-get update && apt-mark hold iptables && \
-    env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    apt-get install -y --no-install-recommends \
       dbus-x11 \
       psmisc \
       xdg-utils \
       x11-xserver-utils \
       x11-utils  \
       xfce4  \
-      gtk3-engines-xfce \
+      gtk3-engines-unico \
       libgtk-3-bin \
       mousepad \
       xfce4-notifyd \
@@ -60,7 +60,7 @@ RUN apt-get update && apt-mark hold iptables && \
 
 RUN sed -i 's%<property name="ThemeName" type="string" value="Xfce"/>%<property name="ThemeName" type="string" value="Raleigh"/>%' /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
 
-RUN apt-get update && apt-get install -y \ 
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \ 
     git \
     x11vnc \
     software-properties-common \
@@ -69,7 +69,7 @@ RUN apt-get update && apt-get install -y \
     slim \
     xvfb \ 
     novnc \
-    python-websockify
+    python3-websockify
 
 #Expose port 5920 to view display using VNC Viewer
 EXPOSE 5920

@@ -19,19 +19,19 @@ LABEL \
 #     so we make a symlink
 # - panic uses python 2, but 'python' maps to python3 in our base image,
 #     so we use sed to edit the PyAlarm launcher
-ENV DEBIAN_FRONTEND=noninteractive
+
 
 USER root
 
 RUN mv /etc/pip.conf /tmp/ska_pip_conf
 
 RUN apt-get update && \
-    apt-get -y install python2.7 \
+    DEBIAN_FRONTEND=noninteractive apt-get -y install python2.7 \
         python-pip \
         exim4
 
 RUN ln -s /usr/lib/x86_64-linux-gnu/libboost_python27.so /usr/lib/x86_64-linux-gnu/libboost_python-py27.so && \
-    pip2 install panic
+    pip install panic
 
 RUN mv /tmp/ska_pip_conf /etc/pip.conf
 RUN sed -i.original 's/python/python2/g' `which PyAlarm`
