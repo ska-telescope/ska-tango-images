@@ -15,13 +15,12 @@ LABEL \
       int.skao.application="ITango"
 
 USER root
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && apt-get install -y procps
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y procps
 
 USER tango
+
+RUN python3 -m pip install --no-cache-dir ipython==8.5.0 itango==0.1.9
 # create ipython profile to so that itango doesn't fail if ipython hasn't run yet
 RUN ipython profile create
-
-COPY requirements.txt /requirements.txt
-RUN python3 -m pip install -r /requirements.txt
 
 CMD ["itango3"]

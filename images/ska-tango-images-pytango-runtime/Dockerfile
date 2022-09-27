@@ -22,7 +22,7 @@ LABEL \
 
 USER root
 
-ENV DEBIAN_FRONTEND=noninteractive
+
 # Permanently install Python and PyTango runtime dependencies:
 #
 # * libboost-python is required by PyTango;
@@ -33,7 +33,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update \
     && apt-get -y install --no-install-recommends \
-      libboost-python1.67.0 \
+      libboost-python1.74.0 \
       ca-certificates \
       make \
       curl \
@@ -45,7 +45,7 @@ RUN apt-get update \
 # and test execution sequences
 COPY --from=buildenv /usr/local/bin/wait-for-it.sh /usr/local/bin/wait-for-it.sh
 COPY --from=buildenv /usr/local/bin/retry /usr/local/bin/retry
-COPY --from=buildenv /usr/local/lib/python3.7 /usr/local/lib/python3.7
+COPY --from=buildenv /usr/local/lib/python3.10 /usr/local/lib/python3.10
 COPY --from=buildenv /opt/poetry /opt/poetry
 
 RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
@@ -54,7 +54,7 @@ COPY pip.conf /etc/pip.conf
 RUN ln -sfn /usr/bin/python3 /usr/bin/python && ln -sfn /opt/poetry/bin/poetry /usr/local/bin/poetry
 
 USER tango
-ENV PATH="home/tango/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PATH}"
+ENV PATH="/home/tango/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PATH}"
 
 ONBUILD COPY --chown=tango:tango . /app
 ONBUILD COPY --from=buildenv /usr/local/bin/ /usr/local/bin/

@@ -13,9 +13,9 @@ tags updated.
 
 The release tags should match the underlying dependencies used where possible.
 
-- debian-buster-slim
-  - tango-dependencies/Dockerfile:FROM debian:buster-slim as buildenv
-  - tango-dependencies/Dockerfile:FROM debian:buster-slim
+- ubuntu:22.04
+  - tango-dependencies/Dockerfile:FROM ubuntu:22.04 as buildenv
+  - tango-dependencies/Dockerfile:FROM ubuntu:22.04
     - tango-java/Dockerfile:FROM {nexus}/tango-dependencies
       - tango-jive/Dockerfile:FROM {nexus}/tango-java
       - tango-pogo/Dockerfile:FROM {nexus}/tango-java
@@ -23,7 +23,7 @@ The release tags should match the underlying dependencies used where possible.
       - tango-rest/Dockerfile:FROM {nexus}/tango-java
       - tango-vnc/Dockerfile:FROM {nexus}/tango-java
     - tango-cpp/Dockerfile:FROM {nexus}/tango-dependencies as buildenv
-    - tango-cpp/Dockerfile:FROM debian:buster-slim
+    - tango-cpp/Dockerfile:FROM ubuntu:22.04
       - tango-libtango/Dockerfile:FROM {nexus}/tango-cpp
         - tango-admin/Dockerfile:FROM {nexus}/tango-libtango
         - tango-test/Dockerfile:FROM {nexus}/tango-libtango

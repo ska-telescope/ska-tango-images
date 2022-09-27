@@ -23,7 +23,7 @@ LABEL \
 
 USER root
 
-ENV DEBIAN_FRONTEND=noninteractive
+
 
 # Install build dependencies:
 #
@@ -51,13 +51,12 @@ WORKDIR /app
 
 # Install numpy manually before PyTango and other requirements to ensure we
 # build PyTango with numpy support.
-RUN python3 -m pip install numpy==1.19.2
+RUN python3 -m pip install --no-cache-dir numpy==1.23.0
 
 # Install poetry as a binary
 ENV POETRY_HOME=/opt/poetry
 RUN curl -sSL https://install.python-poetry.org | python3 - --yes
 
-COPY requirements.txt /requirements.txt
-RUN python3 -m pip install -r /requirements.txt
+RUN python3 -m pip install --no-cache-dir pytango==9.3.3
 
 RUN ln -sfn /usr/bin/python3 /usr/bin/python && ln -sfn /opt/poetry/bin/poetry /usr/local/bin/poetry
