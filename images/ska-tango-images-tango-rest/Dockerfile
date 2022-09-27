@@ -6,7 +6,7 @@ FROM $BUILD_IMAGE AS buildenv
 
 ENV MTANGOREST_DOWNLOAD_URL=https://github.com/tango-controls/rest-server/releases/download/rest-server-1.14/rest-server-1.14.jar
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+RUN apt-get update && \
     apt-get -y install ca-certificates curl libtcnative-1 --no-install-recommends
 
 RUN mkdir -p /usr/local/lib/tango
@@ -32,7 +32,7 @@ USER root
 
 RUN mkdir -p /usr/share/man/man1
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+RUN apt-get update && \
     apt-get -y install supervisor libtcnative-1 --no-install-recommends
 
 RUN ln -s /usr/lib/x86_64-linux-gnu/libtcnative-1.so /usr/lib/libtcnative-1.so

@@ -20,17 +20,15 @@ LABEL \
 #     so we make a symlink
 # - panic uses python 2, but 'python' maps to python3 in our base image,
 #     so we use sed to edit the PyAlarm launcher
-ENV DEBIAN_FRONTEND=noninteractive
+
 
 RUN mv /etc/pip.conf /tmp/ska_pip_conf
 
 RUN apt-get update && \
-    apt-get -y install python2.7 \
-        python-pip \
-        python-qt4
+    apt-get -y install python2.7
 
 RUN ln -s /usr/lib/x86_64-linux-gnu/libboost_python27.so /usr/lib/x86_64-linux-gnu/libboost_python-py27.so && \
-    pip2 install panic lxml
+    pip install panic lxml
 
 RUN mv /tmp/ska_pip_conf /etc/pip.conf
 RUN sed -i.original 's/python/python2/g' `which PyAlarm`
@@ -41,14 +39,14 @@ ENV DISPLAY=:20
 USER root
 
 RUN apt-get update && apt-mark hold iptables && \
-    env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
       dbus-x11 \
       psmisc \
       xdg-utils \
       x11-xserver-utils \
       x11-utils  \
       xfce4  \
-      gtk3-engines-xfce \
+      gtk3-engines-unico \
       libgtk-3-bin \
       mousepad \
       xfce4-notifyd \
@@ -79,7 +77,8 @@ RUN apt-get update && apt-mark hold iptables && \
 
 RUN sed -i 's%<property name="ThemeName" type="string" value="Xfce"/>%<property name="ThemeName" type="string" value="Raleigh"/>%' /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y \
     git \
     x11vnc \
     software-properties-common \
@@ -87,8 +86,7 @@ RUN apt-get update && apt-get install -y \
     curl \
     slim \
     xvfb \
-    novnc \
-    python-websockify
+    novnc
 
 #Expose port 5920 to view display using VNC Viewer
 EXPOSE 5920
