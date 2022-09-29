@@ -39,6 +39,7 @@ RUN apt-get update \
                python3-distutils \
                python3-setuptools \
                python3-wheel \
+               python3-venv \
                zlib1g-dev \
                ca-certificates \
                curl \
