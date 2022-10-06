@@ -428,7 +428,7 @@ build_tango-pytango:
       - images/ska-tango-images-pytango-runtime/*
       - images/ska-tango-images-tango-pytango/*
 
-build_tango-panic:
+.build_tango-panic:
   retry: 2
   stage: build_5
   extends:
@@ -452,7 +452,7 @@ build_tango-panic:
       - images/ska-tango-images-pytango-runtime/*
       - images/ska-tango-images-tango-pytango/*
 
-build_tango-panic-gui:
+.build_tango-panic-gui:
   retry: 2
   stage: build_5
   extends:
@@ -633,7 +633,7 @@ scan_tango-pytango:
   rules:
     - !reference [.tango-pytango-rules, rules]
 
-scan_tango-panic:
+.scan_tango-panic:
   extends: 
   - .container-scanning
   variables:
@@ -641,7 +641,7 @@ scan_tango-panic:
   rules:
     - !reference [.tango-panic-rules, rules]
 
-scan_tango-panic-gui:
+.scan_tango-panic-gui:
   extends: 
   - .container-scanning
   variables:
