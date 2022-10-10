@@ -16,7 +16,9 @@ Parameters are:
 {{ define "ska-tango-util.deviceserver-pvc.tpl" }}
 
 ---
+{{/* replace with "if and .volume (not .volume.existingClaimName)" for Helm >= 3.10 */}}
 {{- if .volume }}
+{{- if not .volume.existingClaimName }}
 
 {{ $volume_name := .volume.name }}
 {{ $volume_path := .volume.mountPath }}
@@ -86,6 +88,7 @@ spec:
         persistentVolumeClaim: 
           claimName: {{ $volume_name | toString }}-pvc-{{ .local.Release.Name }}
 
+{{- end -}}
 {{- end }}
 
 {{ end }} # deviceserver-pvc.tpl
