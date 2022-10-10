@@ -7,7 +7,7 @@ instructions.
 
 ## Deprecation alerts
 
-As of release 0.3.23 **tango-panic images will no longer be maintained** as python3 isn't supported.
+As of release 0.3.23 **tango-panic images will no longer be maintained** as these don't support python3.
 
 ## Docker hierarchy and release tagging
 
