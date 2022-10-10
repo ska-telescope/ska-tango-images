@@ -16,7 +16,7 @@ Parameters are:
 {{ define "ska-tango-util.deviceserver-pvc.tpl" }}
 
 ---
-{{- if .volume }}
+{{- if and .volume (not .volume.existingClaimName) }}
 
 {{ $volume_name := .volume.name }}
 {{ $volume_path := .volume.mountPath }}
