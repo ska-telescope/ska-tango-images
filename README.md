@@ -5,6 +5,10 @@ that are useful for TANGO control system development.
 See the documentation in the 'docs' folder for build and usage
 instructions.
 
+## Deprecation alerts
+
+As of release 0.3.23 **tango-panic images will no longer be maintained** as these don't support python3.
+
 ## Docker hierarchy and release tagging
 
 When updating Dockerfiles, and especially the tags in the `.release` files,
@@ -29,8 +33,6 @@ The release tags should match the underlying dependencies used where possible.
         - tango-test/Dockerfile:FROM {nexus}/tango-libtango
         - tango-databaseds/Dockerfile:FROM {nexus}/tango-libtango
       - pytango-builder/Dockerfile:FROM {nexus}/tango-cpp
-        - pytango-panic/Dockerfile:FROM {nexus}/pytango-builder as buildenv
-        - pytango-panic-gui/Dockerfile:FROM {nexus}/pytango-builder as buildenv
         - pytango-runtime/Dockerfile:FROM {nexus}/pytango-builder as buildenv
         - pytango-runtime/Dockerfile:FROM {nexus}/tango-cpp
           - tango-dsconfig/Dockerfile:FROM {nexus}/pytango-builder as buildenv
