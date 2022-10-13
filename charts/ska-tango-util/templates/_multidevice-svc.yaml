@@ -241,10 +241,10 @@ spec:
           - name: configuration
             mountPath: data
             readOnly: true
-          {{ if hasKey $deviceserver "volume" }}
+          {{ with $deviceserver.volume }}
           - name: volume-data
-            mountPath: {{ $deviceserver.volume.mountPath }}
-            readOnly: true
+            mountPath: {{ .mountPath }}
+            readOnly: {{ (hasKey . "readOnly" | ternary .readOnly true) }}{{/* https://github.com/helm/helm/issues/3308 */}}
           {{ end }}
         livenessProbe:
           exec:
