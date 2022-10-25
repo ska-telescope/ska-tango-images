@@ -325,6 +325,10 @@ spec:
         resources:
 {{ toYaml (coalesce $instance.resources $deviceserver.resources $chart.Values.resources) | indent 10 }}
 {{ end }}
+{{- with (coalesce $deviceserver.securityContext $chart.Values.securityContext) }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+{{ end }}
 {{- with $deviceserver.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
