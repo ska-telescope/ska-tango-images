@@ -12,6 +12,7 @@ Parameters are:
 - volume.mountPath    mount path inside the container, e.g. "/firmware"
 - volume.size         (optional and set to 250Mi by default)
 - volume.admin_image  structure composed by registry, image, tag and policy for the OCI image to use
+- volume.readOnly     whether to mount the volume as read only, default true
 - volume.existingClaimName  name of an existing PVC to use instead of creating
 - local (the local chart)
 
