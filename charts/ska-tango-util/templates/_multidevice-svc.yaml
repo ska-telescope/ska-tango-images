@@ -329,9 +329,9 @@ spec:
         securityContext:
           {{- toYaml . | nindent 10 }}
 {{ end }}
-{{- with $deviceserver.nodeSelector }}
+{{- with (coalesce $deviceserver.nodeSelector $chart.Values.nodeSelector) }}
       nodeSelector:
-{{ toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
 {{- end }}
 {{- with $chart.Values.affinity }}
       affinity:
