@@ -120,9 +120,9 @@ spec:
         domain: {{ $deviceserver.domain }}
         subsystem: {{ $chart.Values.subsystem }}
 {{ toYaml $labels | indent 8 }}
-    {{ if $annotations }}
+    {{ with $deviceserver.annotations | default dict | mergeOverwrite $annotations }}
       annotations:
-{{ toYaml $annotations | indent 8 }}
+        {{- toYaml . | nindent 8 }}
     {{ end }}
     spec:
       volumes:
@@ -325,9 +325,13 @@ spec:
         resources:
 {{ toYaml (coalesce $instance.resources $deviceserver.resources $chart.Values.resources) | indent 10 }}
 {{ end }}
-{{- with $deviceserver.nodeSelector }}
+{{- with (coalesce $deviceserver.securityContext $chart.Values.securityContext) }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+{{ end }}
+{{- with (coalesce $deviceserver.nodeSelector $chart.Values.nodeSelector) }}
       nodeSelector:
-{{ toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
 {{- end }}
 {{- with $chart.Values.affinity }}
       affinity:
