@@ -52,6 +52,24 @@ before_script:
       echo "Image to build: ${IMG}"; docker pull ${IMG} || true;
     - make oci-build OCI_IMAGE=${OCI_IMAGE} CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME} RELEASE_CONTEXT_DIR=images/${OCI_IMAGE} OCI_BUILD_ADDITIONAL_ARGS="--no-cache --build-arg BUILD_IMAGE --build-arg BASE_IMAGE "
 
+trigger-ska-tango-examples:
+  stage: test
+  script:
+    - |
+      VERS=$(make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-builder);
+      export BUILD_IMAGE="${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:${VERS}";
+      VERS=$(make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-runtime);
+      export BASE_IMAGE="${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime:${VERS}";
+      export OCI_BUILD_ADDITIONAL_ARGS="--no-cache --build-arg BUILD_IMAGE --build-arg BASE_IMAGE "
+      curl --request POST \
+           --form token=$CI_JOB_TOKEN \
+           --form ref=master \
+           --form "variables[BUILD_IMAGE]=${BUILD_IMAGE}" \
+           --form "variables[BASE_IMAGE]=${BASE_IMAGE}" \
+           --form "variables[OCI_BUILD_ADDITIONAL_ARGS]=${OCI_BUILD_ADDITIONAL_ARGS}" \
+           --form "variables[SKA_PYTHON_PYTANGO_BUILDER_IMAGE]=${BUILD_IMAGE}" \
+           "https://gitlab.com/api/v4/projects/9673989/trigger/pipeline"
+
 .tango-dependencies_rules:
   rules:
     - if: '$CI_COMMIT_TAG'
