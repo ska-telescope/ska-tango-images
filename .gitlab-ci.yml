@@ -54,10 +54,7 @@ before_script:
 
 trigger-ska-tango-examples:
   stage: test
-  trigger: 
-    include:
-      project: 'ska-telescope/ska-tango-examples'
-      ref: 'master'
+  trigger: ska-telescope/ska-tango-examples
   variables:
     SKA_PYTHON_PYTANGO_BUILDER_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:${make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-builder}
     BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:${make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-builder}
