@@ -63,7 +63,7 @@ trigger-ska-tango-examples:
       export OCI_BUILD_ADDITIONAL_ARGS="--no-cache --build-arg BUILD_IMAGE --build-arg BASE_IMAGE "
       response=$(curl --request POST \
            --form token=$CI_JOB_TOKEN \
-           --form ref=master \
+           --form ref=st-1386-test-pytango-images \
            --form "variables[BUILD_IMAGE]=${BUILD_IMAGE}" \
            --form "variables[BASE_IMAGE]=${BASE_IMAGE}" \
            --form "variables[OCI_BUILD_ADDITIONAL_ARGS]=${OCI_BUILD_ADDITIONAL_ARGS}" \
@@ -83,7 +83,7 @@ trigger-ska-tango-examples:
           echo "Pipeline 'ska-tango-examples' failed: ${pipeline_url}"
           exit 1
         else
-          echo 'Pipeline $status'
+          echo -n '.'
           sleep 5
         fi
       done
