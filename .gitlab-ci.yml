@@ -54,11 +54,17 @@ before_script:
 
 trigger-ska-tango-examples:
   stage: test
-  trigger: ska-telescope/ska-tango-examples
+  trigger: 
+    include:
+      - project: 'ska-telescope/ska-tango-examples'
+        ref: 'master'
+  before_script:
+    - export BUILDER_VERSION=$(make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-builder)
+    - export RUNTIME_VERSION=$(make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-builder)
   variables:
-    SKA_PYTHON_PYTANGO_BUILDER_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:$(make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-builder)
-    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:$(make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-builder)
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime:$(make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-runtime)
+    SKA_PYTHON_PYTANGO_BUILDER_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:${BUILDER_VERSION}
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder::${BUILDER_VERSION}
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime::${RUNTIME_VERSION}
     OCI_BUILD_ADDITIONAL_ARGS: "--no-cache --build-arg BUILD_IMAGE --build-arg BASE_IMAGE "
 
 .tango-dependencies_rules:
