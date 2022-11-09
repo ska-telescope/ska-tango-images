@@ -54,12 +54,20 @@ before_script:
 
 trigger-ska-tango-examples:
   stage: test
-  trigger: ska-telescope/ska-tango-examples
-  variables:
-    SKA_PYTHON_PYTANGO_BUILDER_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:${make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-builder}
-    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:${make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-builder}
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime:${make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-runtime}
-    OCI_BUILD_ADDITIONAL_ARGS: "--no-cache --build-arg BUILD_IMAGE --build-arg BASE_IMAGE "
+  script:
+    - |
+      VERS=$(make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-builder);
+      BUILD_IMAGE="${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:${VERS}";
+      VERS=$(make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-runtime);
+      BASE_IMAGE="${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime:${VERS}";
+      curl --request POST \
+           --form token=$CI_JOB_TOKEN \
+           --form ref=main \
+           --form "variables[BUILD_IMAGE]=${BUILD_IMAGE}" \
+           --form "variables[BASE_IMAGE]=${BASE_IMAGE}" \
+           --form "variables[OCI_BUILD_ADDITIONAL_ARGS]=${OCI_BUILD_ADDITIONAL_ARGS}" \
+           --form "variables[SKA_PYTHON_PYTANGO_BUILDER_IMAGE]=${BUILD_IMAGE}" \
+           "https://gitlab.com/api/v4/projects/9673989/trigger/pipeline"
 
 .tango-dependencies_rules:
   rules:
