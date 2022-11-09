@@ -7,8 +7,8 @@ ARG BASE_IMAGE="ubuntu:22.04"
 FROM $BASE_IMAGE as buildenv
 
 ENV ZEROMQ_DOWNLOAD_URL=https://github.com/zeromq/libzmq/archive/v4.3.4.tar.gz
-ENV CPPZMQ_DOWNLOAD_URL=https://github.com/zeromq/cppzmq/archive/v4.8.1.tar.gz
-ENV OMNIORB_DOWNLOAD_URL=https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.4/omniORB-4.2.4.tar.bz2/download 
+ENV CPPZMQ_DOWNLOAD_URL=https://github.com/zeromq/cppzmq/archive/v4.9.0.tar.gz
+ENV OMNIORB_DOWNLOAD_URL=https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.3.0/omniORB-4.3.0.tar.bz2/download 
 
 # Copy across files that are used to help orchestrate container compositions
 # and test execution sequences
@@ -17,9 +17,9 @@ COPY retry.sh /usr/local/bin/retry
 
 RUN apt-get update && \
     apt-get -y install --no-install-recommends \
-        autoconf automake build-essential ca-certificates \
-        curl libkrb5-dev libtool pkg-config unzip \
-        cmake python3-dev python3-pkgconfig
+    autoconf automake build-essential ca-certificates \
+    curl libkrb5-dev libtool pkg-config unzip \
+    cmake python3-dev python3-pkgconfig
 
 RUN mkdir /usr/src/zeromq
 WORKDIR /usr/src/zeromq
@@ -55,12 +55,12 @@ RUN curl -kfsSL "$OMNIORB_DOWNLOAD_URL" -o omniorb.tar.bz2 \
 FROM $BASE_IMAGE
 
 LABEL \
-      author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
-      description="This image includes all the depenencies needed for installing the TANGO-controls framework" \
-      license="BSD-3-Clause" \
-      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies" \
-      org.skatelescope.team="Systems Team" \
-      org.skatelescope.version="1.0.0" \
-      int.skao.application="Tango dependencies"
+    author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
+    description="This image includes all the depenencies needed for installing the TANGO-controls framework" \
+    license="BSD-3-Clause" \
+    registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies" \
+    org.skatelescope.team="Systems Team" \
+    org.skatelescope.version="1.0.0" \
+    int.skao.application="Tango dependencies"
 
 COPY --from=buildenv /usr/local /usr/local
