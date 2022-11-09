@@ -52,7 +52,7 @@ before_script:
       echo "Image to build: ${IMG}"; docker pull ${IMG} || true;
     - make oci-build OCI_IMAGE=${OCI_IMAGE} CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME} RELEASE_CONTEXT_DIR=images/${OCI_IMAGE} OCI_BUILD_ADDITIONAL_ARGS="--no-cache --build-arg BUILD_IMAGE --build-arg BASE_IMAGE "
 
-trigger-ska-tango-examples:
+ska-tango-examples-tests:
   stage: test
   script:
     - |
@@ -71,22 +71,33 @@ trigger-ska-tango-examples:
            "https://gitlab.com/api/v4/projects/9673989/trigger/pipeline")
       echo "Created pipeline for 'ska-tango-examples': $(jq -r '.web_url' <<< "$response")"
       pipeline_id=$(jq -r '.id' <<< "$response")
-      jobs_url="https://gitlab.com/api/v4/projects/9673989/pipelines/${pipeline_id}/jobs"
+      pipeline_url="https://gitlab.com/api/v4/projects/9673989/pipelines/${pipeline_id}"
+      jobs_url="$pipeline_url/jobs"
       for i in {1..800}
       do
-        echo curl -s --header "PRIVATE-TOKEN: $CI_JOB_TOKEN" "$jobs_url"
-        response=$(curl -s --header "PRIVATE-TOKEN: $CI_JOB_TOKEN" "$jobs_url")
-        k8steststatus=$(jq -r '.[] | select(.name == "k8s-test") | .status' <<< $response)
-        pythonteststatus=$(jq -r '.[] | select(.name == "python-test") | .status' <<< $response)
-        if [[ $k8steststatus  == "success" ]] && [[ $pythonteststatus  == "success" ]]; then
-          echo "'ska-tango-examples' succeeded"
-          exit 0
-        elif [[ $k8steststatus  == "failed" ]] || [[ $pythonteststatus  == "failed" ]]; then
-          echo "'ska-tango-examples' failed."
+        response=$(curl -s --header "PRIVATE-TOKEN: $CI_JOB_TOKEN" "$pipeline_url")
+        status=$(jq -r '.status' <<< "$response")
+        if [[ $status == "running" ]]; then
+          response=$(curl -s --header "PRIVATE-TOKEN: $CI_JOB_TOKEN" "$jobs_url")
+          k8steststatus=$(jq -r '.[] | select(.name == "k8s-test") | .status' <<< $response)
+          pythonteststatus=$(jq -r '.[] | select(.name == "python-test") | .status' <<< $response)
+          if [[ $k8steststatus  == "success" ]] && [[ $pythonteststatus  == "success" ]]; then
+            echo "'ska-tango-examples' succeeded"
+            exit 0
+          elif [[ $k8steststatus  == "failed" ]] || [[ $pythonteststatus  == "failed" ]]; then
+            echo "'ska-tango-examples' failed."
+            exit 1
+          elif [[ $k8steststatus  == "canceled" ]] || [[ $pythonteststatus  == "canceled" ]]; then
+          echo "'ska-tango-examples' canceled."
           exit 1
-        else
-          echo 'Status:' $k8steststatus $pythonteststatus
-          sleep 5
+          else
+            echo 'Tests status:' $k8steststatus $pythonteststatus
+            sleep 5
+          fi
+          else
+            echo 'Pipeline status:' $status
+            sleep 5
+          fi
         fi
       done
 
