@@ -62,7 +62,7 @@ trigger-ska-tango-examples:
       BASE_IMAGE="${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime:${VERS}";
       curl --request POST \
            --form token=$CI_JOB_TOKEN \
-           --form ref=main \
+           --form ref=master \
            --form "variables[BUILD_IMAGE]=${BUILD_IMAGE}" \
            --form "variables[BASE_IMAGE]=${BASE_IMAGE}" \
            --form "variables[OCI_BUILD_ADDITIONAL_ARGS]=${OCI_BUILD_ADDITIONAL_ARGS}" \
