@@ -63,8 +63,8 @@ trigger-ska-tango-examples:
     - export RUNTIME_VERSION=$(make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-builder)
   variables:
     SKA_PYTHON_PYTANGO_BUILDER_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:${BUILDER_VERSION}
-    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder::${BUILDER_VERSION}
-    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime::${RUNTIME_VERSION}
+    BUILD_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:${BUILDER_VERSION}
+    BASE_IMAGE: ${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime:${RUNTIME_VERSION}
     OCI_BUILD_ADDITIONAL_ARGS: "--no-cache --build-arg BUILD_IMAGE --build-arg BASE_IMAGE "
 
 .tango-dependencies_rules:
