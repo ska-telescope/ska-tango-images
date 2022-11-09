@@ -88,16 +88,21 @@ ska-tango-examples-tests:
             echo "'ska-tango-examples' failed."
             exit 1
           elif [[ $k8steststatus  == "canceled" ]] || [[ $pythonteststatus  == "canceled" ]]; then
-          echo "'ska-tango-examples' canceled."
-          exit 1
+            echo "'ska-tango-examples' canceled."
+            exit 1
           else
             echo 'Tests status:' $k8steststatus $pythonteststatus
             sleep 5
           fi
-          else
-            echo 'Pipeline status:' $status
-            sleep 5
-          fi
+        elif [[ $status == "failed" ]]; then
+          echo "'ska-tango-examples' failed."
+          exit 1
+        elif [[ $status == "cancelled" ]]; then
+          echo "'ska-tango-examples' cancelled."
+          exit 1
+        else
+          echo 'Pipeline status:' $status
+          sleep 5
         fi
       done
 
