@@ -81,7 +81,7 @@ trigger-ska-tango-examples:
         if [[ $k8steststatus  == "success" ]] && [[ $pythonteststatus  == "success" ]]; then
           echo "'ska-tango-examples' succeeded"
           exit 0
-        elif [[ $k8steststatus  == "success" ]] || [[ $pythonteststatus  == "success" ]]; then
+        elif [[ $k8steststatus  == "failed" ]] || [[ $pythonteststatus  == "failed" ]]; then
           echo "'ska-tango-examples' failed."
           exit 1
         else
