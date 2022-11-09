@@ -69,21 +69,21 @@ trigger-ska-tango-examples:
            --form "variables[OCI_BUILD_ADDITIONAL_ARGS]=${OCI_BUILD_ADDITIONAL_ARGS}" \
            --form "variables[SKA_PYTHON_PYTANGO_BUILDER_IMAGE]=${BUILD_IMAGE}" \
            "https://gitlab.com/api/v4/projects/9673989/trigger/pipeline")
-      resource_name=$(echo "$resource_id" | rev | cut -d "/" -f 1 | rev)
-      echo "Created pipeline for '${resource_name}':"
-      echo "$(jq -r '.web_url' <<< "$response")"
+      echo "Created pipeline for 'ska-tango-examples': $(jq -r '.web_url' <<< "$response")"
       pipeline_id=$(jq -r '.id' <<< "$response")
       pipeline_url="https://gitlab.com/api/v4/projects/9673989/pipelines/${pipeline_id}"
-      for i in {1..5}
+      for i in {1..800}
       do
         response=$(curl -s --header "PRIVATE-TOKEN: $CI_JOB_TOKEN" "$pipeline_url")
         status=$(jq -r '.status' <<< "$response")
         if [[ $status == "success" ]]; then
-          echo "Pipeline for '${resource}' succeeded: ${pipeline_url}"
+          echo "Pipeline 'ska-tango-examples' succeeded: ${pipeline_url}"
+          exit 0
         elif [[ $status == "failed" ]]; then
-          echo "Pipeline for '${resource}' failed: ${pipeline_url}"
+          echo "Pipeline 'ska-tango-examples' failed: ${pipeline_url}"
           exit 1
         else
+          echo 'Pipeline $status'
           sleep 5
         fi
       done
