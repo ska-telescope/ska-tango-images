@@ -63,7 +63,7 @@ ska-tango-examples-tests:
       export OCI_BUILD_ADDITIONAL_ARGS="--no-cache --build-arg BUILD_IMAGE --build-arg BASE_IMAGE "
       response=$(curl --request POST \
            --form token=$CI_JOB_TOKEN \
-           --form ref=st-1386-test-pytango-images \
+           --form ref=master \
            --form "variables[BUILD_IMAGE]=${BUILD_IMAGE}" \
            --form "variables[BASE_IMAGE]=${BASE_IMAGE}" \
            --form "variables[OCI_BUILD_ADDITIONAL_ARGS]=${OCI_BUILD_ADDITIONAL_ARGS}" \
@@ -91,7 +91,7 @@ ska-tango-examples-tests:
             echo "'ska-tango-examples' canceled."
             exit 1
           else
-            echo 'Tests status:' $k8steststatus $pythonteststatus
+            echo -n '.'
             sleep 5
           fi
         elif [[ $status == "failed" ]]; then
@@ -101,7 +101,7 @@ ska-tango-examples-tests:
           echo "'ska-tango-examples' canceled."
           exit 1
         else
-          echo 'Pipeline status:' $status
+          echo -n '.'
           sleep 5
         fi
       done
