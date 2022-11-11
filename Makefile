@@ -49,7 +49,7 @@ include .make/base.mk
 ifneq ($(CI_REGISTRY),)
 K8S_TEST_IMAGE_TO_TEST=$(CI_REGISTRY)/ska-telescope/ska-tango-images/ska-tango-images-tango-itango:$(ITANGO_VERSION)
 else
-K8S_TEST_IMAGE_TO_TEST=$(CI_REGISTRY)/ska-telescope/ska-tango-images/ska-tango-images-tango-itango:$(ITANGO_VERSION)
+K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-tango-images-tango-itango:$(ITANGO_VERSION)
 endif
 
 oci-bump-patch-release: ## Bump patch release for all OCI Image .release files in ./images/<dir>
