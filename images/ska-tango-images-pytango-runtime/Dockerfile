@@ -18,7 +18,8 @@ LABEL \
       registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-runtime" \
       org.skatelescope.team="Systems Team" \
       org.skatelescope.version="1.0.0" \
-      int.skao.application="PyTango Runtime"
+      int.skao.application="PyTango Runtime" \
+      int.skao.pytango.application="9.3.6"
 
 USER root
 

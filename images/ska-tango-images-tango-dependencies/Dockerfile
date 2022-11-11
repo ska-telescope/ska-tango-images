@@ -61,6 +61,9 @@ LABEL \
       registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies" \
       org.skatelescope.team="Systems Team" \
       org.skatelescope.version="1.0.0" \
-      int.skao.application="Tango dependencies"
+      int.skao.application="Tango dependencies" \
+      int.skao.omniorb.version="4.2.4" \
+      int.skao.libzmq.version="4.3.4" \
+      int.skao.cppzmq.version="4.8.1"
 
 COPY --from=buildenv /usr/local /usr/local
