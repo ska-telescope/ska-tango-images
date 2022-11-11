@@ -62,7 +62,6 @@ ska-tango-examples-tests:
     PYTANGO_VERSION: "9.3.6"
   trigger:
     project: ska-telescope/ska-tango-examples
-    branch: st-1386-test-pytango-images
     strategy: depend
 
 .tango-dependencies_rules:
