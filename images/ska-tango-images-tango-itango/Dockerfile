@@ -15,7 +15,12 @@ LABEL \
       int.skao.application="ITango"
 
 USER root
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y procps
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+      procps \
+      unattended-upgrades
+
+# Apply security upgrades
+RUN unattended-upgrade
 
 USER tango
 

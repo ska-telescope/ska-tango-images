@@ -8,23 +8,36 @@ ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:9.
 FROM $BUILD_IMAGE
 
 LABEL \
-      author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
-      description="This image includes the Java GUI applications of the TANGO-controls framework" \
-      license="BSD-3-Clause" \
-      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-java" \
-      org.skatelescope.team="Systems Team" \
-      org.skatelescope.version="1.0.0" \
-      int.skao.application="Tango Java"
+    author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
+    description="This image includes the Java GUI applications of the TANGO-controls framework" \
+    license="BSD-3-Clause" \
+    registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-java" \
+    org.skatelescope.team="Systems Team" \
+    org.skatelescope.version="1.0.0" \
+    int.skao.application="Tango Java"
 
 ENV JAVA_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/jre-8u221-linux-x64.tar.gz
 ENV TANGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/tango-9.3.4.tar.gz
 ENV LOG4J=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/log4j-1.2.17.tar.gz
 
 
-RUN apt-get update && \
-    DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends \
-        wget sudo libxrender1 libxtst6 libxi6 \
-        build-essential curl file libmariadbclient-dev-compat pkg-config libmariadb3 python3
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    wget \
+    sudo \
+    libxrender1 \
+    libxtst6 \
+    libxi6 \
+    build-essential \
+    curl \
+    file \
+    libmariadbclient-dev-compat \
+    pkg-config \
+    libmariadb3 \
+    python3 \
+    unattended-upgrades
+
+# Apply security upgrades
+RUN unattended-upgrade
 
 RUN mkdir /usr/java
 WORKDIR /usr/java
