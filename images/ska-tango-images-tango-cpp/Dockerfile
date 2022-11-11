@@ -4,22 +4,24 @@
 # binaries.
 #
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:9.3.5"
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:9.3.11"
 ARG BASE_IMAGE="ubuntu:22.04"
+ARG TANGO_VERSION="9.4.0"
 FROM $BUILD_IMAGE as buildenv
 
 
 
 RUN apt-get update && \
     apt-get -y install --no-install-recommends \
-        build-essential \
-        ca-certificates \
-        cmake \
-        curl \
-        file \
-        git \
-        libmariadbclient-dev-compat \
-        pkg-config python3
+    build-essential \
+    ca-certificates \
+    cmake \
+    curl \
+    file \
+    git \
+    libmariadbclient-dev-compat \
+    libjpeg-dev \
+    pkg-config python3
 
 
 # build and install tangoidl
@@ -36,14 +38,14 @@ RUN mkdir -p /usr/src/tango
 WORKDIR /usr/src/tango
 
 RUN git clone https://gitlab.com/tango-controls/cppTango.git /usr/src/tango && \
-    cd /usr/src/tango && git checkout 9.3.5 && \
+    cd /usr/src/tango && git checkout $TANGO_VERSION && \
     mkdir build && \
     cmake . -B build \
-      -DBUILD_TESTING=OFF \
-      -DCPPZMQ_BASE=/usr/local/ \
-      -DIDL_BASE=/usr/local/ \
-      -DOMNI_BASE=/usr/local/ \
-      -DZMQ_BASE=/usr/local/ && \
+    -DBUILD_TESTING=OFF \
+    -DCPPZMQ_BASE=/usr/local/ \
+    -DIDL_BASE=/usr/local/ \
+    -DOMNI_BASE=/usr/local/ \
+    -DZMQ_BASE=/usr/local/ && \
     make -C /usr/src/tango/build -j$(nproc) && \
     make -C /usr/src/tango/build install && \
     ldconfig && \
@@ -63,19 +65,19 @@ RUN git clone --depth 1 https://gitlab.com/tango-controls/TangoDatabase.git /usr
 FROM $BASE_IMAGE
 
 LABEL \
-      author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
-      description="This image includes the TANGO-controls framework with all its dependencies" \
-      license="BSD-3-Clause" \
-      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp" \
-      org.skatelescope.team="Systems Team" \
-      org.skatelescope.version="1.0.0" \
-      int.skao.application="Tango CPP"
+    author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
+    description="This image includes the TANGO-controls framework with all its dependencies" \
+    license="BSD-3-Clause" \
+    registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp" \
+    org.skatelescope.team="Systems Team" \
+    org.skatelescope.version="1.0.0" \
+    int.skao.application="Tango CPP"
 
 COPY --from=buildenv /usr/local /usr/local
 
 RUN apt-get update && \
     apt-get -y install --no-install-recommends \
-        libmariadb3 sudo
+    libmariadb3 sudo
 
 RUN useradd --create-home --home-dir /home/tango tango
 
