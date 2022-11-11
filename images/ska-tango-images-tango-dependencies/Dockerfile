@@ -15,11 +15,23 @@ ENV OMNIORB_DOWNLOAD_URL=https://sourceforge.net/projects/omniorb/files/omniORB/
 COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
 COPY retry.sh /usr/local/bin/retry
 
-RUN apt-get update && \
-    apt-get -y install --no-install-recommends \
-        autoconf automake build-essential ca-certificates \
-        curl libkrb5-dev libtool pkg-config unzip \
-        cmake python3-dev python3-pkgconfig
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+    autoconf \
+    automake \
+    build-essential \
+    ca-certificates \
+    curl \
+    libkrb5-dev \
+    libtool \
+    pkg-config \
+    unzip \
+    cmake \
+    python3-dev \
+    python3-pkgconfig \
+    unattended-upgrades
+
+# Apply security upgrades
+RUN unattended-upgrade
 
 RUN mkdir /usr/src/zeromq
 WORKDIR /usr/src/zeromq
@@ -55,12 +67,12 @@ RUN curl -kfsSL "$OMNIORB_DOWNLOAD_URL" -o omniorb.tar.bz2 \
 FROM $BASE_IMAGE
 
 LABEL \
-      author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
-      description="This image includes all the depenencies needed for installing the TANGO-controls framework" \
-      license="BSD-3-Clause" \
-      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies" \
-      org.skatelescope.team="Systems Team" \
-      org.skatelescope.version="1.0.0" \
-      int.skao.application="Tango dependencies"
+    author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
+    description="This image includes all the depenencies needed for installing the TANGO-controls framework" \
+    license="BSD-3-Clause" \
+    registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies" \
+    org.skatelescope.team="Systems Team" \
+    org.skatelescope.version="1.0.0" \
+    int.skao.application="Tango dependencies"
 
 COPY --from=buildenv /usr/local /usr/local

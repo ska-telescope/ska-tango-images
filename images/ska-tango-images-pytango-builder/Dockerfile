@@ -31,19 +31,22 @@ USER root
 # * libboost-python-dev is required to bind PyTango to the C++ Tango libs
 # * pkg-config is used to locate required libraries
 # * git is required for Python packages using katversion for release info
-#
-RUN apt-get update \
-    && apt-get -y install --no-install-recommends build-essential \
-               libboost-python-dev \
-               pkg-config \
-               python3-distutils \
-               python3-setuptools \
-               python3-wheel \
-               python3-venv \
-               zlib1g-dev \
-               ca-certificates \
-               curl \
-               git 
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+      build-essential \
+      libboost-python-dev \
+      pkg-config \
+      python3-distutils \
+      python3-setuptools \
+      python3-wheel \
+      python3-venv \
+      zlib1g-dev \
+      ca-certificates \
+      curl \
+      git \
+      unattended-upgrades
+
+# Apply security upgrades
+RUN unattended-upgrade
 
 RUN curl -k https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 COPY pip.conf /etc/pip.conf

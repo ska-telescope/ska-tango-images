@@ -29,18 +29,19 @@ USER root
 # * make is required to manage execution of the tests inside the container
 # * python3 is required as this image is intended for running Python Tango
 #   devices.
-#
-
-RUN apt-get update \
-    && apt-get -y install --no-install-recommends \
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
       libboost-python1.74.0 \
       ca-certificates \
       make \
       curl \
       python3 \
       python3-distutils \
-      python3-setuptools 
-      
+      python3-setuptools \
+      unattended-upgrades
+
+# Apply security upgrades
+RUN unattended-upgrade
+
 # Copy across files that are used to help orchestrate container compositions
 # and test execution sequences
 COPY --from=buildenv /usr/local/bin/wait-for-it.sh /usr/local/bin/wait-for-it.sh
