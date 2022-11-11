@@ -69,8 +69,7 @@ LABEL \
       registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp" \
       org.skatelescope.team="Systems Team" \
       org.skatelescope.version="1.0.0" \
-      int.skao.application="Tango CPP" \
-      int.skao.version="9.3.5"
+      int.skao.application="Tango CPP"
 
 COPY --from=buildenv /usr/local /usr/local
 
