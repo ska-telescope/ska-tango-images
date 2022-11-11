@@ -8,13 +8,13 @@ ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-java:9.3.5"
 FROM $BASE_IMAGE
 
 LABEL \
-      author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
-      description="This image includes the Java GUI applications of the TANGO-controls framework and a X11 server with VNC and NoVnc installed" \
-      license="BSD-3-Clause" \
-      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-vnc" \
-      org.skatelescope.team="Systems Team" \
-      org.skatelescope.version="1.0.0" \
-      int.skao.application="Tango VNC"
+    author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
+    description="This image includes the Java GUI applications of the TANGO-controls framework and a X11 server with VNC and NoVnc installed" \
+    license="BSD-3-Clause" \
+    registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-vnc" \
+    org.skatelescope.team="Systems Team" \
+    org.skatelescope.version="1.0.0" \
+    int.skao.application="Tango VNC"
 
 
 ENV DISPLAY=:20
@@ -23,40 +23,44 @@ USER root
 
 RUN apt-get update && apt-mark hold iptables && \
     apt-get install -y --no-install-recommends \
-      dbus-x11 \
-      psmisc \
-      xdg-utils \
-      x11-xserver-utils \
-      x11-utils  \
-      xfce4  \
-      gtk3-engines-unico \
-      libgtk-3-bin \
-      mousepad \
-      xfce4-notifyd \
-      xfce4-taskmanager \
-      xfce4-terminal  \
-      xfce4-battery-plugin \
-      xfce4-clipman-plugin \
-      xfce4-cpufreq-plugin \
-      xfce4-cpugraph-plugin \
-      xfce4-diskperf-plugin \
-      xfce4-datetime-plugin \
-      xfce4-fsguard-plugin \
-      xfce4-genmon-plugin \
-      xfce4-indicator-plugin \
-      xfce4-netload-plugin \
-      xfce4-notes-plugin \
-      xfce4-places-plugin \
-      xfce4-sensors-plugin \
-      xfce4-smartbookmark-plugin \
-      xfce4-systemload-plugin \
-      xfce4-timer-plugin \
-      xfce4-verve-plugin \
-      xfce4-weather-plugin \
-      xfce4-whiskermenu-plugin \
-      libxv1 \
-      mesa-utils \
-      mesa-utils-extra
+    dbus-x11 \
+    psmisc \
+    xdg-utils \
+    x11-xserver-utils \
+    x11-utils  \
+    xfce4  \
+    gtk3-engines-unico \
+    libgtk-3-bin \
+    mousepad \
+    xfce4-notifyd \
+    xfce4-taskmanager \
+    xfce4-terminal  \
+    xfce4-battery-plugin \
+    xfce4-clipman-plugin \
+    xfce4-cpufreq-plugin \
+    xfce4-cpugraph-plugin \
+    xfce4-diskperf-plugin \
+    xfce4-datetime-plugin \
+    xfce4-fsguard-plugin \
+    xfce4-genmon-plugin \
+    xfce4-indicator-plugin \
+    xfce4-netload-plugin \
+    xfce4-notes-plugin \
+    xfce4-places-plugin \
+    xfce4-sensors-plugin \
+    xfce4-smartbookmark-plugin \
+    xfce4-systemload-plugin \
+    xfce4-timer-plugin \
+    xfce4-verve-plugin \
+    xfce4-weather-plugin \
+    xfce4-whiskermenu-plugin \
+    libxv1 \
+    mesa-utils \
+    mesa-utils-extra \
+    unattended-upgrades
+
+# Apply security upgrades
+RUN unattended-upgrade
 
 RUN sed -i 's%<property name="ThemeName" type="string" value="Xfce"/>%<property name="ThemeName" type="string" value="Raleigh"/>%' /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
 
