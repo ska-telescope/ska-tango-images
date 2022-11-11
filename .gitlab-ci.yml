@@ -53,7 +53,7 @@ before_script:
       echo "Image to build: ${IMG}"; docker pull ${IMG} || true;
     - make oci-build OCI_IMAGE=${OCI_IMAGE} CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME} RELEASE_CONTEXT_DIR=images/${OCI_IMAGE} OCI_BUILD_ADDITIONAL_ARGS="--no-cache --build-arg BUILD_IMAGE --build-arg BASE_IMAGE "
 
-ska-tango-examples-tests:
+.ska-tango-examples-tests-use-trigger:
   variables:
     BUILD_IMAGE: "${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:$CI_COMMIT_SHORT_SHA"
     BASE_IMAGE: "${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime:$CI_COMMIT_SHORT_SHA"
@@ -63,6 +63,62 @@ ska-tango-examples-tests:
   trigger:
     project: ska-telescope/ska-tango-examples
     strategy: depend
+
+ska-tango-examples-tests:
+  stage: test
+  script:
+    - |
+      VERS=$(make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-builder)
+      export BUILD_IMAGE="${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:${VERS}"
+      VERS=$(make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-runtime)
+      export BASE_IMAGE="${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime:${VERS}"
+      export OCI_BUILD_ADDITIONAL_ARGS="--no-cache --build-arg BUILD_IMAGE --build-arg BASE_IMAGE "
+      export PYTANGO_VERSION="9.3.6"
+      response=$(curl --request POST \
+           --form token=$CI_JOB_TOKEN \
+           --form ref=st-1386-test-upstream \
+           --form "variables[BUILD_IMAGE]=${BUILD_IMAGE}" \
+           --form "variables[PYTANGO_VERSION]=${PYTANGO_VERSION}" \
+           --form "variables[BASE_IMAGE]=${BASE_IMAGE}" \
+           --form "variables[OCI_BUILD_ADDITIONAL_ARGS]=${OCI_BUILD_ADDITIONAL_ARGS}" \
+           --form "variables[SKA_PYTHON_PYTANGO_BUILDER_IMAGE]=${BUILD_IMAGE}" \
+           "https://gitlab.com/api/v4/projects/9673989/trigger/pipeline")
+      echo "Created pipeline for 'ska-tango-examples': $(jq -r '.web_url' <<< "$response")"
+      pipeline_id=$(jq -r '.id' <<< "$response")
+      pipeline_url="https://gitlab.com/api/v4/projects/9673989/pipelines/${pipeline_id}"
+      jobs_url="$pipeline_url/jobs"
+      for i in {1..800}
+      do
+        response=$(curl -s --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$pipeline_url")
+        status=$(jq -r '.status' <<< "$response")
+        if [[ $status == "running" ]]; then
+          response=$(curl -s --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$jobs_url")
+          k8steststatus=$(jq -r '.[] | select(.name == "k8s-test") | .status' <<< $response)
+          pythonteststatus=$(jq -r '.[] | select(.name == "python-test") | .status' <<< $response)
+          if [[ $k8steststatus  == "success" ]] && [[ $pythonteststatus  == "success" ]]; then
+            echo "'ska-tango-examples' success."
+            exit 0
+          elif [[ $k8steststatus  == "failed" ]] || [[ $pythonteststatus  == "failed" ]]; then
+            echo "'ska-tango-examples' failed."
+            exit 1
+          elif [[ $k8steststatus  == "canceled" ]] || [[ $pythonteststatus  == "canceled" ]]; then
+            echo "'ska-tango-examples' canceled."
+            exit 1
+          else
+            echo -n '.'
+            sleep 5
+          fi
+        elif [[ $status == "failed" ]]; then
+          echo "'ska-tango-examples' failed."
+          exit 1
+        elif [[ $status == "canceled" ]]; then
+          echo "'ska-tango-examples' canceled."
+          exit 1
+        else
+          echo -n '.'
+          sleep 5
+        fi
+      done
 
 .tango-dependencies_rules:
   rules:
