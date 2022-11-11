@@ -7,7 +7,7 @@ KUBE_NAMESPACE ?= ska-tango-images#namespace to be used
 RELEASE_NAME ?= test## release name of the chart
 K8S_CHART = ska-tango-umbrella
 MINIKUBE ?= true ## Minikube or not
-K8S_TEST_IMAGE_TO_TEST ?= artefact.skao.int/ska-tango-images-tango-itango:9.3.9 ## TODO: UGUR docker image that will be run for testing purpose
+ITANGO_VERSION ?= $(shell make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-itango)
 CI_JOB_ID ?= local##pipeline job id
 TEST_RUNNER ?= test-mk-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
 TANGO_HOST ?= makefile-databaseds-also-node-port:10000## TANGO_HOST connection to the Tango DS
@@ -45,6 +45,12 @@ include .make/base.mk
 
 # include your own private variables for custom deployment configuration
 -include PrivateRules.mak
+
+ifneq ($(CI_REGISTRY),)
+K8S_TEST_IMAGE_TO_TEST=$(CI_REGISTRY)/ska-telescope/ska-tango-images/ska-tango-images-tango-itango:$(ITANGO_VERSION)
+else
+K8S_TEST_IMAGE_TO_TEST=artefact.skao.int/ska-tango-images-tango-itango:$(ITANGO_VERSION)
+endif
 
 oci-bump-patch-release: ## Bump patch release for all OCI Image .release files in ./images/<dir>
 	$(foreach ociimage,$(OCI_IMAGES_TO_PUBLISH), make bump-patch-release RELEASE_CONTEXT_DIR=images/$(ociimage);)
