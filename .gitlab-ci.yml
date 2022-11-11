@@ -78,7 +78,7 @@ ska-tango-examples-tests:
       export PYTANGO_VERSION="9.3.6"
       response=$(curl --request POST \
            --form token=$CI_JOB_TOKEN \
-           --form ref=st-1386-test-upstream \
+           --form ref=master \
            --form "variables[BUILD_IMAGE]=${BUILD_IMAGE}" \
            --form "variables[PYTANGO_VERSION]=${PYTANGO_VERSION}" \
            --form "variables[BASE_IMAGE]=${BASE_IMAGE}" \
