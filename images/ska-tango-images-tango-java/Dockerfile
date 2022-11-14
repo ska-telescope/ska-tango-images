@@ -17,7 +17,7 @@ LABEL \
       int.skao.application="Tango Java"
 
 ENV JAVA_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/jre-8u221-linux-x64.tar.gz
-ENV TANGO_DOWNLOAD_URL=https://gitlab.com/tango-controls/JTango/-/archive/9.7.0/JTango-9.7.0.tar.gz
+ENV TANGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/tango-9.3.4.tar.gz
 ENV LOG4J=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/log4j-1.2.17.tar.gz
 
 

@@ -52,12 +52,12 @@ WORKDIR /app
 
 # Install numpy manually before PyTango and other requirements to ensure we
 # build PyTango with numpy support.
-RUN python3 -m pip install --no-cache-dir numpy==1.23.0
+RUN python3 -m pip install --no-cache-dir numpy==1.23.4
 
 # Install poetry as a binary
 ENV POETRY_HOME=/opt/poetry
 RUN curl -sSL https://install.python-poetry.org | python3 - --yes
 
-RUN python3 -m pip install --no-cache-dir pytango==9.3.6
+RUN python3 -m pip install --no-cache-dir pytango==9.4.0rc1
 
 RUN ln -sfn /usr/bin/python3 /usr/bin/python && ln -sfn /opt/poetry/bin/poetry /usr/local/bin/poetry
