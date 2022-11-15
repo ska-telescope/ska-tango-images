@@ -67,7 +67,7 @@ before_script:
     strategy: depend
 
 ska-tango-examples-tests:
-  stage: test
+  stage: lint
   script:
     - |
       VERS=$(make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-builder)
@@ -76,6 +76,7 @@ ska-tango-examples-tests:
       export BASE_IMAGE="${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime:${VERS}"
       export OCI_BUILD_ADDITIONAL_ARGS="--no-cache --build-arg BUILD_IMAGE --build-arg BASE_IMAGE "
       export PYTANGO_VERSION="$(docker run -it ${BUILD_IMAGE} pip list | grep pytango | awk '{print $2}')"
+      echo $PYTANGO_VERSION
       response=$(curl --request POST \
            --form token=$CI_JOB_TOKEN \
            --form ref=master \
