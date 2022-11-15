@@ -75,6 +75,8 @@ ska-tango-examples-tests:
       VERS=$(make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-runtime)
       export BASE_IMAGE="${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime:${VERS}"
       export OCI_BUILD_ADDITIONAL_ARGS="--no-cache --build-arg BUILD_IMAGE --build-arg BASE_IMAGE "
+      echo docker run -it ${BUILD_IMAGE} pip list | grep pytango | awk '{print $2}'
+      docker run -it ${BUILD_IMAGE} pip list | grep pytango | awk '{print $2}'
       export PYTANGO_VERSION="$(docker run -it ${BUILD_IMAGE} pip list | grep pytango | awk '{print $2}')"
       echo $PYTANGO_VERSION
       response=$(curl --request POST \
