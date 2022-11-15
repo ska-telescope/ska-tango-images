@@ -68,6 +68,9 @@ before_script:
 
 ska-tango-examples-tests:
   stage: lint
+  tags:
+    - k8srunner
+  retry: 2
   script:
     - |
       VERS=$(make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-builder)
