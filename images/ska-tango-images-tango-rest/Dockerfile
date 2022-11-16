@@ -9,8 +9,8 @@ ENV MTANGOREST_DOWNLOAD_URL=https://github.com/tango-controls/rest-server/releas
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
-    libtcnative-1 \
-    unattended-upgrades
+    libtcnative-1 
+    # unattended-upgrades
 
 # Apply security upgrades
 # RUN unattended-upgrade

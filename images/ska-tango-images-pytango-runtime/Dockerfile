@@ -36,8 +36,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
       curl \
       python3 \
       python3-distutils \
-      python3-setuptools \
-      unattended-upgrades
+      python3-setuptools
+      # unattended-upgrades
 
 # Apply security upgrades
 # RUN unattended-upgrade

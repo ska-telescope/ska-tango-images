@@ -56,8 +56,8 @@ RUN apt-get update && apt-mark hold iptables && \
     xfce4-whiskermenu-plugin \
     libxv1 \
     mesa-utils \
-    mesa-utils-extra \
-    unattended-upgrades
+    mesa-utils-extra 
+    # unattended-upgrades
 
 # Apply security upgrades
 # RUN unattended-upgrade

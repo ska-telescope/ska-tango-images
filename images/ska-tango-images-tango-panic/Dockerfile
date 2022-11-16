@@ -27,8 +27,8 @@ RUN mv /etc/pip.conf /tmp/ska_pip_conf
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     python2.7 \
     python-pip \
-    exim4 \
-    unattended-upgrades
+    exim4 
+    # unattended-upgrades
 
 # Apply security upgrades
 # RUN unattended-upgrade

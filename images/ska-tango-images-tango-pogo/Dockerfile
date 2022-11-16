@@ -16,8 +16,8 @@ USER root
 ENV POGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/Pogo-9.6.31.jar
 
 RUN apt-get update && \
-    apt-get -y install wget \
-    unattended-upgrades
+    apt-get -y install wget
+    # unattended-upgrades
 
 # Apply security upgrades
 # RUN unattended-upgrade

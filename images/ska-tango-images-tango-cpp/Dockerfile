@@ -17,8 +17,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     git \
     libmariadbclient-dev-compat \
     pkg-config \
-    python3 \
-    unattended-upgrades
+    python3 
+    # unattended-upgrades
 
 # Apply security upgrades
 # RUN unattended-upgrade
