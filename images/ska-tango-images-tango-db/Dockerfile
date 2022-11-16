@@ -10,7 +10,7 @@ RUN apt-get update && \
     unattended-upgrades
 
 # Apply security upgrades
-RUN unattended-upgrade
+# RUN unattended-upgrade
 
 RUN mkdir -p /usr/src/tango
 

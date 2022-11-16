@@ -20,7 +20,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
       unattended-upgrades
 
 # Apply security upgrades
-RUN unattended-upgrade
+# RUN unattended-upgrade
 
 USER tango
 

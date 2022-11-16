@@ -21,7 +21,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     unattended-upgrades
 
 # Apply security upgrades
-RUN unattended-upgrade
+# RUN unattended-upgrade
 
 # build and install tangoidl
 RUN mkdir -p /usr/src/idl
@@ -75,7 +75,8 @@ COPY --from=buildenv /usr/local /usr/local
 
 RUN apt-get update && \
     apt-get -y install --no-install-recommends \
-    libmariadb3 sudo
+    libmariadb3 \
+    sudo
 
 RUN useradd --create-home --home-dir /home/tango tango
 
