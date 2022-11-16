@@ -67,7 +67,7 @@ before_script:
     strategy: depend
 
 ska-tango-examples-tests:
-  stage: lint
+  stage: test
   tags:
     - k8srunner
   retry: 2
