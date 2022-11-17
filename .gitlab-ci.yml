@@ -81,7 +81,7 @@ ska-tango-examples-tests:
       export PYTANGO_VERSION="$(docker run ${BUILD_IMAGE} pip list | grep pytango | awk '{print $2}')"
       response=$(curl --request POST \
            --form token=$CI_JOB_TOKEN \
-           --form ref=master \
+           --form ref=ST-1431-test-new-ska-tango-util \
            --form "variables[BUILD_IMAGE]=${BUILD_IMAGE}" \
            --form "variables[PYTANGO_VERSION]=${PYTANGO_VERSION}" \
            --form "variables[BASE_IMAGE]=${BASE_IMAGE}" \
