@@ -51,6 +51,9 @@ RUN unattended-upgrade
 RUN curl -k https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 COPY pip.conf /etc/pip.conf
 
+# Try workaround for poetry intended bug: https://github.com/python-poetry/poetry/issues/6013
+RUN pip install distro-info==1.0
+
 WORKDIR /app
 
 # Install numpy manually before PyTango and other requirements to ensure we
