@@ -42,11 +42,11 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
       zlib1g-dev \
       ca-certificates \
       curl \
-      git
-      # unattended-upgrades
+      git \
+      unattended-upgrades
 
 # Apply security upgrades
-# RUN unattended-upgrade
+RUN unattended-upgrade
 
 RUN curl -k https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 COPY pip.conf /etc/pip.conf
