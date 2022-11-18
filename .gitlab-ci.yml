@@ -61,7 +61,7 @@ before_script:
     BASE_IMAGE: "${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-runtime:$CI_COMMIT_SHORT_SHA"
     OCI_BUILD_ADDITIONAL_ARGS: "--no-cache --build-arg BUILD_IMAGE --build-arg BASE_IMAGE "
     SKA_PYTHON_PYTANGO_BUILDER_IMAGE: "${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}/ska-tango-images-pytango-builder:$CI_COMMIT_SHORT_SHA"
-    PYTANGO_VERSION: "9.3.6"
+    PYTANGO_VERSION: "9.4.0rc1"
   trigger:
     project: ska-telescope/ska-tango-examples
     strategy: depend
