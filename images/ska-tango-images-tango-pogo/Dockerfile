@@ -17,10 +17,6 @@ ENV POGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tang
 
 RUN apt-get update && \
     apt-get -y install wget
-    # unattended-upgrades
-
-# Apply security upgrades
-# RUN unattended-upgrade
 
 WORKDIR /usr/local/share/java
 

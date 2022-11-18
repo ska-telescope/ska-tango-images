@@ -18,10 +18,9 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     libmariadbclient-dev-compat \
     pkg-config \
     python3 
-    # unattended-upgrades
 
-# Apply security upgrades
-# RUN unattended-upgrade
+# Apply security upgrades (base image is not patched)
+RUN unattended-upgrade
 
 # build and install tangoidl
 RUN mkdir -p /usr/src/idl

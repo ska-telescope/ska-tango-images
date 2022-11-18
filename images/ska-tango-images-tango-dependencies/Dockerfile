@@ -27,11 +27,11 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     unzip \
     cmake \
     python3-dev \
-    python3-pkgconfig 
-    # unattended-upgrades
+    python3-pkgconfig \
+    unattended-upgrades
 
-# Apply security upgrades
-# RUN unattended-upgrade
+# Apply security upgrades (base image)
+RUN unattended-upgrade
 
 RUN mkdir /usr/src/zeromq
 WORKDIR /usr/src/zeromq

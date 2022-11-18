@@ -28,10 +28,6 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     python2.7 \
     python-pip \
     exim4 
-    # unattended-upgrades
-
-# Apply security upgrades
-# RUN unattended-upgrade
 
 RUN ln -s /usr/lib/x86_64-linux-gnu/libboost_python27.so /usr/lib/x86_64-linux-gnu/libboost_python-py27.so && \
     pip install panic

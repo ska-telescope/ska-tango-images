@@ -37,10 +37,6 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
       python3 \
       python3-distutils \
       python3-setuptools
-      # unattended-upgrades
-
-# Apply security upgrades
-# RUN unattended-upgrade
 
 # Copy across files that are used to help orchestrate container compositions
 # and test execution sequences

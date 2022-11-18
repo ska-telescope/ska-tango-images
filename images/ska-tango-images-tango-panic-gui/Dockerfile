@@ -26,10 +26,6 @@ RUN mv /etc/pip.conf /tmp/ska_pip_conf
 
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     python2.7 
-    # unattended-upgrades
-
-# Apply security upgrades
-# RUN unattended-upgrade
 
 RUN ln -s /usr/lib/x86_64-linux-gnu/libboost_python27.so /usr/lib/x86_64-linux-gnu/libboost_python-py27.so && \
     pip install panic lxml

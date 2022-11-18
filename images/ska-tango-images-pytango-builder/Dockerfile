@@ -42,16 +42,12 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
       zlib1g-dev \
       ca-certificates \
       curl \
-      git \
-      unattended-upgrades
-
-# Apply security upgrades
-RUN unattended-upgrade
+      git
 
 RUN curl -k https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 COPY pip.conf /etc/pip.conf
 
-# Try workaround for poetry intended bug: https://github.com/python-poetry/poetry/issues/6013
+# Workaround for poetry intended bug: https://github.com/python-poetry/poetry/issues/6013
 RUN pip install distro-info==1.0
 
 WORKDIR /app

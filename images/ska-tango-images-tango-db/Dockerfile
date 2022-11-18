@@ -6,11 +6,11 @@ ENV TANGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tan
 RUN apt-get update && \
     apt-get -y install --no-install-recommends \
     curl \
-    ca-certificates 
-    # unattended-upgrades
+    ca-certificates \
+    unattended-upgrades
 
-# Apply security upgrades
-# RUN unattended-upgrade
+# Apply security upgrades (base image is not patched)
+RUN unattended-upgrade
 
 RUN mkdir -p /usr/src/tango
 

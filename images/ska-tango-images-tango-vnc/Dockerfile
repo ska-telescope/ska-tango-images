@@ -57,10 +57,6 @@ RUN apt-get update && apt-mark hold iptables && \
     libxv1 \
     mesa-utils \
     mesa-utils-extra 
-    # unattended-upgrades
-
-# Apply security upgrades
-# RUN unattended-upgrade
 
 RUN sed -i 's%<property name="ThemeName" type="string" value="Xfce"/>%<property name="ThemeName" type="string" value="Raleigh"/>%' /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
 

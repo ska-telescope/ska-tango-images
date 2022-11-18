@@ -34,10 +34,6 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-ins
     pkg-config \
     libmariadb3 \
     python3 
-    # unattended-upgrades
-
-# Apply security upgrades
-# RUN unattended-upgrade
 
 RUN mkdir /usr/java
 WORKDIR /usr/java
