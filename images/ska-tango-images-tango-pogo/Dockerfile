@@ -1,6 +1,7 @@
 ARG CAR_OCI_REGISTRY_HOST
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-java:9.3.5"
 FROM $BASE_IMAGE
+ARG DEBIAN_FRONTEND=noninteractive
 
 LABEL \
     author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
@@ -16,7 +17,8 @@ USER root
 ENV POGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/Pogo-9.6.31.jar
 
 RUN apt-get update && \
-    apt-get -y install wget
+    apt-get install -y --no-install-recommends \
+    wget
 
 WORKDIR /usr/local/share/java
 

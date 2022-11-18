@@ -7,8 +7,10 @@ ARG CAR_OCI_REGISTRY_HOST
 ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:9.3.5"
 ARG BASE_IMAGE="ubuntu:22.04"
 FROM $BUILD_IMAGE as buildenv
+ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     build-essential \
     ca-certificates \
     cmake \
@@ -61,6 +63,7 @@ RUN git clone --depth 1 https://gitlab.com/tango-controls/TangoDatabase.git /usr
 
 
 FROM $BASE_IMAGE
+ARG DEBIAN_FRONTEND=noninteractive
 
 LABEL \
     author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
@@ -74,7 +77,7 @@ LABEL \
 COPY --from=buildenv /usr/local /usr/local
 
 RUN apt-get update && \
-    apt-get -y install --no-install-recommends \
+    apt-get install -y --no-install-recommends \
     libmariadb3 \
     sudo
 

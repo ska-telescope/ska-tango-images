@@ -5,6 +5,7 @@
 #
 ARG BASE_IMAGE="ubuntu:22.04"
 FROM $BASE_IMAGE as buildenv
+ARG DEBIAN_FRONTEND=noninteractive
 
 ENV ZEROMQ_DOWNLOAD_URL=https://github.com/zeromq/libzmq/archive/v4.3.4.tar.gz
 ENV CPPZMQ_DOWNLOAD_URL=https://github.com/zeromq/cppzmq/archive/v4.8.1.tar.gz
@@ -15,7 +16,8 @@ ENV OMNIORB_DOWNLOAD_URL=https://sourceforge.net/projects/omniorb/files/omniORB/
 COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
 COPY retry.sh /usr/local/bin/retry
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     autoconf \
     automake \
     build-essential \

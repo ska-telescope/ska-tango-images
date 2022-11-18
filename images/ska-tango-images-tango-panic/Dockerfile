@@ -1,6 +1,7 @@
 ARG CAR_OCI_REGISTRY_HOST
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:9.3.6"
 FROM $BASE_IMAGE
+ARG DEBIAN_FRONTEND=noninteractive
 
 LABEL \
     author="Andrew Bolin <andrew.bolin@csiro.au>, Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
@@ -24,7 +25,8 @@ USER root
 
 RUN mv /etc/pip.conf /tmp/ska_pip_conf
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     python2.7 \
     python-pip \
     exim4 

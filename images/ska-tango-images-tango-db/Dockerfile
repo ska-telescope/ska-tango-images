@@ -1,10 +1,11 @@
 ARG BASE_IMAGE="mariadb:10.7.4-focal"
 FROM $BASE_IMAGE AS builder
+ARG DEBIAN_FRONTEND=noninteractive
 
 ENV TANGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/tango-9.3.4.tar.gz
 
 RUN apt-get update && \
-    apt-get -y install --no-install-recommends \
+    apt-get install -y --no-install-recommends \
     curl \
     ca-certificates \
     unattended-upgrades

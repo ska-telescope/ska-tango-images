@@ -4,6 +4,7 @@ ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-runtime:9.3.12
 
 FROM $BUILD_IMAGE as buildenv
 FROM $BASE_IMAGE
+ARG DEBIAN_FRONTEND=noninteractive
 
 LABEL \
       author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
@@ -15,7 +16,8 @@ LABEL \
       int.skao.application="ITango"
 
 USER root
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+RUN apt-get update && \
+      apt-get install -y --no-install-recommends \
       procps 
 
 USER tango

@@ -6,6 +6,7 @@
 ARG CAR_OCI_REGISTRY_HOST
 ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:9.3.5"
 FROM $BUILD_IMAGE
+ARG DEBIAN_FRONTEND=noninteractive
 
 LABEL \
     author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
@@ -20,8 +21,8 @@ ENV JAVA_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tang
 ENV TANGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/tango-9.3.4.tar.gz
 ENV LOG4J=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/log4j-1.2.17.tar.gz
 
-
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     wget \
     sudo \
     libxrender1 \

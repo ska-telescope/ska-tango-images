@@ -6,6 +6,7 @@
 ARG CAR_OCI_REGISTRY_HOST
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-java:9.3.5"
 FROM $BASE_IMAGE
+ARG DEBIAN_FRONTEND=noninteractive
 
 LABEL \
     author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
@@ -21,7 +22,8 @@ ENV DISPLAY=:20
 
 USER root
 
-RUN apt-get update && apt-mark hold iptables && \
+RUN apt-get update && \
+    apt-mark hold iptables && \
     apt-get install -y --no-install-recommends \
     dbus-x11 \
     psmisc \
@@ -60,7 +62,8 @@ RUN apt-get update && apt-mark hold iptables && \
 
 RUN sed -i 's%<property name="ThemeName" type="string" value="Xfce"/>%<property name="ThemeName" type="string" value="Raleigh"/>%' /etc/xdg/xfce4/xfconf/xfce-perchannel-xml/xsettings.xml
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \ 
+RUN apt-get update && \
+    apt-get -y install --no-install-recommends \
     git \
     x11vnc \
     software-properties-common \

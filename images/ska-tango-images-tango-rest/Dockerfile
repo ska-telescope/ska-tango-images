@@ -3,10 +3,12 @@ ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:9.
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-java:9.3.5"
 
 FROM $BUILD_IMAGE AS buildenv
+ARG DEBIAN_FRONTEND=noninteractive
 
 ENV MTANGOREST_DOWNLOAD_URL=https://github.com/tango-controls/rest-server/releases/download/rest-server-1.14/rest-server-1.14.jar
 
-RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
     ca-certificates \
     curl \
     libtcnative-1 
@@ -18,6 +20,7 @@ WORKDIR /usr/local/lib/tango
 RUN curl -fsSL "$MTANGOREST_DOWNLOAD_URL" -o mtangorest.jar
 
 FROM $BASE_IMAGE
+ARG DEBIAN_FRONTEND=noninteractive
 
 LABEL \
     author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
@@ -35,7 +38,9 @@ USER root
 RUN mkdir -p /usr/share/man/man1
 
 RUN apt-get update && \
-    apt-get -y install supervisor libtcnative-1 --no-install-recommends
+    apt-get install -y --no-install-recommends \
+    supervisor \
+    libtcnative-1
 
 RUN ln -s /usr/lib/x86_64-linux-gnu/libtcnative-1.so /usr/lib/libtcnative-1.so
 
