@@ -1,24 +1,24 @@
 ARG CAR_OCI_REGISTRY_HOST
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-java:9.3.5"
 FROM $BASE_IMAGE
+ARG DEBIAN_FRONTEND=noninteractive
 
 LABEL \
-      author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
-      description="This image is the Pogo application available from the TANGO-community" \
-      license="BSD-3-Clause" \
-      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-pogo" \
-      org.skatelescope.team="Systems Team" \
-      org.skatelescope.version="1.0.0" \
-      int.skao.application="Tango Pogo"
+    author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
+    description="This image is the Pogo application available from the TANGO-community" \
+    license="BSD-3-Clause" \
+    registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-pogo" \
+    org.skatelescope.team="Systems Team" \
+    org.skatelescope.version="1.0.0" \
+    int.skao.application="Tango Pogo"
 
 USER root
-
-
 
 ENV POGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/Pogo-9.6.31.jar
 
 RUN apt-get update && \
-    apt-get -y install wget
+    apt-get install -y --no-install-recommends \
+    wget
 
 WORKDIR /usr/local/share/java
 

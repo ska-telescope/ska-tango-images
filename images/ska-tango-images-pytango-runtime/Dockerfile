@@ -10,6 +10,7 @@ ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp:9.3.11"
 
 FROM ${BUILD_IMAGE} as buildenv
 FROM $BASE_IMAGE
+ARG DEBIAN_FRONTEND=noninteractive
 
 LABEL \
       author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
@@ -22,25 +23,22 @@ LABEL \
 
 USER root
 
-
 # Permanently install Python and PyTango runtime dependencies:
 #
 # * libboost-python is required by PyTango;
 # * make is required to manage execution of the tests inside the container
 # * python3 is required as this image is intended for running Python Tango
 #   devices.
-#
-
-RUN apt-get update \
-    && apt-get -y install --no-install-recommends \
+RUN apt-get update && \
+      apt-get install -y --no-install-recommends \
       libboost-python1.74.0 \
       ca-certificates \
       make \
       curl \
       python3 \
       python3-distutils \
-      python3-setuptools 
-      
+      python3-setuptools
+
 # Copy across files that are used to help orchestrate container compositions
 # and test execution sequences
 COPY --from=buildenv /usr/local/bin/wait-for-it.sh /usr/local/bin/wait-for-it.sh
