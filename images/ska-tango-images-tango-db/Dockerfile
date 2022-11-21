@@ -12,6 +12,7 @@ RUN apt-get update && \
 
 # Apply security upgrades (base image is not patched)
 RUN unattended-upgrade
+RUN apt-get purge unattended-upgrades -y
 
 RUN mkdir -p /usr/src/tango
 

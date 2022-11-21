@@ -34,6 +34,7 @@ RUN apt-get update && \
 
 # Apply security upgrades (base image)
 RUN unattended-upgrade
+RUN apt-get purge unattended-upgrades -y
 
 RUN mkdir /usr/src/zeromq
 WORKDIR /usr/src/zeromq
