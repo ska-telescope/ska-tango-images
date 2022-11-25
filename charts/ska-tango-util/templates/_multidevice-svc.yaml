@@ -329,6 +329,10 @@ spec:
         securityContext:
           {{- toYaml . | nindent 10 }}
 {{ end }}
+{{- with (coalesce $deviceserver.podSecurityContext $chart.Values.podSecurityContext) }}
+      securityContext:
+        {{- toYaml . | nindent 8 }}
+{{ end }}
 {{- with (coalesce $deviceserver.nodeSelector $chart.Values.nodeSelector) }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
