@@ -67,8 +67,8 @@ annotations:
 dsconfig:
   image:
     registry: ${CAR_OCI_REGISTRY_HOST}
-    image: ska-tango-images-tango-dsconfig${IS_ALPINE}
-    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-dsconfig${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
+    image: ska-tango-images-tango-dsconfig
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-dsconfig setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
 
 itango:
@@ -79,8 +79,8 @@ itango:
   intent: enabling
   image:
     registry: ${CAR_OCI_REGISTRY_HOST}
-    image: ska-tango-images-tango-itango${IS_ALPINE}
-    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-itango${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
+    image: ska-tango-images-tango-itango
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-itango setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   resources:
     requests:
@@ -99,8 +99,8 @@ databaseds:
   intent: production
   image:
     registry: ${CAR_OCI_REGISTRY_HOST}
-    image: ska-tango-images-tango-cpp${IS_ALPINE}
-    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-cpp${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
+    image: ska-tango-images-tango-cpp
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-cpp setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   vault:
     useVault: false
@@ -150,8 +150,8 @@ deviceServers:
           - name: "sys/tg_test/1"
     image:
       registry: ${CAR_OCI_REGISTRY_HOST}
-      image: ska-tango-images-tango-java${IS_ALPINE}
-      tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-java${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
+      image: ska-tango-images-tango-java
+      tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-java setContextHelper; getVersion)${SUFFIX}
       pullPolicy: IfNotPresent
     resources:
       requests:
@@ -184,8 +184,8 @@ tangodb:
   intent: production
   image:
     registry: ${CAR_OCI_REGISTRY_HOST}
-    image: ska-tango-images-tango-db${IS_ALPINE}
-    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-db${IS_ALPINE} setContextHelper; getVersion)${SUFFIX}
+    image: ska-tango-images-tango-db
+    tag: $(. ${RELEASE_SUPPORT}; RELEASE_CONTEXT_DIR=../../images/ska-tango-images-tango-db setContextHelper; getVersion)${SUFFIX}
     pullPolicy: IfNotPresent
   db:
     rootpw: secret

@@ -1,5 +1,5 @@
 -r SUT_requirements.txt
-pytest
+pytest<7.2.0
 pyyaml
 pytest-cov
 pytest-json-report
@@ -7,6 +7,7 @@ pycodestyle<2.7.0,>=2.6.0a1
 pytest-bdd==5.0.0
 pytest-ordering
 pytest-timeout
+pytest-forked
 elasticsearch
 kubernetes
 assertpy

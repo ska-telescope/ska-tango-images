@@ -120,9 +120,9 @@ spec:
         domain: {{ $deviceserver.domain }}
         subsystem: {{ $chart.Values.subsystem }}
 {{ toYaml $labels | indent 8 }}
-    {{ if $annotations }}
+    {{ with $deviceserver.annotations | default dict | mergeOverwrite $annotations }}
       annotations:
-{{ toYaml $annotations | indent 8 }}
+        {{- toYaml . | nindent 8 }}
     {{ end }}
     spec:
       volumes:
@@ -131,8 +131,8 @@ spec:
             name: {{$deviceserver_name | toString }}-{{ $chart.Release.Name }}-dsconfig-json
         {{ if hasKey $deviceserver "volume" }}
         - name: volume-data
-          persistentVolumeClaim: 
-            claimName: {{ $deviceserver.volume.name | toString }}-pvc-{{ $chart.Release.Name }}
+          persistentVolumeClaim:
+            claimName: {{ $deviceserver.volume.existingClaimName | default (printf "%s-pvc-%s" $deviceserver.volume.name $chart.Release.Name) }}
         {{ end }}
       serviceAccountName: {{ $deviceserver_name | toString }}-sa-{{ $chart.Release.Name }}
       initContainers:
@@ -241,10 +241,10 @@ spec:
           - name: configuration
             mountPath: data
             readOnly: true
-          {{ if hasKey $deviceserver "volume" }}
+          {{ with $deviceserver.volume }}
           - name: volume-data
-            mountPath: {{ $deviceserver.volume.mountPath }}
-            readOnly: true
+            mountPath: {{ .mountPath }}
+            readOnly: {{ (hasKey . "readOnly" | ternary .readOnly true) }}{{/* https://github.com/helm/helm/issues/3308 */}}
           {{ end }}
         livenessProbe:
           exec:
@@ -312,22 +312,26 @@ spec:
 {{- if $chart.Values.global.environment_variables }}
 {{- range $index, $envvar := $chart.Values.global.environment_variables }}
         - name: {{$envvar.name}}
-          value: {{tpl ($envvar.value | toString) $chart }}
+          value: {{tpl ($envvar.value | toString) $chart | quote }}
 {{- end }}
 {{- end }}
 {{- if $deviceserver.environment_variables }}
 {{- range $index, $envvar := $deviceserver.environment_variables }}
         - name: {{$envvar.name}}
-          value: {{tpl ($envvar.value | toString) $chart }}
+          value: {{tpl ($envvar.value | toString) $chart | quote }}
 {{- end }}
 {{- end }}
 {{- if not $chart.Values.do_not_constraint_resources }}
         resources:
 {{ toYaml (coalesce $instance.resources $deviceserver.resources $chart.Values.resources) | indent 10 }}
 {{ end }}
-{{- with $deviceserver.nodeSelector }}
+{{- with (coalesce $deviceserver.securityContext $chart.Values.securityContext) }}
+        securityContext:
+          {{- toYaml . | nindent 10 }}
+{{ end }}
+{{- with (coalesce $deviceserver.nodeSelector $chart.Values.nodeSelector) }}
       nodeSelector:
-{{ toYaml . | indent 8 }}
+        {{- toYaml . | nindent 8 }}
 {{- end }}
 {{- with $chart.Values.affinity }}
       affinity:

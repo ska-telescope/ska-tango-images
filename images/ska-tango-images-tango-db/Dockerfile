@@ -1,10 +1,18 @@
 ARG BASE_IMAGE="mariadb:10.7.4-focal"
 FROM $BASE_IMAGE AS builder
+ARG DEBIAN_FRONTEND=noninteractive
 
 ENV TANGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/tango-9.3.4.tar.gz
 
-RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
-     apt-get -y install --no-install-recommends curl ca-certificates
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates \
+    unattended-upgrades
+
+# Apply security upgrades (base image is not patched)
+RUN unattended-upgrade
+RUN apt-get purge unattended-upgrades -y
 
 RUN mkdir -p /usr/src/tango
 
@@ -31,13 +39,13 @@ RUN rm -r /usr/src/tango
 FROM $BASE_IMAGE
 
 LABEL \
-      author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
-      description="This image is the tango db (MariaDB) from the TANGO-community" \
-      license="BSD-3-Clause" \
-      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-db" \
-      org.skatelescope.team="Systems Team" \
-      org.skatelescope.version="1.0.0" \
-      int.skao.application="Tango DB"
+    author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
+    description="This image is the tango db (MariaDB) from the TANGO-community" \
+    license="BSD-3-Clause" \
+    registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-db" \
+    org.skatelescope.team="Systems Team" \
+    org.skatelescope.version="1.0.0" \
+    int.skao.application="Tango DB"
 
 COPY --from=builder /docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
 COPY sql_mode.cnf /etc/mysql/conf.d
