@@ -89,6 +89,7 @@ ska-tango-examples-tests:
            --form "variables[SKA_PYTHON_PYTANGO_BUILDER_IMAGE]=${BUILD_IMAGE}" \
            "https://gitlab.com/api/v4/projects/9673989/trigger/pipeline")
       echo "Created pipeline for 'ska-tango-examples': $(jq -r '.web_url' <<< "$response")"
+      sleep 10
       pipeline_id=$(jq -r '.id' <<< "$response")
       pipeline_url="https://gitlab.com/api/v4/projects/9673989/pipelines/${pipeline_id}"
       jobs_url="$pipeline_url/jobs"
