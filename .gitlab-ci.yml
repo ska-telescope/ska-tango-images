@@ -89,18 +89,26 @@ ska-tango-examples-tests:
            --form "variables[SKA_PYTHON_PYTANGO_BUILDER_IMAGE]=${BUILD_IMAGE}" \
            "https://gitlab.com/api/v4/projects/9673989/trigger/pipeline")
       echo "Created pipeline for 'ska-tango-examples': $(jq -r '.web_url' <<< "$response")"
-      sleep 10
+      echo "step"
       pipeline_id=$(jq -r '.id' <<< "$response")
+      echo "step"
       pipeline_url="https://gitlab.com/api/v4/projects/9673989/pipelines/${pipeline_id}"
+      echo "step"
       jobs_url="$pipeline_url/jobs"
+      echo "step"
       for i in {1..800}
       do
         response=$(curl -s --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$pipeline_url")
+        echo "step"
         status=$(jq -r '.status' <<< "$response")
+        echo "step"
         if [[ $status == "running" ]]; then
           response=$(curl -s --header "PRIVATE-TOKEN: $GITLAB_TOKEN" "$jobs_url")
+          echo "step"
           k8steststatus=$(jq -r '.[] | select(.name == "k8s-test") | .status' <<< $response)
+          echo "step"
           pythonteststatus=$(jq -r '.[] | select(.name == "python-test") | .status' <<< $response)
+          echo "step"
           if [[ $k8steststatus  == "success" ]] && [[ $pythonteststatus  == "success" ]]; then
             echo "'ska-tango-examples' success."
             exit 0
