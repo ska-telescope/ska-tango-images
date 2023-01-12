@@ -38,6 +38,9 @@ metadata:
 {{ toYaml $annotations | indent 4 }}
 {{ end }}
 spec:
+{{- if or ($chart.Values.global.minikube) ($chart.Values.global.exposeAllDS) ($deviceserver.exposeDS) }}
+  enableLoadBalancer: true
+{{- end }}
   databaseds: {{ $databaseds_name }}
   image: "{{ tpl ($deviceserver.image.registry | toString) $chart }}/{{ tpl ($deviceserver.image.image | toString) $chart }}:{{ tpl ($deviceserver.image.tag | toString) $chart }}"
   imagePullPolicy: {{ tpl ($deviceserver.image.pullPolicy | toString) $chart }}
@@ -115,7 +118,7 @@ spec:
           }
         {{- end }}
       }
-      {{ end }}
+      {{- end }}
     }
     {{- $_ := unset $deviceserver "tmp_start_instance" }}
 {{- if $deviceserver.command }}
@@ -142,7 +145,7 @@ spec:
 {{- end }}
 {{- if not $chart.Values.do_not_constraint_resources }}
   resources:
-{{ toYaml (coalesce $instance.resources $deviceserver.resources $chart.Values.resources) | indent 10 }}
+{{ toYaml (coalesce $instance.resources $deviceserver.resources $chart.Values.resources) | indent 4 }}
 {{ end }}
 {{- with (coalesce $deviceserver.securityContext $chart.Values.securityContext) }}
   securityContext:

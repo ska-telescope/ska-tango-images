@@ -7,6 +7,9 @@ Parameters:
 - instance (of the device server)
 */}}
 {{ define "ska-tango-util.multidevice-svc.tpl" }}
+
+{{- if not .local.Values.global.operator }}
+
 ---
 {{ $labels := coalesce .local.Values.global.labels .local.Values.labels "label:none" }}
 {{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations }}
@@ -350,4 +353,10 @@ spec:
 
 {{ end }} # range instances
 
+{{ else }} ## else operator
+
+{{- $context := dict "name" .name "deviceserver" .deviceserver "image" .image "local" .local }}
+{{ template "ska-tango-util.operator-svc.tpl" $context }}
+
+{{ end }}
 {{ end }} # multidevice-svc.tpl
