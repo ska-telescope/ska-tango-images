@@ -45,6 +45,24 @@ spec:
   image: "{{ tpl ($deviceserver.image.registry | toString) $chart }}/{{ tpl ($deviceserver.image.image | toString) $chart }}:{{ tpl ($deviceserver.image.tag | toString) $chart }}"
   imagePullPolicy: {{ tpl ($deviceserver.image.pullPolicy | toString) $chart }}
   args: "{{ $safe_instance | toString }}"
+  volumes:
+  - name: configuration
+    configMap:
+      name: {{$deviceserver_name | toString }}-{{ $chart.Release.Name }}-dsconfig-json
+  {{ if hasKey $deviceserver "volume" }}
+  - name: volume-data
+    persistentVolumeClaim:
+      claimName: {{ $deviceserver.volume.existingClaimName | default (printf "%s-pvc-%s" $deviceserver.volume.name $chart.Release.Name) }}
+  {{ end }}
+  volumeMounts:
+  - name: configuration
+    mountPath: data
+    readOnly: true
+  {{ with $deviceserver.volume }}
+  - name: volume-data
+    mountPath: {{ .mountPath }}
+    readOnly: {{ (hasKey . "readOnly" | ternary .readOnly true) }}{{/* https://github.com/helm/helm/issues/3308 */}}
+  {{ end }}
   config: |
     {
       "servers": {
@@ -122,14 +140,14 @@ spec:
     }
     {{- $_ := unset $deviceserver "tmp_start_instance" }}
 {{- if $deviceserver.command }}
-  script: {{ $deviceserver.command }}
+  script: "{{ $deviceserver.command }}"
 {{- else }}
   script: "/data/{{ $deviceserver.server.name }}.py"
 {{- end }}
 {{- if ($deviceserver.depends_on) }}
   dependsOn:
 {{- range $index, $device := $deviceserver.depends_on }}
-    - {{ $device.device | toString }}
+  - "{{ $device.device | toString }}"
 {{- end }}
 {{- end }}
 {{- if or ($chart.Values.global.environment_variables) ($deviceserver.environment_variables) }}
