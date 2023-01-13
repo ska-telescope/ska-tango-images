@@ -1,4 +1,6 @@
 {{ define "ska-tango-util.multidevice-sacc-role.tpl" }}
+{{- if not .local.Values.global.operator }}
+
 ---
 {{ $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
 ---
@@ -35,4 +37,5 @@ rules:
   verbs: ["list", "get", "watch"]
 
 
+{{ end }}
 {{ end }} # multidevice-sacc-role.tpl
