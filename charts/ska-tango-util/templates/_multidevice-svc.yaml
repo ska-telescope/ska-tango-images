@@ -7,6 +7,9 @@ Parameters:
 - instance (of the device server)
 */}}
 {{ define "ska-tango-util.multidevice-svc.tpl" }}
+
+{{- if not .local.Values.global.operator }}
+
 ---
 {{ $labels := coalesce .local.Values.global.labels .local.Values.labels "label:none" }}
 {{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations }}
@@ -143,7 +146,7 @@ spec:
           - sh
           - -c
         args:
-          - kubectl wait job --for=condition=complete {{ $deviceserver_name | toString }}-{{ $chart.Release.Name }}-config --timeout={{ $kubectl_wait_timeout }}
+          - kubectl wait job --for=condition=complete {{ $deviceserver_name | toString }}-{{ $chart.Release.Name }}-config --timeout={{ $kubectl_wait_timeout }} || test $(kubectl get job {{ $deviceserver_name | toString }}-{{ $chart.Release.Name }}-config -o jsonpath='{.status.succeeded}')
 {{ if ($deviceserver.depends_on) }}
 {{ range $index, $device := $deviceserver.depends_on }}
 {{ if ($device.host) }}
@@ -350,4 +353,10 @@ spec:
 
 {{ end }} # range instances
 
+{{ else }} ## else operator
+
+{{- $context := dict "name" .name "deviceserver" .deviceserver "image" .image "local" .local }}
+{{ template "ska-tango-util.operator-svc.tpl" $context }}
+
+{{ end }}
 {{ end }} # multidevice-svc.tpl

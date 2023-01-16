@@ -60,9 +60,6 @@ telescope: SKA-mid
 
 labels:
   app: ska-tango-images
-annotations:
-  app.gitlab.com/app: CI_PROJECT_PATH_SLUG
-  app.gitlab.com/env: CI_ENVIRONMENT_SLUG
 
 dsconfig:
   image:
