@@ -8,20 +8,18 @@ Parameters:
 */}}
 {{ define "ska-tango-util.operator-svc.tpl" }}
 ---
-{{ $labels := coalesce .local.Values.global.labels .local.Values.labels "label:none" }}
-{{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations }}
-{{ $default_tango_host := printf "%s-%s:10000" "databaseds-tango-base-" .local.Release.Name }}
-{{ $tango_host := tpl (coalesce .local.Values.global.tango_host .local.Values.tango_host $default_tango_host | toString) .local }}
-{{ $databaseds_name := (split ":" $tango_host)._0 }} 
-{{ $chart := .local }}
-{{ $deviceserver := .deviceserver }}
-{{ $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
-
-{{ range $instance := $deviceserver.server.instances }}
-{{ $safe_instance := $instance.name | toString | replace "_" "-" }}
-
-{{ if has $safe_instance $deviceserver.instances }}
-
+{{- $labels := coalesce .local.Values.global.labels .local.Values.labels "label:none" }}
+{{- $annotations := coalesce .local.Values.global.annotations .local.Values.annotations }}
+{{- $default_tango_host := printf "%s-%s:10000" "databaseds-tango-base-" .local.Release.Name }}
+{{- $tango_host := tpl (coalesce .local.Values.global.tango_host .local.Values.tango_host $default_tango_host | toString) .local }}
+{{- $databaseds_name := (split ":" $tango_host)._0 }} 
+{{- $chart := .local }}
+{{- $deviceserver := .deviceserver }}
+{{- $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
+{{- range $instance := $deviceserver.server.instances }}
+{{- $safe_instance := $instance.name | toString | replace "_" "-" }}
+{{- if has $safe_instance $deviceserver.instances }}
+---
 apiVersion: tango.tango-controls.org/v1
 kind: DeviceServer
 metadata:
