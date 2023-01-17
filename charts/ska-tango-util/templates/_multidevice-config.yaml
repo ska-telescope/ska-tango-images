@@ -1,5 +1,4 @@
 {{ define "ska-tango-util.multidevice-config.tpl" }}
-
 ---
 {{ $labels := coalesce .local.Values.global.labels .local.Values.labels "label: none" }}
 {{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations }}
@@ -23,6 +22,7 @@ metadata:
   annotations:
 {{ toYaml $annotations | indent 4 }}
 data:
+{{- if not .local.Values.global.operator }}
   configuration.json: |
     {
       "servers": {
@@ -115,6 +115,7 @@ data:
         exit $rc
       fi
     fi
+{{- end }}
   {{ $deviceserver.server.name }}.py: |
     import importlib
     import importlib.util
@@ -150,10 +151,6 @@ data:
 
     if __name__ == '__main__':
         main()
-
-
-
-
 
 
 {{ end }} # multidevice-config.tpl
