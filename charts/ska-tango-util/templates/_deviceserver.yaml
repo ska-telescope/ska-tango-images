@@ -4,14 +4,18 @@
 {{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations }}
 {{ $default_tango_host := printf "%s-%s:10000" "databaseds-tango-base" .local.Release.Name }}
 {{ $tango_host := tpl (coalesce .local.Values.global.tango_host .local.Values.tango_host $default_tango_host | toString) .local }}
+{{- $databaseds_name := (split ":" $tango_host)._0 }} 
 {{ $dsconfig := coalesce .local.Values.global.dsconfig .local.Values.dsconfig}}
 {{ $chart := .local }}
 {{ $safe_instance := .instance |toString | replace "_" "-" }}
 {{ $kubectl_wait_timeout := coalesce $dsconfig.timeout "120s" }}
+
+{{- if not .local.Values.global.operator }}
 ---
 # Device Server Service
 # Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
 # giving a dummy Service entry ensures that the single pod is DNS addressable
+
 apiVersion: v1
 kind: Service
 metadata:
@@ -186,4 +190,75 @@ spec:
 {{ toYaml . | indent 8 }}
 {{- end }}
 
+{{- else }} #operator
+
+---
+apiVersion: tango.tango-controls.org/v1
+kind: DeviceServer
+metadata:
+  name: {{.deviceserver.name | toString }}-{{ $safe_instance }}
+  namespace: {{ $chart.Release.Namespace }}
+  labels:
+{{ toYaml $labels | indent 4 }}
+    component: {{tpl (.deviceserver.name | toString) $chart }}-{{ $safe_instance }}
+    function: {{ .deviceserver.function }}
+    domain: {{ .deviceserver.domain }}
+    subsystem: {{ $chart.Values.subsystem }}
+{{ if $annotations }}
+  annotations:
+{{ toYaml $annotations | indent 4 }}
 {{ end }}
+spec:
+{{- if or ($chart.Values.global.minikube) ($chart.Values.global.exposeAllDS) (.deviceserver.exposeDS) }}
+  enableLoadBalancer: true
+{{- end }}
+  databaseds: {{ $databaseds_name }}
+  image: "{{ tpl (.deviceserver.image.registry | toString) $chart }}/{{ tpl (.deviceserver.image.image | toString) $chart }}:{{ tpl (.deviceserver.image.tag | toString) $chart }}"
+  imagePullPolicy: {{ tpl (.deviceserver.image.pullPolicy | toString) $chart }}
+  args: "{{ $safe_instance | toString }}"
+{{- if $chart.Values.dsconfig.configuration_file }}
+  config: |
+{{ toJson ($chart.Files.Get $chart.Values.dsconfig.configuration_file) | indent 4 }}
+{{- end }}
+  script: "{{ .deviceserver.command }}"
+{{- if (.deviceserver.depends_on) }}
+  dependsOn:
+{{- range $index, $device := .deviceserver.depends_on }}
+  - "{{ $device.device | toString }}"
+{{- end }}
+{{- end }}
+{{- if or ($chart.Values.global.environment_variables) (.deviceserver.environment_variables) }}
+  env:
+{{- range $index, $envvar := $chart.Values.global.environment_variables }}
+  - name: {{$envvar.name}}
+    value: {{tpl ($envvar.value | toString) $chart }}
+{{- end }}
+{{- range $index, $envvar := .deviceserver.environment_variables }}
+  - name: {{$envvar.name}}
+    value: {{tpl ($envvar.value | toString) $chart | quote }}
+{{- end }}
+{{- end }}
+{{- if not $chart.Values.do_not_constraint_resources }}
+  resources:
+{{ toYaml (coalesce .deviceserver.resources $chart.Values.resources) | indent 4 }}
+{{ end }}
+{{- with (coalesce .deviceserver.securityContext $chart.Values.securityContext) }}
+  securityContext:
+    {{- toYaml . | nindent 4 }}
+{{ end }}
+{{- with (coalesce .deviceserver.nodeSelector $chart.Values.nodeSelector) }}
+  nodeSelector:
+    {{- toYaml . | nindent 4 }}
+{{- end }}
+{{- with $chart.Values.affinity }}
+  affinity:
+    {{- toYaml . | nindent 4 }}
+{{- end }}
+{{- with $chart.Values.tolerations }}
+  tolerations:
+    {{- toYaml . | nindent 4 }}
+{{- end }}
+
+
+{{- end }} # end if operator
+{{- end }} #device server
