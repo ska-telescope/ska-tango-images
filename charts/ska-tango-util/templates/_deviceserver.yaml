@@ -217,8 +217,8 @@ spec:
   imagePullPolicy: {{ tpl (.deviceserver.image.pullPolicy | toString) $chart }}
   args: "{{ $safe_instance | toString }}"
 {{- if $chart.Values.dsconfig.configuration_file }}
-  config: 
-{{ ($chart.Files.Glob $chart.Values.dsconfig.configuration_file).AsConfig | indent 2  }}
+  config: |
+{{ toJson ($chart.Files.Get $chart.Values.dsconfig.configuration_file) | indent 4 }}
 {{- end }}
   script: "{{ .deviceserver.command }}"
 {{- if (.deviceserver.depends_on) }}
