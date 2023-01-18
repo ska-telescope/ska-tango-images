@@ -4,8 +4,47 @@
 {{ $tries := coalesce  .Values.global.tries 10}}
 {{ $sleep := coalesce  .Values.global.sleep 5}}
 
----
+{{ if .Values.global.operator }}
 
+---
+apiVersion: tango.tango-controls.org/v1
+kind: DatabaseDS
+metadata:
+  name: {{ tpl ($databaseds_name | toString) . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    component: {{ .Values.databaseds.component }}
+    function: {{ .Values.databaseds.function }}
+    domain: {{ .Values.databaseds.domain }}
+    intent: {{ .Values.databaseds.intent }}
+{{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
+{{- if or (.Values.global.annotations) (.Values.annotations) ((.Values.databaseds.vault).useVault) }}
+  annotations: 
+    vault.hashicorp.com/agent-inject: "true"
+    vault.hashicorp.com/agent-inject-status: "update"
+    vault.hashicorp.com/agent-inject-secret-config: "{{ .Values.databaseds.vault.secretPath }}/ska-tango-base/databaseds"
+    vault.hashicorp.com/agent-inject-template-config: |
+      {{`{{- with secret `}}"{{ .Values.databaseds.vault.secretPath }}/ska-tango-base/databaseds"{{` -}}`}}
+      {{`{{- range $k, $v := .Data.data }}`}}
+      {{`export {{ $k }}={{ $v }}`}}
+      {{`{{- end }}`}}
+      {{`{{- end }}`}}
+    vault.hashicorp.com/role: "{{ .Values.databaseds.vault.role }}"
+{{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 4 }}
+{{- end }}
+spec:
+{{- if or (.Values.global.minikube) (.Values.global.exposeAllDS) }}
+  enableLoadBalancer: true
+{{- end }}
+  imagePullPolicy: IfNotPresent
+{{- if (coalesce .Values.global.minikube .Values.minikube false)  }}
+  tangDBStorageClass: standard
+{{- else }}
+  tangDBStorageClass: nfss1
+{{- end }}
+
+{{- else }}
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -72,8 +111,8 @@ spec:
         domain: {{ .Values.databaseds.domain }}
         intent: {{ .Values.databaseds.intent }}
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 8 }}
-      annotations:
-{{ if ((.Values.databaseds.vault).useVault) }}         
+{{ if or (.Values.global.annotations) (.Values.annotations) ((.Values.databaseds.vault).useVault) }}
+      annotations: 
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/agent-inject-status: "update"
         vault.hashicorp.com/agent-inject-secret-config: "{{ .Values.databaseds.vault.secretPath }}/ska-tango-base/databaseds"
@@ -84,8 +123,6 @@ spec:
           {{`{{- end }}`}}
           {{`{{- end }}`}}
         vault.hashicorp.com/role: "{{ .Values.databaseds.vault.role }}"
-{{ end }}        
-{{ if or (.Values.global.annotations) (.Values.annotations) }}
 {{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 8 }}
 {{ end }}
     spec:
@@ -160,4 +197,6 @@ spec:
 {{- with .Values.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
+{{- end }}
+
 {{- end }}

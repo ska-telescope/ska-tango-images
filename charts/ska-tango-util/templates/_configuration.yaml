@@ -5,6 +5,7 @@
 {{ $dsconfig := coalesce .Values.global.dsconfig .Values.dsconfig}}
 {{ $itango := coalesce .Values.global.itango .Values.itango}}
 
+{{- if not .Values.global.operator }}
 ---
 apiVersion: v1
 kind: ServiceAccount
@@ -144,4 +145,5 @@ spec:
             name: {{ .Values.subsystem }}-configuration-{{ .Release.Name }}
       restartPolicy: Never
 
-{{- end -}}
+{{- end }}
+{{- end }}
