@@ -38,9 +38,9 @@ spec:
 {{- end }}
   imagePullPolicy: IfNotPresent
 {{- if (coalesce .Values.global.minikube .Values.minikube false)  }}
-  tangDBStorageClass: standard
+  tangoDBStorageClass: standard
 {{- else }}
-  tangDBStorageClass: nfss1
+  tangoDBStorageClass: nfss1
 {{- end }}
 
 {{- else }}
