@@ -145,7 +145,7 @@ spec:
 {{- if ($deviceserver.depends_on) }}
   dependsOn:
 {{- range $index, $device := $deviceserver.depends_on }}
-  - "{{ $device.device | toString }}"
+  - "{{ coalesce $device.device $device.host | toString }}"
 {{- end }}
 {{- end }}
 {{- if or ($chart.Values.global.environment_variables) ($deviceserver.environment_variables) }}

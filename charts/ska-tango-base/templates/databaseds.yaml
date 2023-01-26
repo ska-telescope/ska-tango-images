@@ -33,14 +33,15 @@ metadata:
 {{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 4 }}
 {{- end }}
 spec:
+  usePV: {{ .Values.tangodb.use_pv }}
 {{- if or (.Values.global.minikube) (.Values.global.exposeAllDS) }}
   enableLoadBalancer: true
 {{- end }}
   imagePullPolicy: IfNotPresent
 {{- if (coalesce .Values.global.minikube .Values.minikube false)  }}
-  tangDBStorageClass: standard
+  tangoDBStorageClass: standard
 {{- else }}
-  tangDBStorageClass: nfss1
+  tangoDBStorageClass: nfss1
 {{- end }}
 
 {{- else }}
