@@ -21,10 +21,7 @@ RUN apt-get update && \
     pkg-config \
     python3 \
     unattended-upgrades \
-    libjpeg-dev
-
-RUN curl https://netix.dl.sourceforge.net/project/libjpeg-turbo/2.1.2/libjpeg-turbo-official32_2.1.2_amd64.deb --output libjpeg-turbo-official32_2.1.2_amd64.deb && \
-    dpkg -i libjpeg-turbo-official32_2.1.2_amd64.deb
+    libjpeg-turbo8-dev
 
 # Apply security upgrades (base image is not patched)
 RUN unattended-upgrade
@@ -47,7 +44,6 @@ RUN git clone https://gitlab.com/tango-controls/cppTango.git /usr/src/tango && \
     mkdir build && \
     cmake . -B build \
     -DBUILD_TESTING=OFF \
-    -DTANGO_JPEG_BASE=/opt/libjpeg-turbo \
     -DTANGO_CPPZMQ_BASE=/usr/local/ \
     -DTANGO_IDL_BASE=/usr/local/ \
     -DTANGO_OMNI_BASE=/usr/local/ \
