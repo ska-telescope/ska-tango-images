@@ -21,6 +21,7 @@ RUN apt-get update && \
     pkg-config \
     python3 \
     unattended-upgrades \
+    libjpeg-dev \
     libjpeg-turbo8-dev
 
 # Apply security upgrades (base image is not patched)
