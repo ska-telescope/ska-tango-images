@@ -67,9 +67,6 @@ RUN curl -kfsSL "$OMNIORB_DOWNLOAD_URL" -o omniorb.tar.bz2 \
     && apt-get purge -y --auto-remove $buildDeps \
     && rm -r /usr/src/omniorb
 
-RUN curl https://netix.dl.sourceforge.net/project/libjpeg-turbo/2.1.4/libjpeg-turbo-official32_2.1.4_amd64.deb --output libjpeg-turbo-official32_2.1.4_amd64.deb && \
-    dpkg -i libjpeg-turbo-official32_2.1.4_amd64.deb
-
 FROM $BASE_IMAGE
 
 LABEL \
