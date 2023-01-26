@@ -43,6 +43,7 @@ RUN git clone https://gitlab.com/tango-controls/cppTango.git /usr/src/tango && \
     mkdir build && \
     cmake . -B build \
     -DJPEG_LIBRARY=libjpeg-turbo \
+    -DJPEG_INCLUDE_DIR=/opt/libjpeg-turbo \
     -DBUILD_TESTING=OFF \
     -DCPPZMQ_BASE=/usr/local/ \
     -DIDL_BASE=/usr/local/ \
