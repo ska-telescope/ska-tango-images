@@ -21,7 +21,6 @@ RUN apt-get update && \
     pkg-config \
     python3 \
     unattended-upgrades \
-    libjpeg-dev \
     libjpeg-turbo8-dev
 
 # Apply security upgrades (base image is not patched)
@@ -44,7 +43,7 @@ RUN git clone https://gitlab.com/tango-controls/cppTango.git /usr/src/tango && \
     cd /usr/src/tango && git checkout fix-endpoint-unreachable && \
     mkdir build && \
     cmake . -B build \
-    -DTANGO_BUILD_TESTING=OFF \
+    -DBUILD_TESTING=OFF \
     -DTANGO_CPPZMQ_BASE=/usr/local/ \
     -DTANGO_IDL_BASE=/usr/local/ \
     -DTANGO_OMNI_BASE=/usr/local/ \

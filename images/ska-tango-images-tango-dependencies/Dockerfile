@@ -79,4 +79,3 @@ LABEL \
     int.skao.application="Tango dependencies"
 
 COPY --from=buildenv /usr/local /usr/local
-COPY --from=buildenv /opt/libjpeg-turbo /opt/libjpeg-turbo
