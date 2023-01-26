@@ -42,6 +42,7 @@ RUN git clone https://gitlab.com/tango-controls/cppTango.git /usr/src/tango && \
     cd /usr/src/tango && git checkout fix-endpoint-unreachable && \
     mkdir build && \
     cmake . -B build \
+    -DJPEG_LIBRARY=libjpeg-turbo \
     -DBUILD_TESTING=OFF \
     -DCPPZMQ_BASE=/usr/local/ \
     -DIDL_BASE=/usr/local/ \
