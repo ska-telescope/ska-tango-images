@@ -1,10 +1,10 @@
 {{ define "ska-tango-util.multidevice-config.tpl" }}
----
-{{ $labels := coalesce .local.Values.global.labels .local.Values.labels "label: none" }}
-{{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations }}
-{{ $deviceserver := .deviceserver }}
-{{ $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
-{{ $chart := .local }}
+{{- $labels := coalesce .local.Values.global.labels .local.Values.labels "label: none" }}
+{{- $annotations := coalesce .local.Values.global.annotations .local.Values.annotations }}
+{{- $deviceserver := .deviceserver }}
+{{- $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
+{{- $chart := .local }}
+{{- if not .local.Values.global.operator }}
 
 ---
 # Device Server configuration
@@ -22,7 +22,6 @@ metadata:
   annotations:
 {{ toYaml $annotations | indent 4 }}
 data:
-{{- if not .local.Values.global.operator }}
   configuration.json: |
     {
       "servers": {
@@ -115,42 +114,8 @@ data:
         exit $rc
       fi
     fi
-{{- end }}
   {{ $deviceserver.server.name }}.py: |
-    import importlib
-    import importlib.util
-    from tango.server import run
-
-    classes = []
-
-    {{- range $entrypoint := $deviceserver.entrypoints }}
-    splitted_name = str(" {{ $entrypoint.name }} ").split(sep='.')
-    module_name = ".".join(splitted_name[:-1])
-    {{- if $entrypoint.path }}
-    spec = importlib.util.spec_from_file_location(module_name.strip(), "{{  $entrypoint.path }}")
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-
-    myclass = getattr(mod, splitted_name[-1].strip())
-    if not myclass in classes:
-      classes.append(myclass)
-
-    {{- else }}
-
-    mod = importlib.import_module(module_name.strip())
-    myclass = getattr(mod,  splitted_name[-1].strip())
-    if not myclass in classes:
-      classes.append(myclass)
-
-    {{- end }}
-    {{- end }}
-
-    def main(args=None, **kwargs):
-      {{ if $chart.Values.global.DEBUG }}import debugpy; debugpy.listen({{ $chart.Values.global.DEBUG }}){{ end }}
-      return run(classes=(classes), args=args, **kwargs)
-
-    if __name__ == '__main__':
-        main()
-
-
-{{ end }} # multidevice-config.tpl
+{{- $context := dict "deviceserver" $deviceserver "DEBUG" $chart.Values.global.DEBUG }}
+{{- include "ska-tango-util.entrypoints-script.tpl" $context | nindent 4}}
+{{- end }}
+{{- end }} # multidevice-config.tpl
