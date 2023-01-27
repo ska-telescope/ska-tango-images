@@ -42,7 +42,8 @@ RUN apt-get update && \
       zlib1g-dev \
       ca-certificates \
       curl \
-      git
+      git \
+      libjpeg-turbo8-dev
 
 RUN curl -k https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 COPY pip.conf /etc/pip.conf
@@ -56,5 +57,10 @@ RUN python3 -m pip install --no-cache-dir numpy==1.23.0
 # Install poetry as a binary
 ENV POETRY_HOME=/opt/poetry
 RUN curl -sSL https://install.python-poetry.org | python3 - --yes
-RUN python3 -m pip install --no-cache-dir pytango==9.3.6
+
+RUN git clone https://gitlab.com/tango-controls/pytango.git && \
+    cd pytango && \
+    python3 setup.py build && \
+    python3 setup.py install
+
 RUN ln -sfn /usr/bin/python3 /usr/bin/python && ln -sfn /opt/poetry/bin/poetry /usr/local/bin/poetry
