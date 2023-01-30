@@ -35,7 +35,7 @@ tests:
       - equal:
           path: data
           value:
-            TestServer.py: "\n#!/usr/bin/env python\nimport importlib\nimport importlib.util\nfrom tango.server import run\n\nclasses
+            TestServer.py: "\n#!/usr/bin/env python\n\nimport importlib\nimport importlib.util\nfrom tango.server import run\n\nclasses
               = []\n\ndef main(args=None, **kwargs):\n  \n  return run(classes=(classes), args=args,
               **kwargs)\n\nif __name__ == '__main__':\n    main()\n"
             bootstrap.sh: |
