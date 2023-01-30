@@ -30,7 +30,9 @@ metadata:
       {{`{{- end }}`}}
       {{`{{- end }}`}}
     vault.hashicorp.com/role: "{{ .Values.databaseds.vault.role }}"
+{{- if or (.Values.global.annotations) (.Values.annotations) }}
 {{ toYaml (coalesce .Values.global.annotations .Values.annotations) | indent 4 }}
+{{- end }}
 {{- end }}
 spec:
   usePV: {{ .Values.tangodb.use_pv }}
