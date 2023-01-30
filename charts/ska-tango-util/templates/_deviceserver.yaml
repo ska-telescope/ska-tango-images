@@ -212,6 +212,7 @@ spec:
 {{- if or ($chart.Values.global.minikube) ($chart.Values.global.exposeAllDS) (.deviceserver.exposeDS) }}
   enableLoadBalancer: true
 {{- end }}
+  dsname: "{{ $deviceserver_name }}"
   databaseds: {{ $databaseds_name }}
   image: "{{ tpl (.deviceserver.image.registry | toString) $chart }}/{{ tpl (.deviceserver.image.image | toString) $chart }}:{{ tpl (.deviceserver.image.tag | toString) $chart }}"
   imagePullPolicy: {{ tpl (.deviceserver.image.pullPolicy | toString) $chart }}
@@ -220,7 +221,7 @@ spec:
   config: |
 {{ $chart.Files.Get $chart.Values.dsconfig.configuration_file | indent 4 }}
 {{- end }}
-  script: "{{ .deviceserver.command }}"
+  command: "{{ .deviceserver.command }}"
 {{- if (.deviceserver.depends_on) }}
   dependsOn:
 {{- range $index, $device := .deviceserver.depends_on }}
