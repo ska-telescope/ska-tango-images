@@ -7,7 +7,6 @@ Parameters:
 - instance (of the device server)
 */}}
 {{ define "ska-tango-util.operator-svc.tpl" }}
----
 {{- $labels := coalesce .local.Values.global.labels .local.Values.labels "label:none" }}
 {{- $annotations := coalesce .local.Values.global.annotations .local.Values.annotations }}
 {{- $default_tango_host := printf "%s-%s:10000" "databaseds-tango-base-" .local.Release.Name }}
@@ -31,10 +30,10 @@ metadata:
     function: {{ $deviceserver.function }}
     domain: {{ $deviceserver.domain }}
     subsystem: {{ $chart.Values.subsystem }}
-{{ if $annotations }}
+{{- if $annotations }}
   annotations:
 {{ toYaml $annotations | indent 4 }}
-{{ end }}
+{{- end }}
 spec:
 {{- if or ($chart.Values.global.minikube) ($chart.Values.global.exposeAllDS) ($deviceserver.exposeDS) }}
   enableLoadBalancer: true
@@ -43,24 +42,19 @@ spec:
   image: "{{ tpl ($deviceserver.image.registry | toString) $chart }}/{{ tpl ($deviceserver.image.image | toString) $chart }}:{{ tpl ($deviceserver.image.tag | toString) $chart }}"
   imagePullPolicy: {{ tpl ($deviceserver.image.pullPolicy | toString) $chart }}
   args: "{{ $safe_instance | toString }}"
+  {{- if hasKey $deviceserver "volume" }}
   volumes:
-  - name: configuration
-    configMap:
-      name: {{$deviceserver_name | toString }}-{{ $chart.Release.Name }}-dsconfig-json
-  {{ if hasKey $deviceserver "volume" }}
   - name: volume-data
     persistentVolumeClaim:
       claimName: {{ $deviceserver.volume.existingClaimName | default (printf "%s-pvc-%s" $deviceserver.volume.name $chart.Release.Name) }}
-  {{ end }}
+  {{- end }}
+  {{- with $deviceserver.volume }}
   volumeMounts:
-  - name: configuration
-    mountPath: data
-    readOnly: true
-  {{ with $deviceserver.volume }}
   - name: volume-data
     mountPath: {{ .mountPath }}
     readOnly: {{ (hasKey . "readOnly" | ternary .readOnly true) }}{{/* https://github.com/helm/helm/issues/3308 */}}
-  {{ end }}
+  {{- end }}
+  dsname: "{{ $deviceserver_name }}"
   config: |
     {
       "servers": {
@@ -138,14 +132,16 @@ spec:
     }
     {{- $_ := unset $deviceserver "tmp_start_instance" }}
 {{- if $deviceserver.command }}
-  script: "{{ $deviceserver.command }}"
+  command: "{{ $deviceserver.command }}"
 {{- else }}
-  script: "/data/{{ $deviceserver.server.name }}.py"
+  script: |
+{{- $context := dict "deviceserver" $deviceserver "DEBUG" $chart.Values.global.DEBUG }}
+{{- include "ska-tango-util.entrypoints-script.tpl" $context | nindent 4 }}
 {{- end }}
 {{- if ($deviceserver.depends_on) }}
   dependsOn:
 {{- range $index, $device := $deviceserver.depends_on }}
-  - "{{ $device.device | toString }}"
+  - "{{ coalesce $device.device $device.host | toString }}"
 {{- end }}
 {{- end }}
 {{- if or ($chart.Values.global.environment_variables) ($deviceserver.environment_variables) }}
@@ -178,10 +174,8 @@ spec:
 {{- with $chart.Values.tolerations }}
   tolerations:
     {{- toYaml . | nindent 4 }}
+
 {{- end }}
-
-{{ end }} ## if has
-
-{{ end }} # range instances
-
-{{ end }} # ska-tango-util.operator-svc.tpl
+{{- end }} ## if has
+{{- end }} # range instances
+{{- end }} # ska-tango-util.operator-svc.tpl
