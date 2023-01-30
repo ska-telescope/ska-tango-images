@@ -134,8 +134,6 @@ deviceServers:
     domain: tango-base
     command: "/usr/local/bin/TangoTest"
     instances: ["test"]
-    depends_on:
-    - device: sys/database/2
     environment_variables: []
     server:
       name: "TangoTest"
