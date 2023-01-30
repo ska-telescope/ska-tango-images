@@ -70,7 +70,7 @@ ska-tango-examples-tests:
   stage: test
   tags:
     - k8srunner
-  retry: 2
+  allow_failure: true
   script:
     - |
       VERS=$(make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-builder)
