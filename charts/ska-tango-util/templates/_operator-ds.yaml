@@ -54,7 +54,7 @@ spec:
     mountPath: {{ .mountPath }}
     readOnly: {{ (hasKey . "readOnly" | ternary .readOnly true) }}{{/* https://github.com/helm/helm/issues/3308 */}}
   {{- end }}
-  dsname: "{{ $deviceserver_name }}"
+  dsname: "{{ $deviceserver.server.name }}"
   config: |
     {
       "servers": {
