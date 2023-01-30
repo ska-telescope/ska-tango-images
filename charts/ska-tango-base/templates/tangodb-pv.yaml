@@ -1,3 +1,4 @@
+{{- if not .Values.global.operator }}
 {{ if .Values.tangodb.enabled }}
 
 {{ if .Values.tangodb.use_pv }}
@@ -53,3 +54,4 @@ spec:
 {{ end }}
 
 {{ end }}
+{{- end }}
