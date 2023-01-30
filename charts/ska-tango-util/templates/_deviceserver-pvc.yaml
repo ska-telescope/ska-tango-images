@@ -17,19 +17,15 @@ Parameters are:
 - local (the local chart)
 
 */}}
-{{ define "ska-tango-util.deviceserver-pvc.tpl" }}
-
----
-{{/* replace with "if and .volume (not .volume.existingClaimName)" for Helm >= 3.10 */}}
+{{- define "ska-tango-util.deviceserver-pvc.tpl" }}
+{{- /* replace with "if and .volume (not .volume.existingClaimName)" for Helm >= 3.10 */}}
 {{- if .volume }}
 {{- if not .volume.existingClaimName }}
-
-{{ $volume_name := .volume.name }}
-{{ $volume_path := .volume.mountPath }}
-{{ $volume_size := coalesce .volume.storage "250Mi" }}
-{{ $labels := coalesce .local.Values.global.labels .local.Values.labels "label:none" }}
-{{ $annotations := coalesce .local.Values.global.annotations .local.Values.annotations }}
-
+{{- $volume_name := .volume.name }}
+{{- $volume_path := .volume.mountPath }}
+{{- $volume_size := coalesce .volume.storage "250Mi" }}
+{{- $labels := coalesce .local.Values.global.labels .local.Values.labels "label:none" }}
+{{- $annotations := coalesce .local.Values.global.annotations .local.Values.annotations }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -38,16 +34,16 @@ metadata:
   namespace: {{ .local.Release.Namespace }}
   labels:
 {{ toYaml $labels | indent 4 }}
-{{ if $annotations }}
+{{- if $annotations }}
   annotations:
 {{ toYaml $annotations | indent 4 }}
-{{ end }}
+{{- end }}
 spec:
-{{ if (coalesce .local.Values.global.minikube .local.Values.minikube false)  }}
+{{- if (coalesce .local.Values.global.minikube .local.Values.minikube false)  }}
   storageClassName: standard
-{{ else }}
+{{- else }}
   storageClassName: nfss1
-{{ end }}
+{{- end }}
   accessModes:
     - ReadWriteMany
   resources:
@@ -55,7 +51,6 @@ spec:
       storage: {{ $volume_size }}
 
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -64,10 +59,10 @@ metadata:
 {{ toYaml $labels | indent 4 }}
   name: {{ $volume_name | toString }}-admin-{{ .local.Release.Name }}
   namespace: {{ .local.Release.Namespace }}
-{{ if $annotations }}
+{{- if $annotations }}
   annotations:
 {{ toYaml $annotations | indent 4 }}
-{{ end }}
+{{- end }}
 spec:
   replicas: 1
   selector:
