@@ -10,7 +10,7 @@ The ska-tango-base helm chart
 The ``ska-tango-base`` helm chart is an application chart which defines the basic TANGO ecosystem in kubernetes.
 
 In specific it defines the following k8s services:
- - tangodb: it is a mysql database used to store configuration data used at startup of a device server (more information can be found `here <https://tango-controls.readthedocs.io/en/latest/reference/glossary.html#term-tango-database>`__.
+ - tangodb: it is a mysql database used to store configuration data used at startup of a device server (more information can be found `here <https://tango-controls.readthedocs.io/en/latest/reference/glossary.html#term-tango-database>`__. If the ``global.operator`` is true then this won't be generated in favour of a databaseds resource type. More information available `here <https://gitlab.com/ska-telescope/ska-tango-operator>`_
  - databaseds: it is a device server providing configuration information to all other components of the system as well as a runtime catalog of the components/devices (more information can be found `here <https://tango-controls.readthedocs.io/en/latest/reference/glossary.html#term-tango-host>`__.
  - itango: it is an interactive Tango client (more information can be found `here <https://gitlab.com/tango-controls/itango>`__.
  - vnc: it is a debian environment with x11 server and vnc/novnc installed on it.
@@ -25,12 +25,14 @@ The ``ska-tango-util`` helm chart is a library chart which helps other applicati
 In specific it defines the following helm named template:
  - configuration (deprecated): it creates a k8s service account, a role and role binding for waiting the configuration job to be done and a job for the `dsconfig <https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig>`_ application to apply a configuration json file set into the values file;
  - deviceserver (deprecated): it creates a k8s service and a k8s statefulset for a instance of a device server;
- - multidevice-config: it creates a ConfigMap which contains the generated `dsconfig <https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig>`_ json configuration file, the boostrap script for the `dsconfig <https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig>`_ application and a python script for multi class device server startup;
- - multidevice-job: it creates a job for the `dsconfig <https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig>`_ application to apply a configuration json file set into the values file;
- - multidevice-sacc-role: it creates a k8s service account, a role and role binding for waiting the configuration job to be done;
- - multidevice-svc: it creates a k8s service and a k8s statefulset for a device server tag specified in the values file.
+ - multidevice-config: it creates a ConfigMap which contains the generated `dsconfig <https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig>`_ json configuration file, the boostrap script for the `dsconfig <https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig>`_ application and a python script for multi class device server startup; if the ``global.operator`` is true then this won't be generated. More information available `here <https://gitlab.com/ska-telescope/ska-tango-operator>`_;
+ - multidevice-job: it creates a job for the `dsconfig <https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig>`_ application to apply a configuration json file set into the values file; if the ``global.operator`` is true then this won't be generated. More information available `here <https://gitlab.com/ska-telescope/ska-tango-operator>`_;
+ - multidevice-sacc-role: it creates a k8s service account, a role and role binding for waiting the configuration job to be done; if the ``global.operator`` is true then this won't be generated. More information available `here <https://gitlab.com/ska-telescope/ska-tango-operator>`_;
+ - multidevice-svc: it creates a k8s service and a k8s statefulset for a device server tag specified in the values file. If the ``global.operator`` is true then this won't be generated in favour of a DeviceServer k8s type. More information available `here <https://gitlab.com/ska-telescope/ska-tango-operator>`_
  - deviceserver-pvc: it optionally creates a volume for the deviceserver when it contains the dictionary `volume`. The subkeys are `name`, `mountPath` and `storage`. See example below.
+ - operator: it creates a k8s DeviceServer type of k8s resources. 
 
+With the introduction of the `SKA TANGO Operator k8s controller <https://gitlab.com/ska-telescope/ska-tango-operator>`_ the library is also able to generate DeviceServer type of resources. This can be activate by setting the parameter ``global.operator``.
 
 Dsconfig generation
 +++++++++++++++++++
