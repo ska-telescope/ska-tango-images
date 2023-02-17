@@ -230,7 +230,7 @@ spec:
           {{- end }}
           - "{{ $safe_instance | toString }}"
           - -ORBendPoint
-          - giop:tcp::$(TANGO_SERVER_PORT)
+          - giop:tcp:0.0.0.0:$(TANGO_SERVER_PORT)
           - -ORBendPointPublish
           - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
         ports:
