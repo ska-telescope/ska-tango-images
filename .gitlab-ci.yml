@@ -793,3 +793,7 @@ oci-image-scan:
     when: always
     reports:
       container_scanning: gl-container-scanning-report.json
+
+helm-chart-build:
+  variables:
+    CAR_OCI_REGISTRY_HOST: $CI_REGISTRY/ska-telescope/ska-tango-images
