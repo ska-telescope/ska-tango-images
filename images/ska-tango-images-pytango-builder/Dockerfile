@@ -32,8 +32,6 @@ USER root
 
 RUN apt-get update && \
       apt-get install -y --no-install-recommends \
-      build-essential \
-      libboost-python-dev \
       pkg-config \
       python3-distutils \
       python3-setuptools \
@@ -42,17 +40,12 @@ RUN apt-get update && \
       zlib1g-dev \
       ca-certificates \
       curl \
-      git \
-      libjpeg-turbo8-dev
+      git
 
 RUN curl -k https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 COPY pip.conf /etc/pip.conf
 
 WORKDIR /app
-
-# Install numpy manually before PyTango and other requirements to ensure we
-# build PyTango with numpy support.
-RUN python3 -m pip install --no-cache-dir numpy==1.23.0
 
 # Install poetry as a binary
 ENV POETRY_HOME=/opt/poetry
