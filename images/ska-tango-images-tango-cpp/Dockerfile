@@ -81,7 +81,8 @@ COPY --from=buildenv /usr/local /usr/local
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     libmariadb3 \
-    sudo
+    sudo \
+    libjpeg8-dev
 
 RUN useradd --create-home --home-dir /home/tango tango
 
