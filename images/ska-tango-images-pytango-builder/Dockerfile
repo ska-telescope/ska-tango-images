@@ -51,6 +51,6 @@ WORKDIR /app
 ENV POETRY_HOME=/opt/poetry
 RUN curl -sSL https://install.python-poetry.org | python3 - --yes
 
-RUN python3 -m pip install --no-cache-dir pytango==9.4.0
+RUN python3 -m pip install --no-cache-dir pytango==9.4.1rc1
 
 RUN ln -sfn /usr/bin/python3 /usr/bin/python && ln -sfn /opt/poetry/bin/poetry /usr/local/bin/poetry
