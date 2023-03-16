@@ -37,7 +37,7 @@ metadata:
 {{ toYaml $annotations | indent 4 }}
 {{- end }}
 spec:
-  orbIP: {{ $tango_server_ip }}
+  orbip: {{ $tango_server_ip }}
   clusterDomain: {{ $cluster_domain }}
 {{- if or ($chart.Values.global.minikube) ($chart.Values.global.exposeAllDS) ($deviceserver.exposeDS) }}
   enableLoadBalancer: true
