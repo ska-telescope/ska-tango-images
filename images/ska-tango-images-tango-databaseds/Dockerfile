@@ -13,4 +13,4 @@ LABEL \
 
 ENTRYPOINT ["/usr/local/bin/DataBaseds"]
 
-CMD ["2", "-ORBendPoint", "giop:tcp::10000"]
+CMD ["2", "-ORBendPoint", "giop:tcp:0.0.0.0:10000"]

@@ -48,6 +48,7 @@ global:
   cluster_domain: cluster.local
   tango_host: databaseds-tango-base:10000
   databaseds_port: 10000
+  databaseds_ip: "0.0.0.0"
   device_server_port: 45450
   retry:
   - "--sleep=1"

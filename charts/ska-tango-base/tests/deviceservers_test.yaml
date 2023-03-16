@@ -590,7 +590,7 @@ tests:
             - /usr/local/bin/TangoServer
             - "test"
             - -ORBendPoint
-            - giop:tcp::$(TANGO_SERVER_PORT)
+            - giop:tcp:0.0.0.0:$(TANGO_SERVER_PORT)
             - -ORBendPointPublish
             - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
       - equal:
@@ -676,7 +676,7 @@ tests:
             - /usr/local/bin/TangoServer
             - "test"
             - -ORBendPoint
-            - giop:tcp::$(TANGO_SERVER_PORT)
+            - giop:tcp:0.0.0.0:$(TANGO_SERVER_PORT)
             - -ORBendPointPublish
             - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
         documentIndex: 6
@@ -693,7 +693,7 @@ tests:
             - /usr/local/bin/TangoServer
             - "test2"
             - -ORBendPoint
-            - giop:tcp::$(TANGO_SERVER_PORT)
+            - giop:tcp:0.0.0.0:$(TANGO_SERVER_PORT)
             - -ORBendPointPublish
             - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
         documentIndex: 8
