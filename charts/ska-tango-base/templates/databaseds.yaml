@@ -1,7 +1,7 @@
 {{ $cluster_domain := coalesce .Values.global.cluster_domain "cluster.local" }}
 {{ $databaseds_name := (split ":" .Values.global.tango_host)._0 }} 
 {{ $databaseds_port := (split ":" .Values.global.tango_host)._1 }}
-{{ $databaseds_ip := coalesce .local.Values.global.databaseds_ip "" }}
+{{ $databaseds_ip := coalesce .Values.global.databaseds_ip "0.0.0.0" }}
 {{ $tries := coalesce  .Values.global.tries 10}}
 {{ $sleep := coalesce  .Values.global.sleep 5}}
 
@@ -152,7 +152,7 @@ spec:
           - /usr/local/bin/DataBaseds
           - "2"
           - -ORBendPoint
-          - giop:tcp:{{ if not eq $databaseds_ip "empty"}}{{ $databaseds_ip }}{{ end }}:{{ $databaseds_port }}
+          - giop:tcp:{{ if ne $databaseds_ip "empty"}}{{ $databaseds_ip }}{{ end }}:{{ $databaseds_port }}
           - -ORBendPointPublish
           - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):{{ $databaseds_port }}
         env:
