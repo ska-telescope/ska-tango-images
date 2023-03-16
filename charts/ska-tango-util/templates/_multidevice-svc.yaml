@@ -16,6 +16,7 @@ Parameters:
 {{ $default_tango_host := printf "%s-%s:10000" "databaseds-tango-base-" .local.Release.Name }}
 {{ $tango_host := tpl (coalesce .local.Values.global.tango_host .local.Values.tango_host $default_tango_host | toString) .local }}
 {{ $tango_server_port := coalesce .local.Values.global.device_server_port "45450" }}
+{{ $tango_server_ip := coalesce .local.Values.global.device_server_ip "0.0.0.0" }}
 {{ $tango_heartbeat_port := coalesce .local.Values.global.device_heartbeat_port "45460" }}
 {{ $tango_event_port := coalesce .local.Values.global.device_event_port "45470" }}
 {{ $cluster_domain := coalesce .local.Values.global.cluster_domain "cluster.local" }}
@@ -230,7 +231,7 @@ spec:
           {{- end }}
           - "{{ $safe_instance | toString }}"
           - -ORBendPoint
-          - giop:tcp:0.0.0.0:$(TANGO_SERVER_PORT)
+          - giop:tcp:{{ $tango_server_ip }}:$(TANGO_SERVER_PORT)
           - -ORBendPointPublish
           - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
         ports:
