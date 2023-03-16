@@ -152,7 +152,7 @@ spec:
           - /usr/local/bin/DataBaseds
           - "2"
           - -ORBendPoint
-          - giop:tcp:{{ $databaseds_ip }}:{{ $databaseds_port }}
+          - giop:tcp:{{ if not eq $databaseds_ip "empty"}}{{ $databaseds_ip }}{{ end }}:{{ $databaseds_port }}
           - -ORBendPointPublish
           - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):{{ $databaseds_port }}
         env:
