@@ -23,7 +23,7 @@ Parameters:
 {{ $chart := .local }}
 {{ $deviceserver := .deviceserver }}
 {{ $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
-{{ $tango_server_ip := coalesce .deviceserver.server_ip .local.Values.device_server_ip "0.0.0.0" }}
+{{ $legacy_compatibility := or .deviceserver.legacy_compatibility .local.Values.legacy_compatibility }}
 {{ $kubectl_wait_timeout := coalesce $dsconfig.timeout "120s" }}
 
 {{ $lprobe_initial_delay_seconds := 0 }}
@@ -231,7 +231,7 @@ spec:
           {{- end }}
           - "{{ $safe_instance | toString }}"
           - -ORBendPoint
-          - giop:tcp:{{ if ne $tango_server_ip "empty"}}{{ $tango_server_ip }}{{ end }}:$(TANGO_SERVER_PORT)
+          - giop:tcp:{{ if ne $legacy_compatibility true}}0.0.0.0{{ end }}:$(TANGO_SERVER_PORT)
           - -ORBendPointPublish
           - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
         ports:

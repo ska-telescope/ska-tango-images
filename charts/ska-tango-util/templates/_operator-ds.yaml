@@ -17,6 +17,7 @@ Parameters:
 {{- $deviceserver := .deviceserver }}
 {{- $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
 {{- $tango_server_ip := coalesce .deviceserver.server_ip .local.Values.device_server_ip "0.0.0.0" }}
+{{- $legacy_compatibility := or .deviceserver.legacy_compatibility .local.Values.legacy_compatibility }}
 {{- range $instance := $deviceserver.server.instances }}
 {{- $safe_instance := $instance.name | toString | replace "_" "-" }}
 {{- if has $safe_instance $deviceserver.instances }}
@@ -37,7 +38,7 @@ metadata:
 {{ toYaml $annotations | indent 4 }}
 {{- end }}
 spec:
-  orbip: {{ $tango_server_ip }}
+  legacycompatibility: {{ if ne $legacy_compatibility true}}false{{ else }}true{{ end }}
   clusterDomain: {{ $cluster_domain }}
 {{- if or ($chart.Values.global.minikube) ($chart.Values.global.exposeAllDS) ($deviceserver.exposeDS) }}
   enableLoadBalancer: true
