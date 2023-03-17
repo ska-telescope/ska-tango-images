@@ -31,8 +31,8 @@ RUN apt-get purge unattended-upgrades -y
 RUN mkdir -p /usr/src/idl
 WORKDIR /usr/src/idl
 
-RUN git clone --depth 1 https://gitlab.com/tango-controls/tango-idl.git /usr/src/idl && \
-    && git checkout 5.1.2 && \
+RUN git clone https://gitlab.com/tango-controls/tango-idl.git /usr/src/idl && \
+    cd /usr/src/idl && git checkout 5.1.2 && \
     mkdir -p /usr/src/idl/build && \
     cmake -B /usr/src/idl/build -DCMAKE_INSTALL_PREFIX=/usr/local/ /usr/src/idl && \
     make  -j$(nproc) -C /usr/src/idl/build install
