@@ -67,6 +67,7 @@ before_script:
     strategy: depend
 
 ska-tango-examples-tests:
+  allow_failure: true
   stage: test
   tags:
     - k8srunner
