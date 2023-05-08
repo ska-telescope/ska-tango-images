@@ -197,5 +197,5 @@ k8s-pre-test:
 k8s-chart-test: helm-pre-publish
 	helm package charts/ska-tango-util/ -d charts/ska-tango-base/charts/; \
 	mkdir -p charts/build; \
-	helm unittest charts/ska-tango-base/ --helm3 --with-subchart \
+	helm unittest charts/ska-tango-base/ --with-subchart \
 		--output-type JUnit --output-file charts/build/chart_template_tests.xml

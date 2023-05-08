@@ -9,6 +9,7 @@
 {{ $chart := .local }}
 {{ $safe_instance := .instance |toString | replace "_" "-" }}
 {{ $kubectl_wait_timeout := coalesce $dsconfig.timeout "120s" }}
+{{- $legacy_compatibility := or .deviceserver.legacy_compatibility .local.Values.legacy_compatibility }}
 
 {{- if not .local.Values.global.operator }}
 ---
@@ -209,6 +210,7 @@ metadata:
 {{ toYaml $annotations | indent 4 }}
 {{ end }}
 spec:
+  legacycompatibility: {{ if ne $legacy_compatibility true}}false{{ else }}true{{ end }}
 {{- if or ($chart.Values.global.minikube) ($chart.Values.global.exposeAllDS) (.deviceserver.exposeDS) }}
   enableLoadBalancer: true
 {{- end }}
