@@ -41,7 +41,7 @@ RUN mkdir -p /usr/src/tango
 WORKDIR /usr/src/tango
 
 RUN git clone https://gitlab.com/tango-controls/cppTango.git /usr/src/tango && \
-    cd /usr/src/tango && git checkout 9.4.1 && \
+    cd /usr/src/tango && git checkout 9.4.2-rc2 && \
     mkdir build && \
     cmake . -B build \
     -DBUILD_TESTING=OFF \
