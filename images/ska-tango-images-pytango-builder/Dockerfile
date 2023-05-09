@@ -33,6 +33,7 @@ USER root
 RUN apt-get update && \
       apt-get install -y --no-install-recommends \
       build-essential \
+      boost-python-dev \
       pkg-config \
       python3-distutils \
       python3-setuptools \
@@ -57,6 +58,7 @@ RUN curl -sSL https://install.python-poetry.org | python3 - --yes
 RUN git clone https://gitlab.com/tango-controls/pytango.git && \
     cd pytango && \
     python3 setup.py build && \
-    python3 setup.py install
+    python3 setup.py install && \
+    rm -rf /app/pytango
 
 RUN ln -sfn /usr/bin/python3 /usr/bin/python && ln -sfn /opt/poetry/bin/poetry /usr/local/bin/poetry
