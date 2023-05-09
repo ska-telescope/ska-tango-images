@@ -33,7 +33,7 @@ USER root
 RUN apt-get update && \
       apt-get install -y --no-install-recommends \
       build-essential \
-      boost-python-dev \
+      libboost-python-dev \
       pkg-config \
       python3-distutils \
       python3-setuptools \
