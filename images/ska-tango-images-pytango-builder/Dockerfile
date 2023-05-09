@@ -53,6 +53,10 @@ ENV POETRY_HOME=/opt/poetry
 ENV POETRY_VERSION=1.3.2
 RUN curl -sSL https://install.python-poetry.org | python3 - --yes
 
-RUN python3 -m pip install --no-cache-dir pytango==9.4.1
+# RUN python3 -m pip install --no-cache-dir pytango==9.4.1
+RUN git clone https://gitlab.com/tango-controls/pytango.git && \
+    cd pytango && \
+    python3 setup.py build && \
+    python3 setup.py install
 
 RUN ln -sfn /usr/bin/python3 /usr/bin/python && ln -sfn /opt/poetry/bin/poetry /usr/local/bin/poetry
