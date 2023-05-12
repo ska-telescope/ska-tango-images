@@ -9,7 +9,7 @@
 {{ $chart := .local }}
 {{ $safe_instance := .instance |toString | replace "_" "-" }}
 {{ $kubectl_wait_timeout := coalesce $dsconfig.timeout "120s" }}
-{{- $legacy_compatibility := or .deviceserver.legacy_compatibility .local.Values.legacy_compatibility }}
+{{- $legacy_compatibility := or .deviceserver.legacy_compatibility .local.Values.legacy_compatibility | default true }}
 
 {{- if not .local.Values.global.operator }}
 ---
