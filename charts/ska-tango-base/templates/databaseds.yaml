@@ -18,7 +18,7 @@ metadata:
     domain: {{ .Values.databaseds.domain }}
     intent: {{ .Values.databaseds.intent }}
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 4 }}
-{{- if or (.Values.global.annotations) (.Values.annotations) ((.Values.databaseds.vault).useVault) }}
+{{- if .Values.databaseds.vault.useVault }}
   annotations: 
     vault.hashicorp.com/agent-inject: "true"
     vault.hashicorp.com/agent-inject-status: "update"
