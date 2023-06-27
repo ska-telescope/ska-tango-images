@@ -174,8 +174,8 @@ spec:
             command:
             - "sh"
             - "-c"
-            - - tango_admin
-            - --ping-device
+            - "tango_admin"
+            - "--ping-device"
             - "sys/database/2"
           initialDelaySeconds: {{ .Values.databaseds.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.databaseds.readinessProbe.periodSeconds }}
@@ -189,8 +189,8 @@ spec:
             command:
             - "sh"
             - "-c"
-            - - tango_admin
-            - --ping-device
+            - "tango_admin"
+            - "--ping-device"
             - "sys/database/2"
           initialDelaySeconds: {{ .Values.databaseds.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.databaseds.livenessProbe.periodSeconds }}
