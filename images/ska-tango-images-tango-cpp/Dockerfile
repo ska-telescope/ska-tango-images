@@ -41,7 +41,7 @@ RUN mkdir -p /usr/src/tango
 WORKDIR /usr/src/tango
 
 RUN git clone https://gitlab.com/tango-controls/cppTango.git /usr/src/tango && \
-    cd /usr/src/tango && git checkout 9.4.2-rc2 && \
+    cd /usr/src/tango && git checkout 9.4.2 && \
     mkdir build && \
     cmake . -B build \
     -DBUILD_TESTING=OFF \
@@ -62,7 +62,7 @@ RUN git clone https://gitlab.com/tango-controls/tango_admin.git /usr/src/tango_a
 
 # build and install TangoDatabase
 RUN git clone https://gitlab.com/tango-controls/TangoDatabase.git /usr/src/TangoDatabase && \
-    cd /usr/src/TangoDatabase && git checkout Database-Release-5.20 && \
+    cd /usr/src/TangoDatabase && git checkout Database-Release-5.21 && \
     cmake -B /usr/src/TangoDatabase/build -DCMAKE_INSTALL_PREFIX=/usr/local/ /usr/src/TangoDatabase && \
     make  -j$(nproc) -C /usr/src/TangoDatabase/build install
 
