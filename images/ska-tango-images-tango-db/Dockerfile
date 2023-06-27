@@ -2,7 +2,7 @@ ARG BASE_IMAGE="mariadb:11.0.2-jammy"
 FROM $BASE_IMAGE AS builder
 ARG DEBIAN_FRONTEND=noninteractive
 
-ENV TANGO_DOWNLOAD_URL=https://gitlab.com/tango-controls/TangoSourceDistribution/-/archive/9.4.2/TangoSourceDistribution-9.4.2.tar.gz
+ENV TANGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/tango-9.3.4.tar.gz
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
