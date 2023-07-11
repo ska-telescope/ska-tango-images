@@ -552,6 +552,7 @@ tests:
           - "--tries=y"
       deviceServers:
         tangotest:
+          legacy_compatibility: true
           command: "/usr/local/bin/TangoServer"
           server:
             name: "TangoTest"
@@ -648,6 +649,7 @@ tests:
           - "--tries=y"
       deviceServers:
         tangotest:
+          legacy_compatibility: true
           command: "/usr/local/bin/TangoServer"
           instances: ["test", "test2"]
           server:
