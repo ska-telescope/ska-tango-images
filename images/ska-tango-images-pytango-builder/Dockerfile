@@ -51,16 +51,16 @@ RUN apt install -y zip bison build-essential cmake flex git libedit-dev \
   liblzma-dev libdebuginfod-dev arping netperf iperf
 
 RUN bash -xc "\ 
-    git clone https://github.com/iovisor/bcc.git; \
-    mkdir bcc/build ; cd bcc/build; \
-    cmake .. ; \
-    make ; \
-    make install ; \
-    cmake -DPYTHON_CMD=python3 .. ; \
-    pushd src/python/ ; \
-    make ; \
-    make install ; \
-    popd ; \
+    git clone https://github.com/iovisor/bcc.git && \
+    mkdir bcc/build && cd bcc/build && \
+    cmake .. && \
+    make && \
+    make install && \
+    cmake -DPYTHON_CMD=python3 .. && \
+    pushd src/python/ && \
+    make && \
+    make install && \
+    popd && \
 "
 
 RUN curl -k https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
