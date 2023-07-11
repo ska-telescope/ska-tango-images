@@ -60,7 +60,7 @@ RUN bash -xc "\
     pushd src/python/ && \
     make && \
     make install && \
-    popd && \
+    popd \
 "
 
 RUN curl -k https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
