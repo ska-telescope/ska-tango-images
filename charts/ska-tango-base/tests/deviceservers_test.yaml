@@ -552,6 +552,7 @@ tests:
           - "--tries=y"
       deviceServers:
         tangotest:
+          legacy_compatibility: true
           command: "/usr/local/bin/TangoServer"
           server:
             name: "TangoTest"
@@ -590,7 +591,7 @@ tests:
             - /usr/local/bin/TangoServer
             - "test"
             - -ORBendPoint
-            - giop:tcp:0.0.0.0:$(TANGO_SERVER_PORT)
+            - giop:tcp::$(TANGO_SERVER_PORT)
             - -ORBendPointPublish
             - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
       - equal:
@@ -648,6 +649,7 @@ tests:
           - "--tries=y"
       deviceServers:
         tangotest:
+          legacy_compatibility: true
           command: "/usr/local/bin/TangoServer"
           instances: ["test", "test2"]
           server:
@@ -676,7 +678,7 @@ tests:
             - /usr/local/bin/TangoServer
             - "test"
             - -ORBendPoint
-            - giop:tcp:0.0.0.0:$(TANGO_SERVER_PORT)
+            - giop:tcp::$(TANGO_SERVER_PORT)
             - -ORBendPointPublish
             - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
         documentIndex: 6
@@ -693,7 +695,7 @@ tests:
             - /usr/local/bin/TangoServer
             - "test2"
             - -ORBendPoint
-            - giop:tcp:0.0.0.0:$(TANGO_SERVER_PORT)
+            - giop:tcp::$(TANGO_SERVER_PORT)
             - -ORBendPointPublish
             - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
         documentIndex: 8

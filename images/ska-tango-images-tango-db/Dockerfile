@@ -1,4 +1,4 @@
-ARG BASE_IMAGE="mariadb:10.7.4-focal"
+ARG BASE_IMAGE="mariadb:11.0.2-jammy"
 FROM $BASE_IMAGE AS builder
 ARG DEBIAN_FRONTEND=noninteractive
 

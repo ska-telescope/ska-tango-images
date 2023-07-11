@@ -90,7 +90,7 @@ tests:
     asserts:
       - equal:
           path: spec.hostPath.path
-          value: ska-tango-base-tangodb-storage-RELEASE-NAME/
+          value: /ska-tango-base-tangodb-storage-RELEASE-NAME
 
   - it: should have a recycle persistent volume reclaim policy for the PersistentVolume.
     set:
