@@ -24,14 +24,15 @@ LABEL \
 
 USER root
 
+RUN apt update
+
 # Install build dependencies:
 # * build-essential installs C/C++ compilers and build tools
 # * libboost-python-dev is required to bind PyTango to the C++ Tango libs
 # * pkg-config is used to locate required libraries
 # * git is required for Python packages using katversion for release info
 
-RUN apt-get update && \
-      apt-get install -y --no-install-recommends \
+RUN apt-get install -y --no-install-recommends \
       build-essential \
       libboost-python-dev \
       pkg-config \
@@ -42,7 +43,23 @@ RUN apt-get update && \
       zlib1g-dev \
       ca-certificates \
       curl \
-      git
+      git 
+
+
+RUN apt install -y zip bison build-essential cmake flex git libedit-dev \
+  libllvm14 llvm-14-dev libclang-14-dev python3 zlib1g-dev libelf-dev libfl-dev python3-setuptools \
+  liblzma-dev libdebuginfod-dev arping netperf iperf
+
+RUN git clone https://github.com/iovisor/bcc.git && \
+    mkdir bcc/build ; cd bcc/build && \
+    cmake ..  && \
+    make  && \
+    make install  && \
+    cmake -DPYTHON_CMD=python3 ..  && \
+    pushd src/python/  && \
+    make  && \
+    make install  && \
+    popd
 
 RUN curl -k https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
 COPY pip.conf /etc/pip.conf
