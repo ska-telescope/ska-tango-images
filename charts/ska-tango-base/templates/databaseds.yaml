@@ -115,7 +115,7 @@ spec:
         domain: {{ .Values.databaseds.domain }}
         intent: {{ .Values.databaseds.intent }}
 {{ toYaml (coalesce .Values.global.labels .Values.labels "label:none") | indent 8 }}
-{{ if or (.Values.global.annotations) (.Values.annotations) ((.Values.databaseds.vault).useVault) }}
+{{ if .Values.databaseds.vault.useVault }}
       annotations: 
         vault.hashicorp.com/agent-inject: "true"
         vault.hashicorp.com/agent-inject-status: "update"
@@ -151,7 +151,7 @@ spec:
           - /usr/local/bin/DataBaseds
           - "2"
           - -ORBendPoint
-          - giop:tcp:0.0.0.0:{{ $databaseds_port }}
+          - giop:tcp::{{ $databaseds_port }}
           - -ORBendPointPublish
           - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):{{ $databaseds_port }}
         env:
@@ -170,8 +170,13 @@ spec:
           containerPort: {{ $databaseds_port }}
         {{- if .Values.databaseds.livenessProbe.enabled }}
         readinessProbe:
-          tcpSocket:
-            port: {{ $databaseds_port }}
+          exec:
+            command:
+            - "sh"
+            - "-c"
+            - "tango_admin"
+            - "--ping-device"
+            - "sys/database/2"
           initialDelaySeconds: {{ .Values.databaseds.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.databaseds.readinessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.databaseds.readinessProbe.timeoutSeconds }}
@@ -180,8 +185,13 @@ spec:
         {{- end }}
         {{- if .Values.databaseds.readinessProbe.enabled }}
         livenessProbe:
-          tcpSocket:
-            port: {{ $databaseds_port }}
+          exec:
+            command:
+            - "sh"
+            - "-c"
+            - "tango_admin"
+            - "--ping-device"
+            - "sys/database/2"
           initialDelaySeconds: {{ .Values.databaseds.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.databaseds.livenessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.databaseds.livenessProbe.timeoutSeconds }}
