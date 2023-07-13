@@ -191,6 +191,6 @@ tests:
             - /usr/local/bin/DataBaseds
             - "2"
             - -ORBendPoint
-            - giop:tcp:0.0.0.0:40000
+            - giop:tcp::40000
             - -ORBendPointPublish
             - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):40000

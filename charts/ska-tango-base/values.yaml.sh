@@ -110,7 +110,7 @@ databaseds:
       memory: 128Mi # 128Mi = 0.125 GB mem
       ephemeral-storage: 512Mi
     limits:
-      cpu: 200m     # 200m = 0.2 CPU
+      cpu: 300m     # 300m = 0.3 CPU
       memory: 256Mi # 256Mi = 0.25 GB mem
       ephemeral-storage: 1Gi
   livenessProbe:
