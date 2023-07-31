@@ -71,7 +71,7 @@ WORKDIR /app
 # Install poetry as a binary
 ENV POETRY_HOME=/opt/poetry
 ENV POETRY_VERSION=1.3.2
-RUN curl -sSL https://install.python-poetry.org | python3 - --yes
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/install.python-poetry.org/main/install-poetry.py | python3 - --yes
 RUN /opt/poetry/bin/poetry --help
 
 RUN python3 -m pip install --no-cache-dir numpy
