@@ -27,7 +27,6 @@ In specific it defines the following helm named template:
  - deviceserver (deprecated): it creates a k8s service and a k8s statefulset for a instance of a device server;
  - multidevice-config: it creates a ConfigMap which contains the generated `dsconfig <https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig>`_ json configuration file, the boostrap script for the `dsconfig <https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig>`_ application and a python script for multi class device server startup; if the ``global.operator`` is true then this won't be generated. More information available `here <https://gitlab.com/ska-telescope/ska-tango-operator>`_;
  - multidevice-job: it creates a job for the `dsconfig <https://github.com/MaxIV-KitsControls/lib-maxiv-dsconfig>`_ application to apply a configuration json file set into the values file; if the ``global.operator`` is true then this won't be generated. More information available `here <https://gitlab.com/ska-telescope/ska-tango-operator>`_;
- - multidevice-sacc-role: it creates a k8s service account, a role and role binding for waiting the configuration job to be done; if the ``global.operator`` is true then this won't be generated. More information available `here <https://gitlab.com/ska-telescope/ska-tango-operator>`_;
  - multidevice-svc: it creates a k8s service and a k8s statefulset for a device server tag specified in the values file. If the ``global.operator`` is true then this won't be generated in favour of a DeviceServer k8s type. More information available `here <https://gitlab.com/ska-telescope/ska-tango-operator>`_
  - deviceserver-pvc: it optionally creates a volume for the deviceserver when it contains the dictionary `volume`. The subkeys are `name`, `mountPath` and `storage`. See example below.
  - operator: it creates a k8s DeviceServer type of k8s resources. 
@@ -166,7 +165,6 @@ This templates are called by the below `template <https://gitlab.com/ska-telesco
     {{- $_ := set $filedeviceserver "instances" (coalesce $localchart.Values.global.instances $deviceserver.instances $filedeviceserver.instances) }}
     {{- $context := dict "name" $key "deviceserver" $filedeviceserver "image" $deviceserver.image "local" $localchart }}
     {{ template "ska-tango-util.multidevice-config.tpl" $context }}
-    {{ template "ska-tango-util.multidevice-sacc-role.tpl" $context }}
     {{ template "ska-tango-util.multidevice-job.tpl" $context }}
     {{ template "ska-tango-util.multidevice-svc.tpl" $context }}
     {{- $volume_context := dict "volume" $filedeviceserver.volume "local" $localchart }}
@@ -177,7 +175,6 @@ This templates are called by the below `template <https://gitlab.com/ska-telesco
     {{- $_ := set $deviceserver "instances" (coalesce $localchart.Values.global.instances $deviceserver.instances) }}
     {{- $context := dict "name" $key "deviceserver" $deviceserver "image" $deviceserver.image "local" $localchart }}
     {{ template "ska-tango-util.multidevice-config.tpl" $context }}
-    {{ template "ska-tango-util.multidevice-sacc-role.tpl" $context }}
     {{ template "ska-tango-util.multidevice-job.tpl" $context }}
     {{ template "ska-tango-util.multidevice-svc.tpl" $context }}
     {{- $volume_context := dict "volume" $deviceserver.volume "local" $localchart }}

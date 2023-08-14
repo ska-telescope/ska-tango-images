@@ -138,16 +138,26 @@ spec:
           persistentVolumeClaim:
             claimName: {{ $deviceserver.volume.existingClaimName | default (printf "%s-pvc-%s" $deviceserver.volume.name $chart.Release.Name) }}
         {{ end }}
-      serviceAccountName: {{ $deviceserver_name | toString }}-sa-{{ $chart.Release.Name }}
       initContainers:
       - name: wait-for-configuration
-        image: "bitnami/kubectl:latest"
-        imagePullPolicy: IfNotPresent
+        image: "{{ $dsconfig.image.registry }}/{{ $dsconfig.image.image }}:{{ $dsconfig.image.tag }}"
+        imagePullPolicy: {{ $dsconfig.image.pullPolicy }}
         command:
-          - sh
-          - -c
-        args:
-          - kubectl wait job --for=jsonpath='{.status.succeeded}'=1 {{ $deviceserver_name | toString }}-{{ $chart.Release.Name }}-config --timeout={{ $kubectl_wait_timeout }} || ( ! kubectl get job {{ $deviceserver_name | toString }}-{{ $chart.Release.Name }}-config ); echo $?
+          - retry
+          {{- if $chart.Values.global.retry }}
+          {{- range $retry_option := $chart.Values.global.retry }}
+          - {{ $retry_option }}
+          {{- end }}
+          {{- else }}
+          - --max=60
+          {{- end }}
+          - --
+          - tango_admin
+          - --check-server
+          - {{ $deviceserver.server.name }}/{{ $safe_instance }}
+        env:
+        - name: TANGO_HOST
+          value: {{ $tango_host }}
 {{ if ($deviceserver.depends_on) }}
 {{ range $index, $device := $deviceserver.depends_on }}
 {{ if ($device.host) }}
