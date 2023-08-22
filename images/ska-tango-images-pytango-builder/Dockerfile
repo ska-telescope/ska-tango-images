@@ -75,7 +75,7 @@ RUN curl -sSL https://install.python-poetry.org | python3 - --yes
 RUN /opt/poetry/bin/poetry --help
 
 RUN python3 -m pip install --no-cache-dir numpy
-RUN python3 -m pip install --no-cache-dir pytango==9.4.1
+RUN python3 -m pip install --no-cache-dir pytango==9.4.2
 # RUN git clone https://gitlab.com/tango-controls/pytango.git && \
 #     cd pytango && \
 #     python3 setup.py build && \
