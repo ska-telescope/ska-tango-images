@@ -17,8 +17,7 @@ Parameters:
 {{- $deviceserver := .deviceserver }}
 {{- $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
 {{- $tango_server_ip := coalesce .deviceserver.server_ip .local.Values.device_server_ip "0.0.0.0" }}
-{{- $has_legacy_compatibility := or (hasKey .deviceserver "legacy_compatibility") (hasKey .local.Values "legacy_compatibility") }}
-{{- $legacy_compatibility := ternary (or .deviceserver.legacy_compatibility .local.Values.legacy_compatibility) true $has_legacy_compatibility }}
+{{- $legacy_compatibility := pluck "legacy_compatibility" .deviceserver .local.Values | default (list true) | has true}}
 {{- range $instance := $deviceserver.server.instances }}
 {{- $safe_instance := $instance.name | toString | replace "_" "-" }}
 {{- if has $safe_instance $deviceserver.instances }}
