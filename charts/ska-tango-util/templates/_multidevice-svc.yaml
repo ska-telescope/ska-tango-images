@@ -23,7 +23,7 @@ Parameters:
 {{ $chart := .local }}
 {{ $deviceserver := .deviceserver }}
 {{ $deviceserver_name := tpl (coalesce .name .deviceserver.name | toString) .local }}
-{{ $legacy_compatibility := or .deviceserver.legacy_compatibility .local.Values.legacy_compatibility }}
+{{- $legacy_compatibility := pluck "legacy_compatibility" .deviceserver .local.Values | default (list true) | has true}}
 {{ $kubectl_wait_timeout := coalesce $dsconfig.timeout "120s" }}
 
 {{ $lprobe_initial_delay_seconds := 0 }}
