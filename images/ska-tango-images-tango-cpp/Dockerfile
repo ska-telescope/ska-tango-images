@@ -31,8 +31,8 @@ RUN apt-get purge unattended-upgrades -y
 RUN mkdir -p /usr/src/idl
 WORKDIR /usr/src/idl
 
-RUN git clone https://gitlab.com/tango-controls/tango-idl.git /usr/src/idl && \
-    cd /usr/src/idl && git checkout 5.1.2 && \
+RUN git clone --depth=1 --branch=5.1.2 https://gitlab.com/tango-controls/tango-idl.git /usr/src/idl && \
+    cd /usr/src/idl && \
     mkdir -p /usr/src/idl/build && \
     cmake -B /usr/src/idl/build -DCMAKE_INSTALL_PREFIX=/usr/local/ /usr/src/idl && \
     make  -j$(nproc) -C /usr/src/idl/build install
@@ -55,14 +55,14 @@ RUN git clone --depth=1 --branch=9.4.2 https://gitlab.com/tango-controls/cppTang
     rm -r /usr/src/tango
 
 # build and install tango_admin
-RUN git clone https://gitlab.com/tango-controls/tango_admin.git /usr/src/tango_admin && \
-    cd /usr/src/tango_admin && git checkout Release_1.17 && \
+RUN git clone --depth=1 --branch=Release_1.19 https://gitlab.com/tango-controls/tango_admin.git /usr/src/tango_admin && \
+    cd /usr/src/tango_admin && \
     cmake -B /usr/src/tango_admin/build -DCMAKE_INSTALL_PREFIX=/usr/local/ /usr/src/tango_admin && \
     make  -j$(nproc) -C /usr/src/tango_admin/build install
 
 # build and install TangoDatabase
-RUN git clone https://gitlab.com/tango-controls/TangoDatabase.git /usr/src/TangoDatabase && \
-    cd /usr/src/TangoDatabase && git checkout Database-Release-5.22 && \
+RUN git clone --depth=1 --branch=Database-Release-5.22 https://gitlab.com/tango-controls/TangoDatabase.git /usr/src/TangoDatabase && \
+    cd /usr/src/TangoDatabase && \
     cmake -B /usr/src/TangoDatabase/build -DCMAKE_INSTALL_PREFIX=/usr/local/ /usr/src/TangoDatabase && \
     make  -j$(nproc) -C /usr/src/TangoDatabase/build install
 
