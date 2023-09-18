@@ -43,14 +43,14 @@ RUN apt-get install -y --no-install-recommends \
       zlib1g-dev \
       ca-certificates \
       curl \
-      git 
+      git
 
 
 RUN apt install -y zip bison build-essential cmake flex git libedit-dev \
   libllvm14 llvm-14-dev libclang-14-dev python3 zlib1g-dev libelf-dev libfl-dev python3-setuptools \
   liblzma-dev libdebuginfod-dev arping netperf iperf
 
-RUN bash -xc "\ 
+RUN bash -xc "\
     git clone https://github.com/iovisor/bcc.git && \
     mkdir bcc/build && cd bcc/build && \
     cmake .. && \
@@ -76,11 +76,11 @@ RUN cd $POETRY_HOME && POETRY_VERSION=${POETRY_VERSION} python3 install-poetry.p
 RUN /opt/poetry/bin/poetry --help
 
 RUN python3 -m pip install --no-cache-dir numpy
-RUN python3 -m pip install --no-cache-dir pytango==9.4.2
-# RUN git clone https://gitlab.com/tango-controls/pytango.git && \
-#     cd pytango && \
-#     python3 setup.py build && \
-#     python3 setup.py install && \
-#     rm -rf /app/pytango
+# RUN python3 -m pip install --no-cache-dir pytango==9.4.2
+RUN git clone --depth=1 --branch=develop https://gitlab.com/tango-controls/pytango.git && \
+    cd pytango && \
+    python3 setup.py build --parallel $(ncpu) && \
+    python3 setup.py install && \
+    rm -rf /app/pytango
 
 RUN ln -sfn /usr/bin/python3 /usr/bin/python && ln -sfn /opt/poetry/bin/poetry /usr/local/bin/poetry
