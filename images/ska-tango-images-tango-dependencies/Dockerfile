@@ -9,7 +9,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 ENV ZEROMQ_DOWNLOAD_URL=https://github.com/zeromq/libzmq/archive/v4.3.4.tar.gz
 ENV CPPZMQ_DOWNLOAD_URL=https://github.com/zeromq/cppzmq/archive/v4.8.1.tar.gz
-ENV OMNIORB_DOWNLOAD_URL=https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.2.5/omniORB-4.2.5.tar.bz2/download 
+ENV OMNIORB_DOWNLOAD_URL=https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.3.1/omniORB-4.3.1.tar.bz2/download
 
 # Copy across files that are used to help orchestrate container compositions
 # and test execution sequences
@@ -53,7 +53,7 @@ RUN curl -kfsSL "$CPPZMQ_DOWNLOAD_URL" -o cppzmq.tar.gz \
     && mkdir build \
     && cd build \
     && cmake -DCPPZMQ_BUILD_TESTS=OFF .. \
-    && make -j4 install \
+    && make -j$(nproc) install \
     && apt-get purge -y --auto-remove $buildDeps \
     && rm -r /usr/src/cppzmq
 
