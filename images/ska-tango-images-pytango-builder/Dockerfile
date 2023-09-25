@@ -76,7 +76,7 @@ RUN cd $POETRY_HOME && POETRY_VERSION=${POETRY_VERSION} python3 install-poetry.p
 RUN /opt/poetry/bin/poetry --help
 
 RUN python3 -m pip install --no-cache-dir numpy
-RUN python3 -m pip install --no-cache-dir pytango==9.4.2
+RUN python3 -m pip install --no-cache-dir "https://gitlab.com/tango-controls/pytango/-/jobs/5158415225/artifacts/raw/dist/pytango-9.4.3.dev0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl?inline=false"
 # RUN git clone https://gitlab.com/tango-controls/pytango.git && \
 #     cd pytango && \
 #     python3 setup.py build && \
