@@ -27,7 +27,7 @@ before_script:
   image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
   retry: 2
   tags:
-    - k8srunner
+    - aws-k8srunner
   before_script:
     - '[ -f .make/oci.mk ] || exit 1'
     - 'make help | grep oci-build'
@@ -71,7 +71,7 @@ ska-tango-examples-tests:
   allow_failure: true
   stage: test
   tags:
-    - k8srunner
+    - aws-k8srunner
   script:
     - |
       VERS=$(make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-pytango-builder)
@@ -542,7 +542,7 @@ test-chart-templates:
   variables:
     MINIKUBE: "false"
   tags:
-  - k8srunner
+  - aws-k8srunner
   image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
   script:
     - helm plugin install https://github.com/quintush/helm-unittest
@@ -561,7 +561,7 @@ oci-image-publish: #Executed on a tag for CAR
   stage: publish
   image: $SKA_K8S_TOOLS_DOCKER_BUILDER_IMAGE
   tags:
-    - k8srunner
+    - aws-k8srunner
   before_script:
     - '[ -f .make/oci.mk ] || (echo "File oci.mk not included in Makefile; exit 1")'
     - 'make help | grep oci-publish'
@@ -795,3 +795,65 @@ oci-image-scan:
     when: always
     reports:
       container_scanning: gl-container-scanning-report.json
+
+#### Override runner
+
+default:
+  tags:
+    - aws-k8sruner
+
+oci-image-lint:
+  tags:
+    - aws-k8srunner
+
+helm-chart-lint:
+  tags:
+    - aws-k8srunner
+
+helm-chart-build:
+  tags:
+    - aws-k8srunner
+
+".helm-chart-publish-template":
+  tags:
+    - aws-k8srunner
+
+helm-chart-publish:
+  tags:
+    - aws-k8srunner
+
+raw-build:
+  tags:
+    - aws-k8srunner
+
+raw-publish:
+  tags:
+    - aws-k8srunner
+
+docs-pages:
+  tags:
+    - aws-k8srunner
+
+create-ci-metrics:
+  tags:
+    - aws-k8srunner
+
+k8s-test:
+  tags:
+    - aws-k8srunner
+
+stop-k8s-test:
+  tags:
+    - aws-k8srunner
+
+build-changelog:
+  tags:
+    - aws-k8srunner
+
+oci-image-scan:
+  tags:
+    - aws-k8srunner
+
+oci-image-scan-from-car:
+  tags:
+    - aws-k8srunner
