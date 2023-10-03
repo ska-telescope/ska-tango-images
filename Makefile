@@ -172,7 +172,7 @@ package: helm-pre-publish ## package charts
 
 helm-pre-publish: ## hook before helm chart publish
 	@echo "helm-pre-publish: generating charts/ska-tango-base/values.yaml"
-	@cd charts/ska-tango-base && bash ./values.yaml.sh
+	@cd charts/ska-tango-base && CAR_OCI_REGISTRY_HOST=registry.gitlab.com/ska-telescope/ska-tango-images bash ./values.yaml.sh
 
 helm-pre-build: helm-pre-publish
 
