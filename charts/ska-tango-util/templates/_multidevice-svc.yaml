@@ -255,6 +255,11 @@ spec:
         - containerPort: {{ $tango_event_port }}
           name: tango-event
         volumeMounts:
+{{- if ($deviceserver.secrets) }}
+          - name: secret-volume
+            mountPath: /mnt/secrets-store
+            readOnly: true
+{{- end }}
           - name: configuration
             mountPath: data
             readOnly: true
