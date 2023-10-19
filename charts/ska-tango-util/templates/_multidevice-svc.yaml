@@ -254,6 +254,16 @@ spec:
           name: tango-heartbeat
         - containerPort: {{ $tango_event_port }}
           name: tango-event
+{{- if $deviceserver.postStart }}
+        postStart:
+          exec:
+            command: ["/bin/sh", "-c", "{{ $deviceserver.postStart }}"]
+{{- end }}
+{{- if $deviceserver.preStop }}
+        preStop:
+          exec:
+            command: ["/bin/sh","-c", "{{ $deviceserver.postStart }}"]
+{{- end }}
         volumeMounts:
 {{- if ($deviceserver.secrets) }}
           - name: secret-volume
