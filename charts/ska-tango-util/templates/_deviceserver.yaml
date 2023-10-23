@@ -12,6 +12,15 @@
 {{- $legacy_compatibility := pluck "legacy_compatibility" .deviceserver .local.Values | default (list true) | has true}}
 {{- $cluster_domain := coalesce .local.Values.global.cluster_domain "cluster.local" }}
 {{- if not .local.Values.global.operator }}
+
+{{ $secret_name := printf "%s-%s" .deviceserver.name "secret" }}
+{{- if (.deviceserver.secrets) }}
+{{- if not $chart.Values.global.minikube }}
+---
+{{- $context := dict "local" .local "name" $secret_name "secrets" .deviceserver.secrets }}
+{{ template "ska-tango-util.secret-provider-class-svc.tpl" $context }}
+{{- end}}
+{{- end}}
 ---
 # Device Server Service
 # Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
@@ -68,6 +77,17 @@ spec:
       annotations:
 {{ toYaml $annotations | indent 8 }}
     spec:
+{{- if (.deviceserver.secrets) }}
+{{- if not $chart.Values.global.minikube }}
+      volumes:
+      - name: secret-volume
+        csi:
+          driver: secrets-store.csi.k8s.io
+          readOnly: true
+          volumeAttributes:
+            secretProviderClass: {{ $secret_name }}
+{{- end }}
+{{- end }}
       {{ if $chart.Values.dsconfig.configuration_file }}
       serviceAccountName: {{ $chart.Values.subsystem }}-sa-{{ $chart.Release.Name }}
       {{ end }}
@@ -159,6 +179,14 @@ spec:
           {{- end }}
           - {{ .deviceserver.command | toString }}
           - "{{ .instance | toString }}"
+{{- if (.deviceserver.secrets) }}
+{{- if not $chart.Values.global.minikube }}
+        volumeMounts:
+        - name: secret-volume
+          mountPath: /mnt/secrets-store
+          readOnly: true
+{{- end }}
+{{- end }}
         env:
         - name: TANGO_HOST
           value: {{ $tango_host }}
@@ -172,6 +200,19 @@ spec:
 {{- range $index, $envvar := .deviceserver.environment_variables }}
         - name: {{$envvar.name}}
           value: {{tpl ($envvar.value | toString) $chart }}
+{{- end }}
+{{- end }}
+{{- if (.deviceserver.secrets) }}
+{{- range $secret := .deviceserver.secrets }}
+        - name: {{ $secret.envName }}
+{{- if $chart.Values.global.minikube }}
+          value: {{tpl ($secret.envValue | toString) $chart | quote }}
+{{- else }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secret_name }}
+              key: {{ $secret.envName }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{ if not .local.Values.do_not_constraint_resources }}

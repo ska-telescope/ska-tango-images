@@ -53,9 +53,11 @@ Parameters:
 {{ end }}
 {{ $secret_name := printf "%s-%s" $deviceserver_name "secret" }}
 {{- if ($deviceserver.secrets) }}
+{{- if not $chart.Values.global.minikube }}
 ---
 {{- $context := dict "local" .local "name" $secret_name "secrets" $deviceserver.secrets }}
 {{ template "ska-tango-util.secret-provider-class-svc.tpl" $context }}
+{{- end}}
 {{- end}}
 ---
 {{ range $instance := $deviceserver.server.instances }}
@@ -136,12 +138,14 @@ spec:
     spec:
       volumes:
 {{- if ($deviceserver.secrets) }}
+{{- if not $chart.Values.global.minikube }}
         - name: secret-volume
           csi:
             driver: secrets-store.csi.k8s.io
             readOnly: true
             volumeAttributes:
               secretProviderClass: {{ $secret_name }}
+{{- end }}
 {{- end }}
         - name: configuration
           configMap:
@@ -266,9 +270,11 @@ spec:
 {{- end }}
         volumeMounts:
 {{- if ($deviceserver.secrets) }}
+{{- if not $chart.Values.global.minikube }}
           - name: secret-volume
             mountPath: /mnt/secrets-store
             readOnly: true
+{{- end }}
 {{- end }}
           - name: configuration
             mountPath: data
@@ -356,10 +362,14 @@ spec:
 {{- if ($deviceserver.secrets) }}
 {{- range $secret := $deviceserver.secrets }}
         - name: {{ $secret.envName }}
+{{- if $chart.Values.global.minikube }}
+          value: {{tpl ($secret.envValue | toString) $chart | quote }}
+{{- else }}
           valueFrom:
             secretKeyRef:
               name: {{ $secret_name }}
               key: {{ $secret.envName }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- if not $chart.Values.do_not_constraint_resources }}
