@@ -10,6 +10,7 @@
 {{ $safe_instance := .instance |toString | replace "_" "-" }}
 {{ $kubectl_wait_timeout := coalesce $dsconfig.timeout "120s" }}
 {{- $legacy_compatibility := pluck "legacy_compatibility" .deviceserver .local.Values | default (list true) | has true}}
+{{- $cluster_domain := coalesce .local.Values.global.cluster_domain "cluster.local" }}
 {{- if not .local.Values.global.operator }}
 ---
 # Device Server Service
@@ -209,6 +210,7 @@ metadata:
 {{ toYaml $annotations | indent 4 }}
 {{ end }}
 spec:
+  clusterDomain: {{ $cluster_domain }}
   legacycompatibility: {{ if ne $legacy_compatibility true}}false{{ else }}true{{ end }}
 {{- if or ($chart.Values.global.minikube) ($chart.Values.global.exposeAllDS) (.deviceserver.exposeDS) }}
   enableLoadBalancer: true
