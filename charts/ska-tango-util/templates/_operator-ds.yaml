@@ -43,6 +43,11 @@ spec:
 {{- if or ($chart.Values.global.minikube) ($chart.Values.global.exposeAllDS) ($deviceserver.exposeDS) }}
   enableLoadBalancer: true
 {{- end }}
+{{- if and (not $chart.Values.global.minikube) ($chart.Values.global.useVault)}}
+  useVault: true
+{{- else }}
+  useVault: false
+{{- end }}
   databaseds: {{ $databaseds_name }}
   image: "{{ tpl ($deviceserver.image.registry | toString) $chart }}/{{ tpl ($deviceserver.image.image | toString) $chart }}:{{ tpl ($deviceserver.image.tag | toString) $chart }}"
   imagePullPolicy: {{ tpl ($deviceserver.image.pullPolicy | toString) $chart }}
@@ -163,11 +168,15 @@ spec:
 {{- if not $chart.Values.do_not_constraint_resources }}
   resources:
 {{ toYaml (coalesce $instance.resources $deviceserver.resources $chart.Values.resources) | indent 4 }}
-{{ end }}
+{{- end }}
+{{- with $deviceserver.secrets }}
+  secrets:
+    {{- toYaml . | nindent 4 }}
+{{- end }}
 {{- with (coalesce $deviceserver.securityContext $chart.Values.securityContext) }}
   securityContext:
     {{- toYaml . | nindent 4 }}
-{{ end }}
+{{- end }}
 {{- with (coalesce $deviceserver.nodeSelector $chart.Values.nodeSelector) }}
   nodeSelector:
     {{- toYaml . | nindent 4 }}
