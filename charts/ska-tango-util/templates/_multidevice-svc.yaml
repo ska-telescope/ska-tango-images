@@ -155,6 +155,9 @@ spec:
           persistentVolumeClaim:
             claimName: {{ $deviceserver.volume.existingClaimName | default (printf "%s-pvc-%s" $deviceserver.volume.name $chart.Release.Name) }}
         {{ end }}
+{{- with $deviceserver.extraVolumes }}
+{{- . | toYaml | nindent 8 }}
+{{- end }}
       serviceAccountName: {{ $deviceserver_name | toString }}-sa-{{ $chart.Release.Name }}
       initContainers:
       - name: wait-for-configuration
@@ -287,6 +290,9 @@ spec:
             mountPath: {{ .mountPath }}
             readOnly: {{ (hasKey . "readOnly" | ternary .readOnly true) }}{{/* https://github.com/helm/helm/issues/3308 */}}
           {{ end }}
+{{- with $deviceserver.extraVolumeMounts }}
+{{- . | toYaml | nindent 10 }}
+{{- end }}
         livenessProbe:
           exec:
             command:

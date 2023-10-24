@@ -60,7 +60,7 @@ spec:
   image: "{{ tpl ($deviceserver.image.registry | toString) $chart }}/{{ tpl ($deviceserver.image.image | toString) $chart }}:{{ tpl ($deviceserver.image.tag | toString) $chart }}"
   imagePullPolicy: {{ tpl ($deviceserver.image.pullPolicy | toString) $chart }}
   args: "{{ $safe_instance | toString }}"
-{{- if or (hasKey $deviceserver "volume") (and ($deviceserver.secrets) (not $chart.Values.global.minikube))}}
+{{- if or (hasKey $deviceserver "volume") (and ($deviceserver.secrets) (not $chart.Values.global.minikube)) ($deviceserver.extraVolumes)}}
   volumes:
 {{- if hasKey $deviceserver "volume" }}
   - name: volume-data
@@ -77,8 +77,11 @@ spec:
         secretProviderClass: {{ $secret_name }}
 {{- end }}
 {{- end }}
+{{- with $deviceserver.extraVolumes }}
+{{- . | toYaml | nindent 2 }}
 {{- end }}
-{{- if or (hasKey $deviceserver "volume") (and ($deviceserver.secrets) (not $chart.Values.global.minikube))}}
+{{- end }}
+{{- if or (hasKey $deviceserver "volume") (and ($deviceserver.secrets) (not $chart.Values.global.minikube)) ($deviceserver.extraVolumeMounts)}}
   volumeMounts:
 {{- with $deviceserver.volume }}
   - name: volume-data
@@ -91,6 +94,9 @@ spec:
     mountPath: /mnt/secrets-store
     readOnly: true
 {{- end }}
+{{- end }}
+{{- with $deviceserver.extraVolumeMounts }}
+{{- . | toYaml | nindent 2 }}
 {{- end }}
 {{- end }}
   dsname: "{{ $deviceserver.server.name }}"

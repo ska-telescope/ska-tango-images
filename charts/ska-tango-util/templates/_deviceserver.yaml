@@ -11,7 +11,6 @@
 {{ $kubectl_wait_timeout := coalesce $dsconfig.timeout "120s" }}
 {{- $legacy_compatibility := pluck "legacy_compatibility" .deviceserver .local.Values | default (list true) | has true}}
 {{- $cluster_domain := coalesce .local.Values.global.cluster_domain "cluster.local" }}
-{{- if not .local.Values.global.operator }}
 
 {{ $secret_name := printf "%s-%s" .deviceserver.name "secret" }}
 {{- if (.deviceserver.secrets) }}
@@ -21,6 +20,9 @@
 {{ template "ska-tango-util.secret-provider-class-svc.tpl" $context }}
 {{- end}}
 {{- end}}
+
+{{- if not .local.Values.global.operator }}
+
 ---
 # Device Server Service
 # Parameter: deviceserver struct, global.Values.dsconfig struct, project image struct
@@ -307,8 +309,11 @@ spec:
         secretProviderClass: {{ $secret_name }}
 {{- end }}
 {{- end }}
+{{- with .deviceserver.extraVolumes }}
+{{- . | toYaml | nindent 2 }}
 {{- end }}
-{{- if or (hasKey .deviceserver "volume") (and (.deviceserver.secrets) (not $chart.Values.global.minikube))}}
+{{- end }}
+{{- if or (hasKey .deviceserver "volume") (and (.deviceserver.secrets) (not $chart.Values.global.minikube)) (.deviceserver.extraVolumeMounts) }}
   volumeMounts:
 {{- with .deviceserver.volume }}
   - name: volume-data
@@ -321,6 +326,9 @@ spec:
     mountPath: /mnt/secrets-store
     readOnly: true
 {{- end }}
+{{- end }}
+{{- with .deviceserver.extraVolumeMounts }}
+{{- . | toYaml | nindent 2 }}
 {{- end }}
 {{- end }}
 {{- if or ($chart.Values.global.environment_variables) (.deviceserver.environment_variables) (hasKey .deviceserver "volume") (and (.deviceserver.secrets) (not $chart.Values.global.minikube)) }}
