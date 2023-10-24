@@ -333,7 +333,6 @@ spec:
   - name: {{$envvar.name}}
     value: {{tpl ($envvar.value | toString) $chart | quote }}
 {{- end }}
-{{- end }}
 {{- if (.deviceserver.secrets) }}
 {{- range $secret := .deviceserver.secrets }}
   - name: {{ $secret.envName }}
