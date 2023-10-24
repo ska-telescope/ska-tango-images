@@ -258,15 +258,18 @@ spec:
           name: tango-heartbeat
         - containerPort: {{ $tango_event_port }}
           name: tango-event
+{{- if or ($deviceserver.postStart) ($deviceserver.preStop)  }}
+        lifecycle:
 {{- if $deviceserver.postStart }}
-        postStart:
-          exec:
-            command: ["/bin/sh", "-c", "{{ $deviceserver.postStart }}"]
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "{{ $deviceserver.postStart }}"]
 {{- end }}
 {{- if $deviceserver.preStop }}
-        preStop:
-          exec:
-            command: ["/bin/sh","-c", "{{ $deviceserver.postStart }}"]
+          preStop:
+            exec:
+              command: ["/bin/sh","-c", "{{ $deviceserver.postStart }}"]
+{{- end }}
 {{- end }}
         volumeMounts:
 {{- if ($deviceserver.secrets) }}
