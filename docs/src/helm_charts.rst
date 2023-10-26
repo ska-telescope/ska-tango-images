@@ -113,7 +113,21 @@ Below there is an example of a values file that can be used with the ska-tango-u
             volume:
                 name: firmware
                 mountPath: /firmware
-
+            postStart: "tango_admin --add-property test/motor/1 'LibConfig' 'user=xxx,password='$TEST"
+            preStop: "tango_admin --delete-property test/motor/1 'LibConfig'"
+            secrets:
+            - objectName: test
+              secretPath: kv/data/groups/ska-dev/system
+              secretKey: test-injection
+              envName: TEST
+              envValue: "minikube-case"
+            extraVolumes:
+            - name: generic-volume
+              persistentVolumeClaim: 
+                claimName:  {{ .Release.Name }}-generic-pvc
+            extraVolumeMounts:
+            - name: generic-volume
+              mountPath: /generic-volume
 
 Fields explained:
  - **deviceServers** : contains a list of all device server defined
@@ -127,6 +141,10 @@ Fields explained:
 
     - **intances** : A list of all instances for a device server. For each instance a number of devices can be defined together with the relative properties.
  - **class_properties** : On this field you can list your class properties.
+ - **secrets**: On this field you can list your secret available in vault. The vault address should be specified in the chart values file `vaultAddress` or in global parameter called `global.vaultAddress`.
+ - **postStart/preStop**: On this field you can set the container lifecycle hooks as described `here <https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/>`__.
+ - **extraVolumes**: On this field you can set any extra volume for the device server.
+ - **extraVolumeMounts**: On this field you can set any extra volume mounts for the device server.
 
 The device server configuration, like the above one, needs to be added to the values.yaml file. Below there is an example of how to add it (by splitting the definitions in different files):
 
