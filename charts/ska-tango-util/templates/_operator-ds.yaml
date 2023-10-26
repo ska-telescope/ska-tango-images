@@ -51,11 +51,6 @@ spec:
 {{- if or ($chart.Values.global.minikube) ($chart.Values.global.exposeAllDS) ($deviceserver.exposeDS) }}
   enableLoadBalancer: true
 {{- end }}
-{{- if and (not $chart.Values.global.minikube) ($chart.Values.global.useVault)}}
-  useVault: true
-{{- else }}
-  useVault: false
-{{- end }}
   databaseds: {{ $databaseds_name }}
   image: "{{ tpl ($deviceserver.image.registry | toString) $chart }}/{{ tpl ($deviceserver.image.image | toString) $chart }}:{{ tpl ($deviceserver.image.tag | toString) $chart }}"
   imagePullPolicy: {{ tpl ($deviceserver.image.pullPolicy | toString) $chart }}
@@ -100,6 +95,12 @@ spec:
 {{- end }}
 {{- end }}
   dsname: "{{ $deviceserver.server.name }}"
+{{- if $deviceserver.postStart }}
+  postStart: "{{ $deviceserver.postStart }}"
+{{- end }}
+{{- if $deviceserver.preStop }}
+  preStop: "{{ $deviceserver.preStop }}"
+{{- end }}
   config: |
     {
       "servers": {

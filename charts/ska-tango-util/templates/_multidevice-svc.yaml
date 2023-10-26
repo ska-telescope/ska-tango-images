@@ -271,7 +271,7 @@ spec:
 {{- if $deviceserver.preStop }}
           preStop:
             exec:
-              command: ["/bin/sh","-c", "{{ $deviceserver.postStart }}"]
+              command: ["/bin/sh","-c", "{{ $deviceserver.preStop }}"]
 {{- end }}
 {{- end }}
         volumeMounts:

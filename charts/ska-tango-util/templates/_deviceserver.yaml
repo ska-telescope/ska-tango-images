@@ -199,7 +199,7 @@ spec:
 {{- if .deviceserver.preStop }}
           preStop:
             exec:
-              command: ["/bin/sh","-c", "{{ .deviceserver.postStart }}"]
+              command: ["/bin/sh","-c", "{{ .deviceserver.preStop }}"]
 {{- end }}
 {{- end }}
         env:
@@ -271,16 +271,17 @@ spec:
 {{- if or ($chart.Values.global.minikube) ($chart.Values.global.exposeAllDS) (.deviceserver.exposeDS) }}
   enableLoadBalancer: true
 {{- end }}
-{{- if and (not $chart.Values.global.minikube) ($chart.Values.global.useVault)}}
-  useVault: true
-{{- else }}
-  useVault: false
-{{- end }}
   dsname: "{{ .deviceserver.name }}"
   databaseds: {{ $databaseds_name }}
   image: "{{ tpl (.deviceserver.image.registry | toString) $chart }}/{{ tpl (.deviceserver.image.image | toString) $chart }}:{{ tpl (.deviceserver.image.tag | toString) $chart }}"
   imagePullPolicy: {{ tpl (.deviceserver.image.pullPolicy | toString) $chart }}
   args: "{{ $safe_instance | toString }}"
+{{- if .deviceserver.postStart }}
+  postStart: "{{ .deviceserver.postStart }}"
+{{- end }}
+{{- if .deviceserver.preStop }}
+  preStop: "{{ .deviceserver.preStop }}"
+{{- end }}
 {{- if $chart.Values.dsconfig.configuration_file }}
   config: |
 {{ $chart.Files.Get $chart.Values.dsconfig.configuration_file | indent 4 }}
