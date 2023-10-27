@@ -373,7 +373,7 @@ spec:
 {{- range $env := $secret.env }}
         - name: {{ $env.envName }}
 {{- if $chart.Values.global.minikube }}
-          value: {{tpl ($env.envValue | toString) $chart | quote }}
+          value: {{tpl ($env.default | toString) $chart | quote }}
 {{- else }}
           valueFrom:
             secretKeyRef:
