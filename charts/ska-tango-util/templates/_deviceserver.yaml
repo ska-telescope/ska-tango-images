@@ -185,7 +185,7 @@ spec:
 {{- if not $chart.Values.global.minikube }}
         volumeMounts:
         - name: secret-volume
-          mountPath: /mnt/secrets-store
+          mountPath: {{ coalesce .deviceserver.secretsInjectPath "/mnt/secrets-store" }}
           readOnly: true
 {{- end }}
 {{- end }}
@@ -219,14 +219,16 @@ spec:
 {{- end }}
 {{- if (.deviceserver.secrets) }}
 {{- range $secret := .deviceserver.secrets }}
-        - name: {{ $secret.envName }}
+{{- range $env := $secret.env }}
+        - name: {{ $env.envName }}
 {{- if $chart.Values.global.minikube }}
-          value: {{tpl ($secret.envValue | toString) $chart | quote }}
+          value: {{tpl ($env.envValue | toString) $chart | quote }}
 {{- else }}
           valueFrom:
             secretKeyRef:
               name: {{ $secret_name }}
-              key: {{ $secret.envName }}
+              key: {{ $env.envName }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
@@ -324,7 +326,7 @@ spec:
 {{- if (.deviceserver.secrets) }}
 {{- if not $chart.Values.global.minikube }}
   - name: secret-volume
-    mountPath: /mnt/secrets-store
+    mountPath: {{ coalesce .deviceserver.secretsInjectPath "/mnt/secrets-store" }}
     readOnly: true
 {{- end }}
 {{- end }}
@@ -344,14 +346,16 @@ spec:
 {{- end }}
 {{- if (.deviceserver.secrets) }}
 {{- range $secret := .deviceserver.secrets }}
-  - name: {{ $secret.envName }}
+{{- range $env := $secret.env }}
+  - name: {{ $env.envName }}
 {{- if $chart.Values.global.minikube }}
-    value: {{tpl ($secret.envValue | toString) $chart | quote }}
+    value: {{tpl ($env.envValue | toString) $chart | quote }}
 {{- else }}
     valueFrom:
       secretKeyRef:
         name: {{ $secret_name }}
-        key: {{ $secret.envName }}
+        key: {{ $env.envName }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- end }}
