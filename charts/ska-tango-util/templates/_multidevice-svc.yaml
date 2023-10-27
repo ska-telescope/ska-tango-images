@@ -51,10 +51,17 @@ Parameters:
 {{ $rprobe_success_threshold = coalesce $deviceserver.readinessProbe.successThreshold $rprobe_success_threshold }}
 {{ $rprobe_failure_threshold = coalesce $deviceserver.readinessProbe.failureThreshold $rprobe_failure_threshold }}
 {{ end }}
+{{ $secret_name := printf "%s-%s" $deviceserver_name "secret" }}
+{{- if ($deviceserver.secrets) }}
+{{- if not $chart.Values.global.minikube }}
+---
+{{- $context := dict "local" .local "name" $secret_name "secrets" $deviceserver.secrets }}
+{{ template "ska-tango-util.secret-provider-class-svc.tpl" $context }}
+{{- end}}
+{{- end}}
 ---
 {{ range $instance := $deviceserver.server.instances }}
 {{ $safe_instance := $instance.name | toString | replace "_" "-" }}
-
 {{ if has $safe_instance $deviceserver.instances }}
 ---
 # one k8s service per instance
@@ -130,6 +137,16 @@ spec:
     {{ end }}
     spec:
       volumes:
+{{- if ($deviceserver.secrets) }}
+{{- if not $chart.Values.global.minikube }}
+        - name: secret-volume
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: {{ $secret_name }}
+{{- end }}
+{{- end }}
         - name: configuration
           configMap:
             name: {{$deviceserver_name | toString }}-{{ $chart.Release.Name }}-dsconfig-json
@@ -138,6 +155,9 @@ spec:
           persistentVolumeClaim:
             claimName: {{ $deviceserver.volume.existingClaimName | default (printf "%s-pvc-%s" $deviceserver.volume.name $chart.Release.Name) }}
         {{ end }}
+{{- with $deviceserver.extraVolumes }}
+{{- . | toYaml | nindent 8 }}
+{{- end }}
       serviceAccountName: {{ $deviceserver_name | toString }}-sa-{{ $chart.Release.Name }}
       initContainers:
       - name: wait-for-configuration
@@ -241,7 +261,27 @@ spec:
           name: tango-heartbeat
         - containerPort: {{ $tango_event_port }}
           name: tango-event
+{{- if or ($deviceserver.postStart) ($deviceserver.preStop)  }}
+        lifecycle:
+{{- if $deviceserver.postStart }}
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "{{ $deviceserver.postStart }}"]
+{{- end }}
+{{- if $deviceserver.preStop }}
+          preStop:
+            exec:
+              command: ["/bin/sh","-c", "{{ $deviceserver.preStop }}"]
+{{- end }}
+{{- end }}
         volumeMounts:
+{{- if ($deviceserver.secrets) }}
+{{- if not $chart.Values.global.minikube }}
+          - name: secret-volume
+            mountPath: {{ coalesce $deviceserver.secretsInjectPath "/mnt/secrets-store" }}
+            readOnly: true
+{{- end }}
+{{- end }}
           - name: configuration
             mountPath: data
             readOnly: true
@@ -250,6 +290,9 @@ spec:
             mountPath: {{ .mountPath }}
             readOnly: {{ (hasKey . "readOnly" | ternary .readOnly true) }}{{/* https://github.com/helm/helm/issues/3308 */}}
           {{ end }}
+{{- with $deviceserver.extraVolumeMounts }}
+{{- . | toYaml | nindent 10 }}
+{{- end }}
         livenessProbe:
           exec:
             command:
@@ -323,6 +366,21 @@ spec:
 {{- range $index, $envvar := $deviceserver.environment_variables }}
         - name: {{$envvar.name}}
           value: {{tpl ($envvar.value | toString) $chart | quote }}
+{{- end }}
+{{- end }}
+{{- if ($deviceserver.secrets) }}
+{{- range $secret := $deviceserver.secrets }}
+{{- range $env := $secret.env }}
+        - name: {{ $env.envName }}
+{{- if $chart.Values.global.minikube }}
+          value: {{tpl ($env.default | toString) $chart | quote }}
+{{- else }}
+          valueFrom:
+            secretKeyRef:
+              name: {{ $secret_name }}
+              key: {{ $env.envName }}
+{{- end }}
+{{- end }}
 {{- end }}
 {{- end }}
 {{- if not $chart.Values.do_not_constraint_resources }}
