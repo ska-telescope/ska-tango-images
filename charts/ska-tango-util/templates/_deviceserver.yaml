@@ -360,10 +360,6 @@ spec:
   resources:
 {{ toYaml (coalesce .deviceserver.resources $chart.Values.resources) | indent 4 }}
 {{ end }}
-{{- with .deviceserver.secrets }}
-  secrets:
-    {{- toYaml . | nindent 4 }}
-{{ end }}
 {{- with (coalesce .deviceserver.securityContext $chart.Values.securityContext) }}
   securityContext:
     {{- toYaml . | nindent 4 }}
