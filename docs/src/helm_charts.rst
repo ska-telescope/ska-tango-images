@@ -143,7 +143,11 @@ The most important fields are the following:
 
     - **intances** : A list of all instances for a device server. For each instance a number of devices can be defined together with the relative properties.
  - **class_properties** : On this field you can list your class properties.
+ - **secretsInjectPath**: Path to be mount in the device server containing all secrets. 
  - **secrets**: On this field you can list your secret available in vault. The vault address should be specified in the chart values file `vaultAddress` or in global parameter called `global.vaultAddress`.
+   - **secretPath**: path in vault
+   - **envName**: environment variable name to be set in the device server
+   - **envVault**: environment variable vault to be set in minikube (when vault is not available)
  - **postStart/preStop**: On this field you can set the container lifecycle hooks as described `here <https://kubernetes.io/docs/concepts/containers/container-lifecycle-hooks/>`__.
  - **extraVolumes**: On this field you can set any extra volume for the device server.
  - **extraVolumeMounts**: On this field you can set any extra volume mounts for the device server.
