@@ -68,10 +68,10 @@ spec:
   ports:
   - name: ds
     port: {{ $databaseds_port }}
-{{- if or (.Values.global.minikube) (.Values.global.exposeAllDS) }}
+{{- if or (.Values.global.exposeAllDS) }}
   type: LoadBalancer
 {{- else }}
-  type: NodePort
+  type: ClusterIP
 {{- end }}
   selector:
     component: {{ .Values.databaseds.component }}
