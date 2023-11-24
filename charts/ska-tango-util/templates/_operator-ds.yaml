@@ -46,11 +46,6 @@ metadata:
 {{ toYaml $annotations | indent 4 }}
 {{- end }}
 spec:
-{{- if or ($chart.Values.global.exposeAllDS) ($deviceserver.exposeDS) }}
-  serviceType: LoadBalancer
-{{- else }}
-  serviceType: ClusterIP
-{{- end }}
   legacycompatibility: {{ if ne $legacy_compatibility true}}false{{ else }}true{{ end }}
   clusterDomain: {{ $cluster_domain }}
 {{- if or ($chart.Values.global.minikube) ($chart.Values.global.exposeAllDS) ($deviceserver.exposeDS) }}
