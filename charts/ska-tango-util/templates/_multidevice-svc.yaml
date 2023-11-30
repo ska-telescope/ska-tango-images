@@ -84,7 +84,7 @@ spec:
 {{- if or ($chart.Values.global.minikube) ($chart.Values.global.exposeAllDS) ($deviceserver.exposeDS) }}
   type: LoadBalancer
 {{- else }}
-  type: NodePort
+  type: ClusterIP
 {{- end }}
   ports:
   - name: tango-server
