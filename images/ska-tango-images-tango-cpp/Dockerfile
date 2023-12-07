@@ -40,7 +40,7 @@ RUN git clone https://gitlab.com/tango-controls/tango-idl.git /usr/src/idl && \
 RUN mkdir -p /usr/src/tango
 WORKDIR /usr/src/tango
 
-RUN git clone --depth=1 --branch=9.4.2 https://gitlab.com/tango-controls/cppTango.git /usr/src/tango && \
+RUN git clone --depth=1 --branch=9.5.0 https://gitlab.com/tango-controls/cppTango.git /usr/src/tango && \
     cd /usr/src/tango && \
     mkdir build && \
     cmake . -B build \
