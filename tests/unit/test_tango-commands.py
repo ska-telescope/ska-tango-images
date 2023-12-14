@@ -53,7 +53,7 @@ def call_command(device_proxy,command_name, parameter):
         #  24: tango._tango.CmdArgType.DevULong64,*
         #  25: tango._tango.CmdArgType.DevVarLong64Array,
         #  26: tango._tango.CmdArgType.DevVarULong64Array,
-        #  27: tango._tango.CmdArgType.DevInt,*
+        #  27: None,*  # DevInt has been removed in cppTango 9.5.0
         #  28: tango._tango.CmdArgType.DevEncoded, *****????????
         #  29: tango._tango.CmdArgType.DevEnum, *****????????
         #  30: tango._tango.CmdArgType.DevPipeBlob, *****????????
@@ -63,8 +63,7 @@ def call_command(device_proxy,command_name, parameter):
         command_info.in_type == ArgType.DevUShort or
         command_info.in_type == ArgType.DevULong or
         command_info.in_type == ArgType.DevLong64 or
-        command_info.in_type == ArgType.DevULong64 or
-        command_info.in_type == ArgType.DevInt):
+        command_info.in_type == ArgType.DevULong64):
             return device_proxy.command_inout(command_name, int(parameter))
         if(command_info.in_type == ArgType.DevFloat or 
         command_info.in_type == ArgType.DevDouble):
