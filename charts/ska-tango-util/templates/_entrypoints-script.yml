@@ -36,7 +36,7 @@ if not myclass in classes:
 {{- end }}
 
 def main(args=None, **kwargs):
-  {{ if .DEBUG }}import debugpy; debugpy.listen({{ .DEBUG }}){{ end }}
+  {{ if .DEBUG }}import debugpy; debugpy.listen(("0.0.0.0", {{ .DEBUG }})){{ end }}
   return run(classes=(classes), args=args, **kwargs)
 
 if __name__ == '__main__':
