@@ -49,4 +49,5 @@ LABEL \
 
 COPY --from=builder /docker-entrypoint-initdb.d /docker-entrypoint-initdb.d
 COPY sql_mode.cnf /etc/mysql/conf.d
+RUN sed -i "s|^#bind-address.*|bind-address = 0.0.0.0|" /etc/mysql/mariadb.conf.d/50-server.cnf
 RUN chmod 644 /etc/mysql/conf.d/sql_mode.cnf
