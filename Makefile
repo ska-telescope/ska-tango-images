@@ -19,6 +19,15 @@ CI_ENVIRONMENT_SLUG ?= ska-tango-images
 
 K8S_CHART_PARAMS ?=  --set global.minikube=$(MINIKUBE) --set global.exposeDatabaseDS=$(MINIKUBE) --set global.exposeAllDS=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --set global.device_server_port=$(TANGO_SERVER_PORT)
 
+ifdef CI_COMMIT_SHORT_SHA
+	K8S_CHART_PARAMS += --set ska-tango-base.dsconfig.image.tag=$(CI_COMMIT_SHORT_SHA)
+	K8S_CHART_PARAMS += --set ska-tango-base.itango.image.tag=$(CI_COMMIT_SHORT_SHA)
+	K8S_CHART_PARAMS += --set ska-tango-base.databaseds.image.tag=$(CI_COMMIT_SHORT_SHA)
+	K8S_CHART_PARAMS += --set ska-tango-base.deviceServers.tangotest.image.tag=$(CI_COMMIT_SHORT_SHA)
+	K8S_CHART_PARAMS += --set ska-tango-base.tangodb.image.tag=$(CI_COMMIT_SHORT_SHA)
+	K8S_CHART_PARAMS += --set ska-tango-base.vnc.image.tag=$(CI_COMMIT_SHORT_SHA)
+endif
+
 # K8S_TEST_MAKE_PARAMS = KUBE_NAMESPACE=$(KUBE_NAMESPACE) HELM_RELEASE=$(RELEASE_NAME) TANGO_HOST=$(TANGO_HOST) MARK=$(MARK)
 # K8S_CHART_PARAMS = --set global.minikube=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --values $(BASE)/charts/values.yaml
 

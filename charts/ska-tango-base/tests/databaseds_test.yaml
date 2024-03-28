@@ -24,7 +24,7 @@ tests:
       - isAPIVersion:
           of: v1
   
-  - it: should have a service of type NodePort listening on port given by the tango-host, databaseds-test:12345.
+  - it: should have a service of type ClusterIP listening on port given by the tango-host, databaseds-test:12345.
     documentIndex: 0
     set:
       global:
@@ -32,7 +32,7 @@ tests:
     asserts:
       - equal:
           path: spec.type
-          value: NodePort
+          value: ClusterIP
       - equal:
           path: spec.ports[0].port
           value: 12345
