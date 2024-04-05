@@ -755,6 +755,7 @@ include:
     file: 'gitlab-ci/includes/changelog.gitlab-ci.yml'
 
   - project: 'ska-telescope/templates-repository'
+    ref: 'st-1834-integrate-gitlab-container-scanning'
     file: 'gitlab-ci/includes/oci-image-scan.gitlab-ci.yml'
 
 ##### Test k8s
