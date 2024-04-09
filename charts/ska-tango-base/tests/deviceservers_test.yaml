@@ -2,6 +2,24 @@
 suite: deviceservers
 templates:
   - deviceservers.yaml
+set:
+  testDeviceServersEnabled: true
+  testDeviceServers:
+    tangotest:
+      name: tangotest
+      function: tango-test
+      domain: tango-base
+      command: "/usr/local/bin/TangoTest"
+      instances: ["test"]
+      environment_variables: []
+      server:
+        name: "TangoTest"
+        instances:
+        - name: "test"
+          classes:
+          - name: "TangoTest"
+            devices:
+            - name: "sys/tg_test/1"
 tests:
   - it: should have seven documents rendered.
     asserts:
@@ -18,26 +36,11 @@ tests:
 
   - it: should have a ConfigMap for the TangoTest device server with data having configuration.json.
     documentIndex: 0
-    set:
-      deviceServers:
-        tangotest:
-          name: testserver
-          instances: ["testx"]
-          server:
-            name: TestServer
-            instances:
-              - name: "testx"
-                classes:
-                - name: "TestServerClass"
-                  devices:
-                    - name: "xxx/xx/x"
     asserts:
       - equal:
           path: data
           value:
-            TestServer.py: "\n#!/usr/bin/env python\n\nimport importlib\nimport importlib.util\nfrom tango.server import run\n\nclasses
-              = []\n\ndef main(args=None, **kwargs):\n  \n  return run(classes=(classes), args=args,
-              **kwargs)\n\nif __name__ == '__main__':\n    main()\n"
+            TangoTest.py: "\n#!/usr/bin/env python\n\nimport importlib\nimport importlib.util\nfrom tango.server import run\n\nclasses = []\n\ndef main(args=None, **kwargs):\n  \n  return run(classes=(classes), args=args, **kwargs)\n\nif __name__ == '__main__':\n    main()\n"
             bootstrap.sh: |
               #/bin/sh
               json2tango -w -a -u data/configuration.json
@@ -57,10 +60,10 @@ tests:
             configuration.json: |
               {
                 "servers": {
-                  "TestServer" : {
-                    "testx": {
-                      "TestServerClass": {
-                        "xxx/xx/x": {
+                  "TangoTest" : {
+                    "test": {
+                      "TangoTest": {
+                        "sys/tg_test/1": {
                         }
                       }
                     }
@@ -117,7 +120,7 @@ tests:
   - it: should have a RoleBinding with Subjects.
     documentIndex: 2
     set:
-      deviceServers:
+      testDeviceServers:
         tangotest:
           name: tangotest-x
     asserts:
@@ -131,7 +134,7 @@ tests:
   - it: should have a RoleBinding with roleRef.
     documentIndex: 2
     set:
-      deviceServers:
+      testDeviceServers:
         tangotest:
           name: tangotest-x
     asserts:
@@ -183,7 +186,7 @@ tests:
   - it: should have a Job resource that has a volume that uses a configMap named tangotest-test-dsconfig-json.
     documentIndex: 4
     set:
-      deviceServers:
+      testDeviceServers:
         tangotest:
           name: tangotest-test
     asserts:
@@ -237,7 +240,7 @@ tests:
   - it: should have a Service, and Statfulset with pods having labels.
     set:
       labels.app: ska-tango-images-x
-      deviceServers:
+      testDeviceServers:
         tangotest:
           name: tangotest-test
           function: tango-test-x
@@ -280,7 +283,7 @@ tests:
   - it: should set the service name to its own cluster hostname.
     documentIndex: 6
     set:
-      deviceServers:
+      testDeviceServers:
         tangotest:
           name: tangotest-x
           instances: ["testx"]
@@ -307,7 +310,7 @@ tests:
   - it: should use the docker image specified in the values.yaml, my-own-registry/my-own-image.
     documentIndex: 6
     set:
-      deviceServers:
+      testDeviceServers:
         tangotest:
           image:
             registry: my-own-registry
@@ -321,7 +324,7 @@ tests:
   - it: should use the provided image pull policy.
     documentIndex: 6
     set:
-      deviceServers:
+      testDeviceServers:
         tangotest:
           image:
             pullPolicy: AnyPullPolicy
@@ -343,7 +346,7 @@ tests:
   - it: should have the readiness probes setup using the parameters in the values.yaml file.
     documentIndex: 6
     set:
-      deviceServers:
+      testDeviceServers:
         tangotest:
           readinessProbe:
             failureThreshold: x
@@ -373,7 +376,7 @@ tests:
   - it: should have the liveness probes setup using the parameters in the values.yaml file.
     documentIndex: 6
     set:
-      deviceServers:
+      testDeviceServers:
         tangotest:
           livenessProbe:
             failureThreshold: x
@@ -403,7 +406,7 @@ tests:
   - it: should generate readiness and liveness probes for a TANGO server instance with one Tango class and multiple devices.
     documentIndex: 6
     set:
-      deviceServers:
+      testDeviceServers:
         tangotest:
           server:
             name: "TangoTest"
@@ -456,7 +459,7 @@ tests:
   - it: should use the appropriate values to generate the liveness and readiness probes from both the values.yaml and the _multidevice-svc.yaml files, respectively.
     documentIndex: 6
     set:
-      deviceServers:
+      testDeviceServers:
         tangotest:
           livenessProbe:
             failureThreshold: null
@@ -505,7 +508,7 @@ tests:
   - it: should use default values (from the _multidevice-svc.yaml) to generate the liveness and readiness probes if the readinessProbe/livenessProbe tags are not present in the values.yaml file.
     documentIndex: 6
     set:
-      deviceServers:
+      testDeviceServers:
         tangotest:
           livenessProbe: null
           readinessProbe: null
@@ -550,7 +553,7 @@ tests:
         retry:
           - "--sleep=x"
           - "--tries=y"
-      deviceServers:
+      testDeviceServers:
         tangotest:
           legacy_compatibility: true
           command: "/usr/local/bin/TangoServer"
@@ -647,7 +650,7 @@ tests:
         retry:
           - "--sleep=x"
           - "--tries=y"
-      deviceServers:
+      testDeviceServers:
         tangotest:
           legacy_compatibility: true
           command: "/usr/local/bin/TangoServer"
@@ -715,7 +718,7 @@ tests:
     set:
       global:
         cluster_domain: null
-      deviceServers:
+      testDeviceServers:
         tangotest:
           name: tangotest-test
           instances: ["test2"]
@@ -738,7 +741,7 @@ tests:
   - it: should have resource limits configured.
     documentIndex: 6
     set:
-      deviceServers:
+      testDeviceServers:
         tangotest:
           resources:
             requests:
