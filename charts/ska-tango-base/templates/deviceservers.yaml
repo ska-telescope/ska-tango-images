@@ -13,3 +13,19 @@
 {{ template "ska-tango-util.multidevice-svc.tpl" $context }}
 
 {{ end }} # deviceservers
+
+{{- if .Values.testDeviceServersEnabled }}
+{{ range $deviceserver := .Values.testDeviceServers }}
+
+{{ $context := dict "deviceserver" $deviceserver "image" $deviceserver.image "local" $localchart }}
+
+{{ template "ska-tango-util.multidevice-config.tpl" $context }}
+
+{{ template "ska-tango-util.multidevice-sacc-role.tpl" $context }}
+
+{{ template "ska-tango-util.multidevice-job.tpl" $context }}
+
+{{ template "ska-tango-util.multidevice-svc.tpl" $context }}
+
+{{ end }} # testdeviceservers
+{{- end }}

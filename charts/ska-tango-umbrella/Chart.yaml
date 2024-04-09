@@ -6,7 +6,7 @@ appVersion: 0.2.17
 icon: https://www.skatelescope.org/wp-content/uploads/2016/07/09545_NEW_LOGO_2014.png
 dependencies:
 - name: ska-tango-base
-  version: 0.4.9
+  version: 0.4.10
   repository: file://../ska-tango-base
   condition: ska-tango-base.enabled,global.sub-system.ska-tango-base.enabled
 - name: ska-tango-util
