@@ -10,20 +10,30 @@ MINIKUBE ?= true ## Minikube or not
 ITANGO_VERSION ?= $(shell make show-version RELEASE_CONTEXT_DIR=images/ska-tango-images-tango-itango)
 CI_JOB_ID ?= local##pipeline job id
 TEST_RUNNER ?= test-mk-runner-$(CI_JOB_ID)##name of the pod running the k8s_tests
-TANGO_HOST ?= makefile-databaseds-also-node-port:10000## TANGO_HOST connection to the Tango DS
+TANGO_HOST ?= tango-databaseds:10000## TANGO_HOST connection to the Tango DS
 TANGO_SERVER_PORT ?= 45450## TANGO_SERVER_PORT - fixed listening port for local server
 K8S_CHARTS ?= ska-tango-util ska-tango-base ska-tango-umbrella## list of charts to be published on gitlab -- umbrella charts for testing purpose
+CLUSTER_DOMAIN ?= cluster.local
+SKA_TANGO_OPERATOR ?= false
+TEST_DEVICE_SERVERS_ENABLED ?= false
 
 CI_PROJECT_PATH_SLUG ?= ska-tango-images
 CI_ENVIRONMENT_SLUG ?= ska-tango-images
 
-K8S_CHART_PARAMS ?=  --set global.minikube=$(MINIKUBE) --set global.exposeDatabaseDS=$(MINIKUBE) --set global.exposeAllDS=$(MINIKUBE) --set global.tango_host=$(TANGO_HOST) --set global.device_server_port=$(TANGO_SERVER_PORT)
+K8S_CHART_PARAMS ?=  --set global.minikube=$(MINIKUBE) \
+	--set global.exposeDatabaseDS=$(MINIKUBE) \
+	--set global.exposeAllDS=$(MINIKUBE) \
+	--set global.tango_host=$(TANGO_HOST) \
+	--set global.device_server_port=$(TANGO_SERVER_PORT) \
+	--set global.operator=$(SKA_TANGO_OPERATOR) \
+	--set global.cluster_domain=$(CLUSTER_DOMAIN) \
+	--set ska-tango-base.testDeviceServersEnabled=$(TEST_DEVICE_SERVERS_ENABLED)
 
 ifdef CI_COMMIT_SHORT_SHA
 	K8S_CHART_PARAMS += --set ska-tango-base.dsconfig.image.tag=$(CI_COMMIT_SHORT_SHA)
 	K8S_CHART_PARAMS += --set ska-tango-base.itango.image.tag=$(CI_COMMIT_SHORT_SHA)
 	K8S_CHART_PARAMS += --set ska-tango-base.databaseds.image.tag=$(CI_COMMIT_SHORT_SHA)
-	K8S_CHART_PARAMS += --set ska-tango-base.deviceServers.tangotest.image.tag=$(CI_COMMIT_SHORT_SHA)
+	K8S_CHART_PARAMS += --set ska-tango-base.testDeviceServers.tangotest.image.tag=$(CI_COMMIT_SHORT_SHA)
 	K8S_CHART_PARAMS += --set ska-tango-base.tangodb.image.tag=$(CI_COMMIT_SHORT_SHA)
 	K8S_CHART_PARAMS += --set ska-tango-base.vnc.image.tag=$(CI_COMMIT_SHORT_SHA)
 endif
