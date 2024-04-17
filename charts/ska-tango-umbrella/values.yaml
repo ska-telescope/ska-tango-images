@@ -9,7 +9,6 @@ global:
   minikube: false
   tango_host: tango-databaseds:10000
   operator: true
-  device_server_ip: "0.0.0.0"
   # by setting this parameter we can disable the lower level sub-system tango-base, archiver and webjive
   # sub-system:
   #   tango-base:
