@@ -127,8 +127,8 @@ databaseds:
     successThreshold: 1
     failureThreshold: 3
 
-testDeviceServersEnabled: false
-testDeviceServers:
+deviceServersEnabled: true
+deviceServers:
   tangotest:
     name: tangotest
     function: tango-test
@@ -170,8 +170,6 @@ testDeviceServers:
       timeoutSeconds: 1
       successThreshold: 1
       failureThreshold: 3
-
-deviceServers: {}
 
 tangodb:
   enabled: true

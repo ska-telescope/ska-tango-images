@@ -15,7 +15,6 @@ TANGO_SERVER_PORT ?= 45450## TANGO_SERVER_PORT - fixed listening port for local 
 K8S_CHARTS ?= ska-tango-util ska-tango-base ska-tango-umbrella## list of charts to be published on gitlab -- umbrella charts for testing purpose
 CLUSTER_DOMAIN ?= cluster.local
 SKA_TANGO_OPERATOR ?= false
-TEST_DEVICE_SERVERS_ENABLED ?= false
 
 CI_PROJECT_PATH_SLUG ?= ska-tango-images
 CI_ENVIRONMENT_SLUG ?= ska-tango-images
@@ -26,14 +25,13 @@ K8S_CHART_PARAMS ?=  --set global.minikube=$(MINIKUBE) \
 	--set global.tango_host=$(TANGO_HOST) \
 	--set global.device_server_port=$(TANGO_SERVER_PORT) \
 	--set global.operator=$(SKA_TANGO_OPERATOR) \
-	--set global.cluster_domain=$(CLUSTER_DOMAIN) \
-	--set ska-tango-base.testDeviceServersEnabled=$(TEST_DEVICE_SERVERS_ENABLED)
+	--set global.cluster_domain=$(CLUSTER_DOMAIN)
 
 ifdef CI_COMMIT_SHORT_SHA
 	K8S_CHART_PARAMS += --set ska-tango-base.dsconfig.image.tag=$(CI_COMMIT_SHORT_SHA)
 	K8S_CHART_PARAMS += --set ska-tango-base.itango.image.tag=$(CI_COMMIT_SHORT_SHA)
 	K8S_CHART_PARAMS += --set ska-tango-base.databaseds.image.tag=$(CI_COMMIT_SHORT_SHA)
-	K8S_CHART_PARAMS += --set ska-tango-base.testDeviceServers.tangotest.image.tag=$(CI_COMMIT_SHORT_SHA)
+	K8S_CHART_PARAMS += --set ska-tango-base.deviceServers.tangotest.image.tag=$(CI_COMMIT_SHORT_SHA)
 	K8S_CHART_PARAMS += --set ska-tango-base.tangodb.image.tag=$(CI_COMMIT_SHORT_SHA)
 	K8S_CHART_PARAMS += --set ska-tango-base.vnc.image.tag=$(CI_COMMIT_SHORT_SHA)
 endif
