@@ -127,7 +127,7 @@ databaseds:
     successThreshold: 1
     failureThreshold: 3
 
-deviceServersEnabled: true
+# To disable, set deviceServers: []
 deviceServers:
   tangotest:
     name: tangotest
