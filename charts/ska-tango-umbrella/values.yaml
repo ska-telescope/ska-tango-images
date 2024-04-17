@@ -7,8 +7,8 @@ xauthority: "~/.Xauthority"
 
 global:
   minikube: false
-  tango_host: my-personal-databaseds-also-node-port:10000
-  device_server_ip: "0.0.0.0"
+  tango_host: tango-databaseds:10000
+  operator: true
   # by setting this parameter we can disable the lower level sub-system tango-base, archiver and webjive
   # sub-system:
   #   tango-base:
@@ -26,3 +26,5 @@ ska-tango-base:
   ingress:
     enabled: true
     hostname: tango-base.minikube.local
+  tangodb:
+    use_pv: true

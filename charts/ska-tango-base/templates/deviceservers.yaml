@@ -1,5 +1,6 @@
 {{ $localchart := . }}
 
+{{- if .Values.deviceServersEnabled }}
 {{ range $deviceserver := .Values.deviceServers }}
 
 {{ $context := dict "deviceserver" $deviceserver "image" $deviceserver.image "local" $localchart }}
@@ -13,3 +14,4 @@
 {{ template "ska-tango-util.multidevice-svc.tpl" $context }}
 
 {{ end }} # deviceservers
+{{- end }}
