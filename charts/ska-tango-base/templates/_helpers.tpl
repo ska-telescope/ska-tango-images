@@ -10,6 +10,16 @@ service-name based on values in order to make it constant accross the deplpyent 
 */}}
 
 {{/*
+Short unique name for PVs when using minikube (local)
+*/}}
+{{- define "ska-tango-base.local-pv-prefix" -}}
+{{- printf "%s-%s" (default .Chart.Name .Values.nameOverride) (printf "%s-%s" .Release.Namespace .Release.Name | sha256sum | trunc 8 ) | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{/*
+PV name unique per release and namespace so that multiple releases can coexist
+*/}}
+
+{{/*
 Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.

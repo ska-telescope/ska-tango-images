@@ -54,7 +54,6 @@ global:
   - "--sleep=1"
   - "--tries=100"
 
-homeDir: /home/ubuntu
 system: SW-infrastructure
 subsystem: ska-tango-base
 telescope: SKA-mid
@@ -128,6 +127,7 @@ databaseds:
     successThreshold: 1
     failureThreshold: 3
 
+deviceServersEnabled: true
 deviceServers:
   tangotest:
     name: tangotest

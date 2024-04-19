@@ -2,6 +2,23 @@
 suite: deviceservers
 templates:
   - deviceservers.yaml
+set:
+  deviceServers:
+    tangotest:
+      name: tangotest
+      function: tango-test
+      domain: tango-base
+      command: "/usr/local/bin/TangoTest"
+      instances: ["test"]
+      environment_variables: []
+      server:
+        name: "TangoTest"
+        instances:
+        - name: "test"
+          classes:
+          - name: "TangoTest"
+            devices:
+            - name: "sys/tg_test/1"
 tests:
   - it: should have seven documents rendered.
     asserts:
@@ -18,26 +35,11 @@ tests:
 
   - it: should have a ConfigMap for the TangoTest device server with data having configuration.json.
     documentIndex: 0
-    set:
-      deviceServers:
-        tangotest:
-          name: testserver
-          instances: ["testx"]
-          server:
-            name: TestServer
-            instances:
-              - name: "testx"
-                classes:
-                - name: "TestServerClass"
-                  devices:
-                    - name: "xxx/xx/x"
     asserts:
       - equal:
           path: data
           value:
-            TestServer.py: "\n#!/usr/bin/env python\n\nimport importlib\nimport importlib.util\nfrom tango.server import run\n\nclasses
-              = []\n\ndef main(args=None, **kwargs):\n  \n  return run(classes=(classes), args=args,
-              **kwargs)\n\nif __name__ == '__main__':\n    main()\n"
+            TangoTest.py: "\n#!/usr/bin/env python\n\nimport importlib\nimport importlib.util\nfrom tango.server import run\n\nclasses = []\n\ndef main(args=None, **kwargs):\n  \n  return run(classes=(classes), args=args, **kwargs)\n\nif __name__ == '__main__':\n    main()\n"
             bootstrap.sh: |
               #/bin/sh
               json2tango -w -a -u data/configuration.json
@@ -57,10 +59,10 @@ tests:
             configuration.json: |
               {
                 "servers": {
-                  "TestServer" : {
-                    "testx": {
-                      "TestServerClass": {
-                        "xxx/xx/x": {
+                  "TangoTest" : {
+                    "test": {
+                      "TangoTest": {
+                        "sys/tg_test/1": {
                         }
                       }
                     }
