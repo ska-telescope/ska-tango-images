@@ -24,7 +24,6 @@ Parameters:
 {{ template "ska-tango-util.secret-provider-class-svc.tpl" $context }}
 {{- end}}
 {{- end}}
-{{- $tango_server_ip := coalesce .deviceserver.server_ip .local.Values.device_server_ip "0.0.0.0" }}
 {{- $legacy_compatibility := pluck "legacy_compatibility" .deviceserver .local.Values | default (list true) | has true}}
 {{- range $instance := $deviceserver.server.instances }}
 {{- $safe_instance := $instance.name | toString | replace "_" "-" }}

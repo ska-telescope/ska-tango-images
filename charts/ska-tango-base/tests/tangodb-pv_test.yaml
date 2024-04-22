@@ -88,9 +88,9 @@ tests:
       tangodb.use_pv: true
     documentIndex: 0
     asserts:
-      - equal:
+      - matchRegex:
           path: spec.hostPath.path
-          value: /ska-tango-base-tangodb-storage-RELEASE-NAME
+          pattern: /ska-tango-base-[a-z0-9]{8}-tangodb-storage-RELEASE-NAME
 
   - it: should have a recycle persistent volume reclaim policy for the PersistentVolume.
     set:
