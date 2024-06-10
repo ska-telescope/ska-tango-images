@@ -43,14 +43,14 @@ RUN apt-get install -y --no-install-recommends \
       zlib1g-dev \
       ca-certificates \
       curl \
-      git 
+      git
 
 
 RUN apt install -y zip bison build-essential cmake flex git libedit-dev \
   libllvm14 llvm-14-dev libclang-14-dev python3 zlib1g-dev libelf-dev libfl-dev python3-setuptools \
   liblzma-dev libdebuginfod-dev arping netperf iperf
 
-RUN bash -xc "\ 
+RUN bash -xc "\
     git clone https://github.com/iovisor/bcc.git && \
     mkdir bcc/build && cd bcc/build && \
     cmake .. && \
@@ -70,7 +70,7 @@ WORKDIR /app
 
 # Install poetry as a binary
 ENV POETRY_HOME=/opt/poetry
-ENV POETRY_VERSION=1.3.2
+ENV POETRY_VERSION=1.8.3
 RUN mkdir -p $POETRY_HOME && curl -sSL https://raw.githubusercontent.com/python-poetry/install.python-poetry.org/main/install-poetry.py --output $POETRY_HOME/install-poetry.py
 RUN cd $POETRY_HOME && POETRY_VERSION=${POETRY_VERSION} python3 install-poetry.py --yes
 RUN /opt/poetry/bin/poetry --help
