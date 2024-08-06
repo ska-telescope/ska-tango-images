@@ -232,28 +232,36 @@ spec:
         image: "{{ tpl ($deviceserver.image.registry | toString) $chart }}/{{ tpl ($deviceserver.image.image | toString) $chart }}:{{ tpl ($deviceserver.image.tag | toString) $chart }}"
         imagePullPolicy: {{ tpl ($deviceserver.image.pullPolicy | toString) $chart }}
         command:
-          {{- if not $deviceserver.noretry }}
-          - retry
-          {{- if $chart.Values.global.retry }}
-          {{- range $retry_option := $chart.Values.global.retry }}
-          - {{ $retry_option }}
-          {{- end }}
-          {{- else }}
-          - --max=60
-          {{- end }}
-          - --
-          {{- end }}
-          {{- if $deviceserver.command }}
-          - {{ $deviceserver.command }}
-          {{- else }}
-          - /usr/bin/python
-          - /data/{{ $deviceserver.server.name }}.py
-          {{- end }}
-          - "{{ $safe_instance | toString }}"
-          - -ORBendPoint
-          - giop:tcp:{{ if ne $legacy_compatibility true}}0.0.0.0{{ end }}:$(TANGO_SERVER_PORT)
-          - -ORBendPointPublish
-          - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
+          - sh
+          - -c
+          - >-
+            {{- range $index_class, $class := $instance.classes }}
+            {{- range $index_device, $device := $class.devices }}
+            tango_admin --unexport-device {{ $device.name }};
+            {{- end }}
+            {{- end }}
+            {{- if not $deviceserver.noretry }}
+            retry
+            {{- if $chart.Values.global.retry }}
+            {{- range $retry_option := $chart.Values.global.retry }}
+            {{ $retry_option }}
+            {{- end }}
+            {{- else }}
+            --max=60
+            {{- end }}
+            --
+            {{- end }}
+            {{- if $deviceserver.command }}
+            {{ $deviceserver.command }}
+            {{- else }}
+            /usr/bin/python
+            /data/{{ $deviceserver.server.name }}.py
+            {{- end }}
+            "{{ $safe_instance | toString }}"
+            -ORBendPoint
+            giop:tcp:{{ if ne $legacy_compatibility true}}0.0.0.0{{ end }}:$(TANGO_SERVER_PORT)
+            -ORBendPointPublish
+            giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
         ports:
         - containerPort: {{ $tango_server_port }}
           name: tango-server
@@ -298,22 +306,21 @@ spec:
             command:
             - "sh"
             - "-c"
+            - >-
           {{- range $index_class, $class := $instance.classes }}
-          {{ $num_of_classes := len $instance.classes }}
-          {{ $num_of_classes = sub $num_of_classes 1 }}
-          {{ $num_of_devices := len $class.devices }}
-          {{ $num_of_devices = sub $num_of_devices 1 }}
+          {{- $num_of_classes := len $instance.classes }}
+          {{- $num_of_classes = sub $num_of_classes 1 }}
+          {{- $num_of_devices := len $class.devices }}
+          {{- $num_of_devices = sub $num_of_devices 1 }}
           {{- range $index_device, $device := $class.devices }}
-            - tango_admin
-            - --ping-device
-          {{ if or (lt $index_class $num_of_classes) (lt $index_device  $num_of_devices)  }}
-            - {{ $device.name }}
-            - "&&"
-          {{ else }}
-            - {{ $device.name }}
-          {{ end }}
-          {{ end }}
-          {{ end }}
+              tango_admin --ping-device
+          {{- if or (lt $index_class $num_of_classes) (lt $index_device  $num_of_devices)  }}
+              {{ $device.name }} &&
+          {{- else }}
+              {{ $device.name }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
           initialDelaySeconds: {{ default 0 $lprobe_initial_delay_seconds }}
           periodSeconds: {{ $lprobe_period_seconds }}
           timeoutSeconds: {{ $lprobe_timeout_seconds }}
@@ -324,22 +331,21 @@ spec:
             command:
             - "sh"
             - "-c"
+            - >-
           {{- range $index_class, $class := $instance.classes }}
-          {{ $num_of_classes := len $instance.classes }}
-          {{ $num_of_classes = sub $num_of_classes 1 }}
-          {{ $num_of_devices := len $class.devices }}
-          {{ $num_of_devices = sub $num_of_devices 1 }}
+          {{- $num_of_classes := len $instance.classes }}
+          {{- $num_of_classes = sub $num_of_classes 1 }}
+          {{- $num_of_devices := len $class.devices }}
+          {{- $num_of_devices = sub $num_of_devices 1 }}
           {{- range $index_device, $device := $class.devices }}
-            - tango_admin
-            - --ping-device
-          {{ if or (lt $index_class $num_of_classes) (lt $index_device  $num_of_devices)  }}
-            - {{ $device.name }}
-            - "&&"
-          {{ else }}
-            - {{ $device.name }}
-          {{ end }}
-          {{ end }}
-          {{ end }}
+              tango_admin --check-device-exported
+          {{- if or (lt $index_class $num_of_classes) (lt $index_device  $num_of_devices)  }}
+              {{ $device.name }} &&
+          {{- else }}
+              {{ $device.name }}
+          {{- end }}
+          {{- end }}
+          {{- end }}
           initialDelaySeconds: {{ default 0 $rprobe_initial_delay_seconds }}
           periodSeconds: {{ $rprobe_period_seconds }}
           timeoutSeconds: {{ $rprobe_timeout_seconds }}
