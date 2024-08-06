@@ -165,6 +165,8 @@ spec:
             value: "{{ .Values.tangodb.db.password }}"  # ST-1064: Check if this overwrites the injected value            
           - name: TANGO_SERVER_PUBLISH_HOSTNAME
             value: {{ tpl ($databaseds_name | toString) . }}.{{ .Release.Namespace }}.svc.{{ $cluster_domain }}            
+          - name: TANGO_HOST
+            value: localhost:{{ $databaseds_port }}
         ports:
         - name: ds
           containerPort: {{ $databaseds_port }}
@@ -172,11 +174,8 @@ spec:
         readinessProbe:
           exec:
             command:
-            - "sh"
-            - "-c"
-            - "tango_admin"
-            - "--ping-device"
-            - "sys/database/2"
+            - tango_admin
+            - --ping-database
           initialDelaySeconds: {{ .Values.databaseds.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.databaseds.readinessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.databaseds.readinessProbe.timeoutSeconds }}
@@ -187,11 +186,8 @@ spec:
         livenessProbe:
           exec:
             command:
-            - "sh"
-            - "-c"
-            - "tango_admin"
-            - "--ping-device"
-            - "sys/database/2"
+            - tango_admin
+            - --ping-database
           initialDelaySeconds: {{ .Values.databaseds.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.databaseds.livenessProbe.periodSeconds }}
           timeoutSeconds: {{ .Values.databaseds.livenessProbe.timeoutSeconds }}
