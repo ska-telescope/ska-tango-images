@@ -58,11 +58,7 @@ RUN curl -fsSL -k "$TANGO_DOWNLOAD_URL" -o tango.tar.gz \
     && ldconfig \
     && rm -r /usr/src/tango
 
-# tango_admin 1.19 that comes with TangoSourceDistribution 9.5.0 is broken
-# (https://gitlab.com/tango-controls/tango_admin/-/issues/15), so we install an
-# older version instead.
-# TODO: Remove me when above issue is resolved
-RUN git clone --depth=1 --branch=Release_1.17 https://gitlab.com/tango-controls/tango_admin.git /usr/src/tango_admin && \
+RUN git clone --recurse-submodules --depth=1 --branch=Release_1.24 https://gitlab.com/tango-controls/tango_admin.git /usr/src/tango_admin && \
     cd /usr/src/tango_admin && \
     cmake -B /usr/src/tango_admin/build -DCMAKE_INSTALL_PREFIX=/usr/local/ /usr/src/tango_admin && \
     make  -j$(nproc) -C /usr/src/tango_admin/build install
