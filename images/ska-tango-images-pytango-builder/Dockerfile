@@ -75,7 +75,7 @@ RUN mkdir -p $POETRY_HOME && curl -sSL https://raw.githubusercontent.com/python-
 RUN cd $POETRY_HOME && POETRY_VERSION=${POETRY_VERSION} python3 install-poetry.py --yes
 RUN /opt/poetry/bin/poetry --help
 
-RUN python3 -m pip install --no-cache-dir numpy
+RUN python3 -m pip install --no-cache-dir "numpy<2"
 RUN python3 -m pip install --no-cache-dir pytango==9.5.0
 # RUN git clone https://gitlab.com/tango-controls/pytango.git && \
 #     cd pytango && \
