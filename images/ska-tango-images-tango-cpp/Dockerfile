@@ -51,8 +51,8 @@ RUN git clone --depth=1 --branch=9.5.0 https://gitlab.com/tango-controls/cppTang
     rm -r /usr/src/tango
 
 # build and install tango_admin
-RUN git clone https://gitlab.com/tango-controls/tango_admin.git /usr/src/tango_admin && \
-    cd /usr/src/tango_admin && git checkout Release_1.17 && \
+RUN git clone --recurse-submodules --depth=1 --branch=main https://gitlab.com/tango-controls/tango_admin.git /usr/src/tango_admin && \
+    cd /usr/src/tango_admin && \
     cmake -B /usr/src/tango_admin/build -DCMAKE_INSTALL_PREFIX=/usr/local/ /usr/src/tango_admin && \
     make  -j$(nproc) -C /usr/src/tango_admin/build install
 
