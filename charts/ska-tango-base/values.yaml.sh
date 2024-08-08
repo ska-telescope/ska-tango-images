@@ -114,16 +114,16 @@ databaseds:
       ephemeral-storage: 1Gi
   livenessProbe:
     enabled: true
-    initialDelaySeconds: 0
-    periodSeconds: 10
-    timeoutSeconds: 1
+    initialDelaySeconds: 30
+    periodSeconds: 20
+    timeoutSeconds: 10
     successThreshold: 1
     failureThreshold: 3
   readinessProbe:
     enabled: true
-    initialDelaySeconds: 0
-    periodSeconds: 10
-    timeoutSeconds: 1
+    initialDelaySeconds: 30
+    periodSeconds: 20
+    timeoutSeconds: 10
     successThreshold: 1
     failureThreshold: 3
 
