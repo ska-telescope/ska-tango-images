@@ -361,11 +361,9 @@ tests:
           value:
             exec:
               command:
-              - sh
-              - -c
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/1
+                - sh
+                - -c
+                - tango_admin --check-device-exported sys/tg_test/1
             failureThreshold: x
             initialDelaySeconds: x
             periodSeconds: x
@@ -393,9 +391,7 @@ tests:
               command:
               - sh
               - -c
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/1
+              - tango_admin --ping-device sys/tg_test/1
             failureThreshold: x
             initialDelaySeconds: x
             periodSeconds: x
@@ -427,33 +423,19 @@ tests:
           value:
             - sh
             - -c
-            - tango_admin
-            - --ping-device
-            - sys/tg_test/1
-            - "&&"
-            - tango_admin
-            - --ping-device
-            - sys/tg_test/2
-            - "&&"
-            - tango_admin
-            - --ping-device
-            - sys/tg_test/3
+            - >-
+              tango_admin --ping-device sys/tg_test/1 &&
+              tango_admin --ping-device sys/tg_test/2 &&
+              tango_admin --ping-device sys/tg_test/3
       - equal:
           path: spec.template.spec.containers[0].readinessProbe.exec.command
           value:
             - sh
             - -c
-            - tango_admin
-            - --ping-device
-            - sys/tg_test/1
-            - "&&"
-            - tango_admin
-            - --ping-device
-            - sys/tg_test/2
-            - "&&"
-            - tango_admin
-            - --ping-device
-            - sys/tg_test/3
+            - >-
+              tango_admin --check-device-exported sys/tg_test/1 &&
+              tango_admin --check-device-exported sys/tg_test/2 &&
+              tango_admin --check-device-exported sys/tg_test/3
 
   - it: should use the appropriate values to generate the liveness and readiness probes from both the values.yaml and the _multidevice-svc.yaml files, respectively.
     documentIndex: 6
@@ -480,9 +462,7 @@ tests:
               command:
               - sh
               - -c
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/1
+              - tango_admin --ping-device sys/tg_test/1
             failureThreshold: 3
             initialDelaySeconds: x
             periodSeconds: 5
@@ -495,9 +475,7 @@ tests:
               command:
               - sh
               - -c
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/1
+              - tango_admin --check-device-exported sys/tg_test/1
             failureThreshold: x
             initialDelaySeconds: x
             periodSeconds: x
@@ -521,9 +499,7 @@ tests:
               command:
               - sh
               - -c
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/1
+              - tango_admin --ping-device sys/tg_test/1
             failureThreshold: 3
             initialDelaySeconds: 0
             periodSeconds: 5
@@ -536,9 +512,7 @@ tests:
               command:
               - sh
               - -c
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/1
+              - tango_admin --check-device-exported sys/tg_test/1
             failureThreshold: 3
             initialDelaySeconds: 0
             periodSeconds: 5
@@ -586,16 +560,16 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].command
           value:
-            - retry
-            - --sleep=x
-            - --tries=y
-            - --
-            - /usr/local/bin/TangoServer
-            - "test"
-            - -ORBendPoint
-            - giop:tcp::$(TANGO_SERVER_PORT)
-            - -ORBendPointPublish
-            - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
+            - sh
+            - -c
+            - >-
+              tango_admin --unexport-device sys/tg_test/11;
+              tango_admin --unexport-device sys/tg_test/12;
+              tango_admin --unexport-device sys/tg_test/13;
+              retry --sleep=x --tries=y --
+              /usr/local/bin/TangoServer "test"
+              -ORBendPoint giop:tcp::$(TANGO_SERVER_PORT)
+              -ORBendPointPublish giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
       - equal:
           path: spec.template.spec.containers[0].readinessProbe
           value:
@@ -603,17 +577,10 @@ tests:
               command:
               - sh
               - -c
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/11
-              - "&&"
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/12
-              - "&&"
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/13
+              - >-
+                tango_admin --check-device-exported sys/tg_test/11 &&
+                tango_admin --check-device-exported sys/tg_test/12 &&
+                tango_admin --check-device-exported sys/tg_test/13
             failureThreshold: x
             initialDelaySeconds: x
             periodSeconds: x
@@ -626,17 +593,10 @@ tests:
               command:
               - sh
               - -c
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/11
-              - "&&"
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/12
-              - "&&"
-              - tango_admin
-              - --ping-device
-              - sys/tg_test/13
+              - >-
+                tango_admin --ping-device sys/tg_test/11 &&
+                tango_admin --ping-device sys/tg_test/12 &&
+                tango_admin --ping-device sys/tg_test/13
             failureThreshold: x
             initialDelaySeconds: x
             periodSeconds: x
@@ -673,16 +633,14 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].command
           value:
-            - retry
-            - --sleep=x
-            - --tries=y
-            - --
-            - /usr/local/bin/TangoServer
-            - "test"
-            - -ORBendPoint
-            - giop:tcp::$(TANGO_SERVER_PORT)
-            - -ORBendPointPublish
-            - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
+            - sh
+            - -c
+            - >-
+              tango_admin --unexport-device sys/tg_test/1;
+              retry --sleep=x --tries=y --
+              /usr/local/bin/TangoServer "test"
+              -ORBendPoint giop:tcp::$(TANGO_SERVER_PORT)
+              -ORBendPointPublish giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
         documentIndex: 6
       - isKind:
           of: StatefulSet
@@ -690,16 +648,14 @@ tests:
       - equal:
           path: spec.template.spec.containers[0].command
           value:
-            - retry
-            - --sleep=x
-            - --tries=y
-            - --
-            - /usr/local/bin/TangoServer
-            - "test2"
-            - -ORBendPoint
-            - giop:tcp::$(TANGO_SERVER_PORT)
-            - -ORBendPointPublish
-            - giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
+            - sh
+            - -c
+            - >-
+              tango_admin --unexport-device sys/tg_test/2;
+              retry --sleep=x --tries=y --
+              /usr/local/bin/TangoServer "test2"
+              -ORBendPoint giop:tcp::$(TANGO_SERVER_PORT)
+              -ORBendPointPublish giop:tcp:$(TANGO_SERVER_PUBLISH_HOSTNAME):$(TANGO_SERVER_PORT)
         documentIndex: 8
 
   - it: should have a TANGO_SERVER_PORT environment variable set to 45450 by default

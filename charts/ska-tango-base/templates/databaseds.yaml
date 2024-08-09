@@ -165,36 +165,34 @@ spec:
             value: "{{ .Values.tangodb.db.password }}"  # ST-1064: Check if this overwrites the injected value            
           - name: TANGO_SERVER_PUBLISH_HOSTNAME
             value: {{ tpl ($databaseds_name | toString) . }}.{{ .Release.Namespace }}.svc.{{ $cluster_domain }}            
+          - name: TANGO_HOST
+            value: localhost:{{ $databaseds_port }}
         ports:
         - name: ds
           containerPort: {{ $databaseds_port }}
-        {{- if .Values.databaseds.livenessProbe.enabled }}
+        {{- if .Values.databaseds.readinessProbe.enabled }}
         readinessProbe:
           exec:
             command:
-            - "sh"
-            - "-c"
-            - "tango_admin"
-            - "--ping-device"
-            - "sys/database/2"
+            - tango_admin
+            - --ping-database
+            - "{{ .Values.databaseds.readinessProbe.timeoutSeconds }}"
           initialDelaySeconds: {{ .Values.databaseds.readinessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.databaseds.readinessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.databaseds.readinessProbe.timeoutSeconds }}
+          timeoutSeconds: {{ mul .Values.databaseds.readinessProbe.timeoutSeconds 2 }}
           successThreshold: {{ .Values.databaseds.readinessProbe.successThreshold }}
           failureThreshold: {{ .Values.databaseds.readinessProbe.failureThreshold }}
         {{- end }}
-        {{- if .Values.databaseds.readinessProbe.enabled }}
+        {{- if .Values.databaseds.livenessProbe.enabled }}
         livenessProbe:
           exec:
             command:
-            - "sh"
-            - "-c"
-            - "tango_admin"
-            - "--ping-device"
-            - "sys/database/2"
+            - tango_admin
+            - --ping-database
+            - "{{ .Values.databaseds.livenessProbe.timeoutSeconds }}"
           initialDelaySeconds: {{ .Values.databaseds.livenessProbe.initialDelaySeconds }}
           periodSeconds: {{ .Values.databaseds.livenessProbe.periodSeconds }}
-          timeoutSeconds: {{ .Values.databaseds.livenessProbe.timeoutSeconds }}
+          timeoutSeconds: {{ mul .Values.databaseds.livenessProbe.timeoutSeconds 2 }}
           successThreshold: {{ .Values.databaseds.livenessProbe.successThreshold }}
           failureThreshold: {{ .Values.databaseds.livenessProbe.failureThreshold }}
         {{- end }}
