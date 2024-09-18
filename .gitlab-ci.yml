@@ -538,25 +538,6 @@ build_tango-pytango:
   rules:
     - !reference [.tango-panic-gui-rules, rules]
 
-test-chart-templates:
-  stage: test
-  variables:
-    MINIKUBE: "false"
-  tags:
-  - k8srunner
-  image: $SKA_K8S_TOOLS_DEPLOY_IMAGE
-  script:
-    - helm plugin install https://github.com/quintush/helm-unittest && helm plugin update unittest
-    - make k8s-chart-test
-    - mkdir -p ./build/reports
-    - mv charts/build/chart_template_tests.xml ./build/reports/chart_template_tests.xml
-  artifacts:
-    name: "$CI_PROJECT_NAME-$CI_JOB_ID"
-    paths:
-      - "build/"
-    reports:
-      junit: build/reports/chart_template_tests.xml
-
 # Custom OCI Image publish stage
 oci-image-publish: #Executed on a tag for CAR
   stage: publish
@@ -731,10 +712,6 @@ include:
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/oci-image-lint.gitlab-ci.yml'
 
-# Helm Charts
-  - project: 'ska-telescope/templates-repository'
-    file: 'gitlab-ci/includes/helm-chart.gitlab-ci.yml'
-
   # Raw
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/raw.gitlab-ci.yml'
@@ -747,24 +724,12 @@ include:
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/finaliser.gitlab-ci.yml'
 
-# k8s steps
-  - project: 'ska-telescope/templates-repository'
-    file: 'gitlab-ci/includes/k8s.gitlab-ci.yml'
-
 # changelog release page
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/changelog.gitlab-ci.yml'
 
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/oci-image-scan.gitlab-ci.yml'
-
-##### Test k8s
-k8s-test:
-  before_script:
-    - '[ -f .make/k8s.mk ] || (echo "File k8s.mk not included in Makefile; exit 1")'
-    - 'make help | grep k8s-test'
-    - make k8s-install-chart CAR_OCI_REGISTRY_HOST=${CI_REGISTRY}/${CI_PROJECT_NAMESPACE}/${CI_PROJECT_NAME}
-    - make k8s-wait
 
 ##### Overide scanning jobs
 
