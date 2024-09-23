@@ -6,3 +6,4 @@ build
 *~ 
 .pytest_cache
 PrivateRules.mak
+tests/__pycache__
