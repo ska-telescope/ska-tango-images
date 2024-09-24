@@ -763,3 +763,12 @@ oci-image-scan:
     when: always
     reports:
       container_scanning: gl-container-scanning-report.json
+
+oci-tests:
+  stage: test
+  tags:
+    - k8srunner
+  before_script:
+    pip install -r tests/requirements.txt
+  script:
+    make oci-tests

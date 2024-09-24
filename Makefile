@@ -25,3 +25,6 @@ oci-bump-major-release: ## Bump major release for all OCI Image .release files i
 
 custom-oci-publish-all: ## Custom Publish all OCI Images in OCI_IMAGES_TO_PUBLISH using image local .release
 	$(foreach ociimage,$(OCI_IMAGES_TO_PUBLISH), make oci-publish OCI_IMAGE=$(ociimage) RELEASE_CONTEXT_DIR=images/$(ociimage);)
+
+oci-tests:
+	env SKA_TANGO_IMAGES_DIR=$(BASE)/images pytest tests
