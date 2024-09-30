@@ -1,59 +1,29 @@
-#
-# This Dockerfile creates a Docker image intended to be a base runtime for SKA
-# python projects. This image should be used as an intermediate layer
-# alongside the pytango-builder image.
-#
-ARG CAR_PYPI_REPOSITORY_URL
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:local"
-ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp:local"
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-admin:local"
+ARG BASE_IMAGE="registry.gitlab.com/ska-telescope/ska-base-image/ska-python:0.1.0-dev.c592bd08e"
+FROM $BUILD_IMAGE as build
 
-FROM ${BUILD_IMAGE} as buildenv
 FROM $BASE_IMAGE
 ARG DEBIAN_FRONTEND=noninteractive
 
-LABEL \
-      author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
-      description="This image includes the pytango framework with all its dependencies and no building tools" \
-      license="BSD-3-Clause" \
-      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-runtime" \
-      org.skatelescope.team="Systems Team" \
-      org.skatelescope.version="1.0.0" \
-      int.skao.application="PyTango Runtime"
+LABEL int.skao.image.team="Team Wombat" \
+      int.skao.image.url="https://gitlab.com/ska-telescope/ska-tango-images" \
+      int.skao.image.source="images/ska-tango-images-tango-python/Dockerfile"
 
-USER root
+RUN set -xe; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        sudo \
+        libjpeg8; \
+    rm -rf /var/lib/apt/lists/*
 
-# Permanently install Python and PyTango runtime dependencies:
-#
-# * libboost-python is required by PyTango;
-# * make is required to manage execution of the tests inside the container
-# * python3 is required as this image is intended for running Python Tango
-#   devices.
-RUN apt-get update && \
-      apt-get install -y --no-install-recommends \
-      libboost-python1.74.0 \
-      ca-certificates \
-      make \
-      curl \
-      python3 \
-      python3-distutils \
-      python3-setuptools
+# Provides tango_admin, libtango, retry and wait-for-it.sh
+COPY --from=build /usr/local/ /usr/local/
 
-# Copy across files that are used to help orchestrate container compositions
-# and test execution sequences
-COPY --from=buildenv /usr/local/bin/wait-for-it.sh /usr/local/bin/wait-for-it.sh
-COPY --from=buildenv /usr/local/bin/retry /usr/local/bin/retry
-COPY --from=buildenv /usr/local/lib/python3.10 /usr/local/lib/python3.10
-COPY --from=buildenv /opt/poetry /opt/poetry
+RUN useradd --create-home --home-dir /home/tango tango
 
-RUN curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py
-COPY pip.conf /etc/pip.conf
-
-RUN ln -sfn /usr/bin/python3 /usr/bin/python && ln -sfn /opt/poetry/bin/poetry /usr/local/bin/poetry
+RUN echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango && \
+    chmod 0440 /etc/sudoers.d/tango
 
 USER tango
-ENV PATH="/home/tango/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:${PATH}"
 
-ONBUILD COPY --chown=tango:tango . /app
-ONBUILD COPY --from=buildenv /usr/local/bin/ /usr/local/bin/
-ONBUILD WORKDIR /app
