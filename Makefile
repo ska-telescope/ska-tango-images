@@ -58,7 +58,6 @@ oci-build-$1: build/receipts/$1
 endef
 
 $(foreach img,$(ALL_IMAGES),$(eval $(call oci-build-image,$(img))))
-
 .PHONY: oci-build-with-deps
 oci-build-with-deps:
 	scripts/oci-build-with-deps.sh $(OCI_IMAGE)
