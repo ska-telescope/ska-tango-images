@@ -1,19 +1,29 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-builder:local"
+ARG BUILD_IMAGE="harbor.skao.int/production/ska-build-python:0.1.0"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-pytango-runtime:local"
-FROM $BUILD_IMAGE as buildenv
+FROM $BUILD_IMAGE as build
+
+ENV VIRTUAL_ENV=/app
+RUN set -xe; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        python3-venv; \
+    python3 -m venv $VIRTUAL_ENV
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+RUN pip install --no-cache-dir dsconfig==1.7.1
+
 FROM $BASE_IMAGE
 
-LABEL \
-      author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
-      description="This image includes the MaxIV Dsconfig tool" \
-      license="BSD-3-Clause" \
-      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dsconfig" \
-      org.skatelescope.team="Systems Team" \
-      org.skatelescope.version="1.0.0" \
-      int.skao.application="MaxIV Tango Dsconfig"
+ENV VIRTUAL_ENV=/app
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-RUN python3 -m pip install dsconfig
+COPY --from=build $VIRTUAL_ENV $VIRTUAL_ENV
+
+LABEL int.skao.image.team="Team Wombat" \
+      int.skao.image.url="https://gitlab.com/ska-telescope/ska-tango-images" \
+      int.skao.image.source="images/ska-tango-images-tango-dsconfig/Dockerfile" \
+      int.skao.application="MaxIV Tango Dsconfig"
 
 # Existing Helm charts assume tango-dsconfig starts in the root directory
 WORKDIR /
