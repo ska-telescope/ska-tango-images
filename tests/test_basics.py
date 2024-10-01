@@ -11,8 +11,9 @@ OCI_REGISTRY = f'{CI_REGISTRY}/{CI_PROJECT_NAMESPACE}/{CI_PROJECT_NAME}'
 IMAGES_DIR = os.path.abspath(f"{os.path.dirname(__file__)}/../images")
 CI_COMMIT_SHORT_SHA = os.environ.get('CI_COMMIT_SHORT_SHA', None)
 
-# Return code used by tango when you pass no arguments
-TANGO_DSERVER_NO_ARGS = 255
+# Return code used by tango when you pass invalid arguments
+TANGO_CPP_DSERVER_INVALID_ARGS = 255
+TANGO_JAVA_DSERVER_INVALID_ARGS = 1
 
 def get_tag(name):
     if CI_COMMIT_SHORT_SHA is None:
@@ -84,7 +85,7 @@ def test_tango_databaseds():
 
     result = run_in_docker(image, command)
 
-    assert result.returncode == TANGO_DSERVER_NO_ARGS
+    assert result.returncode == TANGO_CPP_DSERVER_INVALID_ARGS
     assert 'usage' in result.stderr.decode()
 
 def test_tango_itango():
@@ -111,7 +112,7 @@ def test_tango_test():
 
     result = run_in_docker(image, command)
 
-    assert result.returncode == TANGO_DSERVER_NO_ARGS
+    assert result.returncode == TANGO_CPP_DSERVER_INVALID_ARGS
     assert 'usage' in result.stderr.decode()
 
 def test_tango_rest():
@@ -121,12 +122,12 @@ def test_tango_rest():
     assert tag is not None
 
     image = f'{OCI_REGISTRY}/{name}:{tag}'
-    command = ['supervisord', '--help']
+    command = ['TangoRestServer']
 
     result = run_in_docker(image, command)
 
-    assert result.returncode == 0
-    assert 'Usage' in result.stdout.decode()
+    assert result.returncode == TANGO_JAVA_DSERVER_INVALID_ARGS
+    assert 'usage' in result.stdout.decode()
 
 def test_tango_jive():
     name='ska-tango-images-tango-jive'
