@@ -5,10 +5,6 @@ that are useful for TANGO control system development.
 See the documentation in the 'docs' folder for build and usage
 instructions.
 
-## Deprecation alerts
-
-As of release 0.3.23 **tango-panic images will no longer be maintained** as these don't support python3.
-
 ## Docker hierarchy and release tagging
 
 When updating Dockerfiles, and especially the tags in the `.release` files,
