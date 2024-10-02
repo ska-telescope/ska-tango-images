@@ -8,7 +8,7 @@ CI_REGISTRY = os.environ.get('CI_REGISTRY', 'registry.gitlab.com')
 CI_PROJECT_NAMESPACE = os.environ.get('CI_PROJECT_NAMESPACE', 'ska-telescope')
 CI_PROJECT_NAME = os.environ.get('CI_PROJECT_NAME', 'ska-tango-images')
 OCI_REGISTRY = f'{CI_REGISTRY}/{CI_PROJECT_NAMESPACE}/{CI_PROJECT_NAME}'
-IMAGES_DIR = os.environ['SKA_TANGO_IMAGES_DIR']
+IMAGES_DIR = os.path.abspath(f"{os.path.dirname(__file__)}/../images")
 CI_COMMIT_SHORT_SHA = os.environ.get('CI_COMMIT_SHORT_SHA', None)
 
 # Return code used by tango when you pass no arguments

@@ -66,7 +66,7 @@ oci-build-with-deps:
 define oci-test-image
 .PHONY: oci-test-$(1)
 oci-test-$(1): build/receipts/$(1)
-	env SKA_TANGO_IMAGES_DIR=$(BASE)/images pytest tests -k test_$(subst -,_,$(1))
+	pytest tests -k test_$(subst -,_,$(1))
 endef
 
 build/deps/images-with-tests: tests/test_basics.py scripts/gen-images-with-tests.sh
@@ -77,4 +77,4 @@ include build/deps/images-with-tests
 
 .PHONY: oci-tests
 oci-tests:
-	env SKA_TANGO_IMAGES_DIR=$(BASE)/images pytest tests
+	pytest tests
