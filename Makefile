@@ -77,3 +77,7 @@ include build/deps/images-with-tests
 .PHONY: oci-tests
 oci-tests:
 	pytest tests
+
+.gitlab-ci.yml: scripts/gen-gitlab-ci.sh scripts/gitlab-ci.yml.head
+	@scripts/gen-gitlab-ci.sh
+

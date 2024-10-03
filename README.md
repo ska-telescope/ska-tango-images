@@ -120,3 +120,18 @@ make oci-test-tango-dsconfig
 ```
 
 This will first build the image and all its dependencies if required.
+
+## Gitlab CI
+
+This repository has a generated .gitlab-ci.yml so that the dependency graph can
+be determined from the Dockerfiles.
+
+To regenerate the .gitlab-ci.yml, run the following and the commit the new
+.gitlab-ci.yml.
+
+```shell
+make .gitlab-ci.yml
+```
+
+There is a job in the .gitlab-ci.yml that checks that this file is up-to-date.
+It will fail the pipeline if this needs regenerating.
