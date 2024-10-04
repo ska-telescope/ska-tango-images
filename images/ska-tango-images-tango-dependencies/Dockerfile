@@ -3,79 +3,60 @@
 # intermediate image, then creates a release image containing the compiled
 # binaries.
 #
-ARG BASE_IMAGE="ubuntu:22.04"
-FROM $BASE_IMAGE as buildenv
+ARG BUILD_IMAGE="harbor.skao.int/production/ska-build:0.1.0"
+FROM $BUILD_IMAGE as build
 ARG DEBIAN_FRONTEND=noninteractive
+ARG ZEROMQ_VERSION=4.3.4
+ARG CPPMQ_VERSION=4.8.1
+ARG OMNIORB_VERSION=4.3.2
 
-ENV ZEROMQ_DOWNLOAD_URL=https://github.com/zeromq/libzmq/archive/v4.3.4.tar.gz
-ENV CPPZMQ_DOWNLOAD_URL=https://github.com/zeromq/cppzmq/archive/v4.8.1.tar.gz
-ENV OMNIORB_DOWNLOAD_URL=https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-4.3.1/omniORB-4.3.1.tar.bz2/download
+ENV ZEROMQ_DOWNLOAD_URL="https://github.com/zeromq/libzmq/archive/v${ZEROMQ_VERSION}.tar.gz"
+ENV CPPZMQ_DOWNLOAD_URL="https://github.com/zeromq/cppzmq/archive/v${CPPMQ_VERSION}.tar.gz"
+ENV OMNIORB_DOWNLOAD_URL="https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-${OMNIORB_VERSION}/omniORB-${OMNIORB_VERSION}.tar.bz2/download"
 
-# Copy across files that are used to help orchestrate container compositions
-# and test execution sequences
-COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh
-COPY retry.sh /usr/local/bin/retry
-
-RUN apt-get update && \
+RUN set -xe; \
+    apt-get update; \
     apt-get install -y --no-install-recommends \
-    autoconf \
-    automake \
-    build-essential \
-    ca-certificates \
-    curl \
-    libkrb5-dev \
-    libtool \
-    pkg-config \
-    unzip \
-    cmake \
-    python3-dev \
-    python3-pkgconfig \
-    unattended-upgrades
-
-# Apply security upgrades (base image)
-RUN unattended-upgrade
-RUN apt-get purge unattended-upgrades -y
+        autoconf \
+        automake \
+        cmake \
+        curl \
+        libtool \
+        pkg-config \
+        unzip; \
+    rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /usr/src/zeromq
 WORKDIR /usr/src/zeromq
-RUN curl -kfsSL "$ZEROMQ_DOWNLOAD_URL" -o zeromq.tar.gz \
-    && tar xf zeromq.tar.gz -C /usr/src/zeromq --strip-components=1 \
-    && ./autogen.sh \
-    && ./configure --enable-static=no \
-    && make -C /usr/src/zeromq -j$(nproc) \
-    && make -C /usr/src/zeromq install \
-    && rm -r /usr/src/zeromq
+RUN set -xe; \
+    curl -kfsSL "$ZEROMQ_DOWNLOAD_URL" -o zeromq.tar.gz; \
+    tar xf zeromq.tar.gz -C /usr/src/zeromq --strip-components=1; \
+    ./autogen.sh; \
+    ./configure --enable-static=no; \
+    make -C /usr/src/zeromq -j$(nproc); \
+    make -C /usr/src/zeromq install
 
 RUN mkdir /usr/src/cppzmq
 WORKDIR /usr/src/cppzmq
-RUN curl -kfsSL "$CPPZMQ_DOWNLOAD_URL" -o cppzmq.tar.gz \
-    && tar xf cppzmq.tar.gz -C /usr/src/cppzmq --strip-components=1 \
-    && mkdir build \
-    && cd build \
-    && cmake -DCPPZMQ_BUILD_TESTS=OFF .. \
-    && make -j4 install \
-    && apt-get purge -y --auto-remove $buildDeps \
-    && rm -r /usr/src/cppzmq
+RUN set -xe; \
+    curl -kfsSL "$CPPZMQ_DOWNLOAD_URL" -o cppzmq.tar.gz; \
+    tar xf cppzmq.tar.gz -C /usr/src/cppzmq --strip-components=1; \
+    cmake -Bbuild -S. -DCPPZMQ_BUILD_TESTS=OFF; \
+    make -Cbuild install
 
 RUN mkdir /usr/src/omniorb
 WORKDIR /usr/src/omniorb
-RUN curl -kfsSL "$OMNIORB_DOWNLOAD_URL" -o omniorb.tar.bz2 \
-    && tar xf omniorb.tar.bz2 -C /usr/src/omniorb --strip-components=1 \
-    && ./configure --enable-static=no \
-    && make -C /usr/src/omniorb -j$(nproc) \
-    && make -C /usr/src/omniorb install \
-    && apt-get purge -y --auto-remove $buildDeps \
-    && rm -r /usr/src/omniorb
+RUN set -xe; \
+    curl -kfsSL "$OMNIORB_DOWNLOAD_URL" -o omniorb.tar.bz2; \
+    tar xf omniorb.tar.bz2 -C /usr/src/omniorb --strip-components=1; \
+    ./configure --enable-static=no --disable-longdouble; \
+    make -C /usr/src/omniorb -j$(nproc); \
+    make -C /usr/src/omniorb install
 
-FROM $BASE_IMAGE
+FROM $BUILD_IMAGE
 
-LABEL \
-    author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
-    description="This image includes all the depenencies needed for installing the TANGO-controls framework" \
-    license="BSD-3-Clause" \
-    registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies" \
-    org.skatelescope.team="Systems Team" \
-    org.skatelescope.version="1.0.0" \
-    int.skao.application="Tango dependencies"
+LABEL int.skao.image.team="Team Wombat" \
+      int.skao.image.url="https://gitlab.com/ska-telescope/ska-tango-images" \
+      int.skao.image.source="images/ska-tango-images-tango-dependencies/Dockerfile"
 
-COPY --from=buildenv /usr/local /usr/local
+COPY --from=build /usr/local /usr/local
