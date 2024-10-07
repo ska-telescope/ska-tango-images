@@ -1,55 +1,25 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:local"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-java:local"
-
-FROM $BUILD_IMAGE AS buildenv
-ARG DEBIAN_FRONTEND=noninteractive
-
-ENV MTANGOREST_DOWNLOAD_URL=https://github.com/tango-controls/rest-server/releases/download/rest-server-1.14/rest-server-1.14.jar
-
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    ca-certificates \
-    curl \
-    libtcnative-1 
-
-RUN mkdir -p /usr/local/lib/tango
-
-WORKDIR /usr/local/lib/tango
-
-RUN curl -fsSL "$MTANGOREST_DOWNLOAD_URL" -o mtangorest.jar
-
 FROM $BASE_IMAGE
-ARG DEBIAN_FRONTEND=noninteractive
 
-LABEL \
-    author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
-    description="This image is the tango-rest application available from the TANGO-community" \
-    license="BSD-3-Clause" \
-    registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-rest" \
-    org.skatelescope.team="Systems Team" \
-    org.skatelescope.version="1.0.0" \
-    int.skao.application="Tango REST"
-
-COPY --from=buildenv /usr/local/lib/tango/mtangorest.jar /usr/local/lib/tango/mtangorest.jar
+LABEL int.skao.image.team="Team Wombat" \
+      int.skao.image.url="https://gitlab.com/ska-telescope/ska-tango-images" \
+      int.skao.image.source="images/ska-tango-images-tango-rest/Dockerfile" \
+      int.skao.application="Tango REST"
 
 USER root
 
-RUN mkdir -p /usr/share/man/man1
-
-RUN apt-get update && \
+RUN set -xe; \
+    apt-get update; \
     apt-get install -y --no-install-recommends \
-    supervisor \
-    libtcnative-1
-
-RUN ln -s /usr/lib/x86_64-linux-gnu/libtcnative-1.so /usr/lib/libtcnative-1.so
-
-RUN rm -rf /var/lib/apt/lists/* /etc/apt/apt.conf.d/30proxy
+        supervisor \
+        ssl-cert \
+        libtcnative-1; \
+    rm -rf /var/lib/apt/lists/*
 
 COPY tango_register_device.sh /usr/local/bin/
-
-# Configure supervisord. Ensure supervisord.conf contains entries for your device!
 COPY supervisord.conf /etc/supervisor/conf.d/
 
-# Start supervisor as daemon
+USER tango
+
 CMD ["/usr/bin/supervisord", "--configuration", "/etc/supervisor/supervisord.conf"]

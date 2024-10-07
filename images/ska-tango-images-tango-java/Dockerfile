@@ -4,79 +4,59 @@
 # binaries.
 #
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:local"
-FROM $BUILD_IMAGE
+ARG BUILD_IMAGE="harbor.skao.int/production/ska-build:0.1.0"
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-test:local"
+
+FROM $BUILD_IMAGE as build
 ARG DEBIAN_FRONTEND=noninteractive
+ARG TANGO_SOURCE_DISTRIBUTION_VERION=9.5.0
+ARG LOG4J_VERSION=1.2.17
 
-LABEL \
-    author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
-    description="This image includes the Java GUI applications of the TANGO-controls framework" \
-    license="BSD-3-Clause" \
-    registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-java" \
-    org.skatelescope.team="Systems Team" \
-    org.skatelescope.version="1.0.0" \
-    int.skao.application="Tango Java"
+ENV TSD_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/tango-${TANGO_SOURCE_DISTRIBUTION_VERION}.tar.gz
+ENV LOG4J_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/log4j-${LOG4J_VERSION}.tar.gz
 
-ENV TANGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/tango-9.5.0.tar.gz
-ENV LOG4J=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/log4j-1.2.17.tar.gz
-
-RUN apt-get update && \
+RUN set -xe; \
+    apt-get update; \
     apt-get install -y --no-install-recommends \
-    wget \
-    git \
-    sudo \
-    libxrender1 \
-    libxtst6 \
-    default-jre \
-    libxi6 \
-    build-essential \
-    cmake \
-    curl \
-    file \
-    libmariadbclient-dev-compat \
-    pkg-config \
-    libmariadb3 \
-    python3 \
-    libjpeg8-dev
-
-RUN mkdir /usr/java
-WORKDIR /usr/java
+        wget \
+        git \
+        default-jre \
+        cmake \
+        curl
 
 RUN mkdir -p /usr/src/tango
-RUN mkdir -p /usr/share/man/man1
 WORKDIR /usr/src/tango
 
-# CMake flag `-Dtangoidl_ROOT=...` is required as a work around for
-# tango-controls/TangoSourceDistribution#131
-# TODO: Remove flag when issue is fixed
-RUN curl -fsSL -k "$TANGO_DOWNLOAD_URL" -o tango.tar.gz \
-    && tar xf tango.tar.gz -C /usr/src/tango --strip-components=1 \
-    && cd /usr/src/tango \
-    && cmake -Bbuild -S. -DTSD_DATABASE=OFF -DTSD_HTLM_DOCUMENTATION=OFF -Dtangoidl_ROOT=$PWD/lib/idl \
-    && make -C build -j$(nproc) \
-    && make -C build install \
-    && ldconfig \
-    && rm -r /usr/src/tango
+RUN set -xe; \
+    curl -fsSL -k "$TSD_DOWNLOAD_URL" -o tango.tar.gz; \
+    tar xf tango.tar.gz -C /usr/src/tango --strip-components=1; \
+    cmake -Bbuild -Slib/java -DSHELL=/bin/bash -DTSD_RC_FILE=/etc/tangorc -DTSD_JAVA_EXEC=$(which java) -Wno-dev; \
+    make -C build install;
 
-# tango_admin 1.19 that comes with TangoSourceDistribution 9.5.0 is broken
-# (https://gitlab.com/tango-controls/tango_admin/-/issues/15), so we install an
-# older version instead.
-# TODO: Remove me when above issue is resolved
-RUN git clone --depth=1 --branch=Release_1.17 https://gitlab.com/tango-controls/tango_admin.git /usr/src/tango_admin && \
-    cd /usr/src/tango_admin && \
-    cmake -B /usr/src/tango_admin/build -DCMAKE_INSTALL_PREFIX=/usr/local/ /usr/src/tango_admin && \
-    make  -j$(nproc) -C /usr/src/tango_admin/build install
-
+RUN mkdir -p /usr/java
 WORKDIR /usr/java
 
-RUN wget --no-check-certificate "$LOG4J" -O log4j.tar.gz \
-    && tar zxvf log4j.tar.gz \
-    && mv apache-log4j-1.2.17/log4j-1.2.17.jar /usr/local/share/java/log4j-1.2.17.jar \
-    && rm /usr/java/log4j.tar.gz
+RUN set -xe; \
+    wget --no-check-certificate "$LOG4J_DOWNLOAD_URL" -O log4j.tar.gz; \
+    tar zxvf log4j.tar.gz; \
+    mv apache-log4j-1.2.17/log4j-1.2.17.jar /usr/local/share/java/log4j-1.2.17.jar;
 
-RUN useradd --create-home --home-dir /home/tango tango
+FROM $BASE_IMAGE
 
-RUN echo "tango ALL=(root) NOPASSWD:ALL" > /etc/sudoers.d/tango \
-    && chmod 0440 /etc/sudoers.d/tango
+LABEL int.skao.image.team="Team Wombat" \
+      int.skao.image.url="https://gitlab.com/ska-telescope/ska-tango-images" \
+      int.skao.image.source="images/ska-tango-images-tango-java/Dockerfile"
+
+USER root
+
+RUN set -xe; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        default-jre; \
+    rm -rf /var/lib/apt/lists/*
 
 USER tango
+
+COPY --from=build /usr/local /usr/local
+
+ENTRYPOINT []
