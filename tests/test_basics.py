@@ -48,6 +48,43 @@ def run_in_docker(image: str, command: [str], extra_args: [str] = []):
 
     return result
 
+
+def check_tango_admin(image: str) -> None:
+    command = ['--help']
+
+    extra_args = ['--entrypoint', 'tango_admin']
+
+    result = run_in_docker(image, command, extra_args)
+
+    assert result.returncode == 0
+
+
+def check_tango_test(image: str) -> None:
+    command = ['TangoTest', '-nodb']
+
+    result = run_in_docker(image, command)
+
+    assert result.returncode == TANGO_CPP_DSERVER_INVALID_ARGS
+    assert 'usage' in result.stderr.decode()
+
+def check_orchestration_scripts(image: str) -> None:
+    command = ['-h']
+    extra_args = ['--entrypoint', 'retry']
+
+    result = run_in_docker(image, command, extra_args)
+
+    assert result.returncode == 0
+    assert 'Usage' in result.stdout.decode()
+
+    command = []
+    extra_args = ['--entrypoint', 'wait-for-it.sh']
+
+    result = run_in_docker(image, command, extra_args)
+
+    assert result.returncode == 1
+    assert 'Usage' in result.stderr.decode()
+
+
 def test_tango_dsconfig():
     name='ska-tango-images-tango-dsconfig'
     tag = get_tag(name)
@@ -55,6 +92,8 @@ def test_tango_dsconfig():
     assert tag is not None
 
     image = f'{OCI_REGISTRY}/{name}:{tag}'
+    check_tango_admin(image)
+    check_orchestration_scripts(image)
     command = ['json2tango', '--help']
 
     result = run_in_docker(image, command)
@@ -68,11 +107,8 @@ def test_tango_admin():
     assert tag is not None
 
     image = f'{OCI_REGISTRY}/{name}:{tag}'
-    command = ['tango_admin', '--help']
-
-    result = run_in_docker(image, command)
-
-    assert result.returncode == 0
+    check_tango_admin(image)
+    check_orchestration_scripts(image)
 
 def test_tango_databaseds():
     name='ska-tango-images-tango-databaseds'
@@ -81,6 +117,8 @@ def test_tango_databaseds():
     assert tag is not None
 
     image = f'{OCI_REGISTRY}/{name}:{tag}'
+    check_tango_admin(image)
+    check_orchestration_scripts(image)
     command = ['databaseds']
 
     result = run_in_docker(image, command)
@@ -95,6 +133,8 @@ def test_tango_itango():
     assert tag is not None
 
     image = f'{OCI_REGISTRY}/{name}:{tag}'
+    check_tango_admin(image)
+    check_orchestration_scripts(image)
     command = ['itango3', '--help']
 
     result = run_in_docker(image, command)
@@ -108,12 +148,9 @@ def test_tango_test():
     assert tag is not None
 
     image = f'{OCI_REGISTRY}/{name}:{tag}'
-    command = ['TangoTest', '-nodb']
-
-    result = run_in_docker(image, command)
-
-    assert result.returncode == TANGO_CPP_DSERVER_INVALID_ARGS
-    assert 'usage' in result.stderr.decode()
+    check_tango_admin(image)
+    check_tango_test(image)
+    check_orchestration_scripts(image)
 
 def test_tango_rest():
     name='ska-tango-images-tango-rest'
@@ -122,12 +159,28 @@ def test_tango_rest():
     assert tag is not None
 
     image = f'{OCI_REGISTRY}/{name}:{tag}'
+    check_tango_admin(image)
+    check_orchestration_scripts(image)
     command = ['TangoRestServer']
 
     result = run_in_docker(image, command)
 
     assert result.returncode == TANGO_JAVA_DSERVER_INVALID_ARGS
     assert 'usage' in result.stdout.decode()
+
+def test_tango_java():
+    name='ska-tango-images-tango-java'
+    tag = get_tag(name)
+
+    assert tag is not None
+
+    # For historical reasons, we expect the java image to include TangoTest and
+    # tango_admin
+
+    image = f'{OCI_REGISTRY}/{name}:{tag}'
+    check_tango_admin(image)
+    check_tango_test(image)
+    check_orchestration_scripts(image)
 
 def test_tango_jive():
     name='ska-tango-images-tango-jive'
@@ -136,6 +189,8 @@ def test_tango_jive():
     assert tag is not None
 
     image = f'{OCI_REGISTRY}/{name}:{tag}'
+    check_tango_admin(image)
+    check_orchestration_scripts(image)
     # Jive 7.36.0 prints out the usage if we give it a bogus option
     command = ['jive', '--not-an-option']
 
@@ -152,6 +207,8 @@ def test_tango_pogo():
     assert tag is not None
 
     image = f'{OCI_REGISTRY}/{name}:{tag}'
+    check_tango_admin(image)
+    check_orchestration_scripts(image)
     command = ['pogo', '--help']
 
     # pogo 9.8.0 does not start if the display environment variable
