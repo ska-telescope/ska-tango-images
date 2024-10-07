@@ -203,18 +203,6 @@ oci-tests:
   script:
     make oci-tests
 
-scan_pytango-runtime:
-  extends: .container-scanning
-  variables:
-    OCI_IMAGE: ska-tango-images-pytango-runtime
-
-build_pytango-runtime:
-  extends: .image_builder_template
-  variables:
-    OCI_IMAGE: ska-tango-images-pytango-runtime
-  needs:
-    - build_tango-admin
-
 scan_tango-admin:
   extends: .container-scanning
   variables:
@@ -293,7 +281,7 @@ build_tango-dsconfig:
   variables:
     OCI_IMAGE: ska-tango-images-tango-dsconfig
   needs:
-    - build_pytango-runtime
+    - build_tango-python
 
 scan_tango-itango:
   extends: .container-scanning
@@ -305,7 +293,7 @@ build_tango-itango:
   variables:
     OCI_IMAGE: ska-tango-images-tango-itango
   needs:
-    - build_pytango-runtime
+    - build_tango-python
 
 scan_tango-java:
   extends: .container-scanning
@@ -342,6 +330,18 @@ build_tango-pogo:
     OCI_IMAGE: ska-tango-images-tango-pogo
   needs:
     - build_tango-java
+
+scan_tango-python:
+  extends: .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-python
+
+build_tango-python:
+  extends: .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-python
+  needs:
+    - build_tango-admin
 
 scan_tango-rest:
   extends: .container-scanning

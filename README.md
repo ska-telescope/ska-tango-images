@@ -31,12 +31,12 @@ The release tags should match the underlying dependencies used where possible.
               - tango-pogo/Dockerfile:FROM {nexus}/tango-java
               - tango-rest/Dockerfile:FROM {nexus}/tango-java
 - {nexus}/ska-python / {nexus}/ska-build-python
-  - tango-dsconfig/Dockerfile:FROM {nexus}/ska-build-python as build
-  - tango-dsconfig/Dockerfile:FROM {nexus}/ska-python
-  - tango-itango/Dockerfile:FROM {nexus}/ska-build-python as build
-  - tango-itango/Dockerfile:FROM {nexus}/ska-python
-  - tango-pytango/Dockerfile:FROM {nexus}/ska-build-python as build
-  - tango-pytango/Dockerfile:FROM {nexus}/ska-python
+  - ska-tango-images-tango-python:FROM ska-tango-images-tango-admin as build
+  - ska-tango-images-tango-python:FROM ska-python
+    - tango-dsconfig/Dockerfile:FROM {nexus}/ska-build-python as build
+    - tango-dsconfig/Dockerfile:FROM {nexus}/ska-tango-images-tango-python
+    - tango-itango/Dockerfile:FROM {nexus}/ska-build-python as build
+    - tango-itango/Dockerfile:FROM {nexus}/ska-tango-images-tango-python
 - mariadb
   - tango-db/Dockerfile:FROM mariadb
 
