@@ -5,7 +5,7 @@
 #
 ARG CAR_OCI_REGISTRY_HOST
 ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:local"
-ARG BASE_IMAGE="harbor.skao.int/production/ska-build:0.1.0"
+ARG BASE_IMAGE="harbor.skao.int/production/ska-build:0.1.1"
 FROM $BUILD_IMAGE as build
 ARG DEBIAN_FRONTEND=noninteractive
 ARG TANGOIDL_VERSION=5.1.2

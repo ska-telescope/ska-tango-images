@@ -4,7 +4,7 @@
 # binaries.
 #
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILD_IMAGE="harbor.skao.int/production/ska-build:0.1.0"
+ARG BUILD_IMAGE="harbor.skao.int/production/ska-build:0.1.1"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-test:local"
 
 FROM $BUILD_IMAGE as build

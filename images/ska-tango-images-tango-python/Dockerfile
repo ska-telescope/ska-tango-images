@@ -1,6 +1,6 @@
 ARG CAR_OCI_REGISTRY_HOST
 ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-admin:local"
-ARG BASE_IMAGE="registry.gitlab.com/ska-telescope/ska-base-image/ska-python:0.1.0-dev.c592bd08e"
+ARG BASE_IMAGE="harbor.skao.int/production/ska-python:0.1.1"
 FROM $BUILD_IMAGE as build
 
 FROM $BASE_IMAGE
