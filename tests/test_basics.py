@@ -100,7 +100,6 @@ def test_tango_itango():
 
     assert result.returncode == 0
 
-@pytest.mark.xfail(reason="FIXME: WOM-230")
 def test_tango_test():
     name='ska-tango-images-tango-test'
     tag = get_tag(name)
@@ -108,7 +107,7 @@ def test_tango_test():
     assert tag is not None
 
     image = f'{OCI_REGISTRY}/{name}:{tag}'
-    command = ['TangoTest']
+    command = ['TangoTest', '-nodb']
 
     result = run_in_docker(image, command)
 

@@ -1,14 +1,32 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-libtango:local"
-FROM $BASE_IMAGE
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp:local"
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-admin:local"
+FROM $BUILD_IMAGE as build
+ARG TANGOTEST_VERSION=3.8
 
-LABEL \
-      author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
-      description="This image is the tango-test application available from the TANGO-community" \
-      license="BSD-3-Clause" \
-      registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-test" \
-      org.skatelescope.team="Systems Team" \
-      org.skatelescope.version="1.0.0" \
-      int.skao.application="Tango TEST"
+RUN set -xe; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        cmake \
+        git
+
+RUN mkdir /usr/src/TangoTest
+WORKDIR /usr/src/TangoTest
+RUN set -xe; \
+    git clone --depth=1 --branch=${TANGOTEST_VERSION} --recursive -c advice.detachedHead=false \
+        https://gitlab.com/tango-controls/TangoTest.git /usr/src/TangoTest;  \
+    cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release \
+        -DCMAKE_INSTALL_PREFIX=/usr/local/ -DCMAKE_INSTALL_RPATH=/usr/local/lib; \
+    make  -j$(nproc) -Cbuild install
+
+FROM $BASE_IMAGE
+COPY --from=build /usr/local/bin/TangoTest /usr/local/bin
+
+LABEL int.skao.image.team="Team Wombat" \
+      int.skao.image.url="https://gitlab.com/ska-telescope/ska-tango-images" \
+      int.skao.image.source="images/ska-tango-images-tango-test/Dockerfile" \
+      int.skao.application="TangoTest"
 
 ENTRYPOINT ["/usr/local/bin/TangoTest"]
+
+CMD ["test"]
