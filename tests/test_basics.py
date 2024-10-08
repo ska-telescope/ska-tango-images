@@ -9,18 +9,26 @@ CI_PROJECT_NAMESPACE = os.environ.get('CI_PROJECT_NAMESPACE', 'ska-telescope')
 CI_PROJECT_NAME = os.environ.get('CI_PROJECT_NAME', 'ska-tango-images')
 OCI_REGISTRY = f'{CI_REGISTRY}/{CI_PROJECT_NAMESPACE}/{CI_PROJECT_NAME}'
 IMAGES_DIR = os.environ['SKA_TANGO_IMAGES_DIR']
-
-RELEASE_REGEX = re.compile(r'^release=(.*)$')
+CI_COMMIT_SHORT_SHA = os.environ.get('CI_COMMIT_SHORT_SHA', None)
 
 # Return code used by tango when you pass no arguments
 TANGO_DSERVER_NO_ARGS = 255
 
 def get_tag(name):
-    with open(f'{IMAGES_DIR}/{name}/.release', 'r') as f:
-        for line in f:
-            m = RELEASE_REGEX.match(line)
-            if m is not None:
-                return m.group(1)
+    if CI_COMMIT_SHORT_SHA is None:
+        return "local"
+
+    result = subprocess.run(['make', 'show-version', f'RELEASE_CONTEXT_DIR={IMAGES_DIR}/{name}', f'CAR_OCI_REPOSITORY_HOST={OCI_REGISTRY}'], check=True, capture_output=True)
+
+    output = result.stdout.decode()
+
+    for line in output.split('\n'):
+        if line.startswith("make"):
+            continue
+        version = line
+        break
+
+    return f'{version}-dev.c{CI_COMMIT_SHORT_SHA}'
 
 def run_in_docker(image: str, command: [str], extra_args: [str] = []):
     args = ['docker', 'run', '--rm']

@@ -63,6 +63,17 @@ $(foreach img,$(ALL_IMAGES),$(eval $(call oci-build-image,$(img))))
 oci-build-with-deps:
 	scripts/oci-build-with-deps.sh $(OCI_IMAGE)
 
+define oci-test-image
+.PHONY: oci-test-$(1)
+oci-test-$(1): build/receipts/$(1)
+	env SKA_TANGO_IMAGES_DIR=$(BASE)/images pytest tests -k test_$(subst -,_,$(1))
+endef
+
+build/deps/images-with-tests: tests/test_basics.py scripts/gen-images-with-tests.sh
+	@mkdir -p build/deps
+	@scripts/gen-images-with-tests.sh
+
+include build/deps/images-with-tests
 
 .PHONY: oci-tests
 oci-tests:

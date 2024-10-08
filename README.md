@@ -97,3 +97,30 @@ make oci-build-with-deps OCI_IMAGE=ska-tango-images-<image-slug>
 
 This will run exactly the same command as is run on the CI.  It will not tag the
 resulting image with local.
+
+## Testing an image
+
+To run all the tests (using local image tags) run:
+
+```shell
+make oci-tests
+```
+
+This will not build the images if they do not exist or are out of date.
+
+You can specify the same commit sha as is used on the CI by exporting
+`CI_COMMIT_SHORT_SHA` first, this will then pull the images from the CI:
+
+```shell
+export CI_COMMIT_SHORT_SHA=<copied from pipeline>
+make oci-tests
+```
+
+You can also run the tests for an individual image with the `oci-test-<x>`
+targets.  For example, to test ska-tango-images-tango-dsconfig:
+
+```shell
+make oci-test-tango-dsconfig
+```
+
+This will first build the image and all its dependencies if required.
