@@ -4,7 +4,7 @@
 # binaries.
 #
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:9.3.12"
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:local"
 ARG BASE_IMAGE="ubuntu:22.04"
 FROM $BUILD_IMAGE as buildenv
 ARG DEBIAN_FRONTEND=noninteractive
