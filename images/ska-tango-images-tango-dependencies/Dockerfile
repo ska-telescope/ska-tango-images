@@ -3,7 +3,7 @@
 # intermediate image, then creates a release image containing the compiled
 # binaries.
 #
-ARG BUILD_IMAGE="harbor.skao.int/production/ska-build:0.1.1"
+ARG BUILD_IMAGE="artefact.skao.int/ska-build:0.1.1"
 FROM $BUILD_IMAGE as build
 ARG DEBIAN_FRONTEND=noninteractive
 ARG ZEROMQ_VERSION=4.3.4
