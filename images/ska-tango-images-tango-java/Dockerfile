@@ -31,7 +31,7 @@ RUN set -xe; \
     curl -fsSL -k "$TSD_DOWNLOAD_URL" -o tango.tar.gz; \
     tar xf tango.tar.gz -C /usr/src/tango --strip-components=1; \
     cmake -Bbuild -Slib/java -DSHELL=/bin/bash -DTSD_RC_FILE=/etc/tangorc -DTSD_JAVA_EXEC=$(which java) -Wno-dev; \
-    make -C build install;
+    cmake --build build --target install;
 
 RUN mkdir -p /usr/java
 WORKDIR /usr/java

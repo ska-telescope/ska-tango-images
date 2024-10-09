@@ -26,7 +26,7 @@ RUN set -xe; \
     git clone --depth=1 --branch=${TANGOIDL_VERSION} -c advice.detachedHead=false \
         https://gitlab.com/tango-controls/tango-idl.git /usr/src/idl; \
     cmake -B /usr/src/idl/build -DCMAKE_INSTALL_PREFIX=/usr/local/ /usr/src/idl; \
-    make  -j$(nproc) -C /usr/src/idl/build install
+    cmake --build /usr/src/idl/build  -j$(nproc) --target install
 
 RUN mkdir -p /usr/src/tango
 WORKDIR /usr/src/tango
@@ -35,7 +35,7 @@ RUN set -xe; \
         -c advice.detachedHead=false https://gitlab.com/tango-controls/cppTango.git /usr/src/tango; \
     cmake -S. -Bbuild -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_INSTALL_RPATH=/usr/local/lib; \
-    make -C /usr/src/tango/build -j$(nproc) install
+    cmake --build /usr/src/tango/build -j$(nproc) --target install
 
 FROM $BASE_IMAGE
 ARG DEBIAN_FRONTEND=noninteractive

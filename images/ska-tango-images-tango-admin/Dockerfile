@@ -18,7 +18,7 @@ RUN set -xe; \
         https://gitlab.com/tango-controls/tango_admin.git /usr/src/tango_admin; \
     cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/local/ -DCMAKE_INSTALL_RPATH=/usr/local/lib; \
-    make  -j$(nproc) -Cbuild install
+    cmake --build build  -j$(nproc) --target install
 
 FROM $BASE_IMAGE
 COPY --from=build /usr/local/lib/lib*.so* /usr/local/lib/

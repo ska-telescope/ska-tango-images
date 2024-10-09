@@ -18,7 +18,7 @@ RUN set -xe; \
         https://gitlab.com/tango-controls/TangoDatabase.git /usr/src/databaseds; \
     cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/local/ -DCMAKE_INSTALL_RPATH=/usr/local/lib; \
-    make  -j$(nproc) -Cbuild install
+    cmake --build build -j$(nproc) --target install
 
 
 FROM $BASE_IMAGE

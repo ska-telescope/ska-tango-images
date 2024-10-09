@@ -42,7 +42,7 @@ RUN set -xe; \
     curl -kfsSL "$CPPZMQ_DOWNLOAD_URL" -o cppzmq.tar.gz; \
     tar xf cppzmq.tar.gz -C /usr/src/cppzmq --strip-components=1; \
     cmake -Bbuild -S. -DCPPZMQ_BUILD_TESTS=OFF; \
-    make -Cbuild install
+    cmake --build build --target install
 
 RUN mkdir /usr/src/omniorb
 WORKDIR /usr/src/omniorb
