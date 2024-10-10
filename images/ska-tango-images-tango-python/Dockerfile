@@ -8,7 +8,9 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 LABEL int.skao.image.team="Team Wombat" \
       int.skao.image.url="https://gitlab.com/ska-telescope/ska-tango-images" \
-      int.skao.image.source="images/ska-tango-images-tango-python/Dockerfile"
+      int.skao.image.source="images/ska-tango-images-tango-python/Dockerfile" \
+      description="Base image for building images with pyTango applications" \
+      license="BSD-3-Clause"
 
 RUN set -xe; \
     apt-get update; \

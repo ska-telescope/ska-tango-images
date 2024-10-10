@@ -45,7 +45,9 @@ FROM $BASE_IMAGE
 
 LABEL int.skao.image.team="Team Wombat" \
       int.skao.image.url="https://gitlab.com/ska-telescope/ska-tango-images" \
-      int.skao.image.source="images/ska-tango-images-tango-java/Dockerfile"
+      int.skao.image.source="images/ska-tango-images-tango-java/Dockerfile" \
+      description="Contains the JTango based applications" \
+      license="BSD-3-Clause"
 
 USER root
 

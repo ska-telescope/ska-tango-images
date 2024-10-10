@@ -23,7 +23,9 @@ COPY --from=build $VIRTUAL_ENV $VIRTUAL_ENV
 LABEL int.skao.image.team="Team Wombat" \
       int.skao.image.url="https://gitlab.com/ska-telescope/ska-tango-images" \
       int.skao.image.source="images/ska-tango-images-tango-dsconfig/Dockerfile" \
-      int.skao.application="MaxIV Tango Dsconfig"
+      int.skao.application="MaxIV Tango Dsconfig" \
+      description="Contains the dsconfig application from the Tango controls collaboration" \
+      license="BSD-3-Clause"
 
 # Existing Helm charts assume tango-dsconfig starts in the root directory
 WORKDIR /

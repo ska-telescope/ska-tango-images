@@ -23,7 +23,9 @@ COPY --from=build $VIRTUAL_ENV $VIRTUAL_ENV
 LABEL int.skao.image.team="Team Wombat" \
       int.skao.image.url="https://gitlab.com/ska-telescope/ska-tango-images" \
       int.skao.image.source="images/ska-tango-images-tango-itango/Dockerfile" \
-      int.skao.application="ITango"
+      int.skao.application="ITango" \
+      description="Contains the itango3 application from the Tango Controls collaboration" \
+      license="BSD-3-Clause"
 
 USER root
 

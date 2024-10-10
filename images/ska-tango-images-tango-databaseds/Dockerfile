@@ -27,7 +27,9 @@ COPY --from=build /usr/local/bin/Databaseds /usr/local/bin/
 LABEL int.skao.image.team="Team Wombat" \
       int.skao.image.url="https://gitlab.com/ska-telescope/ska-tango-images" \
       int.skao.image.source="images/ska-tango-images-tango-databaseds/Dockerfile" \
-      int.skao.application="TangoDatabase"
+      int.skao.application="TangoDatabase" \
+      description="Contains the Databaseds application from the Tango controls collaboration" \
+      license="BSD-3-Clause"
 
 USER root
 

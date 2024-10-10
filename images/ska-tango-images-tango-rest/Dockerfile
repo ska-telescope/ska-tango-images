@@ -5,7 +5,9 @@ FROM $BASE_IMAGE
 LABEL int.skao.image.team="Team Wombat" \
       int.skao.image.url="https://gitlab.com/ska-telescope/ska-tango-images" \
       int.skao.image.source="images/ska-tango-images-tango-rest/Dockerfile" \
-      int.skao.application="Tango REST"
+      int.skao.application="Tango REST" \
+      description="Contains the TangoRestServer application from the Tango controls collaboration" \
+      license="BSD-3-Clause"
 
 USER root
 

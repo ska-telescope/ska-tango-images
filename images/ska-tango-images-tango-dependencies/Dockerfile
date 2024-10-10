@@ -57,6 +57,8 @@ FROM $BUILD_IMAGE
 
 LABEL int.skao.image.team="Team Wombat" \
       int.skao.image.url="https://gitlab.com/ska-telescope/ska-tango-images" \
-      int.skao.image.source="images/ska-tango-images-tango-dependencies/Dockerfile"
+      int.skao.image.source="images/ska-tango-images-tango-dependencies/Dockerfile" \
+      description="Build image for building cppTango" \
+      license="BSD-3-Clause"
 
 COPY --from=build /usr/local /usr/local
