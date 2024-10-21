@@ -39,11 +39,11 @@ RUN rm -r /usr/src/tango
 FROM $BASE_IMAGE
 
 LABEL \
-    author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
     description="This image is the tango db (MariaDB) from the TANGO-community" \
     license="BSD-3-Clause" \
     registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-db" \
     org.skatelescope.team="Systems Team" \
+    int.skao.image.authors="oci-support@skao.int" \
     org.skatelescope.version="1.0.0" \
     int.skao.application="Tango DB"
 

@@ -21,6 +21,7 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 COPY --from=build $VIRTUAL_ENV $VIRTUAL_ENV
 
 LABEL int.skao.image.team="Team Wombat" \
+      int.skao.image.authors="oci-support@skao.int" \
       int.skao.image.url="https://gitlab.com/ska-telescope/ska-tango-images" \
       int.skao.image.source="images/ska-tango-images-tango-dsconfig/Dockerfile" \
       int.skao.application="MaxIV Tango Dsconfig" \
