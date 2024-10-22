@@ -1,28 +1,14 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-java:9.3.5"
+ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-java:local"
 FROM $BASE_IMAGE
 
-LABEL \
-    author="Matteo Di Carlo <matteo.dicarlo@inaf.it>" \
-    description="This image is the Pogo application available from the TANGO-community" \
-    license="BSD-3-Clause" \
-    registry="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-pogo" \
-    org.skatelescope.team="Systems Team" \
-    org.skatelescope.version="1.0.0" \
-    int.skao.application="Tango Pogo"
+LABEL int.skao.image.team="Team Wombat" \
+      int.skao.image.authors="oci-support@skao.int" \
+      int.skao.image.url="https://gitlab.com/ska-telescope/ska-tango-images" \
+      int.skao.image.source="images/ska-tango-images-tango-pogo/Dockerfile" \
+      int.skao.application="Tango Pogo" \
+      description="Contains the pogo application from the Tango controls collaboration" \
+      license="BSD-3-Clause"
 
-USER root
-
-ENV POGO_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/Pogo-9.6.31.jar
-
-WORKDIR /usr/local/share/java
-
-# Pogo is included in tango source distribution, but replace with a newer version
-# Official source:  https://bintray.com/tango-controls/maven/Pogo/_latestVersion
-RUN curl -k "$POGO_DOWNLOAD_URL" -o Pogo-9.6.31.jar \
-    && ln -sf Pogo-9.6.31.jar Pogo.jar
-
-USER tango
-
-CMD ["/usr/local/bin/pogo"]
+ENTRYPOINT ["/usr/local/bin/pogo"]
 
