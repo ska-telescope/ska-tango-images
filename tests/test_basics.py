@@ -219,3 +219,18 @@ def test_tango_pogo():
 
     assert result.returncode == 0
     assert 'Actions' in result.stdout.decode()
+
+def test_tango_boogie():
+    name='ska-tango-images-tango-boogie'
+    tag = get_tag(name)
+
+    assert tag is not None
+
+    image = f'{OCI_REGISTRY}/{name}:{tag}'
+    check_tango_admin(image)
+    check_orchestration_scripts(image)
+    command = ['boogie', '-h']
+
+    result = run_in_docker(image, command)
+
+    assert result.returncode == 0
