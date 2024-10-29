@@ -226,6 +226,18 @@ build_tango-base:
   variables:
     OCI_IMAGE: ska-tango-images-tango-base
 
+scan_tango-boogie:
+  extends: .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-boogie
+
+build_tango-boogie:
+  extends: .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-tango-boogie
+  needs:
+    - build_tango-python
+
 scan_tango-cpp:
   extends: .container-scanning
   variables:
