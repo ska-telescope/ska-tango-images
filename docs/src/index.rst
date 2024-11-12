@@ -15,5 +15,3 @@ that are useful for TANGO control system development.
 
    docker_images
    helm_charts
-   README
-

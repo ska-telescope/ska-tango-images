@@ -1,9 +1,9 @@
-# TANGO Docker containers
+# TANGO OCI images
 
-This project defines a set of Docker images and Charts files
-that are useful for TANGO control system development.
-See the documentation in the 'docs' folder for build and usage
-instructions.
+This project defines a set of Docker images and Charts files that are useful for
+TANGO control system development. This README outlines how to build and test the
+images, aimed at ska-tango-images developers. See the documentation in the
+'docs' folder for usage instructions.
 
 ## Setup virtualenv
 
