@@ -16,8 +16,12 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN mkdir /usr/src/boogie
 WORKDIR /usr/src/boogie
 RUN set -xe; \
-    git clone --depth=1 --branch=${BOOGIE_VERSION} --recursive -c advice.detachedHead=false \
-        https://gitlab.com/nurbldoff/boogie.git /usr/src/boogie; \
+    #git clone --depth=1 --branch=${BOOGIE_VERSION} --recursive -c advice.detachedHead=false \
+    #    https://gitlab.com/nurbldoff/boogie.git /usr/src/boogie; \
+    git init \
+    && git remote add origin https://gitlab.com/nurbldoff/boogie.git \
+    && git fetch --depth 1 origin 0613475efe44583e3cf724478ef6326e75a52493 \
+    && git checkout FETCH_HEAD; \
     pip install .
 
 FROM $BASE_IMAGE
