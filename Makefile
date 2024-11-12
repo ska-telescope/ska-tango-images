@@ -2,6 +2,9 @@ BASE = $(shell pwd)
 
 RELEASE_SUPPORT := $(shell dirname $(abspath $(lastword $(MAKEFILE_LIST))))/.make-release-support
 
+# include documentation support
+include .make/docs.mk
+
 # include OCI Images support
 include .make/oci.mk
 
