@@ -199,6 +199,6 @@ oci-tests:
   tags:
     - k8srunner
   before_script:
-    pip install -r tests/requirements.txt
+    poetry install --no-root --with dev
   script:
-    make oci-tests
+    poetry run make oci-tests
