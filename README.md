@@ -33,6 +33,8 @@ The release tags should match the underlying dependencies used where possible.
 - {nexus}/ska-python / {nexus}/ska-build-python
   - ska-tango-images-tango-python:FROM ska-tango-images-tango-admin as build
   - ska-tango-images-tango-python:FROM ska-python
+    - tango-boogie/Dockerfile:FROM {nexus}/ska-build-python as build
+    - tango-boogie/Dockerfile:FROM {nexus}/ska-tango-images-tango-python
     - tango-dsconfig/Dockerfile:FROM {nexus}/ska-build-python as build
     - tango-dsconfig/Dockerfile:FROM {nexus}/ska-tango-images-tango-python
     - tango-itango/Dockerfile:FROM {nexus}/ska-build-python as build

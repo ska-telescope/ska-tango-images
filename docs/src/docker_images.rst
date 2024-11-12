@@ -14,6 +14,8 @@ The following Docker images are built by this project:
 +--------------------+-------------------------------------------------------+
 | tango-admin        | The TANGO tango-admin tool.                           |
 +--------------------+-------------------------------------------------------+
+| tango-boogie       | The TANGO MAXIV tool for browsing the control system. |
++--------------------+-------------------------------------------------------+
 | tango-cpp          | Core C++ TANGO libraries and applications.            |
 +--------------------+-------------------------------------------------------+
 | tango-databaseds   | The TANGO databaseds device server.                   |
