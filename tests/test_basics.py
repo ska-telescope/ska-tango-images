@@ -2,6 +2,7 @@ import os
 import re
 import sys
 import subprocess
+import time
 import pytest
 
 CI_REGISTRY = os.environ.get('CI_REGISTRY', 'registry.gitlab.com')
@@ -31,12 +32,7 @@ def get_tag(name):
 
     return f'{version}-dev.c{CI_COMMIT_SHORT_SHA}'
 
-def run_in_docker(image: str, command: [str], extra_args: [str] = []):
-    args = ['docker', 'run', '--rm']
-    args.extend(extra_args)
-    args.append(image)
-    args.extend(command)
-
+def run(args):
     print(f'Running: {args}')
 
     result = subprocess.run(args, capture_output=True)
@@ -44,10 +40,18 @@ def run_in_docker(image: str, command: [str], extra_args: [str] = []):
     if result.stdout:
         print(f'!! docker stdout:\n{result.stdout.decode()}')
     if result.stderr:
-        print(f'!! docker stderr:\n{result.stderr.decode()}', file=sys.stderr)
+        print(f'!! docker stderr:\n{result.stderr.decode()}')
 
     return result
 
+
+def run_in_docker(image: str, command: [str], extra_args: [str] = []):
+    args = ['docker', 'run', '--rm']
+    args.extend(extra_args)
+    args.append(image)
+    args.extend(command)
+
+    return run(args)
 
 def check_tango_admin(image: str) -> None:
     command = ['--help']
@@ -84,6 +88,49 @@ def check_orchestration_scripts(image: str) -> None:
     assert result.returncode == 1
     assert 'Usage' in result.stderr.decode()
 
+
+def test_tango_db():
+    name='ska-tango-images-tango-db'
+    tag = get_tag(name)
+
+    assert tag is not None
+
+    image = f'{OCI_REGISTRY}/{name}:{tag}'
+
+    # Start the maridbd daemon
+    command = []
+    extra_args = ['--detach',
+            '--env=MYSQL_ROOT_PASSWORD=secret',
+            '--env=MYSQL_PASSWORD=tango',
+            '--env=MYSQL_USER=tango',
+            '--env=MYSQL_DATABASE=tango']
+    result = run_in_docker(image, command, extra_args)
+    assert result.returncode == 0
+
+    container = result.stdout.decode().strip()
+
+    def ping_db():
+        args = ['docker', 'exec', container, 'mariadb', '-utango', '-ptango', '-e status;']
+        result = run(args)
+
+        return result.returncode == 0
+
+    while not ping_db():
+        time.sleep(0.5)
+
+    try:
+        # get Databaseds device name
+        args = ['docker', 'exec', container, 'mariadb', '-utango', '-ptango', 'tango', '-N', '-B', '-e', "SELECT name FROM device WHERE class='Database' \g"]
+        result = run(args)
+        assert result.returncode == 0
+
+        name = result.stdout.decode().strip()
+        assert name == 'sys/database/2'
+
+    finally:
+        args = ['docker', 'stop', container]
+        result = run(args)
+        pass
 
 def test_tango_dsconfig():
     name='ska-tango-images-tango-dsconfig'

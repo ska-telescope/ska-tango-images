@@ -2,7 +2,7 @@ ARG CAR_OCI_REGISTRY_HOST
 ARG BUILD_IMAGE="artefact.skao.int/ska-build-python:0.1.1"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-python:local"
 FROM $BUILD_IMAGE as build
-ARG BOOGIE_VERSION=main
+ARG BOOGIE_VERSION
 
 ENV VIRTUAL_ENV=/app
 RUN set -xe; \
@@ -20,7 +20,7 @@ RUN set -xe; \
     #    https://gitlab.com/nurbldoff/boogie.git /usr/src/boogie; \
     git init \
     && git remote add origin https://gitlab.com/nurbldoff/boogie.git \
-    && git fetch --depth 1 origin 0613475efe44583e3cf724478ef6326e75a52493 \
+    && git fetch --depth 1 origin ${BOOGIE_VERSION} \
     && git checkout FETCH_HEAD; \
     pip install .
 

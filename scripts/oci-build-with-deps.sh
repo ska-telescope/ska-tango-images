@@ -78,6 +78,10 @@ if [ -n "${CI_COMMIT_SHORT_SHA}" ] && [ -n "${BASE_IMAGE}" ]; then
     ADDITIONAL_ARGS+=" --build-arg BASE_IMAGE=\${CAR_OCI_REGISTRY_HOST}/${BASE_IMAGE}:${VERS}-dev.c${CI_COMMIT_SHORT_SHA}"
 fi
 
+for line in $(cat $SCRIPT_DIR/upstream_versions); do
+    ADDITIONAL_ARGS+=" --build-arg ${line}"
+done
+
 set -x
 
 # We need to provide a CAR_OCI_REGISTRY_HOST which begins with

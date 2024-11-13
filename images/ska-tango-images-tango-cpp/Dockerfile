@@ -8,8 +8,8 @@ ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:lo
 ARG BASE_IMAGE="artefact.skao.int/ska-build:0.1.1"
 FROM $BUILD_IMAGE as build
 ARG DEBIAN_FRONTEND=noninteractive
-ARG TANGOIDL_VERSION=5.1.2
-ARG CPPTANGO_VERSION=9.5.0
+ARG TANGOIDL_VERSION
+ARG CPPTANGO_VERSION
 
 RUN set -xe; \
     apt-get update; \

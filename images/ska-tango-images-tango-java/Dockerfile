@@ -9,10 +9,10 @@ ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-test:local"
 
 FROM $BUILD_IMAGE as build
 ARG DEBIAN_FRONTEND=noninteractive
-ARG TANGO_SOURCE_DISTRIBUTION_VERION=9.5.0
-ARG LOG4J_VERSION=1.2.17
+ARG TANGO_SOURCE_DISTRIBUTION_VERSION
+ARG LOG4J_VERSION
 
-ENV TSD_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/tango-${TANGO_SOURCE_DISTRIBUTION_VERION}.tar.gz
+ENV TSD_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/tango-${TANGO_SOURCE_DISTRIBUTION_VERSION}.tar.gz
 ENV LOG4J_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/log4j-${LOG4J_VERSION}.tar.gz
 
 RUN set -xe; \

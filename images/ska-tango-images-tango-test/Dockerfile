@@ -2,7 +2,7 @@ ARG CAR_OCI_REGISTRY_HOST
 ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp:local"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-admin:local"
 FROM $BUILD_IMAGE as build
-ARG TANGOTEST_VERSION=3.8
+ARG TANGOTEST_VERSION
 
 RUN set -xe; \
     apt-get update; \

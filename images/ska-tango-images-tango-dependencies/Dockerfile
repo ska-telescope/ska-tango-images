@@ -6,12 +6,12 @@
 ARG BUILD_IMAGE="artefact.skao.int/ska-build:0.1.1"
 FROM $BUILD_IMAGE as build
 ARG DEBIAN_FRONTEND=noninteractive
-ARG ZEROMQ_VERSION=4.3.4
-ARG CPPMQ_VERSION=4.8.1
-ARG OMNIORB_VERSION=4.3.2
+ARG ZEROMQ_VERSION
+ARG CPPZMQ_VERSION
+ARG OMNIORB_VERSION
 
 ENV ZEROMQ_DOWNLOAD_URL="https://github.com/zeromq/libzmq/archive/v${ZEROMQ_VERSION}.tar.gz"
-ENV CPPZMQ_DOWNLOAD_URL="https://github.com/zeromq/cppzmq/archive/v${CPPMQ_VERSION}.tar.gz"
+ENV CPPZMQ_DOWNLOAD_URL="https://github.com/zeromq/cppzmq/archive/v${CPPZMQ_VERSION}.tar.gz"
 ENV OMNIORB_DOWNLOAD_URL="https://sourceforge.net/projects/omniorb/files/omniORB/omniORB-${OMNIORB_VERSION}/omniORB-${OMNIORB_VERSION}.tar.bz2/download"
 
 RUN set -xe; \
