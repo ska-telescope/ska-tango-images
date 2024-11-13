@@ -5,6 +5,17 @@ that are useful for TANGO control system development.
 See the documentation in the 'docs' folder for build and usage
 instructions.
 
+## Setup virtualenv
+
+This repository uses poetry to manage test and documentation dependencies as
+this fits in best with the .make infrastructure.  However, this repository
+(currently) does not define a python module/package, as such, to install the
+dependencies you must pass `--no-root` to poetry:
+
+```
+poetry install --no-root
+```
+
 ## Docker hierarchy and release tagging
 
 When updating Dockerfiles, and especially the tags in the `.release` files,

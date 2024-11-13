@@ -145,9 +145,9 @@ include:
   - project: 'ska-telescope/templates-repository'
     file: 'gitlab-ci/includes/raw.gitlab-ci.yml'
 
-# Docs pages
+# Docs
   - project: 'ska-telescope/templates-repository'
-    file: 'gitlab-ci/includes/docs-pages.gitlab-ci.yml'
+    file: 'gitlab-ci/includes/docs.gitlab-ci.yml'
 
 # .post step finalisers eg: badges
   - project: 'ska-telescope/templates-repository'
@@ -199,6 +199,6 @@ oci-tests:
   tags:
     - k8srunner
   before_script:
-    pip install -r tests/requirements.txt
+    poetry install --no-root --with dev
   script:
-    make oci-tests
+    poetry run make oci-tests
