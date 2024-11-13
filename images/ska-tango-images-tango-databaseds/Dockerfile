@@ -2,7 +2,7 @@ ARG CAR_OCI_REGISTRY_HOST
 ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp:local"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-admin:local"
 FROM $BUILD_IMAGE as build
-ARG DATABASEDS_VERSION=Database-Release-5.22
+ARG DATABASEDS_VERSION
 
 RUN set -xe; \
     apt-get update; \

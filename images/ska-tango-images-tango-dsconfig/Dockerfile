@@ -2,6 +2,7 @@ ARG CAR_OCI_REGISTRY_HOST
 ARG BUILD_IMAGE="artefact.skao.int/ska-build-python:0.1.1"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-python:local"
 FROM $BUILD_IMAGE as build
+ARG DSCONFIG_VERSION
 
 ENV VIRTUAL_ENV=/app
 RUN set -xe; \
@@ -11,7 +12,7 @@ RUN set -xe; \
     python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-RUN pip install --no-cache-dir dsconfig==1.7.1
+RUN pip install --no-cache-dir dsconfig==${DSCONFIG_VERSION}
 
 FROM $BASE_IMAGE
 

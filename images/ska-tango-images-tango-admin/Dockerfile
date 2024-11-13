@@ -2,7 +2,7 @@ ARG CAR_OCI_REGISTRY_HOST
 ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp:local"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-base:local"
 FROM $BUILD_IMAGE as build
-ARG TANGOADMIN_VERSION=Release_1.17
+ARG TANGOADMIN_VERSION
 
 RUN set -xe; \
     apt-get update; \
