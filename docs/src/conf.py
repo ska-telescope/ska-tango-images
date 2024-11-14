@@ -89,7 +89,7 @@ version = get_version()
 release = get_release()
 
 def generate_prolog():
-    prolog = ''
+    prolog = '.. |oci-registry| replace:: artefact.skao.int\n'
     for dockerfile in Path(f'{REPO_DIR}/images').rglob('Dockerfile'):
         dir = dockerfile.parent
         name = str(dir).removeprefix(f'{REPO_DIR}/images/ska-tango-images-')
