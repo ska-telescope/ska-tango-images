@@ -19,7 +19,7 @@ the ska-tango-images-tango-db OCI image.
 The image uses the `MariaDB docker image <https://hub.docker.com/_/mariadb>`_ as
 a base image, using the |mariadb-version| tag.
 
-The Tango table is built using the |tangodatabaseds-version| release of
+The Tango table is built using the |databaseds-tangodb-version| release of
 TangoDatabase.
 
 Usage Example
