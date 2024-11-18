@@ -148,3 +148,41 @@ make .gitlab-ci.yml
 
 There is a job in the .gitlab-ci.yml that checks that this file is up-to-date.
 It will fail the pipeline if this needs regenerating.
+
+## Running documentation examples
+
+When building locally, the documentation will generate examples which use the
+"local" tags of the images.  This means if you have done a `make all` you should
+be able to copy and paste the examples from the locally built documentation.
+Unfortunately, running these examples is not yet automated.
+
+The documentation can built locally by running:
+
+```shell
+make docs-build html
+```
+
+To view the locally built documentation run the python HTTP server from the
+docs/build directory:
+
+```shell
+python -m http.server
+```
+
+The documentation will then be available at `0.0.0.0:8000` and any usage
+examples can be copied from there and they should use the locally built images.
+
+Some of the examples require a `TANGO_HOST` to run.  There is a docker compose
+file at test/compose.yaml which will spin up a `TANGO_HOST` at
+`localhost:10000`.  To use it run the following from the test directory:
+
+```shell
+docker compose up -d
+export TANGO_HOST=localhost:10000
+```
+
+Similarly, any usage examples copied from the `doc-build` CI job output should
+reference the `CI_COMMIT_SHORT_SHA` version of the images, meaning the examples
+will use the version of the images built by that job.  To spin-up a `TANGO_HOST`
+using the images built by the CI, you can copy the compose.yaml from the "How to
+spin-up a Tango environment using Docker compose" page.
