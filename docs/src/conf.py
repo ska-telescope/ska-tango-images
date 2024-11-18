@@ -89,7 +89,11 @@ version = get_version()
 release = get_release()
 
 def generate_prolog():
-    prolog = '.. |oci-registry| replace:: artefact.skao.int\n'
+    if "CI_COMMIT_TAG" in os.environ or "READTHEDOCS" in os.environ:
+        prolog = '.. |oci-registry| replace:: artefact.skao.int\n'
+    else:
+        prolog = '.. |oci-registry| replace:: registry.gitlab.com/ska-telescope/ska-tango-images\n'
+
     for dockerfile in Path(f'{REPO_DIR}/images').rglob('Dockerfile'):
         dir = dockerfile.parent
         name = str(dir).removeprefix(f'{REPO_DIR}/images/ska-tango-images-')
