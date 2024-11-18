@@ -66,6 +66,19 @@ REPO_DIR = os.path.abspath(f"{os.path.dirname(__file__)}/../../")
 
 
 def get_version(dir=None):
+    is_ci_job = "CI_JOB_ID" in os.environ
+    is_rtd_job = "READTHEDOCS" in os.environ
+    is_tag_job = "CI_COMMIT_TAG" in os.environ
+    is_local_job = not is_ci_job and not is_rtd_job
+
+    # Return "local" for images when a local job
+    if is_local_job and dir is not None:
+        return "local"
+
+    # When running on the CI, use the commit tag for images
+    if is_ci_job and not is_tag_job and dir is not None:
+        return os.environ["CI_COMMIT_SHORT_SHA"]
+
     if dir is None:
         dir = Path(REPO_DIR)
 
