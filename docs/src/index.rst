@@ -20,6 +20,7 @@ longer provided here.
   :maxdepth: 1
   :caption: How-To Guides
 
+  how-to/basic-docker-compose
   how-to/build-cpptango-image
   how-to/build-pytango-image
 
