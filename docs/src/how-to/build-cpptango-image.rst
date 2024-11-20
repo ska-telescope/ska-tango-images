@@ -102,3 +102,14 @@ The following Dockerfile builds a `TangoTest
          int.skao.image.url="https://gitlab.com/example" \
          description="This is just an example and these labels should be updated" \
          license="BSD-3-Clause"
+
+To build and run an image using this example, copy the above into a file named
+``Dockerfile`` and run the following commands from a terminal inside the same
+directory:
+
+.. code-block:: shell
+
+    docker image build -t my-tango-test .
+    docker run --env TANGO_HOST=$TANGO_HOST --net=host my-tango-test test
+
+This will launch a TangoTest device server connecting to your TANGO_HOST.

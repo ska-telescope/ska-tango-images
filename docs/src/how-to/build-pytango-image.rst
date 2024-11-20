@@ -95,3 +95,15 @@ The following Dockerfile builds a `dsconfig
          int.skao.image.url="https://gitlab.com/example" \
          description="This is just an example and these labels should be updated" \
          license="BSD-3-Clause"
+
+To build and run an image using this example, copy the above into a file named
+``Dockerfile`` and run the following commands from a terminal inside the same
+directory:
+
+.. code-block:: shell
+
+    docker image build -t my-dsconfig .
+    docker run -it my-dsconfig
+
+This will place you in an interactive terminal for the container, which will
+have the dsconfig command line tools such as json2tango installed.
