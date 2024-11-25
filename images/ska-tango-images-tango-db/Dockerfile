@@ -1,7 +1,8 @@
-ARG BASE_IMAGE="mariadb:11.0.2-jammy"
+ARG MARIADB_VERSION
+ARG BASE_IMAGE="mariadb:${MARIADB_VERSION}"
 FROM $BASE_IMAGE AS builder
 ARG DEBIAN_FRONTEND=noninteractive
-ARG DATABASEDS_VERSION
+ARG DATABASEDS_TANGODB_VERSION
 
 RUN set -xe; \
     apt-get update; \
@@ -18,7 +19,7 @@ RUN apt-get purge unattended-upgrades -y
 RUN mkdir -p /usr/src/databaseds
 WORKDIR /usr/src/databaseds
 RUN set -xe; \
-    git clone --depth=1 --branch=${DATABASEDS_VERSION} --recursive -c advice.detachedHead=false \
+    git clone --depth=1 --branch=${DATABASEDS_TANGODB_VERSION} --recursive -c advice.detachedHead=false \
         https://gitlab.com/tango-controls/TangoDatabase.git /usr/src/databaseds; \
     mkdir -p dbinit/include; \
     cp create_db.sql.in dbinit/create_db.sql; \

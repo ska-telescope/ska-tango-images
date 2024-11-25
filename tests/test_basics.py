@@ -97,40 +97,74 @@ def test_tango_db():
 
     image = f'{OCI_REGISTRY}/{name}:{tag}'
 
+    def get_health(container):
+        args = ['docker', 'inspect', '-f', '{{.State.Health.Status}}', container]
+        result = run(args)
+
+        return result.stdout.decode().strip()
+
+    def wait_for_healthy(container):
+        health = get_health(container)
+        while health == "starting":
+            time.sleep(0.5)
+            health = get_health(container)
+
+        return health == "healthy"
+
+
     # Start the maridbd daemon
     command = []
     extra_args = ['--detach',
+            '--name=tango-db',
             '--env=MYSQL_ROOT_PASSWORD=secret',
             '--env=MYSQL_PASSWORD=tango',
             '--env=MYSQL_USER=tango',
-            '--env=MYSQL_DATABASE=tango']
+            '--env=MYSQL_DATABASE=tango',
+            '--health-cmd=healthcheck.sh --connect',
+            '--health-start-period=1s',
+            '--health-interval=0.5s',
+            '--health-timeout=5s',
+            '--health-retries=10']
     result = run_in_docker(image, command, extra_args)
     assert result.returncode == 0
 
-    container = result.stdout.decode().strip()
-
-    def ping_db():
-        args = ['docker', 'exec', container, 'mariadb', '-utango', '-ptango', '-e status;']
-        result = run(args)
-
-        return result.returncode == 0
-
-    while not ping_db():
-        time.sleep(0.5)
+    tango_db = result.stdout.decode().strip()
+    databaseds = ""
 
     try:
-        # get Databaseds device name
-        args = ['docker', 'exec', container, 'mariadb', '-utango', '-ptango', 'tango', '-N', '-B', '-e', "SELECT name FROM device WHERE class='Database' \g"]
-        result = run(args)
+        assert wait_for_healthy(tango_db)
+
+        # start a Databaseds which connects to tango_db
+        name='ska-tango-images-tango-databaseds'
+        tag = get_tag(name)
+
+        assert tag is not None
+
+        image = f'{OCI_REGISTRY}/{name}:{tag}'
+        extra_args = ['--detach',
+                '--name=tango-dbds',
+                '--env=TANGO_HOST=localhost:10000',
+                '--env=MYSQL_HOST=tango-db:3306',
+                '--env=MYSQL_PASSWORD=tango',
+                '--env=MYSQL_USER=tango',
+                '--env=MYSQL_DATABASE=tango',
+                '--health-cmd=tango_admin --ping-database',
+                '--health-start-period=1s',
+                '--health-interval=0.5s',
+                '--health-timeout=5s',
+                '--health-retries=10']
+        command = ["Databaseds", "2", "-ORBendPoint", "giop:tcp::10000"]
+        result = run_in_docker(image, command, extra_args)
         assert result.returncode == 0
 
-        name = result.stdout.decode().strip()
-        assert name == 'sys/database/2'
+        databaseds = result.stdout.decode().strip()
+        assert wait_for_healthy(tango_db)
 
     finally:
-        args = ['docker', 'stop', container]
-        result = run(args)
-        pass
+        args = ['docker', 'stop', tango_db]
+        run(args)
+        args = ['docker', 'stop', databaseds]
+        run(args)
 
 def test_tango_dsconfig():
     name='ska-tango-images-tango-dsconfig'

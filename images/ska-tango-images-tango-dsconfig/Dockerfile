@@ -1,5 +1,6 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BUILD_IMAGE="artefact.skao.int/ska-build-python:0.1.1"
+ARG SKABUILDPYTHON_VERSION
+ARG BUILD_IMAGE="artefact.skao.int/ska-build-python:${SKABUILDPYTHON_VERSION}"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-python:local"
 FROM $BUILD_IMAGE as build
 ARG DSCONFIG_VERSION
