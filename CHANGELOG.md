@@ -1,3 +1,33 @@
+# Changelog
+
+## Unreleased
+
+### Changes
+
+- WOM-512, WOM-513: Add user facing documentation
+- WOM-461: Add Boogie OCI image
+- WOM-459, WOM-516: Refactor OCI image hierarchy to use ska-base-image
+- WOM-467: Add tests for OCI images
+- WOM-485: Remove charts, now available at ska-tango-charts
+
+### New image releases
+
+- ska-tango-images-tango-admin:1.17.0
+- ska-tango-images-tango-base:0.1.0
+- ska-tango-images-tango-boogie:0.1.0
+- ska-tango-images-tango-cpp:9.5.0
+- ska-tango-images-tango-databaseds:5.22.1
+- ska-tango-images-tango-db:11.0.2
+- ska-tango-images-tango-dependencies:9.5.0
+- ska-tango-images-tango-dsconfig:1.7.1
+- ska-tango-images-tango-itango:9.5.0
+- ska-tango-images-tango-java:9.5.0
+- ska-tango-images-tango-jive:7.36.0
+- ska-tango-images-tango-pogo:9.8.0
+- ska-tango-images-tango-python:0.1.0
+- ska-tango-images-tango-rest:1.14.9
+- ska-tango-images-tango-test:3.8.0
+
 ## [0.3.8]
 
 ### Jira Tickets
