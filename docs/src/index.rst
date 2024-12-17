@@ -41,3 +41,9 @@ longer provided here.
   catalogue/ska-tango-images-tango-jive
   catalogue/ska-tango-images-tango-pogo
   catalogue/ska-tango-images-tango-rest
+
+.. toctree::
+  :titlesonly:
+  :caption: Releases
+
+  releases/changelog
