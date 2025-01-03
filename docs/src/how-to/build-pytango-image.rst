@@ -20,7 +20,9 @@ Dockerfile Template
 
 It is recommended to install your application into a python virtual environment
 in the build image, then copy this environment across to the runtime image.
-This can be done with the following skeleton:
+
+For PyTango applications that can be installed via pip, this can be done with
+the following skeleton:
 
 .. code-block:: Dockerfile
    :substitutions:
@@ -58,6 +60,59 @@ This can be done with the following skeleton:
    hard-coding them directly.  These arguments can be used by tools such as the
    `SKA Tango Test Bench <https://gitlab.com/ska-telescope/ska-tango-test-bench>`_ to
    test out different versions of build and base images.
+
+Dockerfile Template for poetry applications
+-------------------------------------------
+
+To build an image containing a local application managed by poetry, use the
+following skeleton, which is based on the recommendations from
+`ska-base-image
+<https://developer.skao.int/en/latest/tools/containers/base-images.html>`_:
+
+.. code-block:: Dockerfile
+   :substitutions:
+
+   ARG BUILD_IMAGE=artefact.skao.int/ska-build-python:0.1.1
+   ARG BASE_IMAGE=|oci-registry|/ska-tango-images-tango-python:|tango-python-imgver|
+   FROM $BUILD_IMAGE as build
+
+   WORKDIR /src
+
+   COPY pyproject.toml poetry.lock* ./
+
+   ENV POETRY_NO_INTERACTION=1
+   ENV POETRY_VIRTUALENVS_IN_PROJECT=1
+   ENV POETRY_VIRTUALENVS_CREATE=1
+
+   #no-root is required because in the build
+   #step we only want to install dependencies
+   #not the code under development
+   RUN poetry install --no-root
+
+   FROM $BASE_IMAGE
+
+   WORKDIR /src
+
+   #Adding the virtualenv binaries
+   #to the PATH so there is no need
+   #to activate the venv
+   ENV VIRTUAL_ENV=/src/.venv
+   ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
+   COPY --from=build ${VIRTUAL_ENV} ${VIRTUAL_ENV}
+
+   COPY ./src/my_project ./my_project
+
+   #Add source code to the PYTHONPATH
+   #so python is able to find our package
+   #when we use it on imports
+   ENV PYTHONPATH=${PYTHONPATH}:/src/
+
+   LABEL int.skao.image.team=<my-team> \
+         int.skao.image.authors=<author> \
+         int.skao.image.url=<gitlab url> \
+         description=<description> \
+         license=<license>
 
 Example
 -------
@@ -107,3 +162,4 @@ directory:
 
 This will place you in an interactive terminal for the container, which will
 have the dsconfig command line tools such as json2tango installed.
+
