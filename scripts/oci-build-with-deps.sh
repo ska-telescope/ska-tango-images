@@ -78,9 +78,13 @@ if [ -n "${CI_COMMIT_SHORT_SHA}" ] && [ -n "${BASE_IMAGE}" ]; then
     ADDITIONAL_ARGS+=" --build-arg BASE_IMAGE=\${CAR_OCI_REGISTRY_HOST}/${BASE_IMAGE}:${VERS}-dev.c${CI_COMMIT_SHORT_SHA}"
 fi
 
-for line in $(cat $SCRIPT_DIR/upstream_versions); do
+while IFS='\n' read -r line; do
+    # Skip comments
+    if [[ "${line}" == \#* ]]; then
+        continue
+    fi
     ADDITIONAL_ARGS+=" --build-arg ${line}"
-done
+done < $SCRIPT_DIR/upstream_versions
 
 set -x
 

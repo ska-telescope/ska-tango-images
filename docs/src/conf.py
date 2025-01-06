@@ -117,6 +117,8 @@ def generate_prolog():
 
     with open(f'{REPO_DIR}/scripts/upstream_versions') as f:
         for line in f.readlines():
+            if line.startswith("#"):
+                continue
             name, version = line.strip().split('=')
             name = name.lower().replace('_', '-')
 
