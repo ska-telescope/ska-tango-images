@@ -3,6 +3,7 @@ ARG SKABUILDPYTHON_VERSION
 ARG BUILD_IMAGE="artefact.skao.int/ska-build-python:${SKABUILDPYTHON_VERSION}"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-python:local"
 FROM $BUILD_IMAGE as build
+ARG PYTANGO_VERSION
 ARG ITANGO_VERSION
 
 ENV VIRTUAL_ENV=/app
@@ -13,7 +14,7 @@ RUN set -xe; \
     python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-RUN python3 -m pip install --no-cache-dir ipython==8.5.0 itango==${ITANGO_VERSION}
+RUN python3 -m pip install --no-cache-dir pytango==${PYTANGO_VERSION} ipython==8.5.0 itango==${ITANGO_VERSION}
 
 FROM $BASE_IMAGE
 

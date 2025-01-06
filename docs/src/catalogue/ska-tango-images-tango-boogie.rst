@@ -24,6 +24,8 @@ Included Software
 
    * - Package
      - Version
+   * - PyTango
+     - |pytango-version|
    * - boogie
      - |boogie-version|
    * - tango_admin

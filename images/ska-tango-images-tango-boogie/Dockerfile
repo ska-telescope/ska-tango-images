@@ -3,6 +3,7 @@ ARG SKABUILDPYTHON_VERSION
 ARG BUILD_IMAGE="artefact.skao.int/ska-build-python:${SKABUILDPYTHON_VERSION}"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-python:local"
 FROM $BUILD_IMAGE as build
+ARG PYTANGO_VERSION
 ARG BOOGIE_VERSION
 
 ENV VIRTUAL_ENV=/app
@@ -23,7 +24,7 @@ RUN set -xe; \
     && git remote add origin https://gitlab.com/nurbldoff/boogie.git \
     && git fetch --depth 1 origin ${BOOGIE_VERSION} \
     && git checkout FETCH_HEAD; \
-    pip install .
+    pip install pytango==${PYTANGO_VERSION} .
 
 FROM $BASE_IMAGE
 

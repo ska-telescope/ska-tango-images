@@ -27,6 +27,7 @@ TANGOADMIN_NAME=tango_admin
 DATABASEDS_NAME=TangoDatabase
 DATABASEDS_TANGODB_NAME="SQL DB from TangoDatabase"
 TANGOTEST_NAME=TangoTest
+PYTANGO_NAME=PyTango
 DSCONFIG_NAME=dsconfig
 ITANGO_NAME=itango
 BOOGIE_NAME="Boogie commit"
