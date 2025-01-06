@@ -25,6 +25,8 @@ Included Software
 
    * - Package
      - Version
+   * - PyTango
+     - |pytango-version|
    * - dsconfig
      - |dsconfig-version|
    * - tango_admin

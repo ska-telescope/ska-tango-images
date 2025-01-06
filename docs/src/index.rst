@@ -4,9 +4,29 @@
    contain the root `toctree` directive.
 
 SKA OCI Images
-=================
+==============
 
 This project defines a set of OCI images for TANGO control system development.
+Each OCI image has an independent version, unrelated to the version of
+ska-tango-images itself. These version numbers loosely based on the "principle
+upstream package" they provide, for example, the
+:ref:`ska-tango-images-tango-admin` image's version number is based on the
+version of ``tango_admin`` which is installed.  If a new version of the image is
+released without updating the principle upstream package then the patch version
+number will be bumped.
+
+This means that for each image the major and minor version numbers will match
+the version number of the principle upstream package and the patch version will
+always be greater than or equal to the patch version of the principle upstream
+package.
+
+In general the principle upstream package can be inferred from the name of the
+image, the only exception to this is :ref:`ska-tango-images-tango-itango`, which has
+``PyTango`` as its principle upstream package and not ``itango``.
+
+See the `change log <releases/changelog.html>`_ for a (abridged) bill of materials
+for all the images released with a particular release.  See the
+:ref:`image-catalogue` below for more details on what each image provides.
 
 Helm Charts
 -----------

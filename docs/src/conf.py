@@ -20,6 +20,7 @@
 import os
 import sys
 import subprocess
+import re
 from pathlib import Path
 
 # -- General configuration ------------------------------------------------
@@ -115,9 +116,16 @@ def generate_prolog():
 
         prolog += f'.. |{name}-imgver| replace:: {version}\n'
 
-    with open(f'{REPO_DIR}/scripts/upstream_versions') as f:
+    # We use this to strip the unneeded information from the tag name
+    version_regex = re.compile("([0-9]+\.[0-9]+(\.[0-9]+)?)")
+    upstream_to_strip = ["DATABASEDS_VERSION", "DATABASEDS_TANGODB_VERSION", "TANGOADMIN_VERSION"]
+    with open(f'{REPO_DIR}/scripts/upstream-versions') as f:
         for line in f.readlines():
+            if line.startswith("#"):
+                continue
             name, version = line.strip().split('=')
+            if name in upstream_to_strip:
+                version = version_regex.search(version).group(1)
             name = name.lower().replace('_', '-')
 
             prolog += f'.. |{name}| replace:: {version}\n'

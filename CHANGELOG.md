@@ -1,32 +1,166 @@
 # Changelog
 
-## Unreleased
+## [0.5.0]
 
 ### Changes
 
-- WOM-512, WOM-513: Add user facing documentation
+- WOM-512, WOM-513, WOM-568, WOM-570: Add user facing documentation
 - WOM-461: Add Boogie OCI image
 - WOM-459, WOM-516: Refactor OCI image hierarchy to use ska-base-image
 - WOM-467: Add tests for OCI images
 - WOM-485: Remove charts, now available at ska-tango-charts
 
-### New image releases
+### Published Images
 
-- ska-tango-images-tango-admin:1.17.0
+- ska-tango-images-tango-admin:1.17.1
+  + cppTango 9.5.0
+  + cppZMQ 4.8.1
+  + omniORB 4.3.1
+  + ska-base 0.1.0
+  + ska-build 0.1.1
+  + tango_admin 1.17
+  + tango_idl 5.1.2
+  + ZeroMQ 4.3.4
 - ska-tango-images-tango-base:0.1.0
+  + ska-base 0.1.0
 - ska-tango-images-tango-boogie:0.1.0
-- ska-tango-images-tango-cpp:9.5.0
-- ska-tango-images-tango-databaseds:5.22.1
-- ska-tango-images-tango-db:11.0.2
-- ska-tango-images-tango-dependencies:9.5.0
+  + Boogie commit 0613475efe44583e3cf724478ef6326e75a52493
+  + cppTango 9.5.0
+  + cppZMQ 4.8.1
+  + omniORB 4.3.1
+  + PyTango 9.5.0
+  + ska-base 0.1.0
+  + ska-build 0.1.1
+  + ska-build-python 0.1.1
+  + ska-python 0.1.1
+  + tango_admin 1.17
+  + tango_idl 5.1.2
+  + ZeroMQ 4.3.4
+- ska-tango-images-tango-cpp:9.5.1
+  + cppTango 9.5.0
+  + cppZMQ 4.8.1
+  + omniORB 4.3.1
+  + ska-build 0.1.1
+  + tango_idl 5.1.2
+  + ZeroMQ 4.3.4
+- ska-tango-images-tango-databaseds:5.22.2
+  + cppTango 9.5.0
+  + cppZMQ 4.8.1
+  + omniORB 4.3.1
+  + ska-base 0.1.0
+  + ska-build 0.1.1
+  + tango_admin 1.17
+  + TangoDatabase 5.22
+  + tango_idl 5.1.2
+  + ZeroMQ 4.3.4
+- ska-tango-images-tango-db:11.0.3
+  + MariaDB docker image 11.0.2-jammy
+  + SQL DB from TangoDatabase 5.16
+- ska-tango-images-tango-dependencies:9.5.1
+  + cppZMQ 4.8.1
+  + omniORB 4.3.1
+  + ska-build 0.1.1
+  + ZeroMQ 4.3.4
 - ska-tango-images-tango-dsconfig:1.7.1
-- ska-tango-images-tango-itango:9.5.0
-- ska-tango-images-tango-java:9.5.0
-- ska-tango-images-tango-jive:7.36.0
-- ska-tango-images-tango-pogo:9.8.0
+  + cppTango 9.5.0
+  + cppZMQ 4.8.1
+  + dsconfig 1.7.1
+  + omniORB 4.3.1
+  + PyTango 9.5.0
+  + ska-base 0.1.0
+  + ska-build 0.1.1
+  + ska-build-python 0.1.1
+  + ska-python 0.1.1
+  + tango_admin 1.17
+  + tango_idl 5.1.2
+  + ZeroMQ 4.3.4
+- ska-tango-images-tango-itango:9.5.1
+  + cppTango 9.5.0
+  + cppZMQ 4.8.1
+  + itango 0.1.9
+  + omniORB 4.3.1
+  + PyTango 9.5.0
+  + ska-base 0.1.0
+  + ska-build 0.1.1
+  + ska-build-python 0.1.1
+  + ska-python 0.1.1
+  + tango_admin 1.17
+  + tango_idl 5.1.2
+  + ZeroMQ 4.3.4
+- ska-tango-images-tango-java:9.5.1
+  + cppTango 9.5.0
+  + cppZMQ 4.8.1
+  + Java applications from TangoSourceDistribution 9.5.0
+  + log4j 1.2.17
+  + omniORB 4.3.1
+  + ska-base 0.1.0
+  + ska-build 0.1.1
+  + tango_admin 1.17
+  + tango_idl 5.1.2
+  + TangoTest 3.8
+  + ZeroMQ 4.3.4
+- ska-tango-images-tango-jive:7.36.1
+  + ATK 9.3.28
+  + ATK Panel 5.11
+  + ATK Tuning 4.8
+  + cppTango 9.5.0
+  + cppZMQ 4.8.1
+  + Jive 7.36
+  + JTango 9.6.6
+  + log4j 1.2.17
+  + omniORB 4.3.1
+  + ska-base 0.1.0
+  + ska-build 0.1.1
+  + tango_admin 1.17
+  + tango_idl 5.1.2
+  + TangoTest 3.8
+  + ZeroMQ 4.3.4
+- ska-tango-images-tango-pogo:9.8.1
+  + cppTango 9.5.0
+  + cppZMQ 4.8.1
+  + JTango 9.6.6
+  + log4j 1.2.17
+  + omniORB 4.3.1
+  + Pogo 9.8.0
+  + ska-base 0.1.0
+  + ska-build 0.1.1
+  + tango_admin 1.17
+  + tango_idl 5.1.2
+  + TangoTest 3.8
+  + ZeroMQ 4.3.4
 - ska-tango-images-tango-python:0.1.0
-- ska-tango-images-tango-rest:1.14.9
-- ska-tango-images-tango-test:3.8.0
+  + cppTango 9.5.0
+  + cppZMQ 4.8.1
+  + omniORB 4.3.1
+  + ska-base 0.1.0
+  + ska-build 0.1.1
+  + ska-python 0.1.1
+  + tango_admin 1.17
+  + tango_idl 5.1.2
+  + ZeroMQ 4.3.4
+- ska-tango-images-tango-rest:1.22.0
+  + cppTango 9.5.0
+  + cppZMQ 4.8.1
+  + JTango 9.6.6
+  + log4j 1.2.17
+  + omniORB 4.3.1
+  + ska-base 0.1.0
+  + ska-build 0.1.1
+  + tango_admin 1.17
+  + tango_idl 5.1.2
+  + TangoRestServer 1.22
+  + TangoTest 3.8
+  + ZeroMQ 4.3.4
+- ska-tango-images-tango-test:3.8.1
+  + cppTango 9.5.0
+  + cppZMQ 4.8.1
+  + omniORB 4.3.1
+  + ska-base 0.1.0
+  + ska-build 0.1.1
+  + tango_admin 1.17
+  + tango_idl 5.1.2
+  + TangoTest 3.8
+  + ZeroMQ 4.3.4
 
 ## [0.3.8]
 

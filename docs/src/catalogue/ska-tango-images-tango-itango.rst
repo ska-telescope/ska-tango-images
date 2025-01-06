@@ -26,6 +26,8 @@ Included Software
 
    * - Package
      - Version
+   * - PyTango
+     - |pytango-version|
    * - iTango
      - |itango-version|
    * - tango_admin
