@@ -24,6 +24,7 @@ longer provided here.
   how-to/build-cpptango-image
   how-to/build-pytango-image
 
+.. _image-catalogue:
 .. toctree::
   :maxdepth: 1
   :caption: OCI Image Catalogue
@@ -41,3 +42,10 @@ longer provided here.
   catalogue/ska-tango-images-tango-jive
   catalogue/ska-tango-images-tango-pogo
   catalogue/ska-tango-images-tango-rest
+
+.. toctree::
+  :titlesonly:
+  :caption: Releases
+
+  releases/migrating-to-0.5
+  releases/changelog
