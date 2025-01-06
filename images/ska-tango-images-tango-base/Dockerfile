@@ -1,5 +1,6 @@
 ARG CAR_OCI_REGISTRY_HOST
-ARG BASE_IMAGE="artefact.skao.int/ska-base:0.1.0"
+ARG SKABASE_VERSION
+ARG BASE_IMAGE="artefact.skao.int/ska-base:${SKABASE_VERSION}"
 
 FROM $BASE_IMAGE
 ARG DEBIAN_FRONTEND=noninteractive
