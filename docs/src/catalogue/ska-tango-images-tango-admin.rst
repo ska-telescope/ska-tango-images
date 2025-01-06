@@ -16,7 +16,7 @@ Release |version| of ska-tango-images provides the |tango-admin-imgver| tag of
 the ska-tango-images-tango-admin OCI image.
 
 The image uses :ref:`ska-tango-images-tango-base` as a base image and so
-provides the same features, in addition to the `tango_admin` entry point.
+provides the same features, in addition to the ``tango_admin`` entry point.
 
 Included Software
 *****************
