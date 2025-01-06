@@ -41,7 +41,7 @@ all: $(ALL_BUILD_JOBS)
 clean:
 	@rm -rf build
 
-build/receipts/%: scripts/oci-build-with-deps.sh
+build/receipts/%: scripts/oci-build-with-deps.sh scripts/upstream_versions
 	scripts/oci-build-with-deps.sh $(OCI_IMAGE)
 	@mkdir -p build/receipts
 	@touch $@
