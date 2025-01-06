@@ -68,6 +68,7 @@ function print-upstream-versions {
 
     # Special handling for the java applications which all come from TSD
     if [ ${CURRENT_IMAGE} = "images/ska-tango-images-tango-jive" ]; then
+        echo "  + JTango ${TSD_JTANGO_VERSION}"
         echo "  + Jive ${TSD_JIVE_VERSION}"
         echo "  + ATK ${TSD_ATK_VERSION}"
         echo "  + ATK Panel ${TSD_ATK_PANEL_VERSION}"
@@ -75,10 +76,12 @@ function print-upstream-versions {
     fi
 
     if [ ${CURRENT_IMAGE} = "images/ska-tango-images-tango-pogo" ]; then
+        echo "  + JTango ${TSD_JTANGO_VERSION}"
         echo "  + Pogo ${TSD_POGO_VERSION}"
     fi
 
     if [ ${CURRENT_IMAGE} = "images/ska-tango-images-tango-rest" ]; then
+        echo "  + JTango ${TSD_JTANGO_VERSION}"
         echo "  + TangoRestServer ${TSD_REST_VERSION}"
     fi
 }
