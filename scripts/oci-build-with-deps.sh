@@ -84,7 +84,7 @@ while IFS='\n' read -r line; do
         continue
     fi
     ADDITIONAL_ARGS+=" --build-arg ${line}"
-done < $SCRIPT_DIR/upstream_versions
+done < $SCRIPT_DIR/upstream-versions
 
 set -x
 

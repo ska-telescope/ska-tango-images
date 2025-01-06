@@ -115,7 +115,7 @@ def generate_prolog():
 
         prolog += f'.. |{name}-imgver| replace:: {version}\n'
 
-    with open(f'{REPO_DIR}/scripts/upstream_versions') as f:
+    with open(f'{REPO_DIR}/scripts/upstream-versions') as f:
         for line in f.readlines():
             if line.startswith("#"):
                 continue

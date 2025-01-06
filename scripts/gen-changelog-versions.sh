@@ -16,7 +16,7 @@ fi
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 source $SCRIPT_DIR/lib.sh
-source $SCRIPT_DIR/upstream_versions
+source $SCRIPT_DIR/upstream-versions
 
 ZEROMQ_NAME=ZeroMQ
 CPPZMQ_NAME=cppZMQ
