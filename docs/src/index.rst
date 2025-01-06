@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 SKA OCI Images
-=================
+==============
 
 This project defines a set of OCI images for TANGO control system development.
 
