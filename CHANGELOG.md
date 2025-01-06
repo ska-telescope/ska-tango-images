@@ -1,3 +1,33 @@
+# Changelog
+
+## Unreleased
+
+### Changes
+
+- WOM-512, WOM-513: Add user facing documentation
+- WOM-461: Add Boogie OCI image
+- WOM-459, WOM-516: Refactor OCI image hierarchy to use ska-base-image
+- WOM-467: Add tests for OCI images
+- WOM-485: Remove charts, now available at ska-tango-charts
+
+### New image releases
+
+- ska-tango-images-tango-admin:1.17.0
+- ska-tango-images-tango-base:0.1.0
+- ska-tango-images-tango-boogie:0.1.0
+- ska-tango-images-tango-cpp:9.5.0
+- ska-tango-images-tango-databaseds:5.22.1
+- ska-tango-images-tango-db:11.0.2
+- ska-tango-images-tango-dependencies:9.5.0
+- ska-tango-images-tango-dsconfig:1.7.1
+- ska-tango-images-tango-itango:9.5.0
+- ska-tango-images-tango-java:9.5.0
+- ska-tango-images-tango-jive:7.36.0
+- ska-tango-images-tango-pogo:9.8.0
+- ska-tango-images-tango-python:0.1.0
+- ska-tango-images-tango-rest:1.14.9
+- ska-tango-images-tango-test:3.8.0
+
 ## [0.3.8]
 
 ### Jira Tickets
@@ -50,22 +80,22 @@
 - ST-970: enable tests
 - ST-970: update alpine images
 - ST-970: update alpines
-- ST-974: Bumped up the helm chart versions Co-authored-by: Abhijeet Deolalikar <abhijeet_deolalikar[@persistent](:/persistent).com>
+- ST-974: Bumped up the helm chart versions Co-authored-by: Abhijeet Deolalikar <abhijeet_deolalikar@persistent.com>
 - Merge branch 'st-974-tango-util-readiness-liveness-probes' into 'master'
-- ST-974: Handle undefined annotations tag in values.yaml file Co-authored-by: Abhijeet Deolalikar <abhijeet_deolalikar[@persistent](:/persistent).com>
-- ST-974: Fixed the pipeline for the failing docs-pages job Co-authored-by: Abhijeet Deolalikar <abhijeet_deolalikar[@persistent](:/persistent).com>
-- ST-974: Commented out the duplicated 'global' key Co-authored-by: Abhijeet Deolalikar <abhijeet_deolalikar[@persistent](:/persistent).com>
-- ST-974: Removed the command generated from the entrypoint tag Co-authored-by: Abhijeet Deolalikar <abhijeet_deolalikar[@persistent](:/persistent).com>
+- ST-974: Handle undefined annotations tag in values.yaml file Co-authored-by: Abhijeet Deolalikar <abhijeet_deolalikar@persistent.com>
+- ST-974: Fixed the pipeline for the failing docs-pages job Co-authored-by: Abhijeet Deolalikar <abhijeet_deolalikar@persistent.com>
+- ST-974: Commented out the duplicated 'global' key Co-authored-by: Abhijeet Deolalikar <abhijeet_deolalikar@persistent.com>
+- ST-974: Removed the command generated from the entrypoint tag Co-authored-by: Abhijeet Deolalikar <abhijeet_deolalikar@persistent.com>
 - ST-974: Fixed the probes' ping commands to execute successfully
 - ST-974: Fixed generation of probe's command for multidevices - Included the entrypoint generation when the tag is present in the values.yaml file. - Updated the tests.
 - ST-974: Removed redundant print statements
 - ST-974: Fix generation of the probe command string generation
 - ST-974: Set the initialDelaySeconds parameter to default value 0
 - ST-974: Update sub-modules
-- ST-974: Updated tests to handle cases where the livenessProbe/readinessProbe tag is not specified Co-authored-by: Abhijeet Deolalikar <abhijeet_deolalikar[@persistent](:/persistent).com>
-- ST-974: Added the chart_test target and test-chart-templates job in the Makefile and gitlab, respectively Co-authored-by: Abhijeet Deolalikar <abhijeet_deolalikar[@persistent](:/persistent).com>
-- ST-974: Added tests to ensure correct generation of probes Co-authored-by: Abhijeet Deolalikar <abhijeet_deolalikar[@persistent](:/persistent).com>
-- ST-974: Added support for liveness and readiness probes for tango-util Co-authored-by: Abhijeet Deolalikar <abhijeet_deolalikar[@persistent](:/persistent).com>
+- ST-974: Updated tests to handle cases where the livenessProbe/readinessProbe tag is not specified Co-authored-by: Abhijeet Deolalikar <abhijeet_deolalikar@persistent.com>
+- ST-974: Added the chart_test target and test-chart-templates job in the Makefile and gitlab, respectively Co-authored-by: Abhijeet Deolalikar <abhijeet_deolalikar@persistent.com>
+- ST-974: Added tests to ensure correct generation of probes Co-authored-by: Abhijeet Deolalikar <abhijeet_deolalikar@persistent.com>
+- ST-974: Added support for liveness and readiness probes for tango-util Co-authored-by: Abhijeet Deolalikar <abhijeet_deolalikar@persistent.com>
 - ST-966: makefile submodule with master branch
 
 ## [0.0.123]
@@ -954,7 +984,7 @@
 - story-AT1-328: Initial edits
 - Merge branch 'master' of https://github.com/ska-telescope/ska-docker
 - improvements
-- Merge pull request [#13](/issues/13) from ska-telescope/build_tango_with_numpy
+- Merge pull request #13 from ska-telescope/build_tango_with_numpy
 - Change release versions
 - Install numpy before PyTango Refresh pipfiles to use latest numpy and pytango distributions
 - st-248 fix
@@ -985,7 +1015,7 @@
 - install distutils
 - tango rest manual test
 - itango build
-- Merge pull request [#12](/issues/12) from ska-telescope/upgrade-to-buster
+- Merge pull request #12 from ska-telescope/upgrade-to-buster
 - fix
 
 ## [0.2.0]
@@ -1000,11 +1030,11 @@
 
 ### Commits
 
-- Merge pull request [#10](/issues/10) from ska-telescope/upgrade-to-buster
+- Merge pull request #10 from ska-telescope/upgrade-to-buster
 - Merge branch 'master' into upgrade-to-buster
 - tar in nexus
 - move to tango 9.3.3
-- Merge pull request [#11](/issues/11) from ska-telescope/update-gitlab-ci-vars
+- Merge pull request #11 from ska-telescope/update-gitlab-ci-vars
 - Update .gitlab-ci.yml
 - ST-226: fix on docker file
 - fix rest test
@@ -1022,7 +1052,7 @@
 - ST-221: fix tango-dsconfig
 - Update Dockerfiles to build with buster
 - ST-205: add docker image for dsconfig
-- Merge pull request [#8](/issues/8) from ska-telescope/ST-139-include-k8s-configuration
+- Merge pull request #8 from ska-telescope/ST-139-include-k8s-configuration
 - ST-139: alignement with ST-144
 - ST-139: alignement with ST-144
 - ST-139: fix readme
@@ -1046,7 +1076,7 @@
 
 ### Commits
 
-- Merge pull request [#6](/issues/6) from ska-telescope/new-registry
+- Merge pull request #6 from ska-telescope/new-registry
 - new registry
 - Do not match inet6 addresses on MacOS
 - ST-123: explicitly add copyright reference and apache 2 license
@@ -1107,7 +1137,7 @@
 - Only trigger builds when directory changes
 - Push itango into separate CI build stage.
 - Use 'make test' procedures Add itango image to CI build
-- Merge pull request [#5](/issues/5) from ska-telescope/tango-builder
+- Merge pull request #5 from ska-telescope/tango-builder
 - .
 - Merge remote-tracking branch 'origin/improve_python_test' into improve_python_test
 - Refactor tango-rest test procedure Minor cleanup of tango-python test makefile
@@ -1128,7 +1158,7 @@
 - Separate pytango and itango images
 - Add pip to default python image Improve tests and test automation for tango-python image
 - Merge remote-tracking branch 'origin/master'
-- Merge pull request [#4](/issues/4) from ska-telescope/use-docker-executor
+- Merge pull request #4 from ska-telescope/use-docker-executor
 - .
 - .
 - .
@@ -1164,7 +1194,7 @@
 - ST-58: include rest and test it
 - Add pip to default python image Improve tests and test automation for tango-python image
 - Merge remote-tracking branch 'origin/master'
-- Merge pull request [#3](/issues/3) from ska-telescope/fix-makefile
+- Merge pull request #3 from ska-telescope/fix-makefile
 - Change docker-compose to pull from gitlab registry by default
 - bug fix: tangotest container incorrectly using Python image rather than Java image.
 - put test not manual.
@@ -1176,7 +1206,7 @@
 - fixing tests
 - improving tests
 - fixing tests
-- Merge pull request [#2](/issues/2) from ska-telescope/refactor-env
+- Merge pull request #2 from ska-telescope/refactor-env
 - refactored default env file
 - Introduce mtango-rest image
 - implementing simple test
