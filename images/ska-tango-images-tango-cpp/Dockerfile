@@ -5,7 +5,8 @@
 #
 ARG CAR_OCI_REGISTRY_HOST
 ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-dependencies:local"
-ARG BASE_IMAGE="artefact.skao.int/ska-build:0.1.1"
+ARG SKABUILD_VERSION
+ARG BASE_IMAGE="artefact.skao.int/ska-build:${SKABUILD_VERSION}"
 FROM $BUILD_IMAGE as build
 ARG DEBIAN_FRONTEND=noninteractive
 ARG TANGOIDL_VERSION
