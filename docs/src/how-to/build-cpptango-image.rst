@@ -107,7 +107,7 @@ To build and run an image using this example, copy the above into a file named
 ``Dockerfile`` and run the following commands from a terminal inside the same
 directory:
 
-.. code-block:: shell
+.. code-block:: bash
 
     docker image build -t my-tango-test .
     docker run --env TANGO_HOST=$TANGO_HOST --net=host my-tango-test test
