@@ -29,7 +29,7 @@ against ``libtango.so``, using the :ref:`ska-tango-images-tango-admin` base imag
    ARG BASE_IMAGE=|oci-registry|/ska-tango-images-tango-admin:|tango-admin-imgver|
    FROM $BUILD_IMAGE as build
 
-   <build and install application>
+   # build and install application
 
    FROM $BASE_IMAGE
    COPY --from=build </path/to/installed/application> /usr/local/bin

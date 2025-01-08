@@ -39,7 +39,7 @@ the following skeleton:
        python3 -m venv $VIRTUAL_ENV
    ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-   <install application into $VIRTUAL_ENV>
+   # install application into $VIRTUAL_ENV
 
    FROM $BASE_IMAGE
 
