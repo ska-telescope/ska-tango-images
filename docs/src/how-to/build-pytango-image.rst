@@ -64,10 +64,9 @@ the following skeleton:
 Dockerfile Template for poetry applications
 -------------------------------------------
 
-To build an image containing a local application managed by poetry, use the
-following skeleton, which is based on the recommendations from
-`ska-base-image
-<https://developer.skao.int/en/latest/tools/containers/base-images.html>`_:
+To build an image containing a local application managed by poetry, you could
+use the following skeleton to have poetry install the application into the
+virtual environment:
 
 .. code-block:: Dockerfile
    :substitutions:
@@ -76,37 +75,51 @@ following skeleton, which is based on the recommendations from
    ARG BASE_IMAGE=|oci-registry|/ska-tango-images-tango-python:|tango-python-imgver|
    FROM $BUILD_IMAGE as build
 
-   WORKDIR /src
+   ENV VIRTUAL_ENV=/app \
+       POETRY_NO_INTERACTION=1 \
+       POETRY_VIRTUALENVS_IN_PROJECT=1
 
+   RUN set -xe; \
+       apt-get update; \
+       apt-get install -y --no-install-recommends \
+           python3-venv; \
+       python3 -m venv $VIRTUAL_ENV; \
+       mkdir /build; \
+       ln -s $VIRTUAL_ENV /build/.venv
+   ENV PATH=$VIRTUAL_ENV/bin:$PATH
+
+   WORKDIR /build
+
+   # We install the dependencies and the application in two steps so that the
+   # dependency installation can be cached by the OCI image builder.  The
+   # important point is to install the dependencies _before_ we copy in src so
+   # that changes to the src directory to not result in needlessly reinstalling the
+   # dependencies.
+
+   # Installing the dependencies into /app here relies on the .venv symlink created
+   # above.  We use poetry to install the dependencies so that we can pass
+   # `--only main` to avoid installing dev dependencies.  This option is not
+   # available for pip.
    COPY pyproject.toml poetry.lock* ./
+   RUN poetry install --only main --no-root --no-directory
 
-   ENV POETRY_NO_INTERACTION=1
-   ENV POETRY_VIRTUALENVS_IN_PROJECT=1
-   ENV POETRY_VIRTUALENVS_CREATE=1
+   # The README.md here must match the `tool.poetry.readme` key in the
+   # pyproject.toml otherwise the `pip install` step below will fail.
+   COPY README.md ./
+   COPY src ./src
 
-   #no-root is required because in the build
-   #step we only want to install dependencies
-   #not the code under development
-   RUN poetry install --no-root
+   # We use pip to install the application because `poetry install` is
+   # equivalent to `pip install --editable` which creates symlinks to the src
+   # directory, whereas we want to copy the files.
+   RUN pip install --no-deps .
+
 
    FROM $BASE_IMAGE
 
-   WORKDIR /src
-
-   #Adding the virtualenv binaries
-   #to the PATH so there is no need
-   #to activate the venv
-   ENV VIRTUAL_ENV=/src/.venv
+   ENV VIRTUAL_ENV=/app
    ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-   COPY --from=build ${VIRTUAL_ENV} ${VIRTUAL_ENV}
-
-   COPY ./src/my_project ./my_project
-
-   #Add source code to the PYTHONPATH
-   #so python is able to find our package
-   #when we use it on imports
-   ENV PYTHONPATH=${PYTHONPATH}:/src/
+   COPY --from=build $VIRTUAL_ENV $VIRTUAL_ENV
 
    LABEL int.skao.image.team=<my-team> \
          int.skao.image.authors=<author> \
