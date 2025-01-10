@@ -7,7 +7,7 @@ How to build a Tango image using PyTango
 When building OCI images, it is recommended to use a separate build stage from
 the runtime stage to avoid including build-time dependencies in the final image.
 
-`ska-base-image <https://github.com/ska-telescope/ska-base-image>`_ provides
+`ska-base-images <https://gitlab.com/ska-telescope/ska-base-images>`_ provides
 ska-build-python as a build image for python-based applications and can be used
 for building PyTango-based application images.
 
