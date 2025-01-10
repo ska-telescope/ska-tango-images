@@ -14,7 +14,7 @@ relying on such an image, please get in touch with either Team Wombat (or email
 image or adding a replacement for your use case.
 
 Note, that the OCI images produced by ska-tango-images have their own version
-number, see :ref:`changelog` for a list of image tags released with version
+number, see :doc:`changelog` for a list of image tags released with version
 0.5.0 of ska-tango-images.
 
 New interface definition for OCI images
