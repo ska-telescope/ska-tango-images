@@ -19,7 +19,7 @@
 #  ARG CAR_OCI_REGISTRY_HOST
 #  ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp:local"
 #  ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-admin:local"
-#  FROM $BUILD_IMAGE as build
+#  FROM $BUILD_IMAGE AS build
 #  ...
 #  FROM $BASE_IMAGE
 #  ...

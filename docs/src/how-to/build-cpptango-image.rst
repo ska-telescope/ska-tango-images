@@ -27,7 +27,7 @@ against ``libtango.so``, using the :ref:`ska-tango-images-tango-admin` base imag
 
    ARG BUILD_IMAGE=|oci-registry|/ska-tango-images-tango-cpp:|tango-cpp-imgver|
    ARG BASE_IMAGE=|oci-registry|/ska-tango-images-tango-admin:|tango-admin-imgver|
-   FROM $BUILD_IMAGE as build
+   FROM $BUILD_IMAGE AS build
 
    # build and install application
 
@@ -78,7 +78,7 @@ The following Dockerfile builds a `TangoTest
 
    ARG BUILD_IMAGE=|oci-registry|/ska-tango-images-tango-cpp:|tango-cpp-imgver|
    ARG BASE_IMAGE=|oci-registry|/ska-tango-images-tango-base:|tango-base-imgver|
-   FROM $BUILD_IMAGE as build
+   FROM $BUILD_IMAGE AS build
 
    RUN set -xe; \
     apt-get update; \

@@ -29,7 +29,7 @@ the following skeleton:
 
    ARG BUILD_IMAGE=artefact.skao.int/ska-build-python:0.1.1
    ARG BASE_IMAGE=|oci-registry|/ska-tango-images-tango-python:|tango-python-imgver|
-   FROM $BUILD_IMAGE as build
+   FROM $BUILD_IMAGE AS build
 
    ENV VIRTUAL_ENV=/app
    RUN set -xe; \
@@ -73,7 +73,7 @@ virtual environment:
 
    ARG BUILD_IMAGE=artefact.skao.int/ska-build-python:0.1.1
    ARG BASE_IMAGE=|oci-registry|/ska-tango-images-tango-python:|tango-python-imgver|
-   FROM $BUILD_IMAGE as build
+   FROM $BUILD_IMAGE AS build
 
    ENV VIRTUAL_ENV=/app \
        POETRY_NO_INTERACTION=1 \
@@ -139,7 +139,7 @@ The following Dockerfile builds a `dsconfig
 
    ARG BUILD_IMAGE=artefact.skao.int/ska-build-python:|skabuildpython-version|
    ARG BASE_IMAGE=|oci-registry|/ska-tango-images-tango-python:|tango-python-imgver|
-   FROM $BUILD_IMAGE as build
+   FROM $BUILD_IMAGE AS build
 
    ENV VIRTUAL_ENV=/app
    RUN set -xe; \

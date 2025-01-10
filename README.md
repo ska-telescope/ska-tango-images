@@ -25,30 +25,30 @@ tags updated.
 The release tags should match the underlying dependencies used where possible.
 
 - {nexus}/ska-base / {nexus}/ska-build
-  - tango-dependencies/Dockerfile:FROM {nexus}/ska-build as build
+  - tango-dependencies/Dockerfile:FROM {nexus}/ska-build AS build
   - tango-dependencies/Dockerfile:FROM {nexus}/ska-build
     - tango-base/Dockerfile:FROM {nexus}/ska-base
-    - tango-cpp/Dockerfile:FROM {nexus}/tango-dependencies as build
+    - tango-cpp/Dockerfile:FROM {nexus}/tango-dependencies AS build
     - tango-cpp/Dockerfile:FROM {nexus}/ska-build
-        - tango-admin/Dockerfile:FROM {nexus}/tango-cpp as build
+        - tango-admin/Dockerfile:FROM {nexus}/tango-cpp AS build
         - tango-admin/Dockerfile:FROM {nexus}/tango-base
-          - tango-databaseds/Dockerfile:FROM {nexus}/tango-cpp as build
+          - tango-databaseds/Dockerfile:FROM {nexus}/tango-cpp AS build
           - tango-databaseds/Dockerfile:FROM {nexus}/tango-admin
-          - tango-test/Dockerfile:FROM {nexus}/tango-cpp as build
+          - tango-test/Dockerfile:FROM {nexus}/tango-cpp AS build
           - tango-test/Dockerfile:FROM {nexus}/tango-admin
-            - tango-java/Dockerfile:FROM {nexus}/ska-build as build
+            - tango-java/Dockerfile:FROM {nexus}/ska-build AS build
             - tango-java/Dockerfile:FROM {nexus}/tango-test
               - tango-jive/Dockerfile:FROM {nexus}/tango-java
               - tango-pogo/Dockerfile:FROM {nexus}/tango-java
               - tango-rest/Dockerfile:FROM {nexus}/tango-java
 - {nexus}/ska-python / {nexus}/ska-build-python
-  - ska-tango-images-tango-python:FROM ska-tango-images-tango-admin as build
+  - ska-tango-images-tango-python:FROM ska-tango-images-tango-admin AS build
   - ska-tango-images-tango-python:FROM ska-python
-    - tango-boogie/Dockerfile:FROM {nexus}/ska-build-python as build
+    - tango-boogie/Dockerfile:FROM {nexus}/ska-build-python AS build
     - tango-boogie/Dockerfile:FROM {nexus}/ska-tango-images-tango-python
-    - tango-dsconfig/Dockerfile:FROM {nexus}/ska-build-python as build
+    - tango-dsconfig/Dockerfile:FROM {nexus}/ska-build-python AS build
     - tango-dsconfig/Dockerfile:FROM {nexus}/ska-tango-images-tango-python
-    - tango-itango/Dockerfile:FROM {nexus}/ska-build-python as build
+    - tango-itango/Dockerfile:FROM {nexus}/ska-build-python AS build
     - tango-itango/Dockerfile:FROM {nexus}/ska-tango-images-tango-python
 - mariadb
   - tango-db/Dockerfile:FROM mariadb
