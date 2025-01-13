@@ -1,5 +1,58 @@
 # Changelog
 
+## [0.5.1]
+
+### Changes
+
+- WOM-601: Update poetry example to actually install the application
+- WOM-601: No longer include `pip` in python runtime image virtual environments
+- WOM-603: Pin numpy version to version 1
+
+### Published Images
+
+- ska-tango-images-tango-boogie:0.1.1
+  + Boogie commit 0613475efe44583e3cf724478ef6326e75a52493
+  + cppTango 9.5.0
+  + cppZMQ 4.8.1
+  + NumPy 1.26.4
+  + omniORB 4.3.1
+  + PyTango 9.5.0
+  + ska-base 0.1.0
+  + ska-build 0.1.1
+  + ska-build-python 0.1.1
+  + ska-python 0.1.1
+  + tango_admin 1.17
+  + tango_idl 5.1.2
+  + ZeroMQ 4.3.4
+- ska-tango-images-tango-dsconfig:1.7.2
+  + cppTango 9.5.0
+  + cppZMQ 4.8.1
+  + dsconfig 1.7.1
+  + NumPy 1.26.4
+  + omniORB 4.3.1
+  + PyTango 9.5.0
+  + ska-base 0.1.0
+  + ska-build 0.1.1
+  + ska-build-python 0.1.1
+  + ska-python 0.1.1
+  + tango_admin 1.17
+  + tango_idl 5.1.2
+  + ZeroMQ 4.3.4
+- ska-tango-images-tango-itango:9.5.2
+  + cppTango 9.5.0
+  + cppZMQ 4.8.1
+  + itango 0.1.9
+  + NumPy 1.26.4
+  + omniORB 4.3.1
+  + PyTango 9.5.0
+  + ska-base 0.1.0
+  + ska-build 0.1.1
+  + ska-build-python 0.1.1
+  + ska-python 0.1.1
+  + tango_admin 1.17
+  + tango_idl 5.1.2
+  + ZeroMQ 4.3.4
+
 ## [0.5.0]
 
 ### Changes
