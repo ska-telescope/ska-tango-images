@@ -137,7 +137,7 @@ Example
 
 The following Dockerfile builds a `dsconfig
 <https://gitlab.com/MaxIV/lib-maxiv-dsconfig>`_ image, similar to
-:ref:`ska-tango-images-tango-dsconfig`:
+:ref:`ska-tango-images-tango-dsconfig`, except without pinning the versions:
 
 .. code-block:: Dockerfile
    :substitutions:
@@ -154,7 +154,7 @@ The following Dockerfile builds a `dsconfig
        python3 -m venv $VIRTUAL_ENV
    ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
-   RUN pip install --no-cache-dir dsconfig==|dsconfig-version|
+   RUN pip install --no-cache-dir dsconfig
 
    # We don't want to copy pip into the runtime image
    RUN pip uninstall -y pip
