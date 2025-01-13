@@ -16,6 +16,8 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN pip install --no-cache-dir pytango==${PYTANGO_VERSION} dsconfig==${DSCONFIG_VERSION}
 
+RUN pip uninstall -y pip
+
 FROM $BASE_IMAGE
 
 ENV VIRTUAL_ENV=/app

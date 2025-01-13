@@ -41,6 +41,9 @@ the following skeleton:
 
    # install application into $VIRTUAL_ENV
 
+   # We don't want to copy pip into the runtime image
+   RUN pip uninstall -y pip
+
    FROM $BASE_IMAGE
 
    ENV VIRTUAL_ENV=/app
@@ -113,6 +116,8 @@ virtual environment:
    # directory, whereas we want to copy the files.
    RUN pip install --no-deps .
 
+   # We don't want to copy pip into the runtime image
+   RUN pip uninstall -y pip
 
    FROM $BASE_IMAGE
 
@@ -150,6 +155,9 @@ The following Dockerfile builds a `dsconfig
    ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
    RUN pip install --no-cache-dir dsconfig==|dsconfig-version|
+
+   # We don't want to copy pip into the runtime image
+   RUN pip uninstall -y pip
 
    FROM $BASE_IMAGE
 

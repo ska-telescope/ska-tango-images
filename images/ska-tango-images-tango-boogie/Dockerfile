@@ -26,6 +26,8 @@ RUN set -xe; \
     && git checkout FETCH_HEAD; \
     pip install pytango==${PYTANGO_VERSION} .
 
+RUN pip uninstall -y pip
+
 FROM $BASE_IMAGE
 
 ENV VIRTUAL_ENV=/app

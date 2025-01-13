@@ -16,6 +16,8 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 
 RUN python3 -m pip install --no-cache-dir pytango==${PYTANGO_VERSION} ipython==8.5.0 itango==${ITANGO_VERSION}
 
+RUN pip uninstall -y pip
+
 FROM $BASE_IMAGE
 
 ENV VIRTUAL_ENV=/app
