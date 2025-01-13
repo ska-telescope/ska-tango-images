@@ -2,7 +2,7 @@ ARG CAR_OCI_REGISTRY_HOST
 ARG SKABUILDPYTHON_VERSION
 ARG BUILD_IMAGE="artefact.skao.int/ska-build-python:${SKABUILDPYTHON_VERSION}"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-python:local"
-FROM $BUILD_IMAGE as build
+FROM $BUILD_IMAGE AS build
 ARG PYTANGO_VERSION
 ARG BOOGIE_VERSION
 
@@ -25,6 +25,8 @@ RUN set -xe; \
     && git fetch --depth 1 origin ${BOOGIE_VERSION} \
     && git checkout FETCH_HEAD; \
     pip install pytango==${PYTANGO_VERSION} .
+
+RUN pip uninstall -y pip
 
 FROM $BASE_IMAGE
 

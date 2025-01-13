@@ -14,7 +14,7 @@ relying on such an image, please get in touch with either Team Wombat (or email
 image or adding a replacement for your use case.
 
 Note, that the OCI images produced by ska-tango-images have their own version
-number, see :ref:`changelog` for a list of image tags released with version
+number, see :doc:`changelog` for a list of image tags released with version
 0.5.0 of ska-tango-images.
 
 New interface definition for OCI images
@@ -34,8 +34,8 @@ which is not listed in :ref:`image-catalogue`, please contact Team Wombat (or em
 interface.
 
 With the ska-tango-images 0.5.0 release all the existing OCI images have been
-updated to use the images provided by `ska-base-image
-<https://github.com/ska-telescope/ska-base-image>`_.  This was intended to not
+updated to use the images provided by `ska-base-images
+<https://gitlab.com/ska-telescope/ska-base-images>`_.  This was intended to not
 be a breaking change and has not broken the interface defined in the
 :ref:`image-catalogue`.
 
@@ -52,7 +52,7 @@ Dockerfiles using of ska-tango-images-pytango-builder as a build image
 should use ska-python-build as a build image instead. Uses of
 ska-tango-images-pytango-runtime (and ska-tango-images-tango-pytango) should be
 replaced with ska-tango-images-tango-python. The ska-python-build image is
-provided by `ska-base-image <https://github.com/ska-telescope/ska-base-image>`_.
+provided by `ska-base-images <https://gitlab.com/ska-telescope/ska-base-images>`_.
 
 Unlike the old ska-tango-images-pytango-runtime, the new
 ska-tango-images-tango-python does not include PyTango.  Developers are now
