@@ -59,4 +59,4 @@ connecting to a MariaDB instance available at ``localhost:3306`` with username
       --env MYSQL_USER=tango \
       --env MYSQL_PASSWORD=tango \
       |oci-registry|/ska-tango-images-tango-databaseds:|tango-databaseds-imgver| \
-      Databaseds 2 -ORBendPoint giop:tcp::10000
+      2 -ORBendPoint giop:tcp::10000

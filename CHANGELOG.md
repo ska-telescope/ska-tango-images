@@ -7,6 +7,7 @@
 - WOM-601: Update poetry example to actually install the application
 - WOM-601: No longer include `pip` in python runtime image virtual environments
 - WOM-603: Pin numpy version to version 1
+- WOM-606: Fix ska-tango-images-tango-databaseds example
 
 ### Published Images
 
