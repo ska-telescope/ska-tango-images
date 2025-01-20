@@ -19,12 +19,10 @@ ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 RUN mkdir /usr/src/boogie
 WORKDIR /usr/src/boogie
 RUN set -xe; \
-    #git clone --depth=1 --branch=${BOOGIE_VERSION} --recursive -c advice.detachedHead=false \
-    #    https://gitlab.com/nurbldoff/boogie.git /usr/src/boogie; \
-    git init \
-    && git remote add origin https://gitlab.com/nurbldoff/boogie.git \
-    && git fetch --depth 1 origin ${BOOGIE_VERSION} \
-    && git checkout FETCH_HEAD; \
+    git init; \
+    git remote add origin https://gitlab.com/nurbldoff/boogie.git; \
+    git fetch --depth 1 origin ${BOOGIE_VERSION}; \
+    git checkout FETCH_HEAD; \
     pip install numpy==${NUMPY_VERSION} pytango==${PYTANGO_VERSION} .
 
 RUN pip uninstall -y pip
