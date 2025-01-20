@@ -62,7 +62,10 @@ set -ex
 BASE_IMAGE=$(extract-image-arg BASE_IMAGE)
 BUILD_IMAGE=$(extract-image-arg BUILD_IMAGE)
 
-ADDITIONAL_ARGS="--no-cache"
+ADDITIONAL_ARGS=""
+if [ -n "${CI_JOB_ID}" ]; then
+    ADDITIONAL_ARGS+="--no-cache"
+fi
 
 if [ -z "${CI_COMMIT_SHORT_SHA}" ]; then
     export OCI_BUILD_ADDITIONAL_TAGS=local
