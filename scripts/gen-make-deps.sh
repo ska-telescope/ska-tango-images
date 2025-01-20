@@ -24,7 +24,7 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 source $SCRIPT_DIR/lib.sh
 
-set -ex
+set -e
 
 BASE_IMAGE=$(extract-image-arg BASE_IMAGE)
 BUILD_IMAGE=$(extract-image-arg BUILD_IMAGE)
