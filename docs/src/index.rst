@@ -62,6 +62,10 @@ longer provided here.
   catalogue/ska-tango-images-tango-jive
   catalogue/ska-tango-images-tango-pogo
   catalogue/ska-tango-images-tango-rest
+  catalogue/ska-tango-images-hdbpp-timescaledb
+  catalogue/ska-tango-images-hdbpp-cm
+  catalogue/ska-tango-images-hdbpp-es-timescaledb
+  catalogue/ska-tango-images-hdbpp-yaml2archiving
 
 .. toctree::
   :titlesonly:
