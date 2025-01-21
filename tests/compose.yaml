@@ -17,12 +17,12 @@ services:
     healthcheck:
       test: ["CMD", "healthcheck.sh", "--connect"]
       start_period: 10s
-      interval: 10s
-      timeout: 5s
+      start_interval: 500ms
+      timeout: 1s
       retries: 3
 
   tango-dbds:
-    image: registry.gitlab.com/ska-telescope/ska-tango-images/ska-tango-images-tango-databaseds:5.22.1
+    image: registry.gitlab.com/ska-telescope/ska-tango-images/ska-tango-images-tango-databaseds:local
     platform: linux/x86_64
     networks:
       - tango-net
@@ -37,15 +37,49 @@ services:
     depends_on:
       tango-db:
         condition: service_healthy
-    entrypoint: ''
+    entrypoint: Databaseds
     command:
-      - Databaseds
       - "2"
       - -ORBendPoint
       - giop:tcp::10000
     healthcheck:
       test: ["CMD", "/usr/local/bin/tango_admin", "--ping-database"]
       start_period: 10s
-      interval: 10s
-      timeout: 5s
+      start_interval: 500ms
+      timeout: 1s
       retries: 3
+
+  load-tango-config:
+    image: registry.gitlab.com/ska-telescope/ska-tango-images/ska-tango-images-tango-admin:local
+    platform: linux/x86_64
+    network_mode: host
+    environment:
+      - TANGO_HOST=localhost:10000
+    depends_on:
+      tango-dbds:
+        condition: service_healthy
+    command:
+     - "--add-server"
+     - "TangoTest/my_instance"
+     - "TangoTest"
+     - "sys/tg_test/2"
+
+  tango-test:
+    image: registry.gitlab.com/ska-telescope/ska-tango-images/ska-tango-images-tango-test:local
+    platform: linux/x86_64
+    network_mode: host
+    environment:
+      - TANGO_HOST=localhost:10000
+    depends_on:
+      tango-dbds:
+        condition: service_healthy
+      load-tango-config:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/tango_admin", "--ping-device", "sys/tg_test/2"]
+      start_period: 10s
+      start_interval: 500ms
+      timeout: 1s
+      retries: 3
+    command:
+      - "my_instance"
