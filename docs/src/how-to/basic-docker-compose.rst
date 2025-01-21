@@ -189,7 +189,7 @@ server.
    If you have lots of devices to add, or properties to add for your device, it
    might be easier to use :ref:`ska-tango-images-tango-dsconfig` to load the
    configuration from a JSON file, rather than issuing lots of ``tango_admin``
-   commands.
+   commands.  See :ref:`hdbpp-with-docker-compose` for an example of doing this.
 
 ..
   _TODO: Add a how-to for using dsconfig like above.
@@ -252,7 +252,11 @@ containing compose.yaml:
 Any changes made to the Tango database will be lost once the docker container is
 stopped. To have the data persist, either mount a local directory to the
 /var/lib/mysql directory of the tango-db image; or use
-:ref:`ska-tango-images-tango-dsconfig` to load a configuration at startup.
+:ref:`ska-tango-images-tango-dsconfig` to load a configuration at startup.   See
+the `Docker Volumes documentation
+<https://docs.docker.com/engine/storage/volumes/>`_ for details about mounting a
+local directory; or see :ref:`hdbpp-with-docker-compose` for an example of using
+:ref:`ska-tango-images-tango-dsconfig` to load a configuration at startup
 
 ..
   _TODO: Add how-tos for both of the above peristence methods.
