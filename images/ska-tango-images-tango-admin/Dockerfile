@@ -21,7 +21,8 @@ RUN set -xe; \
     cmake --build build  -j$(nproc) --target install
 
 FROM $BASE_IMAGE
-COPY --from=build /usr/local/lib/lib*.so* /usr/local/lib/
+
+COPY --from=build /usr/local/lib /usr/local/lib
 COPY --from=build /usr/local/bin/tango_admin /usr/local/bin/
 
 LABEL int.skao.image.team="Team Wombat" \
