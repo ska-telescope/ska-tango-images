@@ -212,6 +212,54 @@ oci-tests:
   script:
     poetry run make oci-tests
 
+scan_hdbpp-cm:
+  extends: .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-hdbpp-cm
+
+build_hdbpp-cm:
+  extends: .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-hdbpp-cm
+  needs:
+    - build_tango-admin
+    - build_tango-cpp
+
+scan_hdbpp-es-timescaledb:
+  extends: .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-hdbpp-es-timescaledb
+
+build_hdbpp-es-timescaledb:
+  extends: .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-hdbpp-es-timescaledb
+  needs:
+    - build_tango-admin
+    - build_tango-cpp
+
+scan_hdbpp-timescaledb:
+  extends: .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-hdbpp-timescaledb
+
+build_hdbpp-timescaledb:
+  extends: .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-hdbpp-timescaledb
+
+scan_hdbpp-yaml2archiving:
+  extends: .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-hdbpp-yaml2archiving
+
+build_hdbpp-yaml2archiving:
+  extends: .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-hdbpp-yaml2archiving
+  needs:
+    - build_tango-python
+
 scan_tango-admin:
   extends: .container-scanning
   variables:
