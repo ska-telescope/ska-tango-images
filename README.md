@@ -34,6 +34,10 @@ The release tags should match the underlying dependencies used where possible.
         - tango-admin/Dockerfile:FROM {nexus}/tango-base
           - tango-databaseds/Dockerfile:FROM {nexus}/tango-cpp AS build
           - tango-databaseds/Dockerfile:FROM {nexus}/tango-admin
+          - hdbpp-cm/Dockerfile:FROM {nexus}/tango-cpp AS build
+          - hdbpp-cm/Dockerfile:FROM {nexus}/tango-admin
+          - hdbpp-es-timescaledb/Dockerfile:FROM {nexus}/tango-cpp AS build
+          - hdbpp-es-timescaledb/Dockerfile:FROM {nexus}/tango-admin
           - tango-test/Dockerfile:FROM {nexus}/tango-cpp AS build
           - tango-test/Dockerfile:FROM {nexus}/tango-admin
             - tango-java/Dockerfile:FROM {nexus}/ska-build AS build
@@ -50,8 +54,12 @@ The release tags should match the underlying dependencies used where possible.
     - tango-dsconfig/Dockerfile:FROM {nexus}/ska-tango-images-tango-python
     - tango-itango/Dockerfile:FROM {nexus}/ska-build-python AS build
     - tango-itango/Dockerfile:FROM {nexus}/ska-tango-images-tango-python
+    - hdbpp-yaml2archiving/Dockerfile:FROM {nexus}/ska-build-python AS build
+    - hdbpp-yaml2archiving/Dockerfile:FROM {nexus}/ska-tango-images-tango-python
 - mariadb
   - tango-db/Dockerfile:FROM mariadb
+- timescaledb
+  - hdbpp-timescaledb/Dockerfile:FROM timescaledb
 
 ## Building an image
 
