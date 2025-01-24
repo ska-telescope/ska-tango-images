@@ -1,5 +1,19 @@
 # Changelog
 
+## unrelease
+
+### Changes
+
+- WOM-612: Correctly copy library symlinks into ska-tango-images-tango-admin
+- WOM-612: Add HDB++ images
+
+### Added images
+
+- ska-tango-images-hdbpp-cm
+- ska-tango-images-hdbpp-timescaledb
+- ska-tango-images-hdbpp-es-timescaledb
+- ska-tango-images-hdbpp-yaml2archiving
+
 ## [0.5.1]
 
 ### Changes

@@ -15,7 +15,7 @@ Release |version| of ska-tango-images provides the |tango-dsconfig-imgver| tag o
 the ska-tango-images-tango-dsconfig OCI image.
 
 The image uses :ref:`ska-tango-images-tango-python` as a base image and so
-provides the same features, in addition to the ``itango`` entry point.
+provides the same features, in addition to the ``json2tango`` utility.
 
 Included Software
 *****************
