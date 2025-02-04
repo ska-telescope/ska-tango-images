@@ -43,6 +43,7 @@ longer provided here.
   how-to/basic-docker-compose
   how-to/build-cpptango-image
   how-to/build-pytango-image
+  how-to/rest-with-docker-compose
   how-to/hdbpp-with-docker-compose
 
 .. _image-catalogue:
