@@ -23,6 +23,12 @@ RUN set -xe; \
 COPY tango_register_device.sh /usr/local/bin/
 COPY supervisord.conf /etc/supervisor/conf.d/
 
+RUN usermod -a -G ssl-cert tango
+
 USER tango
+
+RUN mkdir -p /var/tmp/TangoRestServer
+
+WORKDIR /home/tango
 
 CMD ["/usr/bin/supervisord", "--configuration", "/etc/supervisor/supervisord.conf"]
