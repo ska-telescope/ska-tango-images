@@ -164,9 +164,10 @@ server.
      load-tango-config:
        image: |oci-registry|/ska-tango-images-tango-admin:|tango-admin-imgver|
        platform: linux/x86_64
-       network_mode: host
+       networks:
+         - tango-net
        environment:
-         - TANGO_HOST=localhost:10000
+         - TANGO_HOST=tango-dbds:10000
        depends_on:
          tango-dbds:
            condition: service_healthy
@@ -203,9 +204,10 @@ server.
      tango-test:
        image: |oci-registry|/ska-tango-images-tango-test:|tango-test-imgver|
        platform: linux/x86_64
-       network_mode: host
+       networks:
+         - tango-net
        environment:
-         - TANGO_HOST=localhost:10000
+         - TANGO_HOST=tango-dbds:10000
        depends_on:
          tango-dbds:
            condition: service_healthy
