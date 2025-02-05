@@ -16,6 +16,7 @@ build:
     post_install:
       - VIRTUAL_ENV=$READTHEDOCS_VIRTUALENV_PATH poetry install --with docs
       - git submodule update --init
+      - VIRTUAL_ENV=$READTHEDOCS_VIRTUALENV_PATH poetry run make docs/gen
 
 # Build documentation in the docs/src/ directory with Sphinx
 sphinx:

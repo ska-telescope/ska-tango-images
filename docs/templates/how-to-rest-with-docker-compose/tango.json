@@ -1,0 +1,18 @@
+{
+    "servers": {
+        "TangoRestServer": {
+            "rest": {
+                "TangoRestServer": {
+                    "sys/rest/0": {
+                        "properties": {
+                            "TANGO_DB": ["tango://tango-dbds:10000/sys/database/2"],
+                            "TOMCAT_PORT": ["8080"],
+                            "TOMCAT_AUTH_METHOD": ["plain"]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

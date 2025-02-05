@@ -1,0 +1,10 @@
+db: "tango-dbds:10000"
+manager: hdb/cm/1
+archiver: hdb/es/1
+
+configuration:
+  - class: TangoTest
+    attributes:
+      short_scalar_ro:
+        polling_period: 3000
+        archive_rel_change: 5
