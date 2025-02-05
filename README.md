@@ -44,7 +44,8 @@ The release tags should match the underlying dependencies used where possible.
             - tango-java/Dockerfile:FROM {nexus}/tango-test
               - tango-jive/Dockerfile:FROM {nexus}/tango-java
               - tango-pogo/Dockerfile:FROM {nexus}/tango-java
-              - tango-rest/Dockerfile:FROM {nexus}/tango-java
+              - tango-rest/Dockerfile:FROM {nexus}/tango-java DEPRECATED
+              - rest-server/Dockerfile:FROM {nexus}/tango-java
 - {nexus}/ska-python / {nexus}/ska-build-python
   - ska-tango-images-tango-python:FROM ska-tango-images-tango-admin AS build
   - ska-tango-images-tango-python:FROM ska-python

@@ -8,6 +8,11 @@ This image contains `TangoRestServer
 <https://github.com/tango-controls/rest-server>`_.  ``TangoRestServer`` is a web
 sever which exposes your Tango control system via a REST API.
 
+.. warning::
+
+   This image is deprecated and will not recieve another release.  Please use
+   :ref:`ska-tango-images-rest-server` instead.
+
 Summary
 -------
 
@@ -17,10 +22,7 @@ the ska-tango-images-tango-rest OCI image.
 The image uses :ref:`ska-tango-images-tango-admin` as a base image and so
 provides the same features, in addition to the ``TangoRestServer`` application.
 
-To maintain backwards compatibility, by default the ska-tango-images-tango-rest
-image uses ``supervisord`` to spawn and manage the ``TangoRestServer``, however,
-the recommended way to run the application is by using ``TangoRestServer``
-directly and having docker manage the lifecycle of the service.
+This image uses supervisord to spawn the ``TangoRestServer``.
 
 Included Software
 *****************
@@ -51,47 +53,46 @@ To launch the "rest" instance of the TangoRestServer device server, connecting t
    :substitutions:
 
    docker run --rm --env TANGO_HOST=localhost:10000 --net=host \
-     --entrypoint TangoRestServer --detach --name tango-rest \
-     |oci-registry|/ska-tango-images-tango-rest:|tango-rest-imgver| \
-     rest
+     --detach --name tango-rest \
+     |oci-registry|/ska-tango-images-tango-rest:|tango-rest-imgver|
 
-This will launch a REST server listening on port 10001, to check that this is
+This will launch a REST server listening on port 8080, to check that this is
 working run the following curl command:
 
 .. code-block:: bash
 
-    URL="http://localhost:10001/tango/rest/rc4/hosts/localhost/10000/devices/sys/rest/0"
+    URL="http://localhost:8080/tango/rest/rc4/hosts/localhost/10000/devices/sys/rest/0"
     curl -s -u "tango-cs:tango" $URL | python -m json.tool
 
 Which should output something like the following:
 
 .. code-block::
 
-  {
-      "name": "sys/rest/0",
-      "info": {
-          "last_exported": "4th February 2025 at 15:42:10",
-          "last_unexported": "?",
-          "name": "sys/rest/0",
-          "ior": <some very long IOR>,
-          "version": "5",
-          "exported": true,
-          "pid": 7,
-          "server": "TangoRestServer/rest",
-          "hostname": "localhost",
-          "classname": "unknown",
-          "is_taco": false
-      },
-      "attributes": "http://localhost:10001/tango/rest/rc4/hosts/localhost/10000/devices/sys/rest/0/attributes",
-      "commands": "http://localhost:10001/tango/rest/rc4/hosts/localhost/10000/devices/sys/rest/0/commands",
-      "pipes": "http://localhost:10001/tango/rest/rc4/hosts/localhost/10000/devices/sys/rest/0/pipes",
-      "properties": "http://localhost:10001/tango/rest/rc4/hosts/localhost/10000/devices/sys/rest/0/properties",
-      "state": "http://localhost:10001/tango/rest/rc4/hosts/localhost/10000/devices/sys/rest/0/state",
-      "_links": {
-          "_self": "http://localhost:10001/tango/rest/rc4/hosts/localhost/10000/devices/sys/rest/0",
-          "_parent": "http://localhost:10001/tango/rest/rc4/hosts/localhost/10000/devices/"
-      }
-  }
+    {
+        "name": "sys/rest/0",
+        "info": {
+            "last_exported": "?",
+            "last_unexported": "?",
+            "name": "sys/rest/0",
+            "ior": "nada",
+            "version": "nada",
+            "exported": false,
+            "pid": 0,
+            "server": "TangoRestServer/rest",
+            "hostname": "nada",
+            "classname": "unknown",
+            "is_taco": false
+        },
+        "attributes": "http://localhost:8080/tango/rest/rc4/hosts/localhost/10000/devices/sys/rest/0/attributes",
+        "commands": "http://localhost:8080/tango/rest/rc4/hosts/localhost/10000/devices/sys/rest/0/commands",
+        "pipes": "http://localhost:8080/tango/rest/rc4/hosts/localhost/10000/devices/sys/rest/0/pipes",
+        "properties": "http://localhost:8080/tango/rest/rc4/hosts/localhost/10000/devices/sys/rest/0/properties",
+        "state": "http://localhost:8080/tango/rest/rc4/hosts/localhost/10000/devices/sys/rest/0/state",
+        "_links": {
+            "_self": "http://localhost:8080/tango/rest/rc4/hosts/localhost/10000/devices/sys/rest/0",
+            "_parent": "http://localhost:8080/tango/rest/rc4/hosts/localhost/10000/devices/"
+        }
+    }
 
 
 The REST server can be stopped with:

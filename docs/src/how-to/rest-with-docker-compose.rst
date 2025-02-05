@@ -112,7 +112,7 @@ instance.  The docker compose file will use
          - "test"
 
      tango-rest:
-       image: |oci-registry|/ska-tango-images-tango-rest:|tango-rest-imgver|
+       image: |oci-registry|/ska-tango-images-rest-server:|rest-server-imgver|
        platform: linux/x86_64
        networks:
          - tango-net
@@ -131,8 +131,6 @@ instance.  The docker compose file will use
          start_interval: 500ms
          timeout: 1s
          retries: 3
-       entrypoint:
-         - "TangoRestServer"
        command:
          - "rest"
 

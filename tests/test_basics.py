@@ -249,6 +249,23 @@ def test_tango_rest():
     assert result.returncode == TANGO_JAVA_DSERVER_INVALID_ARGS
     assert 'usage' in result.stdout.decode()
 
+def test_rest_server():
+    name='ska-tango-images-rest-server'
+    tag = get_tag(name)
+
+    assert tag is not None
+
+    image = f'{OCI_REGISTRY}/{name}:{tag}'
+    check_tango_admin(image)
+    check_orchestration_scripts(image)
+    extra_args = ['--entrypoint=bash']
+    command = ['-c', 'TangoRestServer']
+
+    result = run_in_docker(image, command, extra_args)
+
+    assert result.returncode == TANGO_JAVA_DSERVER_INVALID_ARGS
+    assert 'usage' in result.stdout.decode()
+
 def test_tango_java():
     name='ska-tango-images-tango-java'
     tag = get_tag(name)
