@@ -386,7 +386,7 @@ build_tango-java:
   variables:
     OCI_IMAGE: ska-tango-images-tango-java
   needs:
-    - build_tango-test
+    - build_tango-admin
 
 scan_tango-jive:
   extends: .container-scanning
