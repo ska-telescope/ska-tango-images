@@ -50,7 +50,7 @@ SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
 source $SCRIPT_DIR/lib.sh
 
-set -ex
+set -e
 
 TARGET=$SCRIPT_DIR/../.gitlab-ci.yml
 

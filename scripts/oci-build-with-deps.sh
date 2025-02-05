@@ -57,7 +57,11 @@ get-version()
     ${MAKE} show-version RELEASE_CONTEXT_DIR=images/$1 2>/dev/null | awk -n '!/^make/{print}'
 }
 
-set -ex
+set -e
+
+if [ -n "${CI_JOB_ID}" ]; then
+    set -x
+fi
 
 BASE_IMAGE=$(extract-image-arg BASE_IMAGE)
 BUILD_IMAGE=$(extract-image-arg BUILD_IMAGE)

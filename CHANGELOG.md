@@ -2,10 +2,16 @@
 
 ## unrelease
 
-### Changes
+### Breaking Changes
 
-- WOM-612: Correctly copy library symlinks into ska-tango-images-tango-admin
+- WOM-517: Remove TangoTest from ska-tango-images-tango-java
+
+### Other Changes
+
 - WOM-612: Add HDB++ images
+- WOM-517: Add ska-tango-images-rest-server
+- WOM-612: Fix copying library symlinks into ska-tango-images-tango-admin
+- WOM-517: Fix the supervisord script for ska-tango-images-tango-rest
 
 ### Added images
 
@@ -13,6 +19,11 @@
 - ska-tango-images-hdbpp-timescaledb
 - ska-tango-images-hdbpp-es-timescaledb
 - ska-tango-images-hdbpp-yaml2archiving
+- ska-tango-images-rest-server
+
+### Deprecated images
+
+- ska-tango-images-tango-rest
 
 ## [0.5.1]
 
