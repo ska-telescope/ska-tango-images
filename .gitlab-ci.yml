@@ -260,6 +260,18 @@ build_hdbpp-yaml2archiving:
   needs:
     - build_tango-python
 
+scan_rest-server:
+  extends: .container-scanning
+  variables:
+    OCI_IMAGE: ska-tango-images-rest-server
+
+build_rest-server:
+  extends: .image_builder_template
+  variables:
+    OCI_IMAGE: ska-tango-images-rest-server
+  needs:
+    - build_tango-java
+
 scan_tango-admin:
   extends: .container-scanning
   variables:
