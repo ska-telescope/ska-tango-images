@@ -17,11 +17,9 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-import os
-import sys
-import subprocess
-import re
-from pathlib import Path
+
+import ska_tango_images as sti
+from ska_tango_images import REPO_DIR
 
 # -- General configuration ------------------------------------------------
 
@@ -63,72 +61,22 @@ master_doc = 'index'
 project = 'SKA Tango Images'
 copyright = 'SKAO'
 
-REPO_DIR = os.path.abspath(f"{os.path.dirname(__file__)}/../../")
-
-
-def get_version(dir=None):
-    is_ci_job = "CI_JOB_ID" in os.environ
-    is_rtd_job = "READTHEDOCS" in os.environ
-    is_tag_job = "CI_COMMIT_TAG" in os.environ
-    is_local_job = not is_ci_job and not is_rtd_job
-
-    # Return "local" for images when a local job
-    if is_local_job and dir is not None:
-        return "local"
-
-    # When running on the CI, use the commit tag for images
-    if is_ci_job and not is_tag_job and dir is not None:
-        return os.environ["CI_COMMIT_SHORT_SHA"]
-
-    if dir is None:
-        dir = Path(REPO_DIR)
-
-    with open(dir / '.release') as f:
-        for line in f:
-            if line.startswith('release'):
-                return line.strip().removeprefix('release=')
-
-def get_release():
-    result = subprocess.run(['git', 'describe', '--tags', '--always', 'HEAD'], check=True, capture_output=True)
-
-    return result.stdout.decode()
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
 # built documents.
 #
 # The short X.Y version.
-version = get_version()
+version = sti.get_version()
 # The full version, including alpha/beta/rc tags.
-release = get_release()
+release = sti.get_git_description()
 
 def generate_prolog():
-    if "CI_COMMIT_TAG" in os.environ or "READTHEDOCS" in os.environ:
-        prolog = '.. |oci-registry| replace:: artefact.skao.int\n'
-    else:
-        prolog = '.. |oci-registry| replace:: registry.gitlab.com/ska-telescope/ska-tango-images\n'
+    prolog = ''
 
-    for dockerfile in Path(f'{REPO_DIR}/images').rglob('Dockerfile'):
-        dir = dockerfile.parent
-        name = str(dir).removeprefix(f'{REPO_DIR}/images/ska-tango-images-')
-
-        version = get_version(dir)
-
-        prolog += f'.. |{name}-imgver| replace:: {version}\n'
-
-    # We use this to strip the unneeded information from the tag name
-    version_regex = re.compile("([0-9]+\.[0-9]+(\.[0-9]+)?)")
-    upstream_to_strip = ["DATABASEDS_VERSION", "DATABASEDS_TANGODB_VERSION", "TANGOADMIN_VERSION"]
-    with open(f'{REPO_DIR}/scripts/upstream-versions') as f:
-        for line in f.readlines():
-            if line.startswith("#"):
-                continue
-            name, version = line.strip().split('=')
-            if name in upstream_to_strip:
-                version = version_regex.search(version).group(1)
-            name = name.lower().replace('_', '-')
-
-            prolog += f'.. |{name}| replace:: {version}\n'
+    subs = sti.get_doc_substitutions()
+    for key, value in subs.items():
+        prolog += f'.. |{key}| replace:: {value}\n'
 
     return prolog
 
