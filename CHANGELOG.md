@@ -8,10 +8,12 @@
 
 ### Other Changes
 
-- WOM-612: Add HDB++ images
 - WOM-517: Add ska-tango-images-rest-server
-- WOM-612: Fix copying library symlinks into ska-tango-images-tango-admin
 - WOM-517: Fix the supervisord script for ska-tango-images-tango-rest
+- WOM-567: Align TangoDatabase version for ska-tango-images-tango-db and
+ska-tango-images-tango-dbds, moving to InnoDB backend.
+- WOM-612: Add HDB++ images
+- WOM-612: Fix copying library symlinks into ska-tango-images-tango-admin
 
 ### Added images
 
