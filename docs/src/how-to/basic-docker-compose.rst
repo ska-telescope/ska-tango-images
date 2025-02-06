@@ -166,7 +166,7 @@ server.
        healthcheck:
          test: ["CMD", "/usr/local/bin/tango_admin", "--ping-device", "sys/tg_test/2"]
          start_period: 10s
-         start_interval: 500ms
+         interval: 500ms
          timeout: 1s
          retries: 3
        command:
