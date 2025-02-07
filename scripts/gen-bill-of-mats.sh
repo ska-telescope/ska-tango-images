@@ -21,6 +21,11 @@ source $SCRIPT_DIR/upstream-versions
 ZEROMQ_NAME=ZeroMQ
 CPPZMQ_NAME=cppZMQ
 OMNIORB_NAME=omniORB
+ABSEIL_NAME=abseil
+PROTOBUF_NAME=protobuf
+GRPC_NAME=gRPC
+OTEL_NAME=opentelemetry-cpp
+OTEL_PROTO_NAME=opentelemetry-proto
 TANGOIDL_NAME=tango_idl
 CPPTANGO_NAME=cppTango
 TANGOADMIN_NAME=tango_admin
@@ -28,7 +33,6 @@ DATABASEDS_NAME=TangoDatabase
 DATABASEDS_TANGODB_NAME="SQL DB from TangoDatabase"
 TANGOTEST_NAME=TangoTest
 PYTANGO_NAME=PyTango
-NUMPY_NAME=NumPy
 DSCONFIG_NAME=dsconfig
 ITANGO_NAME=itango
 BOOGIE_NAME="Boogie commit"
@@ -39,6 +43,13 @@ SKABUILD_NAME=ska-build
 SKAPYTHON_NAME=ska-python
 SKABUILDPYTHON_NAME=ska-build-python
 MARIADB_NAME="MariaDB docker image"
+HDBPP_CM_NAME="hdb++cm-srv"
+HDBPP_ES_NAME="hdb++es-srv"
+LIBHDBPP_NAME="libhdbpp"
+LIBHDBPP_TIMESCALE_NAME="libhdbpp-timescale"
+HDBPP_TIMESCALE_PROJECT_NAME="HDB++ TimescaleDb project commit"
+TIMESCALEDB_NAME="TimescaleDb"
+YAML2ARCHIVING_NAME="yaml2archiving"
 
 # Recursively prints the upstream versions for the image and its base/build images
 function print-upstream-versions {
