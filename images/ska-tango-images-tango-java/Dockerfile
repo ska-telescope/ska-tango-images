@@ -13,7 +13,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG TANGO_SOURCE_DISTRIBUTION_VERSION
 ARG LOG4J_VERSION
 
-ENV TSD_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/tango-${TANGO_SOURCE_DISTRIBUTION_VERSION}.tar.gz
+ENV TSD_DOWNLOAD_URL=https://gitlab.com/api/v4/projects/24125890/packages/generic/TangoSourceDistribution/${TANGO_SOURCE_DISTRIBUTION_VERSION}/tango-${TANGO_SOURCE_DISTRIBUTION_VERSION}.tar.gz
 ENV LOG4J_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/log4j-${LOG4J_VERSION}.tar.gz
 
 RUN set -xe; \
