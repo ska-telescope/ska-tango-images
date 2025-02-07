@@ -164,7 +164,7 @@ server.
          load-tango-config:
            condition: service_completed_successfully
        healthcheck:
-         test: ["CMD", "/usr/local/bin/tango_admin", "--ping-device", "sys/tg_test/2"]
+         test: ["CMD", "sh", "-c", "/usr/local/bin/tango_admin --ping-device sys/tg_test/2 || exit 1"]
          start_period: 10s
          interval: 500ms
          timeout: 1s

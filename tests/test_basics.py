@@ -61,7 +61,9 @@ def check_tango_admin(image: str) -> None:
 
     result = run_in_docker(image, command, extra_args)
 
-    assert result.returncode == 0
+    # tango_admin 1.24 incorrectly exits with 234 when passed --help
+    # See tango_admin#23.
+    assert result.returncode == 234
 
 
 def check_orchestration_scripts(image: str) -> None:
@@ -147,10 +149,10 @@ def test_tango_db():
                 '--env=MYSQL_PASSWORD=tango',
                 '--env=MYSQL_USER=tango',
                 '--env=MYSQL_DATABASE=tango',
-                '--health-cmd=tango_admin --ping-database',
+                '--health-cmd=sh -c "tango_admin --ping-database || exit 1"',
                 '--health-start-period=10s',
                 '--health-interval=0.5s',
-                '--health-timeout=1s',
+                '--health-timeout=3s',
                 '--health-retries=3']
         command = ["2", "-ORBendPoint", "giop:tcp::10000"]
         result = run_in_docker(image, command, extra_args)
