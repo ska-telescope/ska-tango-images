@@ -26,6 +26,8 @@ Included Software
      - |zeromq-version|
    * - omniORB
      - |omniorb-version|
+   * - opentelemetry-cpp
+     - |otel-version|
 
 Usage
 -----
