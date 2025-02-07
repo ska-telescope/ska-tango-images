@@ -20,7 +20,7 @@ RUN set -xe; \
         -DCMAKE_INSTALL_PREFIX=/usr/local/ -DCMAKE_INSTALL_RPATH=/usr/local/lib; \
     cmake --build build  -j$(nproc) --target install
 
-FROM $BASE_IMAGE
+FROM $BASE_IMAGE AS final
 
 COPY --from=build /usr/local/lib /usr/local/lib
 COPY --from=build /usr/local/bin/tango_admin /usr/local/bin/

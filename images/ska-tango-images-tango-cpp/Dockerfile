@@ -190,7 +190,7 @@ RUN set -xe; \
         -DCMAKE_INSTALL_PREFIX=/usr/local -DCMAKE_INSTALL_RPATH=/usr/local/lib; \
     cmake --build /usr/src/tango/build -j$(nproc) --target install
 
-FROM build_system_deps
+FROM build_system_deps AS final
 ARG DEBIAN_FRONTEND=noninteractive
 
 LABEL int.skao.image.team="Team Wombat" \

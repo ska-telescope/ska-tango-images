@@ -22,7 +22,7 @@ RUN set -xe; \
     cmake --build build -j$(nproc) --target install
 
 
-FROM $BASE_IMAGE
+FROM $BASE_IMAGE AS final
 COPY --from=build /usr/local/bin/Databaseds /usr/local/bin/
 
 LABEL int.skao.image.team="Team Wombat" \

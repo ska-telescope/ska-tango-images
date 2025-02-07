@@ -42,7 +42,7 @@ RUN set -xe; \
     tar zxvf log4j.tar.gz; \
     mv apache-log4j-1.2.17/log4j-1.2.17.jar /usr/local/share/java/log4j-1.2.17.jar;
 
-FROM $BASE_IMAGE
+FROM $BASE_IMAGE AS final
 
 LABEL int.skao.image.team="Team Wombat" \
       int.skao.image.authors="oci-support@skao.int" \

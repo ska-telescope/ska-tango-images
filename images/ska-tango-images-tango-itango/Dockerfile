@@ -19,7 +19,7 @@ RUN python3 -m pip install --no-cache-dir pytango==${PYTANGO_VERSION} numpy==${N
 
 RUN pip uninstall -y pip
 
-FROM $BASE_IMAGE
+FROM $BASE_IMAGE AS final
 
 ENV VIRTUAL_ENV=/app
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"

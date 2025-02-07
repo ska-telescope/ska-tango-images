@@ -27,7 +27,7 @@ RUN set -xe; \
 
 RUN pip uninstall -y pip
 
-FROM $BASE_IMAGE
+FROM $BASE_IMAGE AS final
 
 ENV VIRTUAL_ENV=/app
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"

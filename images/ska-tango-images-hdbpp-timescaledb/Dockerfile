@@ -16,7 +16,7 @@ RUN set -xe; \
     git fetch --depth 1 origin ${HDBPP_TIMESCALE_PROJECT_VERSION}; \
     git checkout FETCH_HEAD
 
-FROM $BASE_IMAGE
+FROM $BASE_IMAGE AS final
 
 USER root
 

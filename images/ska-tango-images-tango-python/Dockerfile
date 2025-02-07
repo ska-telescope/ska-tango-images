@@ -4,7 +4,7 @@ ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-admin:local"
 ARG BASE_IMAGE="artefact.skao.int/ska-python:${SKAPYTHON_VERSION}"
 FROM $BUILD_IMAGE AS build
 
-FROM $BASE_IMAGE
+FROM $BASE_IMAGE AS final
 ARG DEBIAN_FRONTEND=noninteractive
 
 LABEL int.skao.image.team="Team Wombat" \
