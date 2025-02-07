@@ -40,7 +40,7 @@ WORKDIR /usr/java
 RUN set -xe; \
     wget --no-check-certificate "$LOG4J_DOWNLOAD_URL" -O log4j.tar.gz; \
     tar zxvf log4j.tar.gz; \
-    mv apache-log4j-1.2.17/log4j-1.2.17.jar /usr/local/share/java/log4j-1.2.17.jar;
+    mv apache-log4j-1.2.17/log4j-1.2.17.jar /usr/local/share/java/log4j.jar;
 
 FROM $BASE_IMAGE AS final
 
