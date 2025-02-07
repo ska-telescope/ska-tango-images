@@ -1,6 +1,8 @@
 ARG CAR_OCI_REGISTRY_HOST
 ARG SKABASE_VERSION
+ARG BUILD_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-cpp:local"
 ARG BASE_IMAGE="artefact.skao.int/ska-base:${SKABASE_VERSION}"
+FROM $BUILD_IMAGE AS build
 
 FROM $BASE_IMAGE
 ARG DEBIAN_FRONTEND=noninteractive
@@ -12,11 +14,12 @@ LABEL int.skao.image.team="Team Wombat" \
       description="Base image for building TANGO images" \
       license="BSD-3-Clause"
 
+COPY --from=build /runtime_deps.txt /runtime_deps.txt
+
 RUN set -xe; \
     apt-get update; \
-    apt-get install -y --no-install-recommends \
-        sudo \
-        libjpeg8; \
+    apt-get install -y --no-install-recommends sudo; \
+    xargs apt-get install -y --no-install-recommends < /runtime_deps.txt; \
     rm -rf /var/lib/apt/lists/*
 
 COPY wait-for-it.sh /usr/local/bin/wait-for-it.sh

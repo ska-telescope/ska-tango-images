@@ -9,6 +9,7 @@ RUN set -xe; \
     apt-get install -y --no-install-recommends \
         libmariadbclient-dev-compat \
         cmake \
+        pkg-config \
         git
 
 RUN mkdir /usr/src/databaseds

@@ -8,6 +8,7 @@ RUN set -xe; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
         cmake \
+        pkg-config \
         git
 
 RUN mkdir /usr/src/TangoTest
