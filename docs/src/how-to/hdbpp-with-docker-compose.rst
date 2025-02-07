@@ -24,173 +24,11 @@ instance.  The docker compose file will use
 :ref:`ska-tango-images-tango-dsconfig` to configure the Tango database and
 :ref:`ska-tango-images-hdbpp-yaml2archiving` to configure the HDB++ archiver.
 
-- Step 1: Save the following as ``compose.yaml``:
+- Step 1: Save the following as :download:`compose.yaml
+  <../../gen/how-to-hdbpp-with-docker-compose/compose.yaml>`:
 
-.. code-block:: yaml
-   :substitutions:
-
-   networks:
-     tango-net:
-       name: tango-net
-       driver: bridge
-
-   services:
-     tango-db:
-       image: |oci-registry|/ska-tango-images-tango-db:|tango-db-imgver|
-       platform: linux/x86_64
-       networks:
-         - tango-net
-       environment:
-         - MARIADB_ROOT_PASSWORD=root
-         - MARIADB_DATABASE=tango
-         - MARIADB_USER=tango
-         - MARIADB_PASSWORD=tango
-       healthcheck:
-         test: ["CMD", "healthcheck.sh", "--connect"]
-         start_period: 10s
-         start_interval: 500ms
-         timeout: 1s
-         retries: 3
-
-     tango-dbds:
-       image: |oci-registry|/ska-tango-images-tango-databaseds:|tango-databaseds-imgver|
-       platform: linux/x86_64
-       networks:
-         - tango-net
-       ports:
-         - "10000:10000"
-       environment:
-         - TANGO_HOST=localhost:10000
-         - MYSQL_HOST=tango-db:3306
-         - MYSQL_USER=tango
-         - MYSQL_PASSWORD=tango
-         - MYSQL_DATABASE=tango
-       depends_on:
-         tango-db:
-           condition: service_healthy
-       entrypoint: Databaseds
-       command:
-         - "2"
-         - -ORBendPoint
-         - giop:tcp::10000
-       healthcheck:
-         test: ["CMD", "/usr/local/bin/tango_admin", "--ping-database"]
-         start_period: 10s
-         start_interval: 500ms
-         timeout: 1s
-         retries: 3
-
-     load-tango-config:
-       image: |oci-registry|/ska-tango-images-tango-dsconfig:|tango-dsconfig-imgver|
-       platform: linux/x86_64
-       networks:
-         - tango-net
-       environment:
-         - TANGO_HOST=tango-dbds:10000
-       volumes:
-         - ./:/mnt:z
-       depends_on:
-         tango-dbds:
-           condition: service_healthy
-       entrypoint: "bash"
-       command:
-         - "-c"
-         - "json2tango --write /mnt/tango.json || [ $$? -eq 2 ]"
-
-     archive-db:
-       image: |oci-registry|/ska-tango-images-hdbpp-timescaledb:|hdbpp-timescaledb-imgver|
-       platform: linux/x86_64
-       networks:
-         - tango-net
-       ports:
-         - "5432:5432"
-       environment:
-         - POSTGRES_PASSWORD=tango
-       healthcheck:
-         test: ["CMD", "pg_isready"]
-         start_period: 10s
-         start_interval: 500ms
-         timeout: 1s
-         retries: 3
-
-     archive-cm:
-       image: |oci-registry|/ska-tango-images-hdbpp-cm:|hdbpp-cm-imgver|
-       platform: linux/x86_64
-       networks:
-         - tango-net
-       environment:
-         - TANGO_HOST=tango-dbds:10000
-       depends_on:
-         tango-dbds:
-           condition: service_healthy
-         load-tango-config:
-           condition: service_completed_successfully
-       healthcheck:
-         test: ["CMD", "/usr/local/bin/tango_admin", "--ping-device", "hdb/cm/1"]
-         start_period: 10s
-         start_interval: 500ms
-         timeout: 1s
-         retries: 3
-       command:
-         - "1"
- 
-     archive-es:
-       image: |oci-registry|/ska-tango-images-hdbpp-es-timescaledb:|hdbpp-es-timescaledb-imgver|
-       platform: linux/x86_64
-       networks:
-         - tango-net
-       environment:
-         - TANGO_HOST=tango-dbds:10000
-       depends_on:
-         tango-dbds:
-           condition: service_healthy
-         load-tango-config:
-           condition: service_completed_successfully
-       healthcheck:
-         test: ["CMD", "/usr/local/bin/tango_admin", "--ping-device", "hdb/es/1"]
-         start_period: 10s
-         start_interval: 500ms
-         timeout: 1s
-         retries: 3
-       command:
-         - "1"
-
-     load-archive-config:
-       image: |oci-registry|/ska-tango-images-hdbpp-yaml2archiving:|hdbpp-yaml2archiving-imgver|
-       platform: linux/x86_64
-       networks:
-         - tango-net
-       environment:
-         - TANGO_HOST=tango-dbds:10000
-       volumes:
-         - ./:/mnt:z
-       depends_on:
-         archive-cm:
-           condition: service_healthy
-         archive-es:
-           condition: service_healthy
-       command:
-         - "--write"
-         - "/mnt/archive.yaml"
-
-     tango-test:
-       image: |oci-registry|/ska-tango-images-tango-test:|tango-test-imgver|
-       platform: linux/x86_64
-       networks:
-         - tango-net
-       environment:
-         - TANGO_HOST=tango-dbds:10000
-       depends_on:
-         tango-dbds:
-           condition: service_healthy
-       healthcheck:
-         test: ["CMD", "/usr/local/bin/tango_admin", "--ping-device", "sys/tg_test/1"]
-         start_period: 10s
-         start_interval: 500ms
-         timeout: 1s
-         retries: 3
-       command:
-         - "test"
+.. literalinclude :: ../../gen/how-to-hdbpp-with-docker-compose/compose.yaml
+   :language: yaml
 
 .. tip::
 
@@ -203,40 +41,11 @@ instance.  The docker compose file will use
 
 - Step 2: Create the configuration file for
   :ref:`ska-tango-images-tango-dsconfig`  by saving the following file as
-  ``tango.json`` in the same directory as your ``compose.yaml``:
+  :download:`tango.json <../../gen/how-to-hdbpp-with-docker-compose/tango.json>`:
+  in the same directory as your ``compose.yaml``:
 
-.. code-block:: json
-
-  {
-      "servers": {
-          "hdb++cm-srv": {
-              "1": {
-                  "HdbConfigurationManager": {
-                      "hdb/cm/1": {
-                          "properties": {
-                              "ArchiverList": ["hdb/es/1"],
-                              "MaxSearchSize": ["1000"]
-                          }
-                      }
-                  }
-              }
-          },
-          "hdb++es-srv": {
-              "1": {
-                  "HdbEventSubscriber": {
-                      "hdb/es/1": {
-                          "properties": {
-                              "LibConfiguration": [
-                                  "libname=libhdb++timescale.so",
-                                  "connect_string=user=postgres password=tango host=archive-db port=5432 dbname=hdb"
-                              ]
-                          }
-                      }
-                  }
-              }
-          }
-      }
-  }
+.. literalinclude :: ../../gen/how-to-hdbpp-with-docker-compose/tango.json
+   :language: json
 
 .. note ::
 
@@ -245,20 +54,11 @@ instance.  The docker compose file will use
 
 - Step 3: Create the configuration file for
   :ref:`ska-tango-images-hdbpp-yaml2archiving` by saving the following file as
-  ``archive.yaml`` in the same directory as your ``compose.yaml``:
+  :download:`archive.yaml <../../gen/how-to-hdbpp-with-docker-compose/archive.yaml>`:
+  in the same directory as your ``compose.yaml``:
 
-.. code-block:: yaml
-
-    db: "tango-dbds:10000"
-    manager: hdb/cm/1
-    archiver: hdb/es/1
-
-    configuration:
-      - class: TangoTest
-        attributes:
-          short_scalar_ro:
-            polling_period: 3000
-            archive_rel_change: 5
+.. literalinclude :: ../../gen/how-to-hdbpp-with-docker-compose/archive.yaml
+   :language: yaml
 
 .. warning::
 

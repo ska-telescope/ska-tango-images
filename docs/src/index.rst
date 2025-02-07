@@ -43,6 +43,7 @@ longer provided here.
   how-to/basic-docker-compose
   how-to/build-cpptango-image
   how-to/build-pytango-image
+  how-to/rest-with-docker-compose
   how-to/hdbpp-with-docker-compose
 
 .. _image-catalogue:
@@ -63,6 +64,7 @@ longer provided here.
   catalogue/ska-tango-images-tango-jive
   catalogue/ska-tango-images-tango-pogo
   catalogue/ska-tango-images-tango-rest
+  catalogue/ska-tango-images-rest-server
   catalogue/ska-tango-images-hdbpp-timescaledb
   catalogue/ska-tango-images-hdbpp-cm
   catalogue/ska-tango-images-hdbpp-es-timescaledb

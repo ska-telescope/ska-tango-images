@@ -1,0 +1,30 @@
+{
+    "servers": {
+        "hdb++cm-srv": {
+            "1": {
+                "HdbConfigurationManager": {
+                    "hdb/cm/1": {
+                        "properties": {
+                            "ArchiverList": ["hdb/es/1"],
+                            "MaxSearchSize": ["1000"]
+                        }
+                    }
+                }
+            }
+        },
+        "hdb++es-srv": {
+            "1": {
+                "HdbEventSubscriber": {
+                    "hdb/es/1": {
+                        "properties": {
+                            "LibConfiguration": [
+                                "libname=libhdb++timescale.so",
+                                "connect_string=user=postgres password=tango host=archive-db port=5432 dbname=hdb"
+                            ]
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

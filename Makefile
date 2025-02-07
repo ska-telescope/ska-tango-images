@@ -40,6 +40,7 @@ all: $(ALL_BUILD_JOBS)
 .PHONY: clean
 clean:
 	@rm -rf build
+	@rm -rf docs/gen
 
 build/receipts/%: scripts/oci-build-with-deps.sh scripts/upstream-versions
 	scripts/oci-build-with-deps.sh $(OCI_IMAGE)
@@ -84,3 +85,23 @@ oci-tests:
 .gitlab-ci.yml: scripts/gen-gitlab-ci.sh scripts/gitlab-ci.yml.head
 	@scripts/gen-gitlab-ci.sh
 
+docs/gen: scripts/gen-doc-from-templates.py docs/templates/*
+	@rm -rf docs/gen
+	@scripts/gen-doc-from-templates.py
+
+# The docs-build-rtd CI jobs fails to build the templates because it does not
+# install ska_tango_images (as it shouldn't need to, it is making web requests
+# to READTHEDOCS).  This ifneq avoids the generator for rtd builds and lets the
+# CI job pass.
+#
+# We have to use this ifneq here because the .make/docs.mk file is doing some
+# weird stuff to get `make docs-build html` to work.  Whatever is passed as the
+# second argument ends up in the DOCS_TARGET_ARGS make variable, so this
+# basically turns off the docs/gen for `make docs-build rtd` which is what the
+# CI runs.
+#
+# Really `make docs-build rtd` should be a separate target rather than hooking
+# into this magic to get `make docs-build html` work.
+ifneq (rtd,$(DOCS_TARGET_ARGS))
+docs-do-build: docs/gen
+endif

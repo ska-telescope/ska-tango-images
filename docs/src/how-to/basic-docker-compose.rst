@@ -16,61 +16,11 @@ file to start additional device servers.
 Starting a basic Tango environment
 ----------------------------------
 
-- Step 1: Save the following as ``compose.yaml``:
+- Step 1: Save the following as :download:`compose.yaml
+  <../../gen/how-to-basic-docker-compose/compose.yaml>`:
 
-.. code-block:: yaml
-   :substitutions:
-
-   networks:
-     tango-net:
-       name: tango-net
-       driver: bridge
-
-   services:
-     tango-db:
-       image: |oci-registry|/ska-tango-images-tango-db:|tango-db-imgver|
-       platform: linux/x86_64
-       networks:
-         - tango-net
-       environment:
-         - MARIADB_ROOT_PASSWORD=root
-         - MARIADB_DATABASE=tango
-         - MARIADB_USER=tango
-         - MARIADB_PASSWORD=tango
-       healthcheck:
-         test: ["CMD", "healthcheck.sh", "--connect"]
-         start_period: 10s
-         start_interval: 500ms
-         timeout: 1s
-         retries: 3
-
-     tango-dbds:
-       image: |oci-registry|/ska-tango-images-tango-databaseds:|tango-databaseds-imgver|
-       platform: linux/x86_64
-       networks:
-         - tango-net
-       ports:
-         - "10000:10000"
-       environment:
-         - TANGO_HOST=localhost:10000
-         - MYSQL_HOST=tango-db:3306
-         - MYSQL_USER=tango
-         - MYSQL_PASSWORD=tango
-         - MYSQL_DATABASE=tango
-       depends_on:
-         tango-db:
-           condition: service_healthy
-       entrypoint: Databaseds
-       command:
-         - "2"
-         - -ORBendPoint
-         - giop:tcp::10000
-       healthcheck:
-         test: ["CMD", "/usr/local/bin/tango_admin", "--ping-database"]
-         start_period: 10s
-         start_interval: 500ms
-         timeout: 1s
-         retries: 3
+.. literalinclude:: ../../gen/how-to-basic-docker-compose/compose.yaml
+   :language: yaml
 
 .. note::
 
@@ -164,9 +114,10 @@ server.
      load-tango-config:
        image: |oci-registry|/ska-tango-images-tango-admin:|tango-admin-imgver|
        platform: linux/x86_64
-       network_mode: host
+       networks:
+         - tango-net
        environment:
-         - TANGO_HOST=localhost:10000
+         - TANGO_HOST=tango-dbds:10000
        depends_on:
          tango-dbds:
            condition: service_healthy
@@ -203,9 +154,10 @@ server.
      tango-test:
        image: |oci-registry|/ska-tango-images-tango-test:|tango-test-imgver|
        platform: linux/x86_64
-       network_mode: host
+       networks:
+         - tango-net
        environment:
-         - TANGO_HOST=localhost:10000
+         - TANGO_HOST=tango-dbds:10000
        depends_on:
          tango-dbds:
            condition: service_healthy
@@ -214,7 +166,7 @@ server.
        healthcheck:
          test: ["CMD", "/usr/local/bin/tango_admin", "--ping-device", "sys/tg_test/2"]
          start_period: 10s
-         start_interval: 500ms
+         interval: 500ms
          timeout: 1s
          retries: 3
        command:

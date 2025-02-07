@@ -63,14 +63,6 @@ def check_tango_admin(image: str) -> None:
     assert result.returncode == 0
 
 
-def check_tango_test(image: str) -> None:
-    command = ['TangoTest', '-nodb']
-
-    result = run_in_docker(image, command)
-
-    assert result.returncode == TANGO_CPP_DSERVER_INVALID_ARGS
-    assert 'usage' in result.stderr.decode()
-
 def check_orchestration_scripts(image: str) -> None:
     command = ['-h']
     extra_args = ['--entrypoint', 'retry']
@@ -230,8 +222,14 @@ def test_tango_test():
 
     image = f'{OCI_REGISTRY}/{name}:{tag}'
     check_tango_admin(image)
-    check_tango_test(image)
     check_orchestration_scripts(image)
+
+    command = ['TangoTest', '-nodb']
+
+    result = run_in_docker(image, command)
+
+    assert result.returncode == TANGO_CPP_DSERVER_INVALID_ARGS
+    assert 'usage' in result.stderr.decode()
 
 def test_tango_rest():
     name='ska-tango-images-tango-rest'
@@ -249,6 +247,23 @@ def test_tango_rest():
     assert result.returncode == TANGO_JAVA_DSERVER_INVALID_ARGS
     assert 'usage' in result.stdout.decode()
 
+def test_rest_server():
+    name='ska-tango-images-rest-server'
+    tag = get_tag(name)
+
+    assert tag is not None
+
+    image = f'{OCI_REGISTRY}/{name}:{tag}'
+    check_tango_admin(image)
+    check_orchestration_scripts(image)
+    extra_args = ['--entrypoint=bash']
+    command = ['-c', 'TangoRestServer']
+
+    result = run_in_docker(image, command, extra_args)
+
+    assert result.returncode == TANGO_JAVA_DSERVER_INVALID_ARGS
+    assert 'usage' in result.stdout.decode()
+
 def test_tango_java():
     name='ska-tango-images-tango-java'
     tag = get_tag(name)
@@ -260,7 +275,6 @@ def test_tango_java():
 
     image = f'{OCI_REGISTRY}/{name}:{tag}'
     check_tango_admin(image)
-    check_tango_test(image)
     check_orchestration_scripts(image)
 
 def test_tango_jive():

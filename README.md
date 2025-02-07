@@ -40,11 +40,12 @@ The release tags should match the underlying dependencies used where possible.
           - hdbpp-es-timescaledb/Dockerfile:FROM {nexus}/tango-admin
           - tango-test/Dockerfile:FROM {nexus}/tango-cpp AS build
           - tango-test/Dockerfile:FROM {nexus}/tango-admin
-            - tango-java/Dockerfile:FROM {nexus}/ska-build AS build
-            - tango-java/Dockerfile:FROM {nexus}/tango-test
-              - tango-jive/Dockerfile:FROM {nexus}/tango-java
-              - tango-pogo/Dockerfile:FROM {nexus}/tango-java
-              - tango-rest/Dockerfile:FROM {nexus}/tango-java
+          - tango-java/Dockerfile:FROM {nexus}/ska-build AS build
+          - tango-java/Dockerfile:FROM {nexus}/tango-admin
+            - tango-jive/Dockerfile:FROM {nexus}/tango-java
+            - tango-pogo/Dockerfile:FROM {nexus}/tango-java
+            - tango-rest/Dockerfile:FROM {nexus}/tango-java DEPRECATED
+            - rest-server/Dockerfile:FROM {nexus}/tango-java
 - {nexus}/ska-python / {nexus}/ska-build-python
   - ska-tango-images-tango-python:FROM ska-tango-images-tango-admin AS build
   - ska-tango-images-tango-python:FROM ska-python
@@ -180,8 +181,10 @@ python -m http.server
 The documentation will then be available at `0.0.0.0:8000` and any usage
 examples can be copied from there and they should use the locally built images.
 
-Some of the examples require a `TANGO_HOST` to run.  There is a docker compose
-file at test/compose.yaml which will spin up a `TANGO_HOST` at
+### Catalogue examples
+
+Some of the examples in the catalogue require a `TANGO_HOST` to run.  There is a
+docker compose file at test/compose.yaml which will spin up a `TANGO_HOST` at
 `localhost:10000`.  To use it run the following from the test directory:
 
 ```shell
@@ -194,3 +197,16 @@ reference the `CI_COMMIT_SHORT_SHA` version of the images, meaning the examples
 will use the version of the images built by that job.  To spin-up a `TANGO_HOST`
 using the images built by the CI, you can copy the compose.yaml from the "How to
 spin-up a Tango environment using Docker compose" page.
+
+### Docker compose examples
+
+The docker compose examples are generated in docs/gen with the following:
+
+```shell
+make docs/gen
+```
+Each of these examples can be run up by navigating to the directory and running
+
+```shell
+docker compose up
+```

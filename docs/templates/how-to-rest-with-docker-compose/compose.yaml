@@ -5,7 +5,7 @@ networks:
 
 services:
   tango-db:
-    image: registry.gitlab.com/ska-telescope/ska-tango-images/ska-tango-images-tango-db:local
+    image: |oci-registry|/ska-tango-images-tango-db:|tango-db-imgver|
     platform: linux/x86_64
     networks:
       - tango-net
@@ -22,7 +22,7 @@ services:
       retries: 3
 
   tango-dbds:
-    image: registry.gitlab.com/ska-telescope/ska-tango-images/ska-tango-images-tango-databaseds:local
+    image: |oci-registry|/ska-tango-images-tango-databaseds:|tango-databaseds-imgver|
     platform: linux/x86_64
     networks:
       - tango-net
@@ -50,7 +50,24 @@ services:
       retries: 3
 
   load-tango-config:
-    image: registry.gitlab.com/ska-telescope/ska-tango-images/ska-tango-images-tango-admin:local
+    image: |oci-registry|/ska-tango-images-tango-dsconfig:|tango-dsconfig-imgver|
+    platform: linux/x86_64
+    networks:
+      - tango-net
+    environment:
+      - TANGO_HOST=tango-dbds:10000
+    volumes:
+      - ./:/mnt:z
+    depends_on:
+      tango-dbds:
+        condition: service_healthy
+    entrypoint: "bash"
+    command:
+      - "-c"
+      - "json2tango --write /mnt/tango.json || [ $$? -eq 2 ]"
+
+  tango-test:
+    image: |oci-registry|/ska-tango-images-tango-test:|tango-test-imgver|
     platform: linux/x86_64
     networks:
       - tango-net
@@ -59,29 +76,34 @@ services:
     depends_on:
       tango-dbds:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/tango_admin", "--ping-device", "sys/tg_test/1"]
+      start_period: 10s
+      start_interval: 500ms
+      timeout: 1s
+      retries: 3
     command:
-     - "--add-server"
-     - "TangoTest/my_instance"
-     - "TangoTest"
-     - "sys/tg_test/2"
+      - "test"
 
-  tango-test:
-    image: registry.gitlab.com/ska-telescope/ska-tango-images/ska-tango-images-tango-test:local
+  tango-rest:
+    image: |oci-registry|/ska-tango-images-rest-server:|rest-server-imgver|
     platform: linux/x86_64
     networks:
       - tango-net
     environment:
       - TANGO_HOST=tango-dbds:10000
+    ports:
+      - "8080:8080"
     depends_on:
       tango-dbds:
         condition: service_healthy
       load-tango-config:
         condition: service_completed_successfully
     healthcheck:
-      test: ["CMD", "/usr/local/bin/tango_admin", "--ping-device", "sys/tg_test/2"]
+      test: ["CMD", "/usr/local/bin/tango_admin", "--ping-device", "sys/rest/0"]
       start_period: 10s
       start_interval: 500ms
       timeout: 1s
       retries: 3
     command:
-      - "my_instance"
+      - "rest"
