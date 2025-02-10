@@ -15,6 +15,7 @@ LABEL int.skao.image.team="Team Wombat" \
       license="BSD-3-Clause"
 
 COPY --from=build /runtime_deps.txt /runtime_deps.txt
+COPY --from=build /usr/local/lib /usr/local/lib
 
 RUN set -xe; \
     apt-get update; \

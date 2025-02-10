@@ -54,19 +54,6 @@ build your C++ application, this can be achieved by passing
 ``-DCMAKE_INSTALL_PREFIX=/usr/local/ -DCMAKE_INSTALL_RPATH=/usr/local/lib`` to
 ``cmake`` at configure time.
 
-.. warning::
-
-   :ref:`ska-tango-images-tango-base` does not include ``libtango.so`` or any of
-   its dependencies.  In addition to your Tango application, these must be
-   copied into the runtime image with the following line in your Dockerfile.
-
-   .. code-block::
-
-      COPY --from=build /usr/local/lib /usr/local/lib
-
-   Note here we copying the entire directory so that symlinks are correctly
-   copied.
-
 Example
 -------
 
@@ -97,7 +84,6 @@ The following Dockerfile builds a `TangoTest
        make  -j$(nproc) -Cbuild install
 
    FROM $BASE_IMAGE
-   COPY --from=build /usr/local/lib /usr/local/lib
    COPY --from=build /usr/local/bin/TangoTest /usr/local/bin
 
    LABEL int.skao.image.team="Team Example" \

@@ -18,8 +18,26 @@ This image is based on the ska-base:|skabase-version| image.
 The image provides:
 
 - system dependencies required to run cppTango-based applications
+- cppTango and its dependencies built by :ref:`ska-tango-images-tango-cpp`
 - a "tango" user with sudo privileges
 - ``wait-for-it.sh`` and ``retry`` orchestration scripts
+
+Included Software
+*****************
+
+.. list-table::
+   :header-rows: 1
+
+   * - Package
+     - Version
+   * - cppTango
+     - |cpptango-version|
+   * - ZeroMQ
+     - |zeromq-version|
+   * - omniORB
+     - |omniorb-version|
+   * - opentelemetry-cpp
+     - |otel-version|
 
 Usage as a Base image
 ---------------------

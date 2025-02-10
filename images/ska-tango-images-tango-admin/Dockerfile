@@ -22,7 +22,6 @@ RUN set -xe; \
 
 FROM $BASE_IMAGE AS final
 
-COPY --from=build /usr/local/lib /usr/local/lib
 COPY --from=build /usr/local/bin/tango_admin /usr/local/bin/
 
 LABEL int.skao.image.team="Team Wombat" \
