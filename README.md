@@ -8,12 +8,13 @@ images, aimed at ska-tango-images developers. See the documentation in the
 ## Setup virtualenv
 
 This repository uses poetry to manage test and documentation dependencies as
-this fits in best with the .make infrastructure.  However, this repository
-(currently) does not define a python module/package, as such, to install the
-dependencies you must pass `--no-root` to poetry:
+this fits in best with the .make infrastructure.  There is also a small
+`ska_tango_images` python package to help manage the images.  This package is
+not published and is only intended for local use.  To install this package and
+all the dependencies, run:
 
 ```
-poetry install --no-root
+poetry install
 ```
 
 ## Docker hierarchy and release tagging
@@ -25,43 +26,68 @@ tags updated.
 The release tags should match the underlying dependencies used where possible.
 
 - {nexus}/ska-base / {nexus}/ska-build
-  - tango-dependencies/Dockerfile:FROM {nexus}/ska-build AS build
-  - tango-dependencies/Dockerfile:FROM {nexus}/ska-build
-    - tango-base/Dockerfile:FROM {nexus}/ska-base
-    - tango-cpp/Dockerfile:FROM {nexus}/tango-dependencies AS build
-    - tango-cpp/Dockerfile:FROM {nexus}/ska-build
-        - tango-admin/Dockerfile:FROM {nexus}/tango-cpp AS build
-        - tango-admin/Dockerfile:FROM {nexus}/tango-base
-          - tango-databaseds/Dockerfile:FROM {nexus}/tango-cpp AS build
-          - tango-databaseds/Dockerfile:FROM {nexus}/tango-admin
-          - hdbpp-cm/Dockerfile:FROM {nexus}/tango-cpp AS build
-          - hdbpp-cm/Dockerfile:FROM {nexus}/tango-admin
-          - hdbpp-es-timescaledb/Dockerfile:FROM {nexus}/tango-cpp AS build
-          - hdbpp-es-timescaledb/Dockerfile:FROM {nexus}/tango-admin
-          - tango-test/Dockerfile:FROM {nexus}/tango-cpp AS build
-          - tango-test/Dockerfile:FROM {nexus}/tango-admin
-          - tango-java/Dockerfile:FROM {nexus}/ska-build AS build
-          - tango-java/Dockerfile:FROM {nexus}/tango-admin
-            - tango-jive/Dockerfile:FROM {nexus}/tango-java
-            - tango-pogo/Dockerfile:FROM {nexus}/tango-java
-            - tango-rest/Dockerfile:FROM {nexus}/tango-java DEPRECATED
-            - rest-server/Dockerfile:FROM {nexus}/tango-java
+  - tango-cpp/Dockerfile:FROM {nexus}/ska-build
+    - tango-base/Dockerfile:FROM {nexus}/tango-cpp AS build
+    - tango-base/Dockerfile:FROM {nexus}/ska-base AS final
+      - tango-admin/Dockerfile:FROM {nexus}/tango-cpp AS build
+      - tango-admin/Dockerfile:FROM {nexus}/tango-base AS final
+        - tango-databaseds/Dockerfile:FROM {nexus}/tango-cpp AS build
+        - tango-databaseds/Dockerfile:FROM {nexus}/tango-admin AS final
+        - hdbpp-cm/Dockerfile:FROM {nexus}/tango-cpp AS build
+        - hdbpp-cm/Dockerfile:FROM {nexus}/tango-admin AS final
+        - hdbpp-es-timescaledb/Dockerfile:FROM {nexus}/tango-cpp AS build
+        - hdbpp-es-timescaledb/Dockerfile:FROM {nexus}/tango-admin AS final
+        - tango-test/Dockerfile:FROM {nexus}/tango-cpp AS build
+        - tango-test/Dockerfile:FROM {nexus}/tango-admin AS final
+        - tango-java/Dockerfile:FROM {nexus}/ska-build AS build
+        - tango-java/Dockerfile:FROM {nexus}/tango-admin AS final
+          - tango-jive/Dockerfile:FROM {nexus}/tango-java AS final
+          - tango-pogo/Dockerfile:FROM {nexus}/tango-java AS final
+          - tango-rest/Dockerfile:FROM {nexus}/tango-java AS final DEPRECATED
+          - rest-server/Dockerfile:FROM {nexus}/tango-java AS final
 - {nexus}/ska-python / {nexus}/ska-build-python
   - ska-tango-images-tango-python:FROM ska-tango-images-tango-admin AS build
-  - ska-tango-images-tango-python:FROM ska-python
+  - ska-tango-images-tango-python:FROM ska-python AS final
     - tango-boogie/Dockerfile:FROM {nexus}/ska-build-python AS build
-    - tango-boogie/Dockerfile:FROM {nexus}/ska-tango-images-tango-python
+    - tango-boogie/Dockerfile:FROM {nexus}/tango-python AS final
     - tango-dsconfig/Dockerfile:FROM {nexus}/ska-build-python AS build
-    - tango-dsconfig/Dockerfile:FROM {nexus}/ska-tango-images-tango-python
+    - tango-dsconfig/Dockerfile:FROM {nexus}/tango-python AS final
     - tango-itango/Dockerfile:FROM {nexus}/ska-build-python AS build
-    - tango-itango/Dockerfile:FROM {nexus}/ska-tango-images-tango-python
+    - tango-itango/Dockerfile:FROM {nexus}/tango-python AS final
     - hdbpp-yaml2archiving/Dockerfile:FROM {nexus}/ska-build-python AS build
-    - hdbpp-yaml2archiving/Dockerfile:FROM {nexus}/ska-tango-images-tango-python
+    - hdbpp-yaml2archiving/Dockerfile:FROM {nexus}/tango-python AS final
 - mariadb
   - tango-db/Dockerfile:FROM mariadb
 - timescaledb
   - hdbpp-timescaledb/Dockerfile:FROM timescaledb
 
+### Tagging a release
+
+To tag a release, use
+
+```shell
+make git-create-tag
+```
+
+This will tag the release with the tag specified in `.release`.
+
+Unfortunately, for 0.4.15 release this process was not followed and the repo was
+tagged as 0.14.15.  This was not an issue in that artifacts were still correctly
+labeled, however, now readthedocs thinks that 0.14.15 is the latest stable
+version.  Until we hit version 1.0.0 we must manually override this also pushing
+a `stable` branch.  After tagging `HEAD`, update your local copy of the `stable`
+branch to point to `HEAD`.
+
+```shell
+git branch -f stable HEAD
+```
+
+Then push the tag and branch with:
+
+```shell
+make git-push-tag
+git push -f origin stable
+```
 ## Building an image
 
 To build all the images locally, run
