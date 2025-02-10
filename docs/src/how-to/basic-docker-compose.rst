@@ -56,6 +56,12 @@ exit code means there is a problem:
    A local version of ``tango_admin`` will also work here, you don't have to use
    the :ref:`ska-tango-images-tango-admin` OCI image.
 
+.. warning::
+
+   With tango_admin 1.24 the above command has a default timeout of 1200s and it
+   does not output anything if it cannot connect to the device.  This happens,
+   for example, if you have not set the `TANGO_HOST` environment variable.
+
 Starting a native Tango device
 ------------------------------
 
