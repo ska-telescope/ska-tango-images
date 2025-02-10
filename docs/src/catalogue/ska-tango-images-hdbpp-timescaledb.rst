@@ -33,7 +33,7 @@ following:
 
    docker run --name archive-db -p 5432:5432 --detach --rm \
       --env POSTGRESS_PASSWORD=tango \
-      |oci-registry|/ska-tango-images-hdbpp-timescaledb:|hdbpp-timescaledb-version|
+      |oci-registry|/ska-tango-images-hdbpp-timescaledb:|hdbpp-timescaledb-imgver|
 
 The database will be available at the TCP port ``localhost:5432``.
 
