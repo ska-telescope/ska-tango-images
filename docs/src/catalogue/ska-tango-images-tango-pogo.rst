@@ -27,6 +27,8 @@ Included Software
      - Version
    * - Pogo
      - |tsd-pogo-version|
+   * - JTango
+     - |tsd-jtango-version|
    * - tango_admin
      - |tangoadmin-version|
    * - cppTango
