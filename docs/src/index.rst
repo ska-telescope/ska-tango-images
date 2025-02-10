@@ -75,4 +75,5 @@ longer provided here.
   :caption: Releases
 
   releases/migrating-to-0.5
+  releases/migrating-to-0.6
   releases/changelog
