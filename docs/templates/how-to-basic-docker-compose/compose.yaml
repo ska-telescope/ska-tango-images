@@ -43,9 +43,9 @@ services:
       - -ORBendPoint
       - giop:tcp::10000
     healthcheck:
-      test: ["CMD", "/usr/local/bin/tango_admin", "--ping-database"]
+      test: ["CMD", "sh", "-c", "/usr/local/bin/tango_admin --ping-database || exit 1"]
       start_period: 10s
       start_interval: 500ms
-      timeout: 1s
+      timeout: 3s
       retries: 3
 

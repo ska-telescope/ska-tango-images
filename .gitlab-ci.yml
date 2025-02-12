@@ -303,6 +303,8 @@ build_tango-base:
   extends: .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-base
+  needs:
+    - build_tango-cpp
 
 scan_tango-boogie:
   extends: .container-scanning
@@ -325,8 +327,6 @@ build_tango-cpp:
   extends: .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-cpp
-  needs:
-    - build_tango-dependencies
 
 scan_tango-databaseds:
   extends: .container-scanning
@@ -350,16 +350,6 @@ build_tango-db:
   extends: .image_builder_template
   variables:
     OCI_IMAGE: ska-tango-images-tango-db
-
-scan_tango-dependencies:
-  extends: .container-scanning
-  variables:
-    OCI_IMAGE: ska-tango-images-tango-dependencies
-
-build_tango-dependencies:
-  extends: .image_builder_template
-  variables:
-    OCI_IMAGE: ska-tango-images-tango-dependencies
 
 scan_tango-dsconfig:
   extends: .container-scanning

@@ -4,7 +4,6 @@ ARG BUILD_IMAGE="artefact.skao.int/ska-build-python:${SKABUILDPYTHON_VERSION}"
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-python:local"
 FROM $BUILD_IMAGE AS build
 ARG PYTANGO_VERSION
-ARG NUMPY_VERSION
 ARG YAML2ARCHIVING_VERSION
 
 ENV VIRTUAL_ENV=/app
@@ -21,11 +20,11 @@ WORKDIR /usr/src/yaml2archiving
 RUN set -xe; \
     git clone --depth=1 --branch=${YAML2ARCHIVING_VERSION} --recursive -c advice.detachedHead=false \
         https://gitlab.com/tango-controls/hdbpp/yaml2archiving.git /usr/src/yaml2archiving; \
-    pip install numpy==${NUMPY_VERSION} pytango==${PYTANGO_VERSION} .
+    pip install pytango==${PYTANGO_VERSION} .
 
 RUN pip uninstall -y pip
 
-FROM $BASE_IMAGE
+FROM $BASE_IMAGE AS final
 
 ENV VIRTUAL_ENV=/app
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"

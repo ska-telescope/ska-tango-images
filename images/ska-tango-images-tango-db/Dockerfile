@@ -35,7 +35,7 @@ RUN set -xe; \
 
 RUN rm -r /usr/src/databaseds
 
-FROM $BASE_IMAGE
+FROM $BASE_IMAGE AS final
 
 LABEL \
     int.skao.application="Tango DB" \

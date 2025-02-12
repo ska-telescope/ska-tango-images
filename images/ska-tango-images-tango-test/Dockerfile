@@ -8,6 +8,7 @@ RUN set -xe; \
     apt-get update; \
     apt-get install -y --no-install-recommends \
         cmake \
+        pkg-config \
         git
 
 RUN mkdir /usr/src/TangoTest
@@ -19,7 +20,7 @@ RUN set -xe; \
         -DCMAKE_INSTALL_PREFIX=/usr/local/ -DCMAKE_INSTALL_RPATH=/usr/local/lib; \
     make  -j$(nproc) -Cbuild install
 
-FROM $BASE_IMAGE
+FROM $BASE_IMAGE AS final
 COPY --from=build /usr/local/bin/TangoTest /usr/local/bin
 
 LABEL int.skao.image.team="Team Wombat" \

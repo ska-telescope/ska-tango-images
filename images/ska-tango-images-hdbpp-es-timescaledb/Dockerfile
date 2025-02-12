@@ -20,6 +20,10 @@ WORKDIR /usr/src/libhdbpp
 RUN set -xe; \
     git clone --depth=1 --branch=${LIBHDBPP_VERSION} --recursive -c advice.detachedHead=false \
         https://gitlab.com/tango-controls/hdbpp/libhdbpp.git /usr/src/libhdbpp; \
+    # This find module is broken for the 2.2.0 release, but the \
+    # TangoConfig.cmake installed by cppTango works so let's force cmake to \
+    # use that. \
+    rm cmake/FindTango.cmake; \
     cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/local/ -DCMAKE_INSTALL_RPATH=/usr/local/lib; \
     cmake --build build -j$(nproc) --target install
@@ -43,7 +47,7 @@ RUN set -xe; \
         -DCMAKE_INSTALL_PREFIX=/usr/local/ -DCMAKE_INSTALL_RPATH=/usr/local/lib; \
     cmake --build build -j$(nproc) --target install
 
-FROM $BASE_IMAGE
+FROM $BASE_IMAGE AS final
 
 USER root
 

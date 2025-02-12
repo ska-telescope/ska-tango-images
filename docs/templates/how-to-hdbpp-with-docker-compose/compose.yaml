@@ -43,10 +43,10 @@ services:
       - -ORBendPoint
       - giop:tcp::10000
     healthcheck:
-      test: ["CMD", "/usr/local/bin/tango_admin", "--ping-database"]
+      test: ["CMD", "sh", "-c", "/usr/local/bin/tango_admin --ping-database || exit 1"]
       start_period: 10s
       start_interval: 500ms
-      timeout: 1s
+      timeout: 3s
       retries: 3
 
   load-tango-config:
@@ -95,7 +95,7 @@ services:
       load-tango-config:
         condition: service_completed_successfully
     healthcheck:
-      test: ["CMD", "/usr/local/bin/tango_admin", "--ping-device", "hdb/cm/1"]
+      test: ["CMD", "sh", "-c", "/usr/local/bin/tango_admin --ping-device hdb/cm/1 || exit 1"]
       start_period: 10s
       start_interval: 500ms
       timeout: 1s
@@ -116,7 +116,7 @@ services:
       load-tango-config:
         condition: service_completed_successfully
     healthcheck:
-      test: ["CMD", "/usr/local/bin/tango_admin", "--ping-device", "hdb/es/1"]
+      test: ["CMD", "sh", "-c", "/usr/local/bin/tango_admin --ping-device hdb/es/1 || exit 1"]
       start_period: 10s
       start_interval: 500ms
       timeout: 1s
@@ -153,7 +153,7 @@ services:
       tango-dbds:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "/usr/local/bin/tango_admin", "--ping-device", "sys/tg_test/1"]
+      test: ["CMD", "sh", "-c", "/usr/local/bin/tango_admin --ping-device sys/tg_test/1 || exit 1"]
       start_period: 10s
       start_interval: 500ms
       timeout: 1s

@@ -21,7 +21,7 @@
 #  ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-admin:local"
 #  FROM $BUILD_IMAGE AS build
 #  ...
-#  FROM $BASE_IMAGE
+#  FROM $BASE_IMAGE AS final
 #  ...
 #  ```
 # If run inside a CI job ([ -n "$CI_COMMIT_SHORT_SHA" ]), then this script will replace

@@ -1,6 +1,6 @@
 ARG CAR_OCI_REGISTRY_HOST
 ARG BASE_IMAGE="${CAR_OCI_REGISTRY_HOST}/ska-tango-images-tango-java:local"
-FROM $BASE_IMAGE
+FROM $BASE_IMAGE AS final
 
 LABEL int.skao.image.team="Team Wombat" \
       int.skao.image.authors="oci-support@skao.int" \

@@ -13,7 +13,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 ARG TANGO_SOURCE_DISTRIBUTION_VERSION
 ARG LOG4J_VERSION
 
-ENV TSD_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/tango-${TANGO_SOURCE_DISTRIBUTION_VERSION}.tar.gz
+ENV TSD_DOWNLOAD_URL=https://gitlab.com/api/v4/projects/24125890/packages/generic/TangoSourceDistribution/${TANGO_SOURCE_DISTRIBUTION_VERSION}/tango-${TANGO_SOURCE_DISTRIBUTION_VERSION}.tar.gz
 ENV LOG4J_DOWNLOAD_URL=https://artefact.skao.int/repository/raw-internal/ska-tango-images/libraries/log4j-${LOG4J_VERSION}.tar.gz
 
 RUN set -xe; \
@@ -40,9 +40,9 @@ WORKDIR /usr/java
 RUN set -xe; \
     wget --no-check-certificate "$LOG4J_DOWNLOAD_URL" -O log4j.tar.gz; \
     tar zxvf log4j.tar.gz; \
-    mv apache-log4j-1.2.17/log4j-1.2.17.jar /usr/local/share/java/log4j-1.2.17.jar;
+    mv apache-log4j-1.2.17/log4j-1.2.17.jar /usr/local/share/java/log4j.jar;
 
-FROM $BASE_IMAGE
+FROM $BASE_IMAGE AS final
 
 LABEL int.skao.image.team="Team Wombat" \
       int.skao.image.authors="oci-support@skao.int" \

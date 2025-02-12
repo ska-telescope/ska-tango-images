@@ -1,22 +1,32 @@
-ZEROMQ_VERSION=4.3.4
-CPPZMQ_VERSION=4.8.1
-OMNIORB_VERSION=4.3.1
-TANGOIDL_VERSION=5.1.2
-CPPTANGO_VERSION=9.5.0
-TANGOADMIN_VERSION=Release_1.17
-DATABASEDS_VERSION=Database-Release-5.22
-TANGOTEST_VERSION=3.8
-PYTANGO_VERSION=9.5.0
-# We only need to pin the NUMPY_VERSION because we are installing pytango 9.5.0,
-# which is incompatible with numpy 2.
-NUMPY_VERSION=1.26.4
-DSCONFIG_VERSION=1.7.1
-ITANGO_VERSION=0.1.9
-BOOGIE_VERSION=0613475efe44583e3cf724478ef6326e75a52493
+ZEROMQ_VERSION=4.3.5
+CPPZMQ_VERSION=4.10.0
+OMNIORB_VERSION=4.3.2
+ABSEIL_VERSION=20250127.0
+PROTOBUF_VERSION=29.3
+GRPC_VERSION=1.70.1
+# This is the latest OTEL version which cppTango 10.0.0 supports
+# later OTEL versions requires cppTango 10.0.1, which is not yet
+# released.
+OTEL_VERSION=1.16.1
+# OTEL_PROTO_VERSION is tied to OTEL_VERSION.  See the opentelemetry-cpp repo to
+# work out which version we need.
+OTEL_PROTO_VERSION=1.3.2
+TANGOIDL_VERSION=6.0.2
+CPPTANGO_VERSION=10.0.0
+# WORKAROUND(tango_admin 1.24):
+#   - tests/test_basic.py
+#   - docs/how-to/basic-docker-compose.rst
+TANGOADMIN_VERSION=Release_1.24
+DATABASEDS_VERSION=Database-Release-5.23
+TANGOTEST_VERSION=3.10
+PYTANGO_VERSION=10.0.0
+DSCONFIG_VERSION=1.8.0
+ITANGO_VERSION=0.2.0
+BOOGIE_VERSION=e29c3056ad780028ac042429c6eb86b483db3924
 LOG4J_VERSION=1.2.17
-SKABASE_VERSION=0.1.0
-SKABUILD_VERSION=0.1.1
-SKAPYTHON_VERSION=0.1.1
+SKABASE_VERSION=0.1.1
+SKABUILD_VERSION=0.1.2
+SKAPYTHON_VERSION=0.1.2
 SKABUILDPYTHON_VERSION=0.1.1
 HDBPP_CM_VERSION=2.2.1
 HDBPP_ES_VERSION=2.2.1
@@ -25,10 +35,10 @@ LIBHDBPP_TIMESCALE_VERSION=2.4.0
 HDBPP_TIMESCALE_PROJECT_VERSION=d4477bdf4d317e4007a8c4cf59e656337c61363c
 TIMESCALEDB_VERSION=2.15.3-pg13
 YAML2ARCHIVING_VERSION=0.11.0
-MARIADB_VERSION=11.0.2-jammy
-TANGO_SOURCE_DISTRIBUTION_VERSION=9.5.0
+MARIADB_VERSION=11.2.6-jammy
+TANGO_SOURCE_DISTRIBUTION_VERSION=10.0.0
 # Below are taken from TangoSourceDistribution distribution.properties and are
-# not used by the images.  They are used by the gen-changelog-versions script to
+# not used by the images.  They are used by the gen-bill-of-mats script to
 # report what is in the images.  If you update the
 # TANGO_SOURCE_DISTRIBUTION_VERSION above, you should also update these version
 # numbers accordingly.

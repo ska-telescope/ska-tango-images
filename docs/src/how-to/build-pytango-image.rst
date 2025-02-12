@@ -27,7 +27,7 @@ the following skeleton:
 .. code-block:: Dockerfile
    :substitutions:
 
-   ARG BUILD_IMAGE=artefact.skao.int/ska-build-python:0.1.1
+   ARG BUILD_IMAGE=artefact.skao.int/ska-build-python:|skabuildpython-version|
    ARG BASE_IMAGE=|oci-registry|/ska-tango-images-tango-python:|tango-python-imgver|
    FROM $BUILD_IMAGE AS build
 
@@ -74,7 +74,7 @@ virtual environment:
 .. code-block:: Dockerfile
    :substitutions:
 
-   ARG BUILD_IMAGE=artefact.skao.int/ska-build-python:0.1.1
+   ARG BUILD_IMAGE=artefact.skao.int/ska-build-python:|skabuildpython-version|
    ARG BASE_IMAGE=|oci-registry|/ska-tango-images-tango-python:|tango-python-imgver|
    FROM $BUILD_IMAGE AS build
 

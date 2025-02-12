@@ -34,6 +34,8 @@ Included Software
      - Version
    * - TangoRestServer
      - |tsd-rest-version|
+   * - JTango
+     - |tsd-jtango-version|
    * - tango_admin
      - |tangoadmin-version|
    * - cppTango
@@ -42,6 +44,8 @@ Included Software
      - |zeromq-version|
    * - omniORB
      - |omniorb-version|
+   * - opentelemetry-cpp
+     - |otel-version|
 
 Usage Example
 -------------
