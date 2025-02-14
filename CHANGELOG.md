@@ -35,6 +35,7 @@ ska-tango-images-tango-dbds, moving to InnoDB backend
 ### Deprecated images
 
 - ska-tango-images-tango-rest
+- ska-tango-images-tango-java
 
 ### Removed images
 
