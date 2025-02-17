@@ -1,6 +1,6 @@
 # Changelog
 
-## unrelease
+## 0.6.0
 
 ### Breaking Changes
 
@@ -21,6 +21,7 @@ ska-tango-images-tango-dbds, moving to InnoDB backend
 - WOM-567: Update to dsconfig 1.8.0
 - WOM-567: Update to itango 0.2.0
 - WOM-567: Update to Mariadb base image 11.2.6-jammy
+- WOm-567: Started copying cppTango libraries into ska-tango-images-tango-base
 - WOM-612: Add HDB++ images for running a TimescaleDB-base archiver
 - WOM-612: Fix copying library symlinks into ska-tango-images-tango-admin
 
@@ -35,6 +36,7 @@ ska-tango-images-tango-dbds, moving to InnoDB backend
 ### Deprecated images
 
 - ska-tango-images-tango-rest
+- ska-tango-images-tango-java
 
 ### Removed images
 

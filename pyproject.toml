@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ska-tango-images"
-version = "0.5.1"
+version = "0.6.0"
 description = "SKA Tango OCI Images"
 authors = ["SKAO"]
 license = "BSD-3-Clause"
