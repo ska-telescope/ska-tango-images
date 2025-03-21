@@ -1,5 +1,294 @@
 # Changelog
 
+## 0.6.1
+
+### Changes
+
+- WOM-699: Update to cppTango 10.0.2
+- WOM-699: Update to pyTango 10.0.2
+
+### Published images
+
+- ska-tango-images-hdbpp-cm:2.2.2
+  + abseil 20250127.0
+  + cppTango 10.0.2
+  + cppZMQ 4.10.0
+  + gRPC 1.70.1
+  + hdb++cm-srv 2.2.1
+  + omniORB 4.3.2
+  + opentelemetry-cpp 1.19.0
+  + opentelemetry-proto 1.5.0
+  + protobuf 29.3
+  + ska-base 0.1.1
+  + ska-build 0.1.2
+  + tango_admin 1.24
+  + tango_idl 6.0.2
+  + ZeroMQ 4.3.5
+- ska-tango-images-hdbpp-es-timescaledb:2.4.1
+  + abseil 20250127.0
+  + cppTango 10.0.2
+  + cppZMQ 4.10.0
+  + gRPC 1.70.1
+  + hdb++es-srv 2.2.1
+  + libhdbpp 2.2.0
+  + libhdbpp-timescale 2.4.0
+  + omniORB 4.3.2
+  + opentelemetry-cpp 1.19.0
+  + opentelemetry-proto 1.5.0
+  + protobuf 29.3
+  + ska-base 0.1.1
+  + ska-build 0.1.2
+  + tango_admin 1.24
+  + tango_idl 6.0.2
+  + ZeroMQ 4.3.5
+- ska-tango-images-hdbpp-timescaledb:2.4.0
+  + HDB++ TimescaleDb project commit d4477bdf4d317e4007a8c4cf59e656337c61363c
+  + TimescaleDb 2.15.3-pg13
+- ska-tango-images-hdbpp-yaml2archiving:0.11.1
+  + abseil 20250127.0
+  + cppTango 10.0.2
+  + cppZMQ 4.10.0
+  + gRPC 1.70.1
+  + omniORB 4.3.2
+  + opentelemetry-cpp 1.19.0
+  + opentelemetry-proto 1.5.0
+  + protobuf 29.3
+  + PyTango 10.0.2
+  + ska-base 0.1.1
+  + ska-build 0.1.2
+  + ska-build-python 0.1.1
+  + ska-python 0.1.2
+  + tango_admin 1.24
+  + tango_idl 6.0.2
+  + yaml2archiving 0.11.0
+  + ZeroMQ 4.3.5
+- ska-tango-images-rest-server:1.22.1
+  + abseil 20250127.0
+  + cppTango 10.0.2
+  + cppZMQ 4.10.0
+  + gRPC 1.70.1
+  + log4j 1.2.17
+  + omniORB 4.3.2
+  + opentelemetry-cpp 1.19.0
+  + opentelemetry-proto 1.5.0
+  + protobuf 29.3
+  + ska-base 0.1.1
+  + ska-build 0.1.2
+  + tango_admin 1.24
+  + tango_idl 6.0.2
+  + ZeroMQ 4.3.5
+- ska-tango-images-tango-admin:1.24.1
+  + abseil 20250127.0
+  + cppTango 10.0.2
+  + cppZMQ 4.10.0
+  + gRPC 1.70.1
+  + omniORB 4.3.2
+  + opentelemetry-cpp 1.19.0
+  + opentelemetry-proto 1.5.0
+  + protobuf 29.3
+  + ska-base 0.1.1
+  + ska-build 0.1.2
+  + tango_admin 1.24
+  + tango_idl 6.0.2
+  + ZeroMQ 4.3.5
+- ska-tango-images-tango-base:0.2.1
+  + abseil 20250127.0
+  + cppTango 10.0.2
+  + cppZMQ 4.10.0
+  + gRPC 1.70.1
+  + omniORB 4.3.2
+  + opentelemetry-cpp 1.19.0
+  + opentelemetry-proto 1.5.0
+  + protobuf 29.3
+  + ska-base 0.1.1
+  + ska-build 0.1.2
+  + tango_idl 6.0.2
+  + ZeroMQ 4.3.5
+- ska-tango-images-tango-boogie:0.2.1
+  + abseil 20250127.0
+  + Boogie commit e29c3056ad780028ac042429c6eb86b483db3924
+  + cppTango 10.0.2
+  + cppZMQ 4.10.0
+  + gRPC 1.70.1
+  + omniORB 4.3.2
+  + opentelemetry-cpp 1.19.0
+  + opentelemetry-proto 1.5.0
+  + protobuf 29.3
+  + PyTango 10.0.2
+  + ska-base 0.1.1
+  + ska-build 0.1.2
+  + ska-build-python 0.1.1
+  + ska-python 0.1.2
+  + tango_admin 1.24
+  + tango_idl 6.0.2
+  + ZeroMQ 4.3.5
+- ska-tango-images-tango-cpp:10.0.2
+  + abseil 20250127.0
+  + cppTango 10.0.2
+  + cppZMQ 4.10.0
+  + gRPC 1.70.1
+  + omniORB 4.3.2
+  + opentelemetry-cpp 1.19.0
+  + opentelemetry-proto 1.5.0
+  + protobuf 29.3
+  + ska-build 0.1.2
+  + tango_idl 6.0.2
+  + ZeroMQ 4.3.5
+- ska-tango-images-tango-databaseds:5.23.1
+  + abseil 20250127.0
+  + cppTango 10.0.2
+  + cppZMQ 4.10.0
+  + gRPC 1.70.1
+  + omniORB 4.3.2
+  + opentelemetry-cpp 1.19.0
+  + opentelemetry-proto 1.5.0
+  + protobuf 29.3
+  + ska-base 0.1.1
+  + ska-build 0.1.2
+  + tango_admin 1.24
+  + TangoDatabase 5.23
+  + tango_idl 6.0.2
+  + ZeroMQ 4.3.5
+- ska-tango-images-tango-db:11.2.6
+  + MariaDB docker image 11.2.6-jammy
+  + TangoDatabase 5.23
+- ska-tango-images-tango-dsconfig:1.8.1
+  + abseil 20250127.0
+  + cppTango 10.0.2
+  + cppZMQ 4.10.0
+  + dsconfig 1.8.0
+  + gRPC 1.70.1
+  + omniORB 4.3.2
+  + opentelemetry-cpp 1.19.0
+  + opentelemetry-proto 1.5.0
+  + protobuf 29.3
+  + PyTango 10.0.2
+  + ska-base 0.1.1
+  + ska-build 0.1.2
+  + ska-build-python 0.1.1
+  + ska-python 0.1.2
+  + tango_admin 1.24
+  + tango_idl 6.0.2
+  + ZeroMQ 4.3.5
+- ska-tango-images-tango-itango:10.0.2
+  + abseil 20250127.0
+  + cppTango 10.0.2
+  + cppZMQ 4.10.0
+  + gRPC 1.70.1
+  + itango 0.2.0
+  + omniORB 4.3.2
+  + opentelemetry-cpp 1.19.0
+  + opentelemetry-proto 1.5.0
+  + protobuf 29.3
+  + PyTango 10.0.2
+  + ska-base 0.1.1
+  + ska-build 0.1.2
+  + ska-build-python 0.1.1
+  + ska-python 0.1.2
+  + tango_admin 1.24
+  + tango_idl 6.0.2
+  + ZeroMQ 4.3.5
+- ska-tango-images-tango-java:10.0.2
+  + abseil 20250127.0
+  + cppTango 10.0.2
+  + cppZMQ 4.10.0
+  + gRPC 1.70.1
+  + Java applications from TangoSourceDistribution 10.0.2
+  + log4j 1.2.17
+  + omniORB 4.3.2
+  + opentelemetry-cpp 1.19.0
+  + opentelemetry-proto 1.5.0
+  + protobuf 29.3
+  + ska-base 0.1.1
+  + ska-build 0.1.2
+  + tango_admin 1.24
+  + tango_idl 6.0.2
+  + ZeroMQ 4.3.5
+- ska-tango-images-tango-jive:7.36.3
+  + abseil 20250127.0
+  + ATK 9.3.28
+  + ATK Panel 5.11
+  + ATK Tuning 4.8
+  + cppTango 10.0.2
+  + cppZMQ 4.10.0
+  + gRPC 1.70.1
+  + Jive 7.36
+  + JTango 9.6.6
+  + log4j 1.2.17
+  + omniORB 4.3.2
+  + opentelemetry-cpp 1.19.0
+  + opentelemetry-proto 1.5.0
+  + protobuf 29.3
+  + ska-base 0.1.1
+  + ska-build 0.1.2
+  + tango_admin 1.24
+  + tango_idl 6.0.2
+  + ZeroMQ 4.3.5
+- ska-tango-images-tango-pogo:9.8.3
+  + abseil 20250127.0
+  + cppTango 10.0.2
+  + cppZMQ 4.10.0
+  + gRPC 1.70.1
+  + JTango 9.6.6
+  + log4j 1.2.17
+  + omniORB 4.3.2
+  + opentelemetry-cpp 1.19.0
+  + opentelemetry-proto 1.5.0
+  + Pogo 9.8.0
+  + protobuf 29.3
+  + ska-base 0.1.1
+  + ska-build 0.1.2
+  + tango_admin 1.24
+  + tango_idl 6.0.2
+  + ZeroMQ 4.3.5
+- ska-tango-images-tango-python:0.2.1
+  + abseil 20250127.0
+  + cppTango 10.0.2
+  + cppZMQ 4.10.0
+  + gRPC 1.70.1
+  + omniORB 4.3.2
+  + opentelemetry-cpp 1.19.0
+  + opentelemetry-proto 1.5.0
+  + protobuf 29.3
+  + ska-base 0.1.1
+  + ska-build 0.1.2
+  + ska-python 0.1.2
+  + tango_admin 1.24
+  + tango_idl 6.0.2
+  + ZeroMQ 4.3.5
+- ska-tango-images-tango-rest:1.22.2
+  + abseil 20250127.0
+  + cppTango 10.0.2
+  + cppZMQ 4.10.0
+  + gRPC 1.70.1
+  + JTango 9.6.6
+  + log4j 1.2.17
+  + omniORB 4.3.2
+  + opentelemetry-cpp 1.19.0
+  + opentelemetry-proto 1.5.0
+  + protobuf 29.3
+  + ska-base 0.1.1
+  + ska-build 0.1.2
+  + tango_admin 1.24
+  + tango_idl 6.0.2
+  + TangoRestServer 1.22
+  + ZeroMQ 4.3.5
+- ska-tango-images-tango-test:3.10.1
+  + abseil 20250127.0
+  + cppTango 10.0.2
+  + cppZMQ 4.10.0
+  + gRPC 1.70.1
+  + omniORB 4.3.2
+  + opentelemetry-cpp 1.19.0
+  + opentelemetry-proto 1.5.0
+  + protobuf 29.3
+  + ska-base 0.1.1
+  + ska-build 0.1.2
+  + tango_admin 1.24
+  + tango_idl 6.0.2
+  + TangoTest 3.10
+  + ZeroMQ 4.3.5
+
 ## 0.6.0
 
 ### Breaking Changes

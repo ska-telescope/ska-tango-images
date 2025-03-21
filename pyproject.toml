@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ska-tango-images"
-version = "0.6.0"
+version = "0.6.1"
 description = "SKA Tango OCI Images"
 authors = ["SKAO"]
 license = "BSD-3-Clause"
@@ -9,7 +9,7 @@ readme = "README.md"
 [[tool.poetry.source]]
 name = "ska-nexus"
 url = "https://artefact.skao.int/repository/pypi-internal/simple"
-priority = "primary"
+priority = "supplemental"
 
 [[tool.poetry.source]]
 name = "PyPi"
@@ -21,8 +21,8 @@ python = "^3.10"
 pytest = "^8.3.3"
 
 [tool.poetry.group.docs.dependencies]
-Sphinx = "^7.2.6"
-ska-ser-sphinx-theme = "^0.1.2"
+Sphinx = "<8.2"
+ska-ser-sphinx-theme = "^0.2.1"
 recommonmark = "^0.7.1"
 sphinx-substitution-extensions = "2022.2.16"
 
