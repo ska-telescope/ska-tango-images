@@ -32,6 +32,7 @@ detail, however, if you were using this image for some reason, you can find all
 the same dependencies in the :ref:`ska-tango-images-tango-cpp` image.
 
 .. _migration-0-6-removed-tangotest:
+
 Removed TangoTest from ska-tango-images-tango-java
 --------------------------------------------------
 
